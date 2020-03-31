@@ -1,0 +1,17 @@
+github.com/d5/tengo v1.24.8 h1:PRJ+NWt7ae/9sSbIfThOBTkPSvNV+dwYoBAvwfNgNJY=
+github.com/d5/tengo v1.24.8/go.mod h1:VhLq8Q2QFhCIJO3NhvM934qOThykMqJi9y9Siqd1ocQ=
+github.com/d5/tengo/v2 v2.1.2 h1:JR5O6qJW2GW9lpv/MfEqK16a/Wpp2y8I0JZZ5fqNOL0=
+github.com/d5/tengo/v2 v2.1.2/go.mod h1:XRGjEs5I9jYIKTxly6HCF8oiiilk5E/RYXOZ5b0DZC8=
+github.com/dlclark/regexp2 v1.2.0 h1:8sAhBGEM0dRWogWqWyQeIJnxjWO6oIjl8FKqREDsGfk=
+github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
+github.com/dop251/goja v0.0.0-20200326102500-6438c8ddc517 h1:q0PO2pntEwlTkw46qrn1T2Qj5Q2sYJbIfgTA4in9AMI=
+github.com/dop251/goja v0.0.0-20200326102500-6438c8ddc517/go.mod h1:Mw6PkjjMXWbTj+nnj4s3QPXq1jaT0s5pC0iFD4+BOAA=
+github.com/go-sourcemap/sourcemap v2.1.3+incompatible h1:W1iEw64niKVGogNgBN3ePyLFfuisuzeidWPMPWmECqU=
+github.com/go-sourcemap/sourcemap v2.1.3+incompatible/go.mod h1:F8jJfvm2KbVjc5NqelyYJmf/v5J0dwNLS2mL4sNA1Jg=
+github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a h1:AbaDA3cbBe+3qpvek2YhvE/xn+8vLOc3J+KBlR2DMII=
+github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a/go.mod h1:Y07Sl+FLd164UCoNlvVFUb0NJWtcehctV6kaNWPjLgM=
+github.com/topxeq/tk v0.0.0-20200329124121-6b6ee5d551ea h1:21RNrQitvZUcaqKkt7UAKN1loB6APo4wlNIFL+XcMjU=
+github.com/topxeq/tk v0.0.0-20200329124121-6b6ee5d551ea/go.mod h1:g85t+ibMOJsTBY4I6k3wlqevIqSLP/mEJF2SQGuROtk=
+golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=
+golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=
+golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
