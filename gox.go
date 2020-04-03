@@ -7,8 +7,11 @@ import (
 
 	"fmt"
 
-	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
+	"github.com/mattn/anko/core"
+	"github.com/mattn/anko/env"
+	_ "github.com/mattn/anko/packages"
+	"github.com/mattn/anko/vm"
 	"github.com/topxeq/tk"
 )
 
@@ -27,29 +30,7 @@ func main() {
 		return
 	}
 
-	if tk.EndsWith(scriptT, ".tg") {
-		fcT := tk.LoadBytes(scriptT, -1)
-
-		if fcT == nil {
-			tk.Pl("failed to load file content")
-
-			return
-		}
-
-		s := tengo.NewScript(fcT)
-		// s.SetImports((*tengo.ModuleMap)(stdlib.GetModuleMap("fmt")))
-		// s.SetImports(stdlib.GetModuleMap("fmt"))
-		// s.SetImports(stdlib.GetModuleMap(stdlib.AllModuleNames()...))
-		// s.SetImports(*tengo.ModuleMapstdlib.GetModuleMap(stdlib.AllModuleNames()...))
-
-		if _, errT := s.Run(); errT != nil {
-			tk.Pl("failed to run script: %v", errT)
-
-			return
-		}
-
-		return
-	} else if tk.EndsWith(scriptT, ".js") {
+	if tk.EndsWith(scriptT, ".js") {
 		fcT := tk.LoadStringFromFile(scriptT)
 
 		if tk.IsErrorString(fcT) {
@@ -115,6 +96,48 @@ func main() {
 		}
 
 		resultG = v.Export()
+
+		// tk.Pl("%#v", rs)
+
+		return
+	} else if tk.EndsWith(scriptT, ".ank") {
+		fcT := tk.LoadStringFromFile(scriptT)
+
+		if tk.IsErrorString(fcT) {
+			tk.Pl("failed to load file content: %v", tk.GetErrorString(fcT))
+
+			return
+		}
+
+		e := env.NewEnv()
+
+		err := e.Define("pl", tk.Pl)
+		if err != nil {
+			tk.CheckErrf("Define error: %v\n", err)
+		}
+
+		e.Define("prl", tk.Prl)
+		e.Define("println", tk.Prl)
+		e.Define("prf", tk.Prf)
+
+		e.Define("inG", map[string]interface{}{"Args": os.Args})
+
+		core.Import(e)
+
+		script := fcT //`println("Hello World :)")`
+
+		_, err = vm.Execute(e, nil, script)
+		if err != nil {
+			tk.CheckErrf("Execute error: %v\n", err)
+		}
+
+		rs, errT := e.Get("resultG")
+
+		// tk.CheckErrCompact(errT)
+
+		if errT == nil && rs != nil {
+			tk.Pl("%#v", rs)
+		}
 
 		// tk.Pl("%#v", rs)
 
