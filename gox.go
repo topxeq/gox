@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"os"
+	"reflect"
 	"time"
 
 	"fmt"
@@ -13,9 +14,40 @@ import (
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/vm"
 	"github.com/topxeq/tk"
+
+	"github.com/sqweek/dialog"
 )
 
-var resultG interface{}
+// var inG interface{}
+// var outG interface{}
+
+var variableG = make(map[string]interface{})
+
+var jsVMG *goja.Runtime = nil
+var ankVMG *env.Env = nil
+
+func getVar(nameA string) interface{} {
+	return variableG[nameA]
+}
+
+func setVar(nameA string, valueA interface{}) {
+	variableG[nameA] = valueA
+}
+
+func importAnkPackages() {
+	env.Packages["tk"] = map[string]reflect.Value{
+		"Pl":                reflect.ValueOf(tk.Pl),
+		"Prl":               reflect.ValueOf(tk.Prl),
+		"Prf":               reflect.ValueOf(tk.Prf),
+		"SleepMilliSeconds": reflect.ValueOf(tk.SleepMilliSeconds),
+		"SleepSeconds":      reflect.ValueOf(tk.SleepSeconds),
+	}
+
+	env.Packages["dialog"] = map[string]reflect.Value{
+		"Message": reflect.ValueOf(dialog.Message),
+	}
+
+}
 
 func main() {
 	rand.Seed(time.Now().Unix())
@@ -39,68 +71,77 @@ func main() {
 			return
 		}
 
-		vmT := goja.New()
+		if jsVMG == nil {
+			jsVMG = goja.New()
 
-		vmT.Set("goPrintf", func(call goja.FunctionCall) goja.Value {
-			callArgsT := call.Arguments
+			jsVMG.Set("goPrintf", func(call goja.FunctionCall) goja.Value {
+				callArgsT := call.Arguments
 
-			argsBufT := make([]interface{}, len(callArgsT)-1)
+				argsBufT := make([]interface{}, len(callArgsT)-1)
 
-			formatA := callArgsT[0].ToString().String()
+				formatA := callArgsT[0].ToString().String()
 
-			for i, v := range callArgsT {
-				if i == 0 {
-					continue
+				for i, v := range callArgsT {
+					if i == 0 {
+						continue
+					}
+
+					argsBufT[i-1] = v.ToString().String()
 				}
 
-				argsBufT[i-1] = v.ToString().String()
+				tk.Prf(formatA, argsBufT...)
+
+				return nil
+			})
+
+			jsVMG.Set("goPrintln", func(call goja.FunctionCall) goja.Value {
+				callArgsT := call.Arguments
+
+				argsBufT := make([]interface{}, len(callArgsT))
+
+				for i, v := range callArgsT {
+					argsBufT[i] = v.ToString().String()
+				}
+
+				fmt.Println(argsBufT...)
+
+				return nil
+			})
+
+			jsVMG.Set("goGetRandomInt", func(call goja.FunctionCall) goja.Value {
+				maxA := call.Argument(0).ToInteger()
+
+				randomNumberT := rand.Intn(int(maxA))
+
+				rs := jsVMG.ToValue(randomNumberT)
+
+				return rs
+			})
+
+			consoleStrT := `console = { log: goPrintln };`
+
+			_, errT := jsVMG.RunString(consoleStrT)
+			if errT != nil {
+				tk.Pl("failed to run script: %v", errT)
+
+				return
 			}
 
-			tk.Prf(formatA, argsBufT...)
+		}
 
-			return nil
-		})
-
-		vmT.Set("goPrintln", func(call goja.FunctionCall) goja.Value {
-			callArgsT := call.Arguments
-
-			argsBufT := make([]interface{}, len(callArgsT))
-
-			for i, v := range callArgsT {
-				argsBufT[i] = v.ToString().String()
-			}
-
-			fmt.Println(argsBufT...)
-
-			return nil
-		})
-
-		vmT.Set("goGetRandomInt", func(call goja.FunctionCall) goja.Value {
-			maxA := call.Argument(0).ToInteger()
-
-			randomNumberT := rand.Intn(int(maxA))
-
-			rs := vmT.ToValue(randomNumberT)
-
-			return rs
-		})
-
-		consoleStrT := `console = { log: goPrintln };
-		`
-
-		v, errT := vmT.RunString(consoleStrT + fcT)
+		v, errT := jsVMG.RunString(fcT)
 		if errT != nil {
 			tk.Pl("failed to run script: %v", errT)
 
 			return
 		}
 
-		resultG = v.Export()
+		variableG["Out"] = v.Export()
 
 		// tk.Pl("%#v", rs)
 
 		return
-	} else if tk.EndsWith(scriptT, ".ank") {
+	} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".gox") {
 		fcT := tk.LoadStringFromFile(scriptT)
 
 		if tk.IsErrorString(fcT) {
@@ -109,29 +150,37 @@ func main() {
 			return
 		}
 
-		e := env.NewEnv()
+		if ankVMG == nil {
+			importAnkPackages()
 
-		err := e.Define("pl", tk.Pl)
-		if err != nil {
-			tk.CheckErrf("Define error: %v\n", err)
+			ankVMG = env.NewEnv()
+
+			// err := e.Define("pl", tk.Pl)
+			// if err != nil {
+			// 	tk.CheckErrf("Define error: %v\n", err)
+			// }
+
+			// e.Define("prl", tk.Prl)
+			ankVMG.Define("println", tk.Prl)
+			// e.Define("prf", tk.Prf)
+
+			ankVMG.Define("setVar", setVar)
+			ankVMG.Define("getVar", getVar)
+
+			core.Import(ankVMG)
+
 		}
 
-		e.Define("prl", tk.Prl)
-		e.Define("println", tk.Prl)
-		e.Define("prf", tk.Prf)
-
-		e.Define("inG", map[string]interface{}{"Args": os.Args})
-
-		core.Import(e)
+		ankVMG.Define("inG", map[string]interface{}{"Args": os.Args})
 
 		script := fcT //`println("Hello World :)")`
 
-		_, err = vm.Execute(e, nil, script)
-		if err != nil {
-			tk.CheckErrf("Execute error: %v\n", err)
+		_, errT := vm.Execute(ankVMG, nil, script)
+		if errT != nil {
+			tk.CheckErrf("Execute error: %v\n", errT)
 		}
 
-		rs, errT := e.Get("resultG")
+		rs, errT := ankVMG.Get("outG")
 
 		// tk.CheckErrCompact(errT)
 
