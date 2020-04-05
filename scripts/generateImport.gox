@@ -1,0 +1,45 @@
+// Usage: gox c:\goprjs\src\github.com\topxeq\gox\scripts\generateImport.gox -file=c:\goprjs\src\github.com\topxeq\tk\tk.go -package=tk > a.txt
+// 
+
+var tk = import("tk")
+var os = import("os")
+
+argsT = os.Args
+
+println(os.Args)
+
+fileNameT = tk.GetSwitchWithDefaultValue(argsT, "-file=", "")
+
+
+packageNameT = tk.GetSwitchWithDefaultValue(argsT, "-package=", "")
+
+if packageNameT == "" {
+	printfln("not enough parameters")
+	os.Exit(1)
+}
+
+printfln("package name: %v", packageNameT)
+
+if fileNameT == "" {
+	printfln("not enough parameters")
+	exit()
+}
+
+printfln("file name: %v", fileNameT)
+
+fcT = tk.LoadStringFromFile(fileNameT)
+
+if tk.IsErrorString(fcT) {
+	printfln("failed to load file content: %v", tk.GetErrorString(fcT))
+	exit()
+}
+
+pl("file content: ", fcT)
+
+aryT = tk.RegFindAll(fcT, `(?m)^func\s*([A-Z]\S*?)\(`, 1)
+
+pl(aryT)
+
+for v in aryT {
+	pfl("%#v: reflect.ValueOf(%v.%v),", v, packageNameT, v)
+}
