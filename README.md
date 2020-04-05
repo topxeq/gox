@@ -147,3 +147,29 @@ the same as fmt.Printf but add a new-line character at the end
 the same as os.Exit(1), used to terminate\exit the whole script running
 
 
+## Development
+
+The script [here](https://github.com/topxeq/gox/blob/master/scripts/generateImport.gox) is used for developers to add imported libraries to Gox.
+
+The usage is as below:
+
+``` 
+gox generateImport.gox -file=c:\goprjs\src\package1\package1.go -package=package1 > a.txt
+```
+
+and you will got something like:
+
+```
+		"StartsWith":                          reflect.ValueOf(tk.StartsWith),
+		"StartsWithIgnoreCase":                reflect.ValueOf(tk.StartsWithIgnoreCase),
+
+```
+
+then add it to the Gox source file in the code block to import variables/functions from the package,
+
+```
+	env.Packages["package1"] = map[string]reflect.Value{
+		"StartsWith":                  reflect.ValueOf(package1.StartsWith),
+		"StartsWithIgnoreCase":                  reflect.ValueOf(package1.StartsWithIgnoreCase),
+    }
+```
