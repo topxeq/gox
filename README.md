@@ -21,20 +21,28 @@ Run a script file.
 
 > gox test.gox
 
-Run several script files in consequence.
+Run several script files in consequence, use "-m" switch to enable multi-scripts mode.
 
-> gox test.gox script1.js start.ank last.txs
+> gox -m test.gox script1.js start.ank last.txs
 
 the result should be like below,
 
 ```
-> gox basic.gox test.js
+> gox -m basic.gox test.js
 3.4000000000000004
 this is 5 + 12.5 = 17.5
 5 12.5 17.5
 19 33 627
 The random number is：1
 ```
+
+Attention: in multi-scripts mode, all the command-line parameters will be recognizd as script file names, so inside each script, it can only retrieve its command-line arguments through switches. For example:
+
+```
+gox -m basic.gox test.js -para=abcd
+```
+
+And all the switches in Gox should be like "-type=code", not "-type code".
 
 Start the interpreter in REPL mode.
 
@@ -57,6 +65,74 @@ exit status 1
 ```
 
 use "quit()" or "exit()" function to exit.
+
+## User/developer guide
+
+### command-line parameters and swithes
+
+The global value "argsG" could be used for retrieve command-line arguments, and the first element(the Gox executable) is removed. If you need the whole command-line, use os.Args instead.
+
+An example for command-line handling is as below([source code](https://github.com/topxeq/gox/blob/master/scripts/commandLine.gox)),
+
+```
+// test command-line functions
+// for example: gox scripts\commandLine.gox abc -file=a.txt
+
+os = import("os")
+
+println("The whole command-line: ", os.Args)
+println("The whole command-line without executable: ", argsG)
+
+lenT = len(argsG)
+
+if lenT > 0 {
+    printfln("The first command-line element is: %v", argsG[0])
+}
+
+if lenT > 1 {
+    printfln("The sencod command-line element is: %v", argsG[1])
+}
+
+var tk = import("tk")
+
+para1 = tk.GetParameterByIndexWithDefaultValue(argsG, 1, "")
+pfl("para1=%v", para1)
+
+para2 = tk.GetParameterByIndexWithDefaultValue(argsG, 2, "")
+pfl("para2=%v", para2)
+
+switch1 = tk.GetSwitchWithDefaultValue(argsG, "-file=", "")
+
+pl("switch1:", switch1)
+
+paras = tk.GetAllParameters(argsG)
+
+pl("All parameters:", paras)
+
+switches = tk.GetAllSwitches(argsG)
+
+pl("All switches:", switches)
+
+pl(tk.IfSwitchExistsWhole(argsG, "-file"))
+pl(tk.IfSwitchExists(argsG, "-file"))
+```
+
+the output for this script should be something like,
+
+```
+> gox scripts\commandLine.gox abc -file=a.txt
+The whole command-line:  [gox scripts\commandLine.gox abc -file=a.txt]
+The whole command-line without executable:  [scripts\commandLine.gox abc -file=a.txt]
+The first command-line element is: scripts\commandLine.gox
+The sencod command-line element is: abc
+para1=abc
+para2=
+switch1: a.txt
+All parameters: [scripts\commandLine.gox abc]
+All switches: [-file=a.txt]
+false
+true
+```
 
 ## Sample script
 

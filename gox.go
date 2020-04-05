@@ -464,6 +464,8 @@ func initAnkVM() {
 		ankVMG.Define("setVar", setVar)
 		ankVMG.Define("getVar", getVar)
 
+		ankVMG.Define("argsG", os.Args[1:])
+
 		core.Import(ankVMG)
 
 	}
@@ -498,6 +500,10 @@ func main() {
 		// tk.Pl("not enough parameters")
 
 		return
+	}
+
+	if !tk.IfSwitchExistsWhole(argsT, "-m") {
+		scriptsT = scriptsT[0:1]
 	}
 
 	for _, scriptT := range scriptsT {
