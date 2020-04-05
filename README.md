@@ -134,6 +134,23 @@ false
 true
 ```
 
+### Import packages
+
+In Gox, the packages can be imported any time, but remember to assign it to a variable, such as,
+
+```
+var fmt = import("fmt")
+
+fmt.Println("abc")
+
+os = import("os")
+
+fmt.Printf("%v\n", os.Args)
+
+```
+
+Along with most of the core Golang libraries, the "tk" package([here](https://github.com/topxeq/tk)) is often used. The "tk" package provides many useful functions. See example scripts for more.
+
 ## Sample script
 
 Sample Javascript file:
