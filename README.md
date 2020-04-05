@@ -5,7 +5,7 @@ Golang is not required to be installed. Gox is only in one executable file, gree
 
 ## Installation
 
-Download the latest Gox executable file from [here](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path.
+Download the latest Gox executable file from [here](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
 
 ## usage
 
