@@ -3,6 +3,8 @@ Gox is a script language or a interpreter written by Golang. It's based on [Anko
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
+And thanks to [Giu](https://github.com/AllenDang/giu), which enable Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient.
+
 ## Installation
 
 Download the latest Gox executable file from [here](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
@@ -153,9 +155,9 @@ Along with most of the core Golang libraries, the "tk" package([here](https://gi
 
 Refer to the documents of these Golang packages for the detailed usage.
 
-## Sample script
+## More Topics and Sample Script
 
-Sample Javascript file:
+### Sample Javascript file:
 
 ```
 var a = 5 + 12.5;
@@ -170,7 +172,7 @@ goPrintfln("The random number：%v", goGetRandomInt(20));
 
 ```
 
-Basic Gox script:
+### Basic Gox script:
 
 ```
 
@@ -180,6 +182,41 @@ y = x + 1
 
 println(x+y)
 
+```
+
+### Base script with GUI
+
+A simple calculator with GUI
+
+```
+var gui = import("gui")
+
+text1 = ""
+
+
+func onButton1Click() {
+	rs = eval(text1)
+	text1 = toString(rs)
+}
+
+func onButton2Click() {
+	exit()
+}
+
+func loop() {
+
+	layoutT = []gui.Widget{
+		gui.Label("Enter an expression."), 
+		gui.InputText("", 0, &text1), 
+		gui.Line(gui.Button("Calculate", onButton1Click), gui.Button("Close", onButton2Click)),
+	}
+
+	gui.SingleWindow("Calculator", layoutT)
+}
+
+mainWindow = gui.NewMasterWindow("Calculator", 400, 200, gui.MasterWindowFlagsNotResizable, nil)
+
+mainWindow.Main(loop)
 ```
 
 ## More examples
@@ -237,9 +274,40 @@ the same as fmt.Printf but add a new-line character at the end
 ---
 
 
+#### eval
+
+evaluate an expression and return the result
+
+---
+
+
 #### exit
 
 the same as os.Exit(1), used to terminate\exit the whole script running
+
+---
+
+#### gui.loadFont
+
+for loading font for GUI display, example:
+
+```
+var gui = import("gui")
+
+...
+
+setVar("Font", "c:/Windows/Fonts/simsun.ttc")
+setVar("FontRange", "COMMON")
+setVar("FontSize", "36")
+
+mainWindow = gui.NewMasterWindow("简易计算器", 400, 200, gui.MasterWindowFlagsNotResizable, gui.loadFont)
+
+```
+
+see the example script [here](https://github.com/topxeq/gox/blob/master/scripts/testguic.gox).
+
+---
+
 
 
 ## Development
