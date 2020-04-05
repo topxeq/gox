@@ -230,7 +230,7 @@ Browse the example scripts [here](https://github.com/topxeq/gox/tree/master/scri
 
 ## Reference
 
-First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents. In addition, you can browse Anko's and Goja's documents.
+First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents. In addition, you can browse Anko's, Goja's and Giu's documents.
 
 However, Gox provides some convenient global variables and functions decribed as below.
 
