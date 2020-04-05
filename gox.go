@@ -19,7 +19,10 @@ import (
 	"github.com/mattn/anko/vm"
 	"github.com/topxeq/tk"
 
-	"github.com/sqweek/dialog"
+	"github.com/AllenDang/giu"
+	g "github.com/AllenDang/giu"
+	"github.com/AllenDang/giu/imgui"
+	// "github.com/sqweek/dialog"
 )
 
 // var inG interface{}
@@ -38,18 +41,120 @@ func setVar(nameA string, valueA interface{}) {
 	variableG[nameA] = valueA
 }
 
+func loadFont() {
+	fonts := giu.Context.IO().Fonts()
+
+	rangeVarT := getVar("FontRange")
+
+	ranges := imgui.NewGlyphRanges()
+
+	builder := imgui.NewFontGlyphRangesBuilder()
+
+	if rangeVarT == nil {
+		builder.AddRanges(fonts.GlyphRangesDefault())
+	} else {
+		rangeStrT := rangeVarT.(string)
+		if rangeStrT == "" || rangeStrT == "COMMON" {
+			builder.AddRanges(fonts.GlyphRangesChineseSimplifiedCommon())
+		} else if rangeStrT == "FULL" {
+			builder.AddRanges(fonts.GlyphRangesChineseFull())
+		} else {
+			builder.AddText(rangeStrT)
+		}
+	}
+
+	builder.BuildRanges(ranges)
+
+	fontPath := "c:/Windows/Fonts/simhei.ttf"
+
+	fontVarT := getVar("Font") // "c:/Windows/Fonts/simsun.ttc"
+
+	if fontVarT != nil {
+		fontPath = fontVarT.(string)
+	}
+
+	fontSizeStrT := "16"
+
+	fontSizeVarT := getVar("FontSize")
+
+	if fontSizeVarT != nil {
+		fontSizeStrT = fontSizeVarT.(string)
+	}
+
+	fontSizeT := tk.StrToIntWithDefaultValue(fontSizeStrT, 16)
+
+	// fonts.AddFontFromFileTTF(fontPath, 14)
+	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
+}
+
 func importAnkPackages() {
+	env.Packages["gui"] = map[string]reflect.Value{
+		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
+		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
+		"Window":                  reflect.ValueOf(g.Window),
+		"SingleWindowWithMenuBar": reflect.ValueOf(g.SingleWindowWithMenuBar),
+		"WindowV":                 reflect.ValueOf(g.WindowV),
+
+		"MasterWindowFlagsNotResizable": reflect.ValueOf(g.MasterWindowFlagsNotResizable),
+		"MasterWindowFlagsMaximized":    reflect.ValueOf(g.MasterWindowFlagsMaximized),
+		"MasterWindowFlagsFloating":     reflect.ValueOf(g.MasterWindowFlagsFloating),
+
+		// "Layout":          reflect.ValueOf(g.Layout),
+
+		"Label":              reflect.ValueOf(g.Label),
+		"Line":               reflect.ValueOf(g.Line),
+		"Button":             reflect.ValueOf(g.Button),
+		"InvisibleButton":    reflect.ValueOf(g.InvisibleButton),
+		"ImageButton":        reflect.ValueOf(g.ImageButton),
+		"InputTextMultiline": reflect.ValueOf(g.InputTextMultiline),
+		"Checkbox":           reflect.ValueOf(g.Checkbox),
+		"RadioButton":        reflect.ValueOf(g.RadioButton),
+		"Child":              reflect.ValueOf(g.Child),
+		"ComboCustom":        reflect.ValueOf(g.ComboCustom),
+		"Combo":              reflect.ValueOf(g.Combo),
+		"ContextMenu":        reflect.ValueOf(g.ContextMenu),
+		"Group":              reflect.ValueOf(g.Group),
+		"Image":              reflect.ValueOf(g.Image),
+		"InputText":          reflect.ValueOf(g.InputText),
+		"InputInt":           reflect.ValueOf(g.InputInt),
+		"InputFloat":         reflect.ValueOf(g.InputFloat),
+		"MainMenuBar":        reflect.ValueOf(g.MainMenuBar),
+		"MenuBar":            reflect.ValueOf(g.MenuBar),
+		"MenuItem":           reflect.ValueOf(g.MenuItem),
+		"PopupModal":         reflect.ValueOf(g.PopupModal),
+		"OpenPopup":          reflect.ValueOf(g.OpenPopup),
+		"CloseCurrentPopup":  reflect.ValueOf(g.CloseCurrentPopup),
+		"ProgressBar":        reflect.ValueOf(g.ProgressBar),
+		"Separator":          reflect.ValueOf(g.Separator),
+		"SliderInt":          reflect.ValueOf(g.SliderInt),
+		"SliderFloat":        reflect.ValueOf(g.SliderFloat),
+		"HSplitter":          reflect.ValueOf(g.HSplitter),
+		"VSplitter":          reflect.ValueOf(g.VSplitter),
+		"TabItem":            reflect.ValueOf(g.TabItem),
+		"TabBar":             reflect.ValueOf(g.TabBar),
+		"Row":                reflect.ValueOf(g.Row),
+		"Table":              reflect.ValueOf(g.Table),
+		"FastTable":          reflect.ValueOf(g.FastTable),
+		"Tooltip":            reflect.ValueOf(g.Tooltip),
+		"TreeNode":           reflect.ValueOf(g.TreeNode),
+		"Spacing":            reflect.ValueOf(g.Spacing),
+		"Custom":             reflect.ValueOf(g.Custom),
+		"Condition":          reflect.ValueOf(g.Condition),
+		"ListBox":            reflect.ValueOf(g.ListBox),
+		"DatePicker":         reflect.ValueOf(g.DatePicker),
+		// "Widget":             reflect.ValueOf(g.Widget),
+		"loadFont": reflect.ValueOf(loadFont),
+	}
+
+	var widget g.Widget
+
+	env.PackageTypes["gui"] = map[string]reflect.Type{
+		"Layout": reflect.TypeOf(g.Layout{}),
+		// "Signal": reflect.TypeOf(&signal).Elem(),
+		"Widget": reflect.TypeOf(&widget).Elem(),
+	}
+
 	env.Packages["tk"] = map[string]reflect.Value{
-		// "Pl":                        reflect.ValueOf(tk.Pl),
-		// "Prl":                       reflect.ValueOf(tk.Prl),
-		// "Prf":                       reflect.ValueOf(tk.Prf),
-		// "SleepMilliSeconds":         reflect.ValueOf(tk.SleepMilliSeconds),
-		// "SleepSeconds":              reflect.ValueOf(tk.SleepSeconds),
-		// "GetSwitchWithDefaultValue": reflect.ValueOf(tk.GetSwitchWithDefaultValue),
-		// "LoadStringFromFile":        reflect.ValueOf(tk.LoadStringFromFile),
-		// "IsErrorString":             reflect.ValueOf(tk.IsErrorString),
-		// "GetErrorString":            reflect.ValueOf(tk.GetErrorString),
-		// "RegFindAll":                reflect.ValueOf(tk.RegFindAll),
 		"CreateTXCollection":                  reflect.ValueOf(tk.CreateTXCollection),
 		"TXResultFromString":                  reflect.ValueOf(tk.TXResultFromString),
 		"SetGlobalEnv":                        reflect.ValueOf(tk.SetGlobalEnv),
@@ -340,11 +445,13 @@ func importAnkPackages() {
 		"CreateSimpleEvent":                   reflect.ValueOf(tk.CreateSimpleEvent),
 		"GetAllParameters":                    reflect.ValueOf(tk.GetAllParameters),
 		"GetAllSwitches":                      reflect.ValueOf(tk.GetAllSwitches),
+		"ToLower":                             reflect.ValueOf(tk.ToLower),
+		"ToUpper":                             reflect.ValueOf(tk.ToUpper),
 	}
 
-	env.Packages["dialog"] = map[string]reflect.Value{
-		"Message": reflect.ValueOf(dialog.Message),
-	}
+	// env.Packages["dialog"] = map[string]reflect.Value{
+	// 	"Message": reflect.ValueOf(dialog.Message),
+	// }
 
 }
 
@@ -441,6 +548,15 @@ func runInteractive() int {
 	return 0
 }
 
+func eval(expA string) interface{} {
+	v, errT := vm.Execute(ankVMG, nil, expA)
+	if errT != nil {
+		return errT.Error()
+	}
+
+	return v
+}
+
 func initAnkVM() {
 	if ankVMG == nil {
 		importAnkPackages()
@@ -461,10 +577,15 @@ func initAnkVM() {
 		ankVMG.Define("pfl", tk.Pl)
 		ankVMG.Define("exit", exit)
 
+		ankVMG.Define("eval", eval)
+
 		ankVMG.Define("setVar", setVar)
 		ankVMG.Define("getVar", getVar)
 
 		ankVMG.Define("argsG", os.Args[1:])
+
+		// for GUI
+		// ankVMG.Define("loadChineseFont", loadChineseFont)
 
 		core.Import(ankVMG)
 
