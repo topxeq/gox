@@ -219,6 +219,11 @@ mainWindow = gui.NewMasterWindow("Calculator", 400, 200, gui.MasterWindowFlagsNo
 mainWindow.Main(loop)
 ```
 
+The screen shot while running the script is like,
+
+![Calculator](https://github.com/topxeq/gox/blob/master/docs/calculatorss.png)
+
+
 ## More examples
 
 Browse the example scripts [here](https://github.com/topxeq/gox/tree/master/scripts)
