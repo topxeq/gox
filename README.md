@@ -151,6 +151,8 @@ fmt.Printf("%v\n", os.Args)
 
 Along with most of the core Golang libraries, the "tk" package([here](https://github.com/topxeq/tk)) is often used. The "tk" package provides many useful functions. See example scripts for more.
 
+Refer to the documents of these Golang packages for the detailed usage.
+
 ## Sample script
 
 Sample Javascript file:
