@@ -98,6 +98,9 @@ An decrypted file with an additional "d" of the file name(i.e. basic.goxed) will
 
 > gox -decrun=mycode basic.goxe
 
+or 
+
+> gox -decrun=mycode -example basic.goxe
 
 ### Run
 
