@@ -5,25 +5,27 @@ Golang is not required to be installed. Gox is only in one executable file, gree
 
 And thanks to [Giu](https://github.com/AllenDang/giu), which enable Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient.
 
-## Installation
+Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
+
+## 1. Installation
 
 Download the latest Gox executable file from the [official website](http://gox.topget.org/) or [Github](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
 
-## usage
+## 2.usage
 
-Check the version.
+### Check the version.
 
 > gox -version
 
-Show help.
+### Show help.
 
 > gox -h
 
-Run a script file.
+### Run a script file.
 
 > gox test.gox
 
-Run several script files in consequence, use "-m" switch to enable multi-scripts mode.
+### Run several script files in consequence, use "-m" switch to enable multi-scripts mode.
 
 > gox -m test.gox script1.js start.ank last.txs
 
@@ -46,7 +48,7 @@ gox -m basic.gox test.js -para=abcd
 
 And all the switches in Gox should be like "-type=code", not "-type code".
 
-Start the interpreter in REPL mode.
+### Start the interpreter in REPL mode.
 
 > gox
 
@@ -68,7 +70,42 @@ exit status 1
 
 use "quit()" or "exit()" function to exit.
 
-## User/developer guide
+### Run example script from Github directly
+
+> gox -example basic.gox
+
+Gox will download the example script directly from Github and run it.
+
+### Run online script directly
+
+> gox -remote https://raw.githubusercontent.com/topxeq/gox/master/scripts/basica.gox
+
+Gox will try to download the script first and then run it.
+
+### Encrypt source code file
+
+> gox -encrypt=mycode basic.gox
+
+An encrypted file with an additional "e" of the file name(i.e. basic.goxe) will be created in the same directory of the original source code file. "mycode" is the password to encrypt the file, and of course remember this code to decrypt it back.
+
+### Decrypt/restore encrypted source code file
+
+> gox -decrypt=mycode basic.goxe
+
+An decrypted file with an additional "d" of the file name(i.e. basic.goxed) will be created in the same directory of the original encrypted source code file. Manually rename the file to "basic.gox" if necessary.
+
+### Running an encrypted script directly
+
+> gox -decrun=mycode basic.goxe
+
+
+### Run
+
+## 3. User/developer guide
+
+### File encoding
+
+All the script file is better in UTF-8 encoding, and its line-endings are better to use "\n" or "\r\n".
 
 ### command-line parameters and swithes
 
@@ -155,7 +192,7 @@ Along with most of the core Golang libraries, the "tk" package([here](https://gi
 
 Refer to the documents of these Golang packages for the detailed usage.
 
-## More Topics and Sample Script
+## 4. More Topics and Sample Script
 
 ### Sample Javascript file:
 
@@ -224,11 +261,11 @@ The screen shot while running the script is like,
 ![Calculator](https://github.com/topxeq/gox/blob/master/docs/calculatorss.png)
 
 
-## More examples
+## 5. More examples
 
 Browse the example scripts [here](https://github.com/topxeq/gox/tree/master/scripts)
 
-## Reference
+## 6. Reference
 
 First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents. In addition, you can browse Anko's, Goja's and Giu's documents.
 

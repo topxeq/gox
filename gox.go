@@ -594,6 +594,8 @@ func initAnkVM() {
 }
 
 func main() {
+	var errT error
+
 	rand.Seed(time.Now().Unix())
 
 	argsT := os.Args
@@ -609,7 +611,6 @@ func main() {
 	}
 
 	scriptsT := tk.GetAllParameters(argsT)[1:]
-	// tk.Plv(scriptsT)
 
 	lenT := len(scriptsT)
 
@@ -623,18 +624,102 @@ func main() {
 		return
 	}
 
+	encryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-encrypt=", "")
+
+	if encryptCodeT != "" {
+		for i, v := range scriptsT {
+			fcT := tk.LoadStringFromFile(v)
+
+			if tk.IsErrorString(fcT) {
+				tk.Pl("failed to load file [%v] %v: %v", i, v, tk.GetErrorString(fcT))
+				continue
+			}
+
+			encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
+
+			if tk.IsErrorString(encStrT) {
+				tk.Pl("failed to encrypt content [%v] %v: %v", i, v, tk.GetErrorString(encStrT))
+				continue
+			}
+
+			rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, v+"e")
+
+			if tk.IsErrorString(rsT) {
+				tk.Pl("failed to encrypt file [%v] %v: %v", i, v, tk.GetErrorString(rsT))
+				continue
+			}
+		}
+
+		return
+	}
+
+	decryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrypt=", "")
+
+	if decryptCodeT != "" {
+		for i, v := range scriptsT {
+			fcT := tk.LoadStringFromFile(v)
+
+			if tk.IsErrorString(fcT) {
+				tk.Pl("failed to load file [%v] %v: %v", i, v, tk.GetErrorString(fcT))
+				continue
+			}
+
+			decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
+
+			if tk.IsErrorString(decStrT) {
+				tk.Pl("failed to decrypt content [%v] %v: %v", i, v, tk.GetErrorString(decStrT))
+				continue
+			}
+
+			rsT := tk.SaveStringToFile(decStrT, v+"d")
+
+			if tk.IsErrorString(rsT) {
+				tk.Pl("failed to decrypt file [%v] %v: %v", i, v, tk.GetErrorString(rsT))
+				continue
+			}
+		}
+
+		return
+	}
+
+	decryptRunCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrun=", "")
+
 	if !tk.IfSwitchExistsWhole(argsT, "-m") {
 		scriptsT = scriptsT[0:1]
 	}
 
+	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
+	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
+
 	for _, scriptT := range scriptsT {
 		if tk.EndsWith(scriptT, ".js") {
-			fcT := tk.LoadStringFromFile(scriptT)
+			var fcT string
+
+			if ifExampleT {
+				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
+			} else if ifRemoteT {
+				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+			} else {
+				fcT = tk.LoadStringFromFile(scriptT)
+			}
 
 			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load file content of %v: %v", scriptT, tk.GetErrorString(fcT))
+				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
 
 				continue
+			}
+
+			if tk.StartsWith(fcT, "//TXDEF#") {
+				if decryptRunCodeT == "" {
+					tk.Prf("Password: ")
+					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+					// fcT = fcT[8:]
+				}
+			}
+
+			if decryptRunCodeT != "" {
+				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
 			}
 
 			if jsVMG == nil {
@@ -706,7 +791,7 @@ func main() {
 
 				consoleStrT := `console = { log: goPrintln };`
 
-				_, errT := jsVMG.RunString(consoleStrT)
+				_, errT = jsVMG.RunString(consoleStrT)
 				if errT != nil {
 					tk.Pl("failed to run script(%v): %v", scriptT, errT)
 
@@ -727,13 +812,34 @@ func main() {
 			// tk.Pl("%#v", rs)
 
 			return
-		} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".gox") {
-			fcT := tk.LoadStringFromFile(scriptT)
+		} else { // if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".gox") {
+			var fcT string
+
+			if ifExampleT {
+				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
+			} else if ifRemoteT {
+				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+			} else {
+				fcT = tk.LoadStringFromFile(scriptT)
+			}
 
 			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load file content of %v: %v", scriptT, tk.GetErrorString(fcT))
+				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
 
 				continue
+			}
+
+			if tk.StartsWith(fcT, "//TXDEF#") {
+				if decryptRunCodeT == "" {
+					tk.Prf("Password: ")
+					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+					// fcT = fcT[8:]
+				}
+			}
+
+			if decryptRunCodeT != "" {
+				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
 			}
 
 			// if ankVMG == nil {
@@ -768,7 +874,7 @@ func main() {
 
 			script := fcT //`println("Hello World :)")`
 
-			_, errT := vm.Execute(ankVMG, nil, script)
+			_, errT = vm.Execute(ankVMG, nil, script)
 			if errT != nil {
 				tk.Pl("failed to execute script(%v) error: %v", scriptT, errT)
 				continue
