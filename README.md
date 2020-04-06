@@ -1,4 +1,4 @@
-![Gox](https://github.com/topxeq/gox/blob/master/docs/goxlogo2s.jpg)
+![Gox](https://github.com/topxeq/gox/blob/master/docs/goxlogo2xs.jpg)
 
 # gox
 Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko, ...
