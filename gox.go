@@ -557,6 +557,10 @@ func eval(expA string) interface{} {
 	return v
 }
 
+func typeOfValue(vA interface{}) string {
+	return fmt.Sprintf("%T", vA)
+}
+
 func initAnkVM() {
 	if ankVMG == nil {
 		importAnkPackages()
@@ -575,9 +579,13 @@ func initAnkVM() {
 		ankVMG.Define("pl", fmt.Println)
 		ankVMG.Define("printfln", tk.Pl)
 		ankVMG.Define("pfl", tk.Pl)
+
+		ankVMG.Define("getInput", tk.GetInputBufferedScan)
+
 		ankVMG.Define("exit", exit)
 
 		ankVMG.Define("eval", eval)
+		ankVMG.Define("typeof", typeOfValue)
 
 		ankVMG.Define("setVar", setVar)
 		ankVMG.Define("getVar", getVar)

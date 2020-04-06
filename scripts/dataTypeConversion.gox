@@ -1,0 +1,23 @@
+a = 1
+b = 2
+
+println("type of a is:", typeof(a))
+
+println("a + b =", a+b)
+printfln("a + b = %#v", a+b)
+
+a1 = toString(a)
+b1 = toString(b)
+
+printfln("type of a1 is: %T", a1)
+printfln("value of a1 is: %v", a1)
+printfln("internal value of a1 is: %#v", a1)
+
+println("a1 + b1 =", a1+b1)
+printfln("a1 + b1 = %#v", a1+b1)
+
+a2 = toFloat(a1)
+b2 = toFloat(b1)
+
+printfln("a2 + b2 = %#v", a2+b2)
+printfln("type of a2 + b2 is: %T", a2+b2)

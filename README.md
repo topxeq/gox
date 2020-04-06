@@ -25,6 +25,12 @@ Download the latest Gox executable file from the [official website](http://gox.t
 
 > gox test.gox
 
+or
+
+> gox test.js
+
+Currently Only ECMAScript 5.1(+) is supported for Javascript.
+
 ### Run several script files in consequence, use "-m" switch to enable multi-scripts mode.
 
 > gox -m test.gox script1.js start.ank last.txs
@@ -195,6 +201,57 @@ Along with most of the core Golang libraries, the "tk" package([here](https://gi
 
 Refer to the documents of these Golang packages for the detailed usage.
 
+### Data type conversion
+
+some "to" functions could be used as below,
+
+```
+a = 1
+b = 2
+
+println("type of a is:", typeof(a))
+
+println("a + b =", a+b)
+printfln("a + b = %#v", a+b)
+
+a1 = toString(a)
+b1 = toString(b)
+
+printfln("type of a1 is: %T", a1)
+printfln("value of a1 is: %v", a1)
+printfln("internal value of a1 is: %#v", a1)
+
+println("a1 + b1 =", a1+b1)
+printfln("a1 + b1 = %#v", a1+b1)
+
+a2 = toFloat(a1)
+b2 = toFloat(b1)
+
+printfln("a2 + b2 = %#v", a2+b2)
+printfln("type of a2 + b2 is: %T", a2+b2)
+
+```
+
+the running result is,
+
+```
+λ gox scripts\dataTypeConversion.gox
+type of a is: int64
+a + b = 3
+a + b = 3
+type of a1 is: string
+value of a1 is: 1
+internal value of a1 is: "1"
+a1 + b1 = 12
+a1 + b1 = "12"
+a2 + b2 = 3
+type of a2 + b2 is: float64
+```
+
+These "to" function include:
+
+> toString, toBool(and tryToBool which returns the result like (bool, error)), toFloat64/tryToFloat64, toInt64/tryToInt64, toInt/tryToInt,
+
 ## 4. More Topics and Sample Script
 
 ### Sample Javascript file:
@@ -318,10 +375,40 @@ the same as fmt.Printf but add a new-line character at the end
 
 ---
 
+#### getInput
+
+get user input from command-line
+
+```
+printf("A:")
+
+a = getInput()
+
+printf("B:")
+
+b = getInput()
+
+println("A + B =", a+b)
+```
+
+---
+
 
 #### eval
 
 evaluate an expression and return the result
+
+---
+
+#### typeof
+
+return the string representation of the type for a variable or expression
+
+```
+a = 1
+println(typeof(a))
+
+```
 
 ---
 

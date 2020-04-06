@@ -1,0 +1,9 @@
+printf("A:")
+
+a = getInput()
+
+printf("B:")
+
+b = getInput()
+
+println("A + B =", toFloat(a)+toFloat(b))
