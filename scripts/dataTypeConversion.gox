@@ -2,6 +2,7 @@ a = 1
 b = 2
 
 println("type of a is:", typeof(a))
+println("type of a is:", typeOf(a))
 
 println("a + b =", a+b)
 printfln("a + b = %#v", a+b)

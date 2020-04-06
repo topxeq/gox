@@ -28,6 +28,6 @@ setVar("Font", "c:/Windows/Fonts/simsun.ttc")
 setVar("FontRange", "COMMON")
 setVar("FontSize", "36")
 
-mainWindow = gui.NewMasterWindow("简易计算器", 400, 200, gui.MasterWindowFlagsNotResizable, gui.loadFont)
+mainWindow = gui.NewMasterWindow("简易计算器", 400, 200, gui.MasterWindowFlagsNotResizable, gui.LoadFont)
 
 mainWindow.Main(loop)

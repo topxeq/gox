@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"math/rand"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"time"
@@ -56,6 +58,7 @@ func loadFont() {
 		rangeStrT := rangeVarT.(string)
 		if rangeStrT == "" || rangeStrT == "COMMON" {
 			builder.AddRanges(fonts.GlyphRangesChineseSimplifiedCommon())
+			builder.AddText("辑")
 		} else if rangeStrT == "FULL" {
 			builder.AddRanges(fonts.GlyphRangesChineseFull())
 		} else {
@@ -142,16 +145,25 @@ func importAnkPackages() {
 		"Condition":          reflect.ValueOf(g.Condition),
 		"ListBox":            reflect.ValueOf(g.ListBox),
 		"DatePicker":         reflect.ValueOf(g.DatePicker),
+		"Dummy":              reflect.ValueOf(g.Dummy),
 		// "Widget":             reflect.ValueOf(g.Widget),
 
-		"loadFont":   reflect.ValueOf(loadFont),
-		"getConfirm": reflect.ValueOf(getConfirmGUI),
+		"PrepareMsgbox": reflect.ValueOf(g.PrepareMsgbox),
+		"Msgbox":        reflect.ValueOf(g.Msgbox),
+
+		"LoadFont":        reflect.ValueOf(loadFont),
+		"GetConfirm":      reflect.ValueOf(getConfirmGUI),
+		"SelectFile":      reflect.ValueOf(selectFileGUI),
+		"SelectSaveFile":  reflect.ValueOf(selectFileToSaveGUI),
+		"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
 	}
 
 	var widget g.Widget
+	var layout g.Layout
 
 	env.PackageTypes["gui"] = map[string]reflect.Type{
-		"Layout": reflect.TypeOf(g.Layout{}),
+		"Layout":  reflect.TypeOf(g.Layout{}),
+		"LayoutS": reflect.TypeOf(&layout),
 		// "Signal": reflect.TypeOf(&signal).Elem(),
 		"Widget": reflect.TypeOf(&widget).Elem(),
 	}
@@ -560,12 +572,114 @@ func eval(expA string) interface{} {
 	return v
 }
 
+func runScript(codeA string) interface{} {
+
+	var vmT *env.Env
+
+	vmT = env.NewEnv()
+
+	vmT.Define("print", fmt.Print)
+	vmT.Define("println", fmt.Println)
+	vmT.Define("printf", fmt.Printf)
+	vmT.Define("pl", fmt.Println)
+	vmT.Define("printfln", tk.Pl)
+	vmT.Define("pfl", tk.Pl)
+
+	vmT.Define("getInput", tk.GetInputBufferedScan)
+
+	vmT.Define("exit", exit)
+
+	vmT.Define("eval", eval)
+	vmT.Define("runScript", runScript)
+	vmT.Define("systemCmd", systemCmd)
+	vmT.Define("typeof", typeOfValue)
+
+	vmT.Define("setVar", setVar)
+	vmT.Define("getVar", getVar)
+
+	vmT.Define("argsG", os.Args[1:])
+
+	// core.Import(vmT)
+
+	v, errT := vm.Execute(vmT, nil, codeA)
+	if errT != nil {
+		posStrT := ""
+
+		e, ok := errT.(*parser.Error)
+
+		if ok {
+			posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+		} else {
+			e, ok := errT.(*vm.Error)
+
+			if ok {
+				posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+			} else {
+				tk.Pl("%#v", errT)
+			}
+		}
+
+		return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", posStrT, errT)
+	}
+
+	return v
+}
+
+func systemCmd(cmdA string, argsA ...string) string {
+	var out bytes.Buffer
+
+	cmd := exec.Command(cmdA, argsA...)
+
+	cmd.Stdout = &out
+	errT := cmd.Run()
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
+
+	rStrT := tk.Trim(out.String())
+
+	return rStrT
+}
+
 func typeOfValue(vA interface{}) string {
 	return fmt.Sprintf("%T", vA)
 }
 
 func getConfirmGUI(titleA string, messageA string) bool {
 	return dialog.Message("%v", messageA).Title(titleA).YesNo()
+}
+
+// filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
+func selectFileToSaveGUI(titleA string, filterNameA string, filterTypeA string) string {
+	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Save()
+
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
+
+	return fileNameT
+}
+
+// fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
+func selectFileGUI(titleA string, filterNameA string, filterTypeA string) string {
+	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Load()
+
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
+
+	return fileNameT
+}
+
+// directory, err := dialog.Directory().Title("Load images").Browse()
+func selectDirectoryGUI(titleA string) string {
+	directoryT, errT := dialog.Directory().Title(titleA).Browse()
+
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
+
+	return directoryT
 }
 
 func initAnkVM() {
@@ -592,6 +706,8 @@ func initAnkVM() {
 		ankVMG.Define("exit", exit)
 
 		ankVMG.Define("eval", eval)
+		ankVMG.Define("runScript", runScript)
+		ankVMG.Define("systemCmd", systemCmd)
 		ankVMG.Define("typeof", typeOfValue)
 
 		ankVMG.Define("setVar", setVar)
@@ -896,6 +1012,7 @@ func main() {
 
 				e, ok := errT.(*parser.Error)
 
+				// tk.Pl("%#v", ankVMG)
 				if ok {
 					posStrT = fmt.Sprintf(", line: %v, col: %v", e.Pos.Line, e.Pos.Column)
 				} else {
@@ -903,6 +1020,8 @@ func main() {
 
 					if ok {
 						posStrT = fmt.Sprintf(", line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+					} else {
+						tk.Pl("%#v", errT)
 					}
 				}
 

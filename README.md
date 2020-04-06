@@ -256,7 +256,7 @@ type of a2 + b2 is: float64
 
 These "to" function include:
 
-> toString, toBool(and tryToBool which returns the result like (bool, error)), toFloat64/tryToFloat64, toInt64/tryToInt64, toInt/tryToInt,
+> toString/toStringSlice, toBool(and tryToBool which returns the result like (bool, error))/toBoolSlice, toFloat64/tryToFloat64/toFloat/toFloatSlice, toInt64/tryToInt64, toInt/tryToInt/toIntSlice, toRune/toRuneSlice, toByteSlice, toChar, toDuration
 
 ## 4. More Topics and Sample Scripts
 
@@ -436,7 +436,7 @@ evaluate an expression and return the result
 
 ---
 
-#### typeof
+#### typeof/typeOf/kindOf
 
 return the string representation of the type for a variable or expression
 
@@ -455,13 +455,13 @@ the same as os.Exit(1), used to terminate\exit the whole script running
 
 ---
 
-#### gui.getConfirm
+#### gui.GetConfirm
 
-the same as os.Exit(1), used to terminate\exit the whole script running
+show a confirm dialog, return true or false
 
 ---
 
-#### gui.loadFont
+#### gui.LoadFont
 
 for loading font for GUI display, example:
 
@@ -474,11 +474,29 @@ setVar("Font", "c:/Windows/Fonts/simsun.ttc")
 setVar("FontRange", "COMMON")
 setVar("FontSize", "36")
 
-mainWindow = gui.NewMasterWindow("简易计算器", 400, 200, gui.MasterWindowFlagsNotResizable, gui.loadFont)
+mainWindow = gui.NewMasterWindow("简易计算器", 400, 200, gui.MasterWindowFlagsNotResizable, gui.LoadFont)
 
 ```
 
 see the example script [here](https://github.com/topxeq/gox/blob/master/scripts/testguic.gox).
+
+---
+
+#### gui.SelectFile
+
+xxxxxxx
+
+---
+
+#### gui.SelectSaveFile
+
+xxxxxxx
+
+---
+
+#### gui.SelectDirectory
+
+xxxxxxx
 
 ---
 
