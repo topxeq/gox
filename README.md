@@ -1,5 +1,5 @@
 # gox
-Gox is a script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko, ...
+Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko, ...
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
@@ -7,7 +7,7 @@ And thanks to [Giu](https://github.com/AllenDang/giu), which enable Gox to provi
 
 ## Installation
 
-Download the latest Gox executable file from [here](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
+Download the latest Gox executable file from the [official website](http://gox.topget.org/) or [Github](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
 
 ## usage
 
