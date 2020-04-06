@@ -1,0 +1,103 @@
+var tk = import("tk")
+
+wordT = tk.GetParameterByIndexWithDefaultValue(argsG, 1, "")
+
+if wordT == "" {
+	println("not enough parameters")
+	return
+}
+
+postDataT = {}
+postDataT.txreq = "searchWord"
+postDataT.word = wordT
+postDataT.tid = "tc040626"
+
+rsT = tk.DownloadPageByMap("http://topget.org:7482/japi", "", postDataT, "", 15)
+
+if tk.IsErrorString(rsT) {
+	printfln("failed to get explanation from server: %v", tk.GetErrorString(rsT))
+	return
+}
+
+mapT = tk.JSONToMapStringString(rsT)
+
+if mapT.Status != "success" {
+	printfln("invalid data: %#v", mapT)
+	return
+}
+
+tk.Pl("%v", mapT.Value)
+
+func getDictionaryComPronunciation(wordA, noStrong) {
+	rs = tk.DownloadPageUTF8("https://www.dictionary.com/browse/"+tk.UrlEncode2(wordA), nil, "", 15)
+	if tk.IsErrorString(rs) {
+		return rs
+	}
+
+	pronunT = tk.RegFindFirst(rs, `<div\s*class="pron-spell-container[^>]*>\s*<span\s*class="pron-spell-content[^>]*>(.*?)</span><button`, 1)
+
+	if tk.IsErrorString(pronunT) {
+		return pronunT
+	}
+
+	// tk.Pl("%#v", pronunT)
+
+	pronunT = tk.RegReplace(pronunT, `<span\s*class="italic">([^<]*?)</span>`, `${1}`)
+
+	if noStrong {
+		pronunT = tk.RegReplace(pronunT, `<span\s*class="bold">([^<]*?)</span>`, `'${1}`)
+	} else {
+		pronunT = tk.RegReplace(pronunT, `<span\s*class="bold">([^<]*?)</span>`, `'<strong>${1}</strong>`)
+	}
+
+	pronunT = tk.RegReplace(pronunT, `<span\s*class="[^"]*">([^<]*?)</span>`, `${1}`)
+
+	pronunT = tk.RegReplace(pronunT, `\[\s*(\S.*?\S)\s*\]`, `[${1}]`)
+
+	return pronunT
+}
+
+
+lineT = "【单词】" + mapT.Value
+
+if tk.Contains(lineT, "[") {
+	wordT = tk.RegFindFirst(lineT, `原型：\s*(\S+?)\s+[^\[]*\[`, 1)
+
+	if tk.IsErrorString(wordT) {
+		wordT = tk.RegFindFirst(lineT, `】\s*(\S+?)\s+`, 1)
+
+		if tk.IsErrorString(wordT) {
+//			printfln("invalid data: %#v", tk.GetErrorString(rsT))
+			return
+		}
+
+		pronunT = getDictionaryComPronunciation(wordT, true)
+		tk.Pl("found %v -> %v", wordT, pronunT)
+
+		if tk.IsErrorString(pronunT) {
+			tk.Pl("skipping...")
+			continue
+		}
+
+		println(tk.RegReplace(lineT, `】(\s*)(\S+?)(\s+)([^\[]*)\[`, `】${1}${2}${3}${4}`+pronunT+`[`))
+
+		return
+	}
+
+	pronunT = getDictionaryComPronunciation(wordT, true)
+	tk.Pl("found %v -> %v", wordT, pronunT)
+
+	if tk.IsErrorString(pronunT) {
+		tk.Pl("skipping...")
+		continue
+	}
+
+	println(tk.RegReplace(lineT, `(原型：\s*)(\S+?)(\s+)([^\[]*)\[`, `${1}${2}${3}${4}`+pronunT+`[`))
+
+	// break
+}
+
+//getInput()
+
+
+

@@ -17,12 +17,12 @@ import (
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
+	"github.com/sqweek/dialog"
 	"github.com/topxeq/tk"
 
 	"github.com/AllenDang/giu"
 	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
-	// "github.com/sqweek/dialog"
 )
 
 // var inG interface{}
@@ -143,7 +143,9 @@ func importAnkPackages() {
 		"ListBox":            reflect.ValueOf(g.ListBox),
 		"DatePicker":         reflect.ValueOf(g.DatePicker),
 		// "Widget":             reflect.ValueOf(g.Widget),
-		"loadFont": reflect.ValueOf(loadFont),
+
+		"loadFont":   reflect.ValueOf(loadFont),
+		"getConfirm": reflect.ValueOf(getConfirmGUI),
 	}
 
 	var widget g.Widget
@@ -417,6 +419,7 @@ func importAnkPackages() {
 		"GetDebug":                            reflect.ValueOf(tk.GetDebug),
 		"DownloadPageUTF8":                    reflect.ValueOf(tk.DownloadPageUTF8),
 		"DownloadPage":                        reflect.ValueOf(tk.DownloadPage),
+		"DownloadPageByMap":                   reflect.ValueOf(tk.DownloadPageByMap),
 		"GetLastComponentOfUrl":               reflect.ValueOf(tk.GetLastComponentOfUrl),
 		"DownloadFile":                        reflect.ValueOf(tk.DownloadFile),
 		"DownloadBytes":                       reflect.ValueOf(tk.DownloadBytes),
@@ -559,6 +562,10 @@ func eval(expA string) interface{} {
 
 func typeOfValue(vA interface{}) string {
 	return fmt.Sprintf("%T", vA)
+}
+
+func getConfirmGUI(titleA string, messageA string) bool {
+	return dialog.Message("%v", messageA).Title(titleA).YesNo()
 }
 
 func initAnkVM() {
@@ -884,7 +891,22 @@ func main() {
 
 			_, errT = vm.Execute(ankVMG, nil, script)
 			if errT != nil {
-				tk.Pl("failed to execute script(%v) error: %v", scriptT, errT)
+
+				posStrT := ""
+
+				e, ok := errT.(*parser.Error)
+
+				if ok {
+					posStrT = fmt.Sprintf(", line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+				} else {
+					e, ok := errT.(*vm.Error)
+
+					if ok {
+						posStrT = fmt.Sprintf(", line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+					}
+				}
+
+				tk.Pl("failed to execute script(%v%v) error: %v", scriptT, posStrT, errT)
 				continue
 			}
 

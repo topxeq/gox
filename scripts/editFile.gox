@@ -1,0 +1,50 @@
+lenT = len(argsG)
+
+if lenT < 2 {
+	println("缺少参数")
+	return
+}
+
+fileNameT = argsG[1]
+
+tk = import("tk")
+
+fcT = tk.LoadStringFromFile(fileNameT)
+
+if tk.IsErrorString(fcT) {
+	printfln("载入文件时发生错误：%v", tk.GetErrorString(fcT))
+	return
+}
+
+var gui = import("gui")
+
+text1 = fcT
+
+
+func onButton1Click() {
+	rs = eval(text1)
+	text1 = toString(rs)
+}
+
+func onButton2Click() {
+	exit()
+}
+
+func loop() {
+
+	layoutT = make(gui.Layout)
+
+	layoutT += gui.InputTextMultiline("", &text1, 626, 420, 0, nil, nil)
+	layoutT += gui.Line(gui.Button("保存", onButton1Click), gui.Button("另存", onButton1Click), gui.Button("运行", onButton2Click), gui.Button("关闭", onButton2Click))
+
+	gui.SingleWindow("编辑器", layoutT)
+}
+
+
+setVar("Font", "c:/Windows/Fonts/simsun.ttc")
+setVar("FontRange", "COMMON")
+setVar("FontSize", "17")
+
+mainWindow = gui.NewMasterWindow("编辑器 - " + fileNameT, 640, 480, 0, gui.loadFont)
+
+mainWindow.Main(loop)

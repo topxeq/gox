@@ -116,6 +116,10 @@ or
 
 All the script file is better in UTF-8 encoding, and its line-endings are better to use "\n" or "\r\n".
 
+### Stop/Terminate the script
+
+Using exit(), os.Exit(1) or return in the script is valid. In interactive mode, quit() is valid, too.
+
 ### command-line parameters and swithes
 
 The global value "argsG" could be used for retrieve command-line arguments, and the first element(the Gox executable) is removed. If you need the whole command-line, use os.Args instead.
@@ -252,7 +256,7 @@ These "to" function include:
 
 > toString, toBool(and tryToBool which returns the result like (bool, error)), toFloat64/tryToFloat64, toInt64/tryToInt64, toInt/tryToInt,
 
-## 4. More Topics and Sample Script
+## 4. More Topics and Sample Scripts
 
 ### Sample Javascript file:
 
@@ -281,7 +285,7 @@ println(x+y)
 
 ```
 
-### Base script with GUI
+### Basic script with GUI
 
 A simple calculator with GUI
 
@@ -321,15 +325,45 @@ The screen shot while running the script is like,
 ![Calculator](https://github.com/topxeq/gox/blob/master/docs/calculatorss.png)
 
 
-## 5. More examples
+## 5. More Examples
 
 Browse the example scripts [here](https://github.com/topxeq/gox/tree/master/scripts)
 
-## 6. Reference
+## 6. Language
+
+### Difference between Gox and Golang
+
+* Gox is a dynamic-type language, so one of the major difference is no data-type declaration necessary in Gox.
+
+```
+a = 10
+
+a = "this"
+
+func f(p1, p2) {
+
+}
+
+```
+
+It's the same for function parameters and return values.
+
+## 7. Library Reference
 
 First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents. In addition, you can browse Anko's, Goja's and Giu's documents.
 
 However, Gox provides some convenient global variables and functions decribed as below.
+
+### Variables
+
+#### argsG
+
+get global variable
+
+The global value "argsG" could be used for retrieve command-line arguments, and the first element(the Gox executable) is removed. If you need the whole command-line, use os.Args instead.
+
+---
+
 
 ### Functions
 
@@ -414,6 +448,12 @@ println(typeof(a))
 
 
 #### exit
+
+the same as os.Exit(1), used to terminate\exit the whole script running
+
+---
+
+#### gui.getConfirm
 
 the same as os.Exit(1), used to terminate\exit the whole script running
 
