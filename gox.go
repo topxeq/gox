@@ -999,48 +999,6 @@ func editorLoop() {
 	})
 }
 
-// GUI related end
-
-func initAnkVM() {
-	if ankVMG == nil {
-		importAnkNonGUIPackages()
-		importAnkGUIPackages()
-
-		ankVMG = env.NewEnv()
-
-		ankVMG.Define("print", fmt.Print)
-		ankVMG.Define("println", fmt.Println)
-		ankVMG.Define("printf", fmt.Printf)
-		ankVMG.Define("pl", fmt.Println)
-		ankVMG.Define("printfln", tk.Pl)
-		ankVMG.Define("pfl", tk.Pl)
-
-		ankVMG.Define("getInput", tk.GetInputBufferedScan)
-
-		ankVMG.Define("exit", exit)
-
-		ankVMG.Define("eval", eval)
-		ankVMG.Define("runScript", runScript)
-		ankVMG.Define("systemCmd", systemCmd)
-		ankVMG.Define("typeof", typeOfValue)
-
-		ankVMG.Define("setVar", setVar)
-		ankVMG.Define("getVar", getVar)
-
-		ankVMG.Define("argsG", os.Args[1:])
-
-		// GUI related start
-
-		ankVMG.Define("edit", editFile)
-
-		// GUI related end
-
-		core.Import(ankVMG)
-
-	}
-
-}
-
 func editFile(fileNameA string) {
 	var fcT string
 
@@ -1081,6 +1039,53 @@ func editFile(fileNameA string) {
 	wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
 
 	wnd.Main(editorLoop)
+
+}
+
+// GUI related end
+
+func initAnkVM() {
+	if ankVMG == nil {
+		importAnkNonGUIPackages()
+
+		// GUI related start
+
+		importAnkGUIPackages()
+
+		// GUI related end
+
+		ankVMG = env.NewEnv()
+
+		ankVMG.Define("print", fmt.Print)
+		ankVMG.Define("println", fmt.Println)
+		ankVMG.Define("printf", fmt.Printf)
+		ankVMG.Define("pl", fmt.Println)
+		ankVMG.Define("printfln", tk.Pl)
+		ankVMG.Define("pfl", tk.Pl)
+
+		ankVMG.Define("getInput", tk.GetInputBufferedScan)
+
+		ankVMG.Define("exit", exit)
+
+		ankVMG.Define("eval", eval)
+		ankVMG.Define("runScript", runScript)
+		ankVMG.Define("systemCmd", systemCmd)
+		ankVMG.Define("typeof", typeOfValue)
+
+		ankVMG.Define("setVar", setVar)
+		ankVMG.Define("getVar", getVar)
+
+		ankVMG.Define("argsG", os.Args[1:])
+
+		// GUI related start
+
+		ankVMG.Define("edit", editFile)
+
+		// GUI related end
+
+		core.Import(ankVMG)
+
+	}
 
 }
 
