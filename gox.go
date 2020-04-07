@@ -56,9 +56,9 @@ func loadFont() {
 		builder.AddRanges(fonts.GlyphRangesDefault())
 	} else {
 		rangeStrT := rangeVarT.(string)
-		if rangeStrT == "" || rangeStrT == "COMMON" {
+		if rangeStrT == "" || tk.StartsWith(rangeStrT, "COMMON") {
 			builder.AddRanges(fonts.GlyphRangesChineseSimplifiedCommon())
-			builder.AddText("辑")
+			builder.AddText("辑" + rangeStrT[6:])
 		} else if rangeStrT == "FULL" {
 			builder.AddRanges(fonts.GlyphRangesChineseFull())
 		} else {
@@ -91,6 +91,9 @@ func loadFont() {
 }
 
 func importAnkPackages() {
+
+	// imgui.EnableFreeType = true
+
 	env.Packages["gui"] = map[string]reflect.Value{
 		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
 		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
@@ -724,6 +727,93 @@ func initAnkVM() {
 
 }
 
+var (
+	editorG       imgui.TextEditor
+	errMarkersG   imgui.ErrorMarkers
+	editFileNameG string
+)
+
+func editorLoop() {
+	g.SingleWindow("Gox Editor", g.Layout{
+		g.Label(editFileNameG),
+		g.Dummy(30, 0),
+		g.Line(
+			g.Button("Save", func() {
+				rs := false
+
+				if tk.IfFileExists(editFileNameG) {
+					rs = getConfirmGUI("请确认", "文件已存在，是否覆盖?")
+				}
+
+				if rs == true {
+					rs1 := tk.SaveStringToFile(editorG.GetText(), editFileNameG)
+
+					if rs1 != "" {
+						g.Msgbox("错误", tk.Spr("保存失败：%v", rs))
+						return
+					}
+
+					g.Msgbox("信息", tk.Spr("文件已保存到：%v", editFileNameG))
+				}
+
+			}),
+			g.Button("Check", func() {
+
+				sourceT := editorG.GetText()
+
+				parser.EnableErrorVerbose()
+				_, errT := parser.ParseSrc(sourceT)
+				// tk.Plv(stmts)
+
+				e, ok := errT.(*parser.Error)
+
+				if ok {
+					errMarkersG.Clear()
+					errMarkersG.Insert(e.Pos.Line, tk.Spr("[col: %v, size: %v] %v", e.Pos.Column, errMarkersG.Size(), e.Error()))
+
+					editorG.SetErrorMarkers(errMarkersG)
+
+				} else if errT != nil {
+					g.Msgbox("Error", tk.Spr("%#v", errT))
+				} else {
+					g.Msgbox("Info", "Syntax check passed.")
+				}
+
+			}),
+			g.Button("Get Text", func() {
+				if editorG.HasSelection() {
+					fmt.Println(editorG.GetSelectedText())
+				} else {
+					fmt.Println(editorG.GetText())
+				}
+
+				column, line := editorG.GetCursorPos()
+				fmt.Println("Cursor pos:", column, line)
+
+				column, line = editorG.GetSelectionStart()
+				fmt.Println("Selection start:", column, line)
+
+				fmt.Println("Current line is", editorG.GetCurrentLineText())
+			}),
+			g.Button("Set Text", func() {
+				editorG.SetText("Set text")
+				editFileNameG = "Set text"
+			}),
+			g.Button("Set Error Marker", func() {
+				errMarkersG.Clear()
+				errMarkersG.Insert(1, "Error message")
+				fmt.Println("ErrMarkers Size:", errMarkersG.Size())
+
+				editorG.SetErrorMarkers(errMarkersG)
+			}),
+		),
+		g.Custom(func() {
+			editorG.Render("Hello", imgui.Vec2{X: 0, Y: 0}, true)
+		}),
+		g.PrepareMsgbox(),
+	})
+}
+
 func main() {
 	var errT error
 
@@ -751,6 +841,37 @@ func main() {
 		runInteractive()
 
 		// tk.Pl("not enough parameters")
+
+		return
+	}
+
+	if tk.IfSwitchExistsWhole(argsT, "-edit") {
+		editFileNameG = scriptsT[0]
+
+		fcT := tk.LoadStringFromFile(editFileNameG)
+
+		if tk.IsErrorString(fcT) {
+			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
+			return
+
+		}
+
+		errMarkersG = imgui.NewErrorMarkers()
+
+		editorG = imgui.NewTextEditor()
+
+		editorG.SetShowWhitespaces(false)
+		editorG.SetTabSize(2)
+		editorG.SetText(fcT)
+		editorG.SetLanguageDefinitionC()
+
+		// setVar("Font", "c:/Windows/Fonts/simsun.ttc")
+		setVar("FontRange", "COMMON")
+		setVar("FontSize", "15")
+
+		wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
+
+		wnd.Main(editorLoop)
 
 		return
 	}
