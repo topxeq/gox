@@ -1,17 +1,19 @@
 ![Gox](https://github.com/topxeq/gox/blob/master/docs/goxlogo2xs.jpg)
 
 # gox
-Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko, ...
+Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko, ..., and the Gox language syntax is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
-And thanks to [Giu](https://github.com/AllenDang/giu), which enable Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient.
+And thanks to [Giu](https://github.com/AllenDang/giu), which enable Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code.
 
 Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
 
 ## 1. Installation
 
 Download the latest Gox executable file from the [official website](http://gox.topget.org/) or [Github](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
+
+A command-line only version of gox (named goxc, no GUI features) is also available. This version will be more fast, and of course smaller in file size.
 
 ## 2.usage
 
@@ -110,7 +112,19 @@ or
 
 > gox -decrun=mycode -example basic.goxe
 
-### Run
+### Open a simple editor to edit Gox code
+
+> gox -edit
+
+### Open a simple editor to edit specific Gox code file
+
+> gox -edit d:\tmp\basic.gox
+
+the screenshot of Gox editor is as below,
+
+![Gox Editor](https://github.com/topxeq/gox/blob/master/docs/goxeditor2.png)
+
+Although Gox provides a simple code editor, the editors with more powerful functions are recommended, such as Visual Studio Code. Currently, you can set the .gox files the same syntax highlight scheme as Golang files.
 
 ## 3. User/developer guide
 
@@ -125,6 +139,8 @@ Using exit(), os.Exit(1) or return in the script is valid. In interactive mode, 
 ### command-line parameters and swithes
 
 The global value "argsG" could be used for retrieve command-line arguments, and the first element(the Gox executable) is removed. If you need the whole command-line, use os.Args instead.
+
+All the command-line switches/flags used by Gox itself are not recommended to be used in the scripts.
 
 An example for command-line handling is as below([source code](https://github.com/topxeq/gox/blob/master/scripts/commandLine.gox)),
 
@@ -455,6 +471,23 @@ the same as os.Exit(1), used to terminate\exit the whole script running
 
 ---
 
+
+#### edit
+
+the same as gui.EditFile, or the command-line switch "-edit", used to start an embedded code editor for Gox files.
+
+```
+edit("") // will open an editor for a new Gox code file
+
+```
+
+```
+edit("d:\\tmp\\basic.gox") // will open an editor for the specific Gox code file
+
+```
+
+---
+
 #### gui.GetConfirm
 
 show a confirm dialog, return true or false
@@ -497,6 +530,12 @@ xxxxxxx
 #### gui.SelectDirectory
 
 xxxxxxx
+
+---
+
+#### gui.EditFile
+
+the same as edit function, or command-line switch "-edit"
 
 ---
 

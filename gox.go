@@ -27,13 +27,18 @@ import (
 	"github.com/AllenDang/giu/imgui"
 )
 
-// var inG interface{}
-// var outG interface{}
+// Non GUI related
+
+var versionG = "0.9a"
 
 var variableG = make(map[string]interface{})
 
 var jsVMG *goja.Runtime = nil
 var ankVMG *env.Env = nil
+
+func exit() {
+	os.Exit(1)
+}
 
 func getVar(nameA string) interface{} {
 	return variableG[nameA]
@@ -43,133 +48,120 @@ func setVar(nameA string, valueA interface{}) {
 	variableG[nameA] = valueA
 }
 
-func loadFont() {
-	fonts := giu.Context.IO().Fonts()
-
-	rangeVarT := getVar("FontRange")
-
-	ranges := imgui.NewGlyphRanges()
-
-	builder := imgui.NewFontGlyphRangesBuilder()
-
-	if rangeVarT == nil {
-		builder.AddRanges(fonts.GlyphRangesDefault())
-	} else {
-		rangeStrT := rangeVarT.(string)
-		if rangeStrT == "" || tk.StartsWith(rangeStrT, "COMMON") {
-			builder.AddRanges(fonts.GlyphRangesChineseSimplifiedCommon())
-			builder.AddText("辑" + rangeStrT[6:])
-		} else if rangeStrT == "FULL" {
-			builder.AddRanges(fonts.GlyphRangesChineseFull())
-		} else {
-			builder.AddText(rangeStrT)
-		}
+func eval(expA string) interface{} {
+	v, errT := vm.Execute(ankVMG, nil, expA)
+	if errT != nil {
+		return errT.Error()
 	}
 
-	builder.BuildRanges(ranges)
-
-	fontPath := "c:/Windows/Fonts/simhei.ttf"
-
-	fontVarT := getVar("Font") // "c:/Windows/Fonts/simsun.ttc"
-
-	if fontVarT != nil {
-		fontPath = fontVarT.(string)
-	}
-
-	fontSizeStrT := "16"
-
-	fontSizeVarT := getVar("FontSize")
-
-	if fontSizeVarT != nil {
-		fontSizeStrT = fontSizeVarT.(string)
-	}
-
-	fontSizeT := tk.StrToIntWithDefaultValue(fontSizeStrT, 16)
-
-	// fonts.AddFontFromFileTTF(fontPath, 14)
-	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
+	return v
 }
 
-func importAnkPackages() {
+func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
-	// imgui.EnableFreeType = true
+	if modeA == "" || modeA == "1" || modeA == "new" {
+		var vmT *env.Env
 
-	env.Packages["gui"] = map[string]reflect.Value{
-		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
-		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
-		"Window":                  reflect.ValueOf(g.Window),
-		"SingleWindowWithMenuBar": reflect.ValueOf(g.SingleWindowWithMenuBar),
-		"WindowV":                 reflect.ValueOf(g.WindowV),
+		vmT = env.NewEnv()
 
-		"MasterWindowFlagsNotResizable": reflect.ValueOf(g.MasterWindowFlagsNotResizable),
-		"MasterWindowFlagsMaximized":    reflect.ValueOf(g.MasterWindowFlagsMaximized),
-		"MasterWindowFlagsFloating":     reflect.ValueOf(g.MasterWindowFlagsFloating),
+		vmT.Define("print", fmt.Print)
+		vmT.Define("println", fmt.Println)
+		vmT.Define("printf", fmt.Printf)
+		vmT.Define("pl", fmt.Println)
+		vmT.Define("printfln", tk.Pl)
+		vmT.Define("pfl", tk.Pl)
 
-		// "Layout":          reflect.ValueOf(g.Layout),
+		vmT.Define("getInput", tk.GetInputBufferedScan)
 
-		"Label":              reflect.ValueOf(g.Label),
-		"Line":               reflect.ValueOf(g.Line),
-		"Button":             reflect.ValueOf(g.Button),
-		"InvisibleButton":    reflect.ValueOf(g.InvisibleButton),
-		"ImageButton":        reflect.ValueOf(g.ImageButton),
-		"InputTextMultiline": reflect.ValueOf(g.InputTextMultiline),
-		"Checkbox":           reflect.ValueOf(g.Checkbox),
-		"RadioButton":        reflect.ValueOf(g.RadioButton),
-		"Child":              reflect.ValueOf(g.Child),
-		"ComboCustom":        reflect.ValueOf(g.ComboCustom),
-		"Combo":              reflect.ValueOf(g.Combo),
-		"ContextMenu":        reflect.ValueOf(g.ContextMenu),
-		"Group":              reflect.ValueOf(g.Group),
-		"Image":              reflect.ValueOf(g.Image),
-		"InputText":          reflect.ValueOf(g.InputText),
-		"InputInt":           reflect.ValueOf(g.InputInt),
-		"InputFloat":         reflect.ValueOf(g.InputFloat),
-		"MainMenuBar":        reflect.ValueOf(g.MainMenuBar),
-		"MenuBar":            reflect.ValueOf(g.MenuBar),
-		"MenuItem":           reflect.ValueOf(g.MenuItem),
-		"PopupModal":         reflect.ValueOf(g.PopupModal),
-		"OpenPopup":          reflect.ValueOf(g.OpenPopup),
-		"CloseCurrentPopup":  reflect.ValueOf(g.CloseCurrentPopup),
-		"ProgressBar":        reflect.ValueOf(g.ProgressBar),
-		"Separator":          reflect.ValueOf(g.Separator),
-		"SliderInt":          reflect.ValueOf(g.SliderInt),
-		"SliderFloat":        reflect.ValueOf(g.SliderFloat),
-		"HSplitter":          reflect.ValueOf(g.HSplitter),
-		"VSplitter":          reflect.ValueOf(g.VSplitter),
-		"TabItem":            reflect.ValueOf(g.TabItem),
-		"TabBar":             reflect.ValueOf(g.TabBar),
-		"Row":                reflect.ValueOf(g.Row),
-		"Table":              reflect.ValueOf(g.Table),
-		"FastTable":          reflect.ValueOf(g.FastTable),
-		"Tooltip":            reflect.ValueOf(g.Tooltip),
-		"TreeNode":           reflect.ValueOf(g.TreeNode),
-		"Spacing":            reflect.ValueOf(g.Spacing),
-		"Custom":             reflect.ValueOf(g.Custom),
-		"Condition":          reflect.ValueOf(g.Condition),
-		"ListBox":            reflect.ValueOf(g.ListBox),
-		"DatePicker":         reflect.ValueOf(g.DatePicker),
-		"Dummy":              reflect.ValueOf(g.Dummy),
-		// "Widget":             reflect.ValueOf(g.Widget),
+		vmT.Define("exit", exit)
 
-		"PrepareMsgbox": reflect.ValueOf(g.PrepareMsgbox),
-		"Msgbox":        reflect.ValueOf(g.Msgbox),
+		vmT.Define("eval", eval)
+		vmT.Define("runScript", runScript)
+		vmT.Define("systemCmd", systemCmd)
+		vmT.Define("typeof", typeOfValue)
 
-		"LoadFont":        reflect.ValueOf(loadFont),
-		"GetConfirm":      reflect.ValueOf(getConfirmGUI),
-		"SelectFile":      reflect.ValueOf(selectFileGUI),
-		"SelectSaveFile":  reflect.ValueOf(selectFileToSaveGUI),
-		"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
+		vmT.Define("setVar", setVar)
+		vmT.Define("getVar", getVar)
+
+		vmT.Define("argsG", argsA)
+
+		core.Import(vmT)
+
+		v, errT := vm.Execute(vmT, nil, codeA)
+		if errT != nil {
+			posStrT := ""
+
+			e, ok := errT.(*parser.Error)
+
+			if ok {
+				posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+			} else {
+				e, ok := errT.(*vm.Error)
+
+				if ok {
+					posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+				} else {
+					tk.Pl("%#v", errT)
+				}
+			}
+
+			return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", posStrT, errT)
+		}
+
+		return v
+	} else if modeA == "2" || modeA == "current" {
+		ankVMG.Define("argsG", argsA)
+
+		v, errT := vm.Execute(ankVMG, nil, codeA)
+		if errT != nil {
+			posStrT := ""
+
+			e, ok := errT.(*parser.Error)
+
+			if ok {
+				posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+			} else {
+				e, ok := errT.(*vm.Error)
+
+				if ok {
+					posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+				} else {
+					tk.Pl("%#v", errT)
+				}
+			}
+
+			return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", posStrT, errT)
+		}
+
+		return v
+
+	} else {
+		return systemCmd("gox", append([]string{codeA}, argsA...)...)
 	}
 
-	var widget g.Widget
-	var layout g.Layout
+}
 
-	env.PackageTypes["gui"] = map[string]reflect.Type{
-		"Layout":  reflect.TypeOf(g.Layout{}),
-		"LayoutS": reflect.TypeOf(&layout),
-		// "Signal": reflect.TypeOf(&signal).Elem(),
-		"Widget": reflect.TypeOf(&widget).Elem(),
+func systemCmd(cmdA string, argsA ...string) string {
+	var out bytes.Buffer
+
+	cmd := exec.Command(cmdA, argsA...)
+
+	cmd.Stdout = &out
+	errT := cmd.Run()
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
 	}
+
+	rStrT := tk.Trim(out.String())
+
+	return rStrT
+}
+
+func typeOfValue(vA interface{}) string {
+	return fmt.Sprintf("%T", vA)
+}
+
+func importAnkNonGUIPackages() {
 
 	env.Packages["tk"] = map[string]reflect.Value{
 		"CreateTXCollection":                  reflect.ValueOf(tk.CreateTXCollection),
@@ -467,17 +459,7 @@ func importAnkPackages() {
 		"ToUpper":                             reflect.ValueOf(tk.ToUpper),
 	}
 
-	// env.Packages["dialog"] = map[string]reflect.Value{
-	// 	"Message": reflect.ValueOf(dialog.Message),
-	// }
-
 }
-
-func exit() {
-	os.Exit(1)
-}
-
-var versionG = "0.9a"
 
 func showHelp() {
 	tk.Pl("Gox by TopXeQ V%v\n", versionG)
@@ -566,90 +548,155 @@ func runInteractive() int {
 	return 0
 }
 
-func eval(expA string) interface{} {
-	v, errT := vm.Execute(ankVMG, nil, expA)
-	if errT != nil {
-		return errT.Error()
-	}
+// Non GUI related end
 
-	return v
-}
+// GUI related start
 
-func runScript(codeA string) interface{} {
+func loadFont() {
+	fonts := giu.Context.IO().Fonts()
 
-	var vmT *env.Env
+	rangeVarT := getVar("FontRange")
 
-	vmT = env.NewEnv()
+	ranges := imgui.NewGlyphRanges()
 
-	vmT.Define("print", fmt.Print)
-	vmT.Define("println", fmt.Println)
-	vmT.Define("printf", fmt.Printf)
-	vmT.Define("pl", fmt.Println)
-	vmT.Define("printfln", tk.Pl)
-	vmT.Define("pfl", tk.Pl)
+	builder := imgui.NewFontGlyphRangesBuilder()
 
-	vmT.Define("getInput", tk.GetInputBufferedScan)
-
-	vmT.Define("exit", exit)
-
-	vmT.Define("eval", eval)
-	vmT.Define("runScript", runScript)
-	vmT.Define("systemCmd", systemCmd)
-	vmT.Define("typeof", typeOfValue)
-
-	vmT.Define("setVar", setVar)
-	vmT.Define("getVar", getVar)
-
-	vmT.Define("argsG", os.Args[1:])
-
-	// core.Import(vmT)
-
-	v, errT := vm.Execute(vmT, nil, codeA)
-	if errT != nil {
-		posStrT := ""
-
-		e, ok := errT.(*parser.Error)
-
-		if ok {
-			posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
+	if rangeVarT == nil {
+		builder.AddRanges(fonts.GlyphRangesDefault())
+	} else {
+		rangeStrT := rangeVarT.(string)
+		if rangeStrT == "" || tk.StartsWith(rangeStrT, "COMMON") {
+			builder.AddRanges(fonts.GlyphRangesChineseSimplifiedCommon())
+			builder.AddText("辑" + rangeStrT[6:])
+		} else if rangeStrT == "FULL" {
+			builder.AddRanges(fonts.GlyphRangesChineseFull())
 		} else {
-			e, ok := errT.(*vm.Error)
-
-			if ok {
-				posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-			} else {
-				tk.Pl("%#v", errT)
-			}
+			builder.AddText(rangeStrT)
 		}
-
-		return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", posStrT, errT)
 	}
 
-	return v
-}
+	builder.BuildRanges(ranges)
 
-func systemCmd(cmdA string, argsA ...string) string {
-	var out bytes.Buffer
+	fontPath := "c:/Windows/Fonts/simhei.ttf"
 
-	cmd := exec.Command(cmdA, argsA...)
+	fontVarT := getVar("Font") // "c:/Windows/Fonts/simsun.ttc"
 
-	cmd.Stdout = &out
-	errT := cmd.Run()
-	if errT != nil {
-		return tk.GenerateErrorStringF("failed: %v", errT)
+	if fontVarT != nil {
+		fontPath = fontVarT.(string)
 	}
 
-	rStrT := tk.Trim(out.String())
+	fontSizeStrT := "16"
 
-	return rStrT
+	fontSizeVarT := getVar("FontSize")
+
+	if fontSizeVarT != nil {
+		fontSizeStrT = fontSizeVarT.(string)
+	}
+
+	fontSizeT := tk.StrToIntWithDefaultValue(fontSizeStrT, 16)
+
+	// fonts.AddFontFromFileTTF(fontPath, 14)
+	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
 }
 
-func typeOfValue(vA interface{}) string {
-	return fmt.Sprintf("%T", vA)
+func importAnkGUIPackages() {
+	env.Packages["gui"] = map[string]reflect.Value{
+		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
+		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
+		"Window":                  reflect.ValueOf(g.Window),
+		"SingleWindowWithMenuBar": reflect.ValueOf(g.SingleWindowWithMenuBar),
+		"WindowV":                 reflect.ValueOf(g.WindowV),
+
+		"MasterWindowFlagsNotResizable": reflect.ValueOf(g.MasterWindowFlagsNotResizable),
+		"MasterWindowFlagsMaximized":    reflect.ValueOf(g.MasterWindowFlagsMaximized),
+		"MasterWindowFlagsFloating":     reflect.ValueOf(g.MasterWindowFlagsFloating),
+
+		// "Layout":          reflect.ValueOf(g.Layout),
+
+		"Label":                  reflect.ValueOf(g.Label),
+		"Line":                   reflect.ValueOf(g.Line),
+		"Button":                 reflect.ValueOf(g.Button),
+		"InvisibleButton":        reflect.ValueOf(g.InvisibleButton),
+		"ImageButton":            reflect.ValueOf(g.ImageButton),
+		"InputTextMultiline":     reflect.ValueOf(g.InputTextMultiline),
+		"Checkbox":               reflect.ValueOf(g.Checkbox),
+		"RadioButton":            reflect.ValueOf(g.RadioButton),
+		"Child":                  reflect.ValueOf(g.Child),
+		"ComboCustom":            reflect.ValueOf(g.ComboCustom),
+		"Combo":                  reflect.ValueOf(g.Combo),
+		"ContextMenu":            reflect.ValueOf(g.ContextMenu),
+		"Group":                  reflect.ValueOf(g.Group),
+		"Image":                  reflect.ValueOf(g.Image),
+		"InputText":              reflect.ValueOf(g.InputText),
+		"InputTextV":             reflect.ValueOf(g.InputTextV),
+		"InputTextFlagsPassword": reflect.ValueOf(g.InputTextFlagsPassword),
+		"InputInt":               reflect.ValueOf(g.InputInt),
+		"InputFloat":             reflect.ValueOf(g.InputFloat),
+		"MainMenuBar":            reflect.ValueOf(g.MainMenuBar),
+		"MenuBar":                reflect.ValueOf(g.MenuBar),
+		"MenuItem":               reflect.ValueOf(g.MenuItem),
+		"PopupModal":             reflect.ValueOf(g.PopupModal),
+		"OpenPopup":              reflect.ValueOf(g.OpenPopup),
+		"CloseCurrentPopup":      reflect.ValueOf(g.CloseCurrentPopup),
+		"ProgressBar":            reflect.ValueOf(g.ProgressBar),
+		"Separator":              reflect.ValueOf(g.Separator),
+		"SliderInt":              reflect.ValueOf(g.SliderInt),
+		"SliderFloat":            reflect.ValueOf(g.SliderFloat),
+		"HSplitter":              reflect.ValueOf(g.HSplitter),
+		"VSplitter":              reflect.ValueOf(g.VSplitter),
+		"TabItem":                reflect.ValueOf(g.TabItem),
+		"TabBar":                 reflect.ValueOf(g.TabBar),
+		"Row":                    reflect.ValueOf(g.Row),
+		"Table":                  reflect.ValueOf(g.Table),
+		"FastTable":              reflect.ValueOf(g.FastTable),
+		"Tooltip":                reflect.ValueOf(g.Tooltip),
+		"TreeNode":               reflect.ValueOf(g.TreeNode),
+		"Spacing":                reflect.ValueOf(g.Spacing),
+		"Custom":                 reflect.ValueOf(g.Custom),
+		"Condition":              reflect.ValueOf(g.Condition),
+		"ListBox":                reflect.ValueOf(g.ListBox),
+		"DatePicker":             reflect.ValueOf(g.DatePicker),
+		"Dummy":                  reflect.ValueOf(g.Dummy),
+		// "Widget":             reflect.ValueOf(g.Widget),
+
+		"PrepareMessageBox": reflect.ValueOf(g.PrepareMsgbox),
+		"MessageBox":        reflect.ValueOf(g.Msgbox),
+
+		"LoadFont": reflect.ValueOf(loadFont),
+
+		"GetConfirm": reflect.ValueOf(getConfirmGUI),
+
+		"SimpleInfo":      reflect.ValueOf(simpleInfo),
+		"SimpleError":     reflect.ValueOf(simpleError),
+		"SelectFile":      reflect.ValueOf(selectFileGUI),
+		"SelectSaveFile":  reflect.ValueOf(selectFileToSaveGUI),
+		"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
+
+		"EditFile": reflect.ValueOf(editFile),
+	}
+
+	var widget g.Widget
+	var layout g.Layout
+
+	env.PackageTypes["gui"] = map[string]reflect.Type{
+		"Layout":  reflect.TypeOf(g.Layout{}),
+		"LayoutS": reflect.TypeOf(&layout),
+		// "Signal": reflect.TypeOf(&signal).Elem(),
+		"Widget": reflect.TypeOf(&widget).Elem(),
+	}
+
 }
 
 func getConfirmGUI(titleA string, messageA string) bool {
 	return dialog.Message("%v", messageA).Title(titleA).YesNo()
+}
+
+func simpleInfo(titleA string, messageA string) {
+	dialog.Message("%v", messageA).Title(titleA).Info()
+}
+
+func simpleError(titleA string, messageA string) {
+	dialog.Message("%v", messageA).Title(titleA).Error()
 }
 
 // filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
@@ -685,78 +732,178 @@ func selectDirectoryGUI(titleA string) string {
 	return directoryT
 }
 
-func initAnkVM() {
-	if ankVMG == nil {
-		importAnkPackages()
+var (
+	editorG            imgui.TextEditor
+	errMarkersG        imgui.ErrorMarkers
+	editFileNameG      string
+	editFileCleanFlagG string
+	editSecureCodeG    string
+	editArgsG          string
+)
 
-		ankVMG = env.NewEnv()
+func editorLoad() {
+	if editorG.IsTextChanged() {
+		editFileCleanFlagG = "*"
+	}
 
-		// err := e.Define("pl", tk.Pl)
-		// if err != nil {
-		// 	tk.CheckErrf("Define error: %v\n", err)
-		// }
+	if editFileCleanFlagG != "" {
+		rs := getConfirmGUI("Please confirm", "File modified, load another file anyway?")
 
-		// e.Define("prl", tk.Prl)
-		ankVMG.Define("print", fmt.Print)
-		ankVMG.Define("println", fmt.Println)
-		ankVMG.Define("printf", fmt.Printf)
-		ankVMG.Define("pl", fmt.Println)
-		ankVMG.Define("printfln", tk.Pl)
-		ankVMG.Define("pfl", tk.Pl)
+		if rs == false {
+			return
+		}
+	}
 
-		ankVMG.Define("getInput", tk.GetInputBufferedScan)
+	fileNameNewT := selectFileGUI("Select the file to open...", "All files", "*")
 
-		ankVMG.Define("exit", exit)
+	if tk.IsErrorString(fileNameNewT) {
+		if tk.EndsWith(fileNameNewT, "Cancelled") {
+			g.Msgbox("Info", tk.Spr("Action cancelled by user"))
+			return
+		}
 
-		ankVMG.Define("eval", eval)
-		ankVMG.Define("runScript", runScript)
-		ankVMG.Define("systemCmd", systemCmd)
-		ankVMG.Define("typeof", typeOfValue)
+		g.Msgbox("Error", tk.Spr("Failed to select file: %v", tk.GetErrorString(fileNameNewT)))
+		return
+	}
 
-		ankVMG.Define("setVar", setVar)
-		ankVMG.Define("getVar", getVar)
+	fcT := tk.LoadStringFromFile(fileNameNewT)
 
-		ankVMG.Define("argsG", os.Args[1:])
+	if tk.IsErrorString(fcT) {
+		g.Msgbox("Error", tk.Spr("Failed to load file content: %v", tk.GetErrorString(fileNameNewT)))
+		return
+	}
 
-		// for GUI
-		// ankVMG.Define("loadChineseFont", loadChineseFont)
+	editFileNameG = fileNameNewT
+	editorG.SetText(fcT)
+	editFileCleanFlagG = ""
 
-		core.Import(ankVMG)
+}
 
+func editorSaveAs() {
+	fileNameNewT := selectFileToSaveGUI("Select the file to save...", "All file", "*")
+
+	if tk.IsErrorString(fileNameNewT) {
+		if tk.EndsWith(fileNameNewT, "Cancelled") {
+			g.Msgbox("Info", tk.Spr("Action cancelled by user"))
+			return
+		}
+
+		g.Msgbox("Error", tk.Spr("Failed to select file: %v", tk.GetErrorString(fileNameNewT)))
+		return
+	}
+
+	editFileNameG = fileNameNewT
+
+	rs := true
+	// if tk.IfFileExists(editFileNameG) {
+	// 	rs = getConfirmGUI("请再次确认", "文件已存在，是否覆盖?")
+	// }
+
+	if rs == true {
+		rs1 := tk.SaveStringToFile(editorG.GetText(), editFileNameG)
+
+		if rs1 != "" {
+			g.Msgbox("Error", tk.Spr("Failed to save: %v", rs))
+			return
+		}
+
+		g.Msgbox("Info", tk.Spr("File saved to: %v", editFileNameG))
+
+		editFileCleanFlagG = ""
 	}
 
 }
 
-var (
-	editorG       imgui.TextEditor
-	errMarkersG   imgui.ErrorMarkers
-	editFileNameG string
-)
+func editorSave() {
+	if editFileNameG == "" {
+		editorSaveAs()
+
+		return
+	}
+
+	rs := false
+
+	if tk.IfFileExists(editFileNameG) {
+		rs = getConfirmGUI("Please confirm", "The file already exists, confirm to overwrite?")
+	}
+
+	if rs == true {
+		rs1 := tk.SaveStringToFile(editorG.GetText(), editFileNameG)
+
+		if rs1 != "" {
+			g.Msgbox("Error", tk.Spr("Failed to save: %v", rs))
+			return
+		}
+
+		g.Msgbox("Info", tk.Spr("File saved to file: %v", editFileNameG))
+
+		editFileCleanFlagG = ""
+	}
+
+}
+
+func editEncrypt() {
+	imgui.CloseCurrentPopup()
+
+	sourceT := editorG.GetText()
+
+	encStrT := tk.EncryptStringByTXDEF(sourceT, editSecureCodeG)
+
+	if tk.IsErrorString(encStrT) {
+		simpleError("Error", tk.Spr("failed to encrypt content: %v", tk.GetErrorString(encStrT)))
+		return
+	}
+
+	editorG.SetText("//TXDEF#" + encStrT)
+	editFileCleanFlagG = "*"
+
+	editSecureCodeG = ""
+}
+
+func editEncryptClick() {
+	g.OpenPopup("Please enter:##EncryptInputSecureCode")
+}
+
+func editDecrypt() {
+	imgui.CloseCurrentPopup()
+
+	sourceT := tk.Trim(editorG.GetText())
+
+	encStrT := tk.DecryptStringByTXDEF(sourceT, editSecureCodeG)
+
+	if tk.IsErrorString(encStrT) {
+		simpleError("Error", tk.Spr("failed to decrypt content: %v", tk.GetErrorString(encStrT)))
+		return
+	}
+
+	editorG.SetText(encStrT)
+	editFileCleanFlagG = "*"
+	editSecureCodeG = ""
+
+}
+
+func editDecryptClick() {
+	g.OpenPopup("Please enter:##DecryptInputSecureCode")
+}
+
+func editRun() {
+	imgui.CloseCurrentPopup()
+
+	runScript(editorG.GetText(), "new", editArgsG)
+}
+
+func editRunClick() {
+	g.OpenPopup("Please enter:##RunInputArgs")
+}
 
 func editorLoop() {
 	g.SingleWindow("Gox Editor", g.Layout{
-		g.Label(editFileNameG),
+		g.Label(editFileNameG + editFileCleanFlagG),
 		g.Dummy(30, 0),
 		g.Line(
-			g.Button("Save", func() {
-				rs := false
-
-				if tk.IfFileExists(editFileNameG) {
-					rs = getConfirmGUI("请确认", "文件已存在，是否覆盖?")
-				}
-
-				if rs == true {
-					rs1 := tk.SaveStringToFile(editorG.GetText(), editFileNameG)
-
-					if rs1 != "" {
-						g.Msgbox("错误", tk.Spr("保存失败：%v", rs))
-						return
-					}
-
-					g.Msgbox("信息", tk.Spr("文件已保存到：%v", editFileNameG))
-				}
-
-			}),
+			g.Button("Load", editorLoad),
+			g.Button("Save", editorSave),
+			g.Button("Save As...", editorSaveAs),
 			g.Button("Check", func() {
 
 				sourceT := editorG.GetText()
@@ -780,38 +927,161 @@ func editorLoop() {
 				}
 
 			}),
-			g.Button("Get Text", func() {
-				if editorG.HasSelection() {
-					fmt.Println(editorG.GetSelectedText())
-				} else {
-					fmt.Println(editorG.GetText())
-				}
+			g.Button("Encrypt", editEncryptClick),
+			g.Button("Decrypt", editDecryptClick),
+			g.Button("Run", editRunClick),
+			// g.Button("Get Text", func() {
+			// 	if editorG.HasSelection() {
+			// 		fmt.Println(editorG.GetSelectedText())
+			// 	} else {
+			// 		fmt.Println(editorG.GetText())
+			// 	}
 
-				column, line := editorG.GetCursorPos()
-				fmt.Println("Cursor pos:", column, line)
+			// 	column, line := editorG.GetCursorPos()
+			// 	fmt.Println("Cursor pos:", column, line)
 
-				column, line = editorG.GetSelectionStart()
-				fmt.Println("Selection start:", column, line)
+			// 	column, line = editorG.GetSelectionStart()
+			// 	fmt.Println("Selection start:", column, line)
 
-				fmt.Println("Current line is", editorG.GetCurrentLineText())
-			}),
-			g.Button("Set Text", func() {
-				editorG.SetText("Set text")
-				editFileNameG = "Set text"
-			}),
-			g.Button("Set Error Marker", func() {
-				errMarkersG.Clear()
-				errMarkersG.Insert(1, "Error message")
-				fmt.Println("ErrMarkers Size:", errMarkersG.Size())
+			// 	fmt.Println("Current line is", editorG.GetCurrentLineText())
+			// }),
+			// g.Button("Set Text", func() {
+			// 	editorG.SetText("Set text")
+			// 	editFileNameG = "Set text"
+			// }),
+			// g.Button("Set Error Marker", func() {
+			// 	errMarkersG.Clear()
+			// 	errMarkersG.Insert(1, "Error message")
+			// 	fmt.Println("ErrMarkers Size:", errMarkersG.Size())
 
-				editorG.SetErrorMarkers(errMarkersG)
-			}),
+			// 	editorG.SetErrorMarkers(errMarkersG)
+			// }),
 		),
+		g.PopupModal("Please enter:##EncryptInputSecureCode", g.Layout{
+			g.Line(
+				g.Label("Secure code"),
+				g.InputTextV("", 40, &editSecureCodeG, g.InputTextFlagsPassword, nil, nil),
+			),
+			g.Line(
+				g.Button("Ok", editEncrypt),
+				g.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
+			),
+		}),
+		g.PopupModal("Please enter:##DecryptInputSecureCode", g.Layout{
+			g.Line(
+				g.Label("Secure code"),
+				g.InputTextV("", 40, &editSecureCodeG, g.InputTextFlagsPassword, nil, nil),
+			),
+			g.Line(
+				g.Button("Ok", editDecrypt),
+				g.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
+			),
+		}),
+		g.PopupModal("Please enter:##RunInputArgs", g.Layout{
+			g.Line(
+				g.Label("Arguments to pass to VM"),
+				g.InputText("", 80, &editArgsG),
+			),
+			g.Line(
+				g.Button("Ok", editRun),
+				g.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
+			),
+		}),
 		g.Custom(func() {
 			editorG.Render("Hello", imgui.Vec2{X: 0, Y: 0}, true)
+			if giu.IsItemHovered() {
+				if editorG.IsTextChanged() {
+					editFileCleanFlagG = "*"
+				}
+			}
 		}),
 		g.PrepareMsgbox(),
 	})
+}
+
+// GUI related end
+
+func initAnkVM() {
+	if ankVMG == nil {
+		importAnkNonGUIPackages()
+		importAnkGUIPackages()
+
+		ankVMG = env.NewEnv()
+
+		ankVMG.Define("print", fmt.Print)
+		ankVMG.Define("println", fmt.Println)
+		ankVMG.Define("printf", fmt.Printf)
+		ankVMG.Define("pl", fmt.Println)
+		ankVMG.Define("printfln", tk.Pl)
+		ankVMG.Define("pfl", tk.Pl)
+
+		ankVMG.Define("getInput", tk.GetInputBufferedScan)
+
+		ankVMG.Define("exit", exit)
+
+		ankVMG.Define("eval", eval)
+		ankVMG.Define("runScript", runScript)
+		ankVMG.Define("systemCmd", systemCmd)
+		ankVMG.Define("typeof", typeOfValue)
+
+		ankVMG.Define("setVar", setVar)
+		ankVMG.Define("getVar", getVar)
+
+		ankVMG.Define("argsG", os.Args[1:])
+
+		// GUI related start
+
+		ankVMG.Define("edit", editFile)
+
+		// GUI related end
+
+		core.Import(ankVMG)
+
+	}
+
+}
+
+func editFile(fileNameA string) {
+	var fcT string
+
+	if fileNameA == "" {
+		editFileNameG = ""
+
+		fcT = ""
+
+		editFileCleanFlagG = "*"
+	} else {
+		editFileNameG = fileNameA
+
+		fcT = tk.LoadStringFromFile(editFileNameG)
+
+		if tk.IsErrorString(fcT) {
+			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
+			return
+
+		}
+
+		editFileCleanFlagG = ""
+
+	}
+
+	errMarkersG = imgui.NewErrorMarkers()
+
+	editorG = imgui.NewTextEditor()
+
+	editorG.SetShowWhitespaces(false)
+	editorG.SetTabSize(2)
+	editorG.SetText(fcT)
+	editorG.SetLanguageDefinitionC()
+
+	// setVar("Font", "c:/Windows/Fonts/simsun.ttc")
+	setVar("FontRange", "COMMON")
+	setVar("FontSize", "15")
+
+	wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
+
+	wnd.Main(editorLoop)
+
 }
 
 func main() {
@@ -835,43 +1105,26 @@ func main() {
 
 	lenT := len(scriptsT)
 
+	// GUI related start
+
+	if tk.IfSwitchExistsWhole(argsT, "-edit") {
+		if lenT < 1 {
+			editFile("")
+		} else {
+			editFile(scriptsT[0])
+		}
+
+		return
+	}
+
+	// GUI related end
+
 	if lenT < 1 {
 		initAnkVM()
 
 		runInteractive()
 
 		// tk.Pl("not enough parameters")
-
-		return
-	}
-
-	if tk.IfSwitchExistsWhole(argsT, "-edit") {
-		editFileNameG = scriptsT[0]
-
-		fcT := tk.LoadStringFromFile(editFileNameG)
-
-		if tk.IsErrorString(fcT) {
-			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
-			return
-
-		}
-
-		errMarkersG = imgui.NewErrorMarkers()
-
-		editorG = imgui.NewTextEditor()
-
-		editorG.SetShowWhitespaces(false)
-		editorG.SetTabSize(2)
-		editorG.SetText(fcT)
-		editorG.SetLanguageDefinitionC()
-
-		// setVar("Font", "c:/Windows/Fonts/simsun.ttc")
-		setVar("FontRange", "COMMON")
-		setVar("FontSize", "15")
-
-		wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
-
-		wnd.Main(editorLoop)
 
 		return
 	}
@@ -1094,34 +1347,6 @@ func main() {
 				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
 			}
 
-			// if ankVMG == nil {
-			// 	importAnkPackages()
-
-			// 	ankVMG = env.NewEnv()
-
-			// 	// err := e.Define("pl", tk.Pl)
-			// 	// if err != nil {
-			// 	// 	tk.CheckErrf("Define error: %v\n", err)
-			// 	// }
-
-			// 	// e.Define("prl", tk.Prl)
-			// 	ankVMG.Define("print", fmt.Print)
-			// 	ankVMG.Define("println", fmt.Println)
-			// 	ankVMG.Define("printf", fmt.Printf)
-			// 	ankVMG.Define("pl", fmt.Println)
-			// 	ankVMG.Define("printfln", tk.Pl)
-			// 	ankVMG.Define("pfl", tk.Pl)
-			// 	ankVMG.Define("exit", exit)
-
-			// 	ankVMG.Define("setVar", setVar)
-			// 	ankVMG.Define("getVar", getVar)
-
-			// 	core.Import(ankVMG)
-
-			// }
-
-			// ankVMG.Define("inG", map[string]interface{}{"Args": os.Args})
-
 			initAnkVM()
 
 			script := fcT //`println("Hello World :)")`
@@ -1152,19 +1377,10 @@ func main() {
 
 			rs, errT := ankVMG.Get("outG")
 
-			// tk.CheckErrCompact(errT)
-
 			if errT == nil && rs != nil {
 				tk.Pl("%#v", rs)
 			}
 
-			// tk.Pl("%#v", rs)
-
 		}
 	}
-
-	// tk.Pl("Gox by TopXeQ V%v", versionG)
-
-	// fmt.Println("")
-
 }
