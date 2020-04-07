@@ -368,7 +368,7 @@ It's the same for function parameters and return values.
 
 ## 7. Library Reference
 
-First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents. In addition, you can browse Anko's, Goja's and Giu's documents.
+First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's and Giu's documents.
 
 However, Gox provides some convenient global variables and functions decribed as below.
 
