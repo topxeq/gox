@@ -579,6 +579,10 @@ func loadFont() {
 
 	fontPath := "c:/Windows/Fonts/simhei.ttf"
 
+	if tk.Contains(tk.GetOSName(), "rwin") {
+		fontPath = "/Library/Fonts/Microsoft/SimHei.ttf"
+	}
+
 	fontVarT := getVar("Font") // "c:/Windows/Fonts/simsun.ttc"
 
 	if fontVarT != nil {
@@ -673,6 +677,7 @@ func importAnkGUIPackages() {
 		"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
 
 		"EditFile": reflect.ValueOf(editFile),
+		"LoopWindow": reflect.ValueOf(loopWindow),
 	}
 
 	var widget g.Widget
@@ -896,6 +901,13 @@ func editRunClick() {
 	g.OpenPopup("Please enter:##RunInputArgs")
 }
 
+func loopWindow(windowA *g.MasterWindow, loopA func()) {
+	// wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
+
+	windowA.Main(loopA)
+
+}
+
 func editorLoop() {
 	g.SingleWindow("Gox Editor", g.Layout{
 		g.Label(editFileNameG + editFileCleanFlagG),
@@ -1037,7 +1049,7 @@ func editFile(fileNameA string) {
 	setVar("FontSize", "15")
 
 	wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
-
+// tk.Pl("%T", wnd)
 	wnd.Main(editorLoop)
 
 }
