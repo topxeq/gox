@@ -676,7 +676,7 @@ func importAnkGUIPackages() {
 		"SelectSaveFile":  reflect.ValueOf(selectFileToSaveGUI),
 		"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
 
-		"EditFile": reflect.ValueOf(editFile),
+		"EditFile":   reflect.ValueOf(editFile),
 		"LoopWindow": reflect.ValueOf(loopWindow),
 	}
 
@@ -901,6 +901,10 @@ func editRunClick() {
 	g.OpenPopup("Please enter:##RunInputArgs")
 }
 
+func onButtonCloseClick() {
+	exit()
+}
+
 func loopWindow(windowA *g.MasterWindow, loopA func()) {
 	// wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
 
@@ -942,6 +946,7 @@ func editorLoop() {
 			g.Button("Encrypt", editEncryptClick),
 			g.Button("Decrypt", editDecryptClick),
 			g.Button("Run", editRunClick),
+			g.Button("Close", onButtonCloseClick),
 			// g.Button("Get Text", func() {
 			// 	if editorG.HasSelection() {
 			// 		fmt.Println(editorG.GetSelectedText())
@@ -1049,7 +1054,7 @@ func editFile(fileNameA string) {
 	setVar("FontSize", "15")
 
 	wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
-// tk.Pl("%T", wnd)
+	// tk.Pl("%T", wnd)
 	wnd.Main(editorLoop)
 
 }
@@ -1381,7 +1386,7 @@ func main() {
 
 			script := fcT //`println("Hello World :)")`
 
-			_, errT = vm.Execute(ankVMG, nil, script)
+			rs1, errT := vm.Execute(ankVMG, nil, script)
 			if errT != nil {
 
 				posStrT := ""
@@ -1401,7 +1406,7 @@ func main() {
 					}
 				}
 
-				tk.Pl("failed to execute script(%v%v) error: %v", scriptT, posStrT, errT)
+				tk.Pl("failed to execute script(%v%v) error: %v\n%#v\n", scriptT, posStrT, errT, rs1)
 				continue
 			}
 

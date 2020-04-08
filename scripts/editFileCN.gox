@@ -1,140 +1,224 @@
-lenT = len(argsG)
-
-if lenT < 2 {
-	println("缺少参数")
-	return
-}
-
-fileNameT = argsG[1]
-
 tk = import("tk")
 
-fcT = tk.LoadStringFromFile(fileNameT)
+lenT = len(argsG)
 
-if tk.IsErrorString(fcT) {
-	printfln("载入文件时发生错误：%v", tk.GetErrorString(fcT))
-	return
-}
+editFileNameG = ""
+editFileCleanFlagG = ""
+editSecureCodeG = ""
 
-var gui = import("gui")
+fcT = ""
 
-text1 = fcT
+if lenT < 2 {
+	editFileNameG = ""
+	editFileCleanFlagG = "*"
+} else {
+	editFileNameG = argsG[1]
+	fcT = tk.LoadStringFromFile(editFileNameG)
 
-
-func onButtonRunClick() {
-	rs = runScript(text1)
-	// rs = systemCmd("gox", fileNameT)
-
-	rs1 = gui.Msgbox("运行结果", tk.Spr("%v", rs))
-
-	tk.Plv(rs1)
-}
-
-func onButtonSaveClick() {
-	rs = false
-	if tk.IfFileExists(fileNameT) {
-		rs = gui.GetConfirm("请确认", "文件已存在，是否覆盖?")
-	}
-
-	if rs == true {
-		rs1 = tk.SaveStringToFile(text1, fileNameT)
-
-		if rs1 != "" {
-			gui.Msgbox("错误", tk.Spr("保存失败：%v", rs))
-			return
-		}
-
-		gui.Msgbox("信息", tk.Spr("文件已保存到：%v", fileNameT))
-	}
-
-}
-
-func onButtonSaveAsClick() {
-
-	fileNameNewT = gui.SelectSaveFile("请选择另存为的文件……", "所有文件", "*")
-
-	if tk.IsErrorString(fileNameNewT) {
-		if tk.EndsWith(fileNameNewT, "Cancelled") {
-			gui.Msgbox("信息", tk.Spr("选择文件已取消"))
-			return
-		}
-
-		gui.Msgbox("错误", tk.Spr("选择文件失败：%v", tk.GetErrorString(fileNameNewT)))
+	if tk.IsErrorString(fcT) {
+		gui.SimpleError("错误提示", "载入文件时发生错误：%v", tk.GetErrorString(fcT))
 		return
 	}
 
-	fileNameT = fileNameNewT
+	editFileCleanFlagG = ""
 
-	// mainWindow.title = "编辑器 - " + fileNameT
+}
 
-	rs = false
-	if tk.IfFileExists(fileNameT) {
-		rs = gui.GetConfirm("请再次确认", "文件已存在，是否覆盖?")
+
+var gui = import("gui")
+
+// hold the text in main edit control
+text1 = fcT
+
+func onEditChange() {
+	editFileCleanFlagG = "*"
+}
+
+func onButtonLoad() {
+	if editFileCleanFlagG != "" {
+		rs = gui.GetConfirm("请确认", "文件已被修改，确认要打开另一个文件吗？")
+
+		if rs == false {
+			return
+		}
 	}
 
-	if rs == true {
-		rs1 = tk.SaveStringToFile(text1, fileNameT)
+	fileNameNewT = gui.SelectFile("请选择要打开的文件", "所有文件", "*")
 
-		if rs1 != "" {
-			gui.Msgbox("错误", tk.Spr("保存失败：%v", rs))
+	if tk.IsErrorString(fileNameNewT) {
+		if tk.EndsWith(fileNameNewT, "Cancelled") {
+			gui.MessageBox("信息", tk.Spr("操作被用户取消"))
 			return
 		}
 
-		gui.Msgbox("信息", tk.Spr("文件已保存到：%v", fileNameT))
+		gui.MessageBox("错误提示", tk.Spr("选择文件失败：%v", tk.GetErrorString(fileNameNewT)))
+		return
+	}
+
+	fcT = tk.LoadStringFromFile(fileNameNewT)
+
+	if tk.IsErrorString(fcT) {
+		gui.MessageBox("错误提示", tk.Spr("载入文件内容失败：%v", tk.GetErrorString(fileNameNewT)))
+		return
+	}
+
+	editFileNameG = fileNameNewT
+	
+	text1 = fcT
+
+	editFileCleanFlagG = ""
+
+}
+
+func onButtonRunClick() {
+	rs = runScript(text1, "new")
+	// rs = systemCmd("gox", fileNameT)
+
+	gui.MessageBox("运行结果", tk.Spr("%v", rs))
+}
+
+func editorSaveAs() {
+	fileNameNewT = gui.SelectSaveFile("请选择要保存的文件", "所有文件", "*")
+
+	if tk.IsErrorString(fileNameNewT) {
+		if tk.EndsWith(fileNameNewT, "Cancelled") {
+			gui.MessageBox("信息", tk.Spr("操作被用户取消"))
+			return
+		}
+
+		gui.MessageBox("错误提示", tk.Spr("选择文件失败：%v", tk.GetErrorString(fileNameNewT)))
+		return
+	}
+
+	editFileNameG = fileNameNewT
+
+	rs1 = tk.SaveStringToFile(text1, editFileNameG)
+
+	if rs1 != "" {
+		gui.MessageBox("错误提示", tk.Spr("保存文件失败：%v", rs))
+		return
+	}
+
+	gui.MessageBox("信息", tk.Spr("文件已被保存至：%v", editFileNameG))
+
+	editFileCleanFlagG = ""
+
+}
+
+func editorSave() {
+	if editFileNameG == "" {
+		editorSaveAs()
+
+		return
+	}
+
+	rs = false
+
+	if tk.IfFileExists(editFileNameG) {
+		rs = gui.GetConfirm("请确认", "文件已存在，是否要覆盖？")
+	}
+
+	if rs == true {
+		rs1 = tk.SaveStringToFile(text1, editFileNameG)
+
+		if rs1 != "" {
+			gui.MessageBox("错误提示", tk.Spr("保存文件失败：%v", rs))
+			return
+		}
+
+		gui.MessageBox("信息", tk.Spr("文件已被保存至：%v", editFileNameG))
+
+		editFileCleanFlagG = ""
 	}
 
 }
 
-func onButtonEncryptClick() {
-	gui.OpenPopup("PopupEncrypt001")
+func editEncrypt() {
+	gui.CloseCurrentPopup()
+
+	sourceT = text1
+
+	encStrT = tk.EncryptStringByTXDEF(sourceT, editSecureCodeG)
+
+	if tk.IsErrorString(encStrT) {
+		gui.SimpleError("错误提示", tk.Spr("加密失败：%v", tk.GetErrorString(encStrT)))
+		return
+	}
+
+	text1 = "//TXDEF#" + encStrT
+	editFileCleanFlagG = "*"
+
+	editSecureCodeG = ""
+}
+
+func editEncryptClick() {
+	gui.OpenPopup("请输入密码##EncryptInputSecureCode")
+}
+
+func editDecrypt() {
+	gui.CloseCurrentPopup()
+
+	sourceT = tk.Trim(text1)
+
+	encStrT = tk.DecryptStringByTXDEF(sourceT, editSecureCodeG)
+
+	if tk.IsErrorString(encStrT) {
+		gui.SimpleError("错误提示", tk.Spr("解密失败：%v", tk.GetErrorString(encStrT)))
+		return
+	}
+
+	text1 = encStrT
+	editFileCleanFlagG = "*"
+	editSecureCodeG = ""
 
 }
 
-func onButton1Click() {
-	rs = eval(text1)
-	text1 = toString(rs)
+func editDecryptClick() {
+	gui.OpenPopup("请输入密码##DecryptInputSecureCode")
 }
 
-func onButton2Click() {
-	gui.Msgbox("abc", "ads")
-}
 
 func onButtonCloseClick() {
 	exit()
 }
 
-func onClosePopupEncrypt001() {
-	gui.CloseCurrentPopup()
-}
-
-fileNameLabel = nil
-
 func loop() {
 
 	layoutT = make(gui.Layout)
 
-	// fileNameLabel = 
+	layoutT += gui.Label(editFileNameG + editFileCleanFlagG)
+	layoutT += gui.InputTextMultiline("InputTextMultiline001", &text1, -1, -30, 0, nil, onEditChange)
+	layoutT += gui.Line(gui.Button("打开", onButtonLoad), gui.Button("保存", editorSave), gui.Button("另存为", editorSaveAs), gui.Button("加密", editEncryptClick), gui.Button("解密", editDecryptClick), gui.Button("运行", onButtonRunClick), gui.Button("关闭", onButtonCloseClick))
 
-	layoutT += gui.Label(fileNameT)
-	layoutT += gui.InputTextMultiline("InputTextMultiline001", &text1, -1, -30, 0, nil, nil)
-	layoutT += gui.Line(gui.Button("运行", onButtonRunClick), gui.Button("保存", onButtonSaveClick), gui.Button("另存", onButtonSaveAsClick), gui.Button("加密", onButtonEncryptClick), gui.Button("解密", onButton1Click), gui.Button("关闭", onButtonCloseClick))
+	layoutT += gui.PopupModal("请输入密码##EncryptInputSecureCode", []gui.Widget{gui.Line(gui.Label("密码"), gui.InputTextV("", 40, &editSecureCodeG, gui.InputTextFlagsPassword, nil, nil)),
+		gui.Line(gui.Button("确定", editEncrypt), gui.Button("取消", func() { gui.CloseCurrentPopup() })),
+	})
 
-	layoutT += gui.PopupModal("PopupEncrypt001", []gui.Widget{
-		gui.Label("Confirm to close me?"),
-		gui.Line(gui.Button("Yes", onClosePopupEncrypt001), gui.Button("No", nil)),
+	layoutT += gui.PopupModal("请输入密码##DecryptInputSecureCode", []gui.Widget{
+		gui.Line(gui.Label("密码"),
+			gui.InputTextV("", 40, &editSecureCodeG, gui.InputTextFlagsPassword, nil, nil)),
+		gui.Line(gui.Button("确定", editDecrypt),
+			gui.Button("取消", func() { gui.CloseCurrentPopup() })),
 	})
 
 
-	layoutT += gui.PrepareMsgbox()
+	// add this to the layout if you would use gui.MessageBox function later
+	layoutT += gui.PrepareMessageBox()
 
-	gui.SingleWindow("编辑器 - "+fileNameT, layoutT)
+	gui.SingleWindow("Gox编辑器", layoutT)
 }
 
+osNameT = tk.GetOSName()
 
-setVar("Font", "c:/Windows/Fonts/simsun.ttc")
+if tk.Contains(osNameT, "darwin") {
+	setVar("Font", "/Library/Fonts/Microsoft/SimHei.ttf")
+} else {
+	setVar("Font", "c:/Windows/Fonts/simsun.ttc")
+}
+
 setVar("FontRange", "COMMON")
-setVar("FontSize", "17")
+setVar("FontSize", "15")
 
-mainWindow = gui.NewMasterWindow("编辑器", 640, 480, 0, gui.LoadFont)
+mainWindow = gui.NewMasterWindow("Gox编辑器", 800, 600, 0, gui.LoadFont)
 
-mainWindow.Main(loop)
+gui.LoopWindow(mainWindow, loop)
