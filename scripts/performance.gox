@@ -1,0 +1,123 @@
+fmt = import ("fmt")
+tk = import("tk")
+time = import("time")
+rand =	import("math/rand")
+
+func calPi(pointCount) {
+	inCircleCount = 0
+
+	r = tk.NewRandomGenerator()
+
+	for i = 0; i < pointCount; i++ {
+		x = r.Float64()
+		y = r.Float64()
+
+		if x*x+y*y < 1 {
+			inCircleCount++
+		}
+	}
+
+	Pi = (4.0 * inCircleCount) / pointCount
+
+	return Pi
+}
+
+func fibonacci(c) {
+	if c < 2 {
+		return c
+	}
+
+	return fibonacci(c-2) + fibonacci(c-1)
+}
+
+func fibonacciFlat(c) {
+	if c < 2 {
+		return c
+	}
+
+	var fibo = 1
+	var fiboPrev = 1
+	for i = 2; i < c; i++ {
+		temp = fibo
+		fibo += fiboPrev
+		fiboPrev = temp
+	}
+
+	return fibo
+}
+
+func main() {
+	tk.Randomize() // 初始化随机数
+	
+	fmt.Printf("Test 1\n")
+
+	startTime = time.Now()
+
+	result = 0.0
+
+	for i = 0; i < 10000000; i ++ {
+		result += i * i
+	}
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", result)
+
+	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+
+	fmt.Printf("Test 2\n")
+
+	startTime = time.Now()
+
+	resultInt = fibonacciFlat(100000000)
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", resultInt)
+
+	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+
+	fmt.Printf("Test 2r\n")
+
+	startTime = time.Now()
+
+	resultInt = fibonacci(20)
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", resultInt)
+
+	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+
+	fmt.Printf("Test 3\n")
+
+	startTime = time.Now()
+
+	result = 0.0
+
+	for i = 0; i < 1000000; i ++ {
+		result += rand.Float64()
+	}
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", result)
+
+	fmt.Printf("Duration: %v\n s", endTime.Sub(startTime))
+
+	fmt.Printf("Test 4\n")
+
+	startTime = time.Now()
+
+	result = calPi(1000000)
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", result)
+
+	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
+
+}
+
+main()
+
