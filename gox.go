@@ -1212,6 +1212,7 @@ func main() {
 
 	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
 	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
+	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 
 	for _, scriptT := range scriptsT {
 		if tk.EndsWith(scriptT, ".js") {
@@ -1242,6 +1243,12 @@ func main() {
 
 			if decryptRunCodeT != "" {
 				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+			}
+
+			if ifViewT {
+				tk.Pl("%v", fcT)
+
+				return
 			}
 
 			if jsVMG == nil {
@@ -1362,6 +1369,12 @@ func main() {
 
 			if decryptRunCodeT != "" {
 				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+			}
+
+			if ifViewT {
+				tk.Pl("%v", fcT)
+
+				return
 			}
 
 			initAnkVM()
