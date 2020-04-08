@@ -1,0 +1,7 @@
+printf("Please enter the expression: ")
+
+expression = getInput()
+
+result = eval(expression)
+
+println("result:", result)

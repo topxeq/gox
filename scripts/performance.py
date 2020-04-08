@@ -29,13 +29,13 @@ random.seed()
 
 startTime = datetime.datetime.now()
 
-# rs = calPi(1000000000)
-result = 0.0
+result = calPi(10000000)
+# result = 0.0
 
-for i in range(1000000000):
-    result += square(i)
+# for i in range(1000000000):
+#     result += square(i)
 
 endTime = datetime.datetime.now()
 
 print("Pi: ", result)
-print("耗时: ", endTime - startTime)
+print("Duration: ", endTime - startTime)

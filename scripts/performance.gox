@@ -49,61 +49,61 @@ func fibonacciFlat(c) {
 func main() {
 	tk.Randomize() // 初始化随机数
 	
-	fmt.Printf("Test 1\n")
+	// fmt.Printf("Test 1\n")
 
-	startTime = time.Now()
+	// startTime = time.Now()
 
-	result = 0.0
+	// result = 0.0
 
-	for i = 0; i < 10000000; i ++ {
-		result += i * i
-	}
+	// for i = 0; i < 10000000; i ++ {
+	// 	result += i * i
+	// }
 
-	endTime = time.Now()
+	// endTime = time.Now()
 
-	fmt.Printf("Result: %v\n", result)
+	// fmt.Printf("Result: %v\n", result)
 
-	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+	// fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
 
-	fmt.Printf("Test 2\n")
+	// fmt.Printf("Test 2\n")
 
-	startTime = time.Now()
+	// startTime = time.Now()
 
-	resultInt = fibonacciFlat(100000000)
+	// resultInt = fibonacciFlat(100000000)
 
-	endTime = time.Now()
+	// endTime = time.Now()
 
-	fmt.Printf("Result: %v\n", resultInt)
+	// fmt.Printf("Result: %v\n", resultInt)
 
-	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+	// fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
 
-	fmt.Printf("Test 2r\n")
+	// fmt.Printf("Test 2r\n")
 
-	startTime = time.Now()
+	// startTime = time.Now()
 
-	resultInt = fibonacci(20)
+	// resultInt = fibonacci(20)
 
-	endTime = time.Now()
+	// endTime = time.Now()
 
-	fmt.Printf("Result: %v\n", resultInt)
+	// fmt.Printf("Result: %v\n", resultInt)
 
-	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+	// fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
 
-	fmt.Printf("Test 3\n")
+	// fmt.Printf("Test 3\n")
 
-	startTime = time.Now()
+	// startTime = time.Now()
 
-	result = 0.0
+	// result = 0.0
 
-	for i = 0; i < 1000000; i ++ {
-		result += rand.Float64()
-	}
+	// for i = 0; i < 1000000; i ++ {
+	// 	result += rand.Float64()
+	// }
 
-	endTime = time.Now()
+	// endTime = time.Now()
 
-	fmt.Printf("Result: %v\n", result)
+	// fmt.Printf("Result: %v\n", result)
 
-	fmt.Printf("Duration: %v\n s", endTime.Sub(startTime))
+	// fmt.Printf("Duration: %v\n s", endTime.Sub(startTime))
 
 	fmt.Printf("Test 4\n")
 
