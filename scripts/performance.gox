@@ -48,7 +48,132 @@ func fibonacciFlat(c) {
 
 func main() {
 	tk.Randomize() // 初始化随机数
+
+	countT = 10000000
+
+	println("\nGox Test 2")
 	
+	startTime = time.Now()
+
+	println("Count:", countT)
+
+	result = calPi(countT)
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", result)
+
+	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
+
+	println("\nJavaScript Test 2")
+	
+	startTime = time.Now()
+
+	jsStrT = `
+	function calPi(pointCount) {
+		var inCircleCount = 0
+	
+		for (var i = 0; i < pointCount; i++) {
+			var x = Math.random()
+			var y = Math.random()
+	
+			if (x*x+y*y < 1) {
+				inCircleCount++
+			}
+		}
+	
+		var Pi = (4.0 * inCircleCount) / pointCount
+	
+		return Pi
+	}
+	
+	
+	var countStrT = getVar("Count");
+	
+	var countT = 1000;
+	
+	if (!countStrT.startsWith("TXERROR:")) {
+		countT = parseInt(countStrT);
+	}
+	
+	if (countT == NaN) {
+		countT = 1000;
+	}
+	
+	println("Count:", countT);
+	
+	resultG = calPi(countT)
+		
+	`
+
+	setVar("Count", toString(countT))
+
+	result = runScript(jsStrT, "js")
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", result)
+
+	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
+
+	println("\nTengo Test 2")
+	
+	startTime = time.Now()
+
+	tgStrT = `
+	timelib := import("times")
+	fmt := import("fmt")
+	rand := import("rand")
+	text := import("text")
+
+
+	calPi := func(pointCount) {
+		inCircleCount := 0
+		
+		rand.seed(timelib.time_unix(timelib.now()))
+
+		for i := 0; i < pointCount; i++ {
+			x := rand.float()
+			y := rand.float()
+
+			if x*x+y*y < 1 {
+				inCircleCount++
+			}
+		}
+
+		Pi := (4.0 * inCircleCount) / pointCount
+
+		return Pi
+	}
+
+	countStrT := getVar("Count");
+
+	countT := 1000;
+
+	if !text.has_prefix(countStrT, "TXERROR:") {
+		countT = int(countStrT)
+	}
+
+	if (countT == undefined) {
+		countT = 1000
+	}
+
+	fmt.printf("Count: %v\n", countT);
+
+	resultG := calPi(countT)
+		
+	`
+
+	setVar("Count", toString(countT))
+
+	result = runScript(tgStrT, "tg")
+
+	endTime = time.Now()
+
+	fmt.Printf("Result: %v\n", result)
+
+	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
+
 	// fmt.Printf("Test 1\n")
 
 	// startTime = time.Now()
@@ -105,17 +230,17 @@ func main() {
 
 	// fmt.Printf("Duration: %v\n s", endTime.Sub(startTime))
 
-	fmt.Printf("Test 4\n")
+	// fmt.Printf("Test 4\n")
 
-	startTime = time.Now()
+	// startTime = time.Now()
 
-	result = calPi(1000000)
+	// result = calPi(1000000)
 
-	endTime = time.Now()
+	// endTime = time.Now()
 
-	fmt.Printf("Result: %v\n", result)
+	// fmt.Printf("Result: %v\n", result)
 
-	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
+	// fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
 
 }
 

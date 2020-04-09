@@ -1,0 +1,40 @@
+setVar("v1", "abc123")
+
+tgScript = `
+fmt := import("fmt")
+text := import("text")
+
+a := 1
+
+fmt.println(a)
+
+fmt.println(argsG)
+
+v1 := getVar("v1")
+
+fmt.println("v1:", v1)
+// fmt.println(v1["name"])
+
+if text.has_prefix(v1, "TXERROR:") {
+    fmt.println("v1 undefined!")
+}
+
+v2 := getVar("v2")
+
+fmt.println("v2:", v2)
+
+if text.has_prefix(v2, "TXERROR:") {
+    fmt.println("v2 undefined!")
+}
+
+s1 := "12aa"
+s2 := int(s1)
+
+fmt.printf("s2: %#v\n", s2)
+
+fmt.printf("s2==undefined: %#v\n", s2==undefined)
+
+resultG := ["done"]
+`
+
+println("result:", runScript(tgScript, "tg", argsG...))

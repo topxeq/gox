@@ -59,23 +59,39 @@ func fibonacciFlat(c int64) int64 {
 func main() {
 	rand.Seed(time.Now().Unix()) // 初始化随机数
 
-	fmt.Printf("Test 1\n")
+	// fmt.Printf("Test 1\n")
+
+	// startTime := time.Now()
+
+	// result := 0.0
+
+	// for i := 0.0; i < 1000000000; i = i + 1 {
+	// 	result += i * i
+	// }
+
+	// endTime := time.Now()
+
+	// fmt.Printf("Result: %v\n", result)
+
+	// fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+
+	countT := 10000000
+
+	fmt.Printf("\nGolang Test 2\n")
 
 	startTime := time.Now()
 
-	result := 0.0
-
-	for i := 0.0; i < 1000000000; i = i + 1 {
-		result += i * i
-	}
+	result := calPi(countT)
 
 	endTime := time.Now()
 
 	fmt.Printf("Result: %v\n", result)
 
-	fmt.Printf("Duration: %v\n", endTime.Sub(startTime))
+	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
 
-	fmt.Printf("Test 2\n")
+	return
+
+	fmt.Printf("Golang Test 2\n")
 
 	startTime = time.Now()
 
@@ -114,17 +130,5 @@ func main() {
 	fmt.Printf("Result: %v\n", result)
 
 	fmt.Printf("Duration: %v\n s", endTime.Sub(startTime))
-
-	fmt.Printf("Test 4\n")
-
-	startTime = time.Now()
-
-	result = calPi(100000000)
-
-	endTime = time.Now()
-
-	fmt.Printf("Result: %v\n", result)
-
-	fmt.Printf("Duration: %v s\n", endTime.Sub(startTime))
 
 }

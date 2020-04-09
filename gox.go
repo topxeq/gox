@@ -3,16 +3,20 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"io"
 	"math/rand"
 	"os"
 	"os/exec"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"fmt"
 
+	"github.com/d5/tengo/stdlib"
+	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
 	"github.com/mattn/anko/core"
 	"github.com/mattn/anko/env"
@@ -35,17 +39,87 @@ var variableG = make(map[string]interface{})
 
 var jsVMG *goja.Runtime = nil
 var ankVMG *env.Env = nil
+var tengoModulesG = stdlib.GetModuleMap(stdlib.AllModuleNames()...)
+
+var varMutexG sync.Mutex
 
 func exit() {
 	os.Exit(1)
 }
 
 func getVar(nameA string) interface{} {
-	return variableG[nameA]
+	varMutexG.Lock()
+	rs, ok := variableG[nameA]
+	varMutexG.Unlock()
+
+	if !ok {
+		tk.GenerateErrorString("no key")
+	}
+	return rs
 }
 
 func setVar(nameA string, valueA interface{}) {
+	varMutexG.Lock()
 	variableG[nameA] = valueA
+	varMutexG.Unlock()
+}
+
+func getVarTengo(objsA ...tengo.Object) (tengo.Object, error) {
+	if len(objsA) < 1 {
+		return tengo.FromInterface(tk.GenerateErrorString("not enough parameters"))
+	}
+
+	strT, ok := tengo.ToString(objsA[0])
+
+	if !ok {
+		return tengo.FromInterface(tk.GenerateErrorString("failed to convert value"))
+	}
+
+	varMutexG.Lock()
+	objT, ok := variableG[strT]
+	varMutexG.Unlock()
+
+	if !ok {
+		return tengo.FromInterface(tk.GenerateErrorString("no key"))
+	}
+
+	return tengo.FromInterface(objT)
+}
+
+func setVarTengo(nameA string, valueA interface{}) {
+	varMutexG.Lock()
+	variableG[nameA] = valueA
+	varMutexG.Unlock()
+}
+
+func times(objsA ...tengo.Object) (tengo.Object, error) {
+	lenT := len(objsA)
+
+	intListT := make([]int, lenT)
+
+	// 用一个循环将函数不定个数参数中的所有数值存入整数切片中
+	for i, v := range objsA {
+		// 调用objects.ToInt函数将objects.Object对象转换为整数
+		cT, ok := tengo.ToInt(v)
+
+		if ok {
+			intListT[i] = cT
+		}
+	}
+
+	// 进行累乘与那算
+	r := 1
+
+	for i := 0; i < lenT; i++ {
+		r = r * intListT[i]
+	}
+
+	// 输出结果值供参考
+	fmt.Printf("result: %v\n", r)
+
+	// 也作为函数返回值返回，返回前要转换为objects.Object类型
+	// objects.Int类型实现了objects.Object类型，因此可以用作返回值
+	return &tengo.Int{Value: int64(r)}, nil
 }
 
 func eval(expA string) interface{} {
@@ -134,6 +208,54 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 		}
 
 		return v
+
+	} else if modeA == "3" || modeA == "js" {
+		initJSVM()
+
+		jsVMG.Set("argsG", jsVMG.ToValue(argsA))
+
+		_, errT := jsVMG.RunString(codeA)
+		if errT != nil {
+			return tk.GenerateErrorStringF("failed to run script(%v): %v", codeA, errT)
+		}
+
+		result := jsVMG.Get("resultG")
+
+		return result
+
+	} else if modeA == "5" || modeA == "tg" {
+		scriptT := tengo.NewScript([]byte(codeA))
+
+		scriptT.SetImports(tengoModulesG)
+
+		_ = scriptT.Add("setVar", setVarTengo)
+		errT := scriptT.Add("times", times)
+		if errT != nil {
+			return tk.GenerateErrorStringF("failed to add times(%v) error: %v", "", errT)
+		}
+
+		errT = scriptT.Add("getVar", getVarTengo)
+		if errT != nil {
+			return tk.GenerateErrorStringF("failed to add getVar(%v) error: %v", "", errT)
+		}
+
+		argsG_TG := make([]interface{}, len(argsA))
+		for i, v := range argsA {
+			argsG_TG[i] = v
+		}
+
+		errT = scriptT.Add("argsG", argsG_TG)
+		if errT != nil {
+			return tk.GenerateErrorStringF("failed to add argsA(%v) error: %v", "", errT)
+		}
+
+		compiledT, errT := scriptT.RunContext(context.Background())
+		if errT != nil {
+			return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", "", errT)
+		}
+
+		result := compiledT.Get("resultG")
+		return result
 
 	} else {
 		return systemCmd("gox", append([]string{codeA}, argsA...)...)
@@ -1061,6 +1183,137 @@ func editFile(fileNameA string) {
 
 // GUI related end
 
+func initTengoVM() {
+
+}
+
+func initJSVM() {
+	if jsVMG == nil {
+		jsVMG = goja.New()
+
+		jsVMG.Set("printf", func(call goja.FunctionCall) goja.Value {
+			callArgsT := call.Arguments
+
+			argsBufT := make([]interface{}, len(callArgsT)-1)
+
+			formatA := callArgsT[0].ToString().String()
+
+			for i, v := range callArgsT {
+				if i == 0 {
+					continue
+				}
+
+				argsBufT[i-1] = v.ToString().String()
+			}
+
+			tk.Prf(formatA, argsBufT...)
+
+			return nil
+		})
+
+		jsVMG.Set("printfln", func(call goja.FunctionCall) goja.Value {
+			callArgsT := call.Arguments
+
+			argsBufT := make([]interface{}, len(callArgsT)-1)
+
+			formatA := callArgsT[0].ToString().String()
+
+			for i, v := range callArgsT {
+				if i == 0 {
+					continue
+				}
+
+				argsBufT[i-1] = v.ToString().String()
+			}
+
+			tk.Prf(formatA+"\n", argsBufT...)
+
+			return nil
+		})
+
+		jsVMG.Set("println", func(call goja.FunctionCall) goja.Value {
+			callArgsT := call.Arguments
+
+			argsBufT := make([]interface{}, len(callArgsT))
+
+			for i, v := range callArgsT {
+				argsBufT[i] = v.ToString().String()
+			}
+
+			fmt.Println(argsBufT...)
+
+			return nil
+		})
+
+		// jsVMG.Set("goGetRandomInt", func(call goja.FunctionCall) goja.Value {
+		// 	maxA := call.Argument(0).ToInteger()
+
+		// 	randomNumberT := rand.Intn(int(maxA))
+
+		// 	rs := jsVMG.ToValue(randomNumberT)
+
+		// 	return rs
+		// })
+
+		jsVMG.Set("getVar", func(call goja.FunctionCall) goja.Value {
+			nameA := call.Argument(0).ToString().String()
+
+			objT, ok := variableG[nameA]
+
+			if !ok {
+				return jsVMG.ToValue(tk.GenerateErrorString("no key"))
+			}
+
+			rs := jsVMG.ToValue(objT)
+
+			return rs
+		})
+
+		jsVMG.Set("setVar", func(call goja.FunctionCall) goja.Value {
+			nameA := call.Argument(0).ToString().String()
+
+			objT := call.Argument(1).ToString().String()
+
+			variableG[nameA] = objT
+
+			return nil
+		})
+
+		consoleStrT := `console = { log: println };
+		String.prototype.startsWith = function (s) {
+			if (s == null || s == "" || this.length == 0 || s.length > this.length)
+				return false;
+			if (this.substr(0, s.length) == s)
+				return true;
+			else
+				return false;
+			return true;
+		}
+		
+		String.prototype.endsWith = function (s) {
+			if (s == null || s == "" || this.length == 0 || s.length > this.length)
+				return false;
+			if (this.substring(this.length - s.length) == s)
+				return true;
+			else
+				return false;
+			return true;
+		}
+		
+		
+		`
+
+		_, errT := jsVMG.RunString(consoleStrT)
+		if errT != nil {
+			tk.Pl("failed to initialize JS VM: %v", errT)
+
+			return
+		}
+
+	}
+
+}
+
 func initAnkVM() {
 	if ankVMG == nil {
 		importAnkNonGUIPackages()
@@ -1107,7 +1360,7 @@ func initAnkVM() {
 }
 
 func main() {
-	var errT error
+	// var errT error
 
 	rand.Seed(time.Now().Unix())
 
@@ -1256,96 +1509,102 @@ func main() {
 				return
 			}
 
-			if jsVMG == nil {
-				jsVMG = goja.New()
+			initJSVM()
 
-				jsVMG.Set("goPrintf", func(call goja.FunctionCall) goja.Value {
-					callArgsT := call.Arguments
+			jsVMG.Set("argsG", jsVMG.ToValue(argsT))
 
-					argsBufT := make([]interface{}, len(callArgsT)-1)
-
-					formatA := callArgsT[0].ToString().String()
-
-					for i, v := range callArgsT {
-						if i == 0 {
-							continue
-						}
-
-						argsBufT[i-1] = v.ToString().String()
-					}
-
-					tk.Prf(formatA, argsBufT...)
-
-					return nil
-				})
-
-				jsVMG.Set("goPrintfln", func(call goja.FunctionCall) goja.Value {
-					callArgsT := call.Arguments
-
-					argsBufT := make([]interface{}, len(callArgsT)-1)
-
-					formatA := callArgsT[0].ToString().String()
-
-					for i, v := range callArgsT {
-						if i == 0 {
-							continue
-						}
-
-						argsBufT[i-1] = v.ToString().String()
-					}
-
-					tk.Prf(formatA+"\n", argsBufT...)
-
-					return nil
-				})
-
-				jsVMG.Set("goPrintln", func(call goja.FunctionCall) goja.Value {
-					callArgsT := call.Arguments
-
-					argsBufT := make([]interface{}, len(callArgsT))
-
-					for i, v := range callArgsT {
-						argsBufT[i] = v.ToString().String()
-					}
-
-					fmt.Println(argsBufT...)
-
-					return nil
-				})
-
-				jsVMG.Set("goGetRandomInt", func(call goja.FunctionCall) goja.Value {
-					maxA := call.Argument(0).ToInteger()
-
-					randomNumberT := rand.Intn(int(maxA))
-
-					rs := jsVMG.ToValue(randomNumberT)
-
-					return rs
-				})
-
-				consoleStrT := `console = { log: goPrintln };`
-
-				_, errT = jsVMG.RunString(consoleStrT)
-				if errT != nil {
-					tk.Pl("failed to run script(%v): %v", scriptT, errT)
-
-					continue
-				}
-
-			}
-
-			v, errT := jsVMG.RunString(fcT)
+			_, errT := jsVMG.RunString(fcT)
 			if errT != nil {
 				tk.Pl("failed to run script(%v): %v", scriptT, errT)
 
 				continue
 			}
 
-			variableG["Out"] = v.Export()
+			result := jsVMG.Get("resultG")
 
-			// tk.Pl("%#v", rs)
+			if result != nil {
+				tk.Pl("%#v", result)
+			}
 
 			return
+		} else if tk.EndsWith(scriptT, ".tg") || tk.EndsWith(scriptT, ".tengo") {
+			var fcT string
+
+			if ifExampleT {
+				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
+			} else if ifRemoteT {
+				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+			} else {
+				fcT = tk.LoadStringFromFile(scriptT)
+			}
+
+			if tk.IsErrorString(fcT) {
+				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+
+				continue
+			}
+
+			if tk.StartsWith(fcT, "//TXDEF#") {
+				if decryptRunCodeT == "" {
+					tk.Prf("Password: ")
+					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+					// fcT = fcT[8:]
+				}
+			}
+
+			if decryptRunCodeT != "" {
+				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+			}
+
+			if ifViewT {
+				tk.Pl("%v", fcT)
+
+				return
+			}
+
+			initTengoVM()
+
+			scriptT := tengo.NewScript([]byte(fcT))
+
+			scriptT.SetImports(tengoModulesG)
+
+			_ = scriptT.Add("setVar", setVarTengo)
+			errT := scriptT.Add("times", times)
+			if errT != nil {
+				tk.Pl("failed to add times(%v) error: %v", "", errT)
+				continue
+			}
+
+			errT = scriptT.Add("getVar", getVarTengo)
+			if errT != nil {
+				tk.Pl("failed to add getVar(%v) error: %v", "", errT)
+				continue
+			}
+
+			argsG_TG := make([]interface{}, len(argsT))
+			for i, v := range argsT {
+				argsG_TG[i] = v
+			}
+
+			errT = scriptT.Add("argsG", argsG_TG)
+			if errT != nil {
+				tk.Pl("failed to add argsA(%v) error: %v", "", errT)
+				continue
+			}
+
+			compiledT, errT := scriptT.RunContext(context.Background())
+			if errT != nil {
+				tk.Pl("failed to execute script(%v) error: %v", "", errT)
+				continue
+			}
+
+			rs := compiledT.Get("resultG")
+
+			// if errT == nil && rs != nil {
+			tk.Pl("%#v", rs)
+			// }
+
 		} else { // if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".gox") {
 			var fcT string
 

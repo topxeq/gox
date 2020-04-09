@@ -1,0 +1,42 @@
+timelib := import("times")
+fmt := import("fmt")
+rand := import("rand")
+text := import("text")
+
+
+calPi := func(pointCount) {
+    inCircleCount := 0
+    
+	rand.seed(timelib.time_unix(timelib.now()))
+
+	for i := 0; i < pointCount; i++ {
+		x := rand.float()
+		y := rand.float()
+
+		if x*x+y*y < 1 {
+			inCircleCount++
+		}
+	}
+
+	Pi := (4.0 * inCircleCount) / pointCount
+
+	return Pi
+}
+
+countStrT := getVar("Count");
+
+countT := 1000;
+
+if !text.has_prefix(countStrT, "TXERROR:") {
+    countT = int(countStrT)
+}
+
+if (countT == undefined) {
+	countT = 1000;
+}
+
+fmt.println("Count:", countT);
+
+resultG := calPi(countT)
+
+
