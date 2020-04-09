@@ -3,7 +3,7 @@
 _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起。_
 
 # gox
-Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko, ..., and the Gox language syntax is very similar to Golang.
+Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko and Tengo. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
@@ -44,7 +44,7 @@ Currently Only ECMAScript 5.1(+) is supported for Javascript.
 the result should be like below,
 
 ```
-> gox -m basic.gox test.js
+> gox -m basic.gox test.js a.tg
 3.4000000000000004
 this is 5 + 12.5 = 17.5
 5 12.5 17.5
@@ -58,7 +58,7 @@ Attention: in multi-scripts mode, all the command-line parameters will be recogn
 gox -m basic.gox test.js -para=abcd
 ```
 
-And all the switches in Gox should be like "-type=code", not "-type code".
+And all the switches in Gox should be like "-type=code", not "-type code". The globle variables across VMs could be shared to other scripts in this mode.
 
 ### Start the interpreter in REPL mode.
 
