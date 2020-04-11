@@ -1,0 +1,210 @@
+// Assign value to variables
+
+var a = 1
+
+printfln("[%T] %v", a, a)
+
+b = 1
+
+printfln("[%T] %v", b, b)
+
+a = "abc"
+
+printfln("[%T] %v", a, a)
+
+// var to define local variables
+
+a = 1
+func() {
+	a = 2
+}()
+println(a)
+
+var a = 1
+func() {
+	a = 2
+}()
+println(a)
+
+a = 1
+func() {
+	var a = 2
+}()
+println(a)
+
+var a = 1
+func() {
+	var a = 2
+}()
+println(a)
+
+// Boolean
+
+b = true
+
+printf("[%T] %v\n", b, b)
+
+c = false
+
+printf("[%T] %v\n", c, c)
+
+printf("!b = %v\n", !b)
+
+printf("b == c: %v\n", b == c)
+
+printf("1 > 14: %v\n", 1 > 14)
+
+printf("b == true: %v\n", b == true)
+
+printf("b && c: %v\n", b && c)
+
+printf("b || c: %v\n", b || c)
+
+// Integer
+
+c1 = 19
+
+c2 = 18
+
+println(c1 + c2/3)
+
+printfln("%T", c1)
+
+printfln("%T", c1+c2)
+printfln("%T", c2/3)
+printfln("%T", c1+c2/3)
+printfln("%T", (c1+c2/3)*6)
+
+// Float
+
+f1 = 1.32
+
+previus_f1 = f1
+
+f1 = f1 * 0.8
+
+print(previus_f1, "*", 0.8, "=", f1)
+println()
+
+f2 = 0.99
+f2 /= 0.3
+
+print(0.99, "/", 0.3, "=", f2, "\n")
+
+// String
+
+s1 = "abc"
+
+s2 = s1 * 3
+
+pv("s2")
+
+println(s1, "*", 3, "=", s2)
+
+s3 = s2 / 3
+printfln("s3: %v", s3)
+
+s4 = "0.99"
+s4 += 0.3
+
+printfln("s4: %v", s4)
+
+s5 = "上善若水"
+
+pv("s5")
+
+s6 = toByteSlice(s5)
+
+println(s6)
+
+s7 = toRuneSlice("上善若水")
+
+pv("s7")
+
+pl("s5[1:2] = %#v", s5[1:2])
+
+pl("s6[1:2] = %#v", s6[1:2])
+
+pl("s7[1:2] = %#v", s7[1:2])
+
+pl("toString(s7[1:3]) = %#v", toString(s7[1:3]))
+
+pl("toString(toByteSlice(s7[1:3])) = %#v", toString(toByteSlice(s7[1:3])))
+
+pl("toStringFromRuneSlice(s7[1:3]) = %#v", toStringFromRuneSlice(s7[1:3]))
+
+pl("%c", s7[1])
+
+for i = 0; i < len(s5); i++ {
+	pl("%v: %v", i, s5[i])
+}
+
+for v in s7 {
+	pl("%#T, %v", toChar(v), toChar(v))
+}
+
+// nil type
+
+pv("a")
+
+println(defined("a"))
+
+a = 18
+
+pv("a")
+
+println(defined("a"))
+
+b = nil
+
+pv("b")
+
+println(defined("b"))
+
+tk = import("tk")
+
+c, errT = tk.StrToInt("12ab")
+
+if errT != nil {
+	println("Error:", errT.Error())
+}
+
+pv("c")
+
+pv("errT")
+
+c, errT = tk.StrToInt("123")
+
+pv("c")
+
+pv("errT")
+
+if errT != nil {
+	println("Error:", errT.Error())
+}
+
+// Conversion
+
+a = 1
+b = 2
+
+println("type of a is:", typeof(a))
+
+println("a + b =", a+b)
+printfln("a + b = %#v", a+b)
+
+a1 = toString(a)
+b1 = toString(b)
+
+printfln("type of a1 is: %T", a1)
+printfln("value of a1 is: %v", a1)
+printfln("internal value of a1 is: %#v", a1)
+
+println("a1 + b1 =", a1+b1)
+printfln("a1 + b1 = %#v", a1+b1)
+
+a2 = toFloat(a1)
+b2 = toFloat(b1)
+
+printfln("a2 + b2 = %#v", a2+b2)
+printfln("type of a2 + b2 is: %T", a2+b2)

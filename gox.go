@@ -15,6 +15,7 @@ import (
 
 	"fmt"
 
+	"github.com/atotto/clipboard"
 	"github.com/d5/tengo/stdlib"
 	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
@@ -92,6 +93,19 @@ func setVarTengo(nameA string, valueA interface{}) {
 	varMutexG.Unlock()
 }
 
+func getClipText() string {
+	textT, errT := clipboard.ReadAll()
+	if errT != nil {
+		return tk.GenerateErrorStringF("could not get text from clipboard: %v", errT.Error())
+	}
+
+	return textT
+}
+
+func setClipText(textA string) {
+	clipboard.WriteAll(textA)
+}
+
 func times(objsA ...tengo.Object) (tengo.Object, error) {
 	lenT := len(objsA)
 
@@ -131,6 +145,76 @@ func eval(expA string) interface{} {
 	return v
 }
 
+// func printValue(nameA string) {
+// 	if ankVMG == nil {
+// 		return
+// 	}
+
+// 	v, errT := ankVMG.Get(nameA)
+
+// 	if errT != nil {
+// 		tk.Pl("%v(%T): %v", nameA, errT, errT)
+// 		return
+// 	}
+
+// 	tk.Pl("%v(%T): %v", nameA, v, v)
+
+// }
+
+func toStringFromRuneSlice(sliceA []rune) string {
+	return string(sliceA)
+}
+
+func initAnkoVMInstance(vmA *env.Env) {
+	if vmA == nil {
+		return
+	}
+
+	vmA.Define("printfln", tk.Pl)
+	vmA.Define("pl", tk.Pl)
+
+	printValue := func(nameA string) {
+
+		v, errT := vmA.Get(nameA)
+
+		if errT != nil {
+			tk.Pl("%v(%T): %v", nameA, errT, errT)
+			return
+		}
+
+		tk.Pl("%v(%T): %v", nameA, v, v)
+
+	}
+
+	vmA.Define("pv", printValue)
+
+	vmA.Define("getInput", tk.GetInputBufferedScan)
+
+	vmA.Define("exit", exit)
+
+	vmA.Define("toStringFromRuneSlice", toStringFromRuneSlice)
+
+	vmA.Define("eval", eval)
+	vmA.Define("runScript", runScript)
+	vmA.Define("systemCmd", systemCmd)
+	vmA.Define("typeof", typeOfValue)
+
+	vmA.Define("setVar", setVar)
+	vmA.Define("getVar", getVar)
+
+	vmA.Define("setClipText", setClipText)
+	vmA.Define("getClipText", getClipText)
+
+	// GUI related start
+
+	vmA.Define("edit", editFile)
+
+	// GUI related end
+
+	core.Import(vmA)
+
+}
+
 func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 	if modeA == "" || modeA == "1" || modeA == "new" {
@@ -138,28 +222,9 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 		vmT = env.NewEnv()
 
-		vmT.Define("print", fmt.Print)
-		vmT.Define("println", fmt.Println)
-		vmT.Define("printf", fmt.Printf)
-		vmT.Define("pl", fmt.Println)
-		vmT.Define("printfln", tk.Pl)
-		vmT.Define("pfl", tk.Pl)
-
-		vmT.Define("getInput", tk.GetInputBufferedScan)
-
-		vmT.Define("exit", exit)
-
-		vmT.Define("eval", eval)
-		vmT.Define("runScript", runScript)
-		vmT.Define("systemCmd", systemCmd)
-		vmT.Define("typeof", typeOfValue)
-
-		vmT.Define("setVar", setVar)
-		vmT.Define("getVar", getVar)
+		initAnkoVMInstance(vmT)
 
 		vmT.Define("argsG", argsA)
-
-		core.Import(vmT)
 
 		v, errT := vm.Execute(vmT, nil, codeA)
 		if errT != nil {
@@ -800,14 +865,14 @@ func importAnkGUIPackages() {
 
 		"EditFile":   reflect.ValueOf(editFile),
 		"LoopWindow": reflect.ValueOf(loopWindow),
+
+		"LayoutP": reflect.ValueOf(g.Layout{}),
 	}
 
 	var widget g.Widget
-	var layout g.Layout
 
 	env.PackageTypes["gui"] = map[string]reflect.Type{
-		"Layout":  reflect.TypeOf(g.Layout{}),
-		"LayoutS": reflect.TypeOf(&layout),
+		"Layout": reflect.TypeOf(g.Layout{}),
 		// "Signal": reflect.TypeOf(&signal).Elem(),
 		"Widget": reflect.TypeOf(&widget).Elem(),
 	}
@@ -1326,34 +1391,9 @@ func initAnkVM() {
 
 		ankVMG = env.NewEnv()
 
-		ankVMG.Define("print", fmt.Print)
-		ankVMG.Define("println", fmt.Println)
-		ankVMG.Define("printf", fmt.Printf)
-		ankVMG.Define("pl", fmt.Println)
-		ankVMG.Define("printfln", tk.Pl)
-		ankVMG.Define("pfl", tk.Pl)
-
-		ankVMG.Define("getInput", tk.GetInputBufferedScan)
-
-		ankVMG.Define("exit", exit)
-
-		ankVMG.Define("eval", eval)
-		ankVMG.Define("runScript", runScript)
-		ankVMG.Define("systemCmd", systemCmd)
-		ankVMG.Define("typeof", typeOfValue)
-
-		ankVMG.Define("setVar", setVar)
-		ankVMG.Define("getVar", getVar)
+		initAnkoVMInstance(ankVMG)
 
 		ankVMG.Define("argsG", os.Args[1:])
-
-		// GUI related start
-
-		ankVMG.Define("edit", editFile)
-
-		// GUI related end
-
-		core.Import(ankVMG)
 
 	}
 

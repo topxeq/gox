@@ -1,0 +1,8 @@
+s = "abcd"
+
+c = s[1]
+
+c1 = toChar(s[1])
+
+pv("c")
+pv("c1")

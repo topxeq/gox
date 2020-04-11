@@ -1,6 +1,6 @@
 ![Gox](https://github.com/topxeq/gox/blob/master/docs/goxlogo2xs.jpg)
 
-_Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起。_
+_Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起，或者[这里](https://www.jianshu.com/nb/44919205)看更多的开发指南。_
 
 # gox
 Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko and Tengo. The syntax of Gox language is very similar to Golang.
@@ -402,6 +402,12 @@ set global variable
 
 ---
 
+#### defined
+
+check if a variable is defined
+
+---
+
 
 #### print
 
@@ -416,16 +422,31 @@ the same as fmt.Printf
 ---
 
 
-#### println/pl
+#### println
 
 the same as fmt.Println
 
 ---
 
 
-#### printfln/pfl
+#### printfln/pl
 
 the same as fmt.Printf but add a new-line character at the end
+
+---
+
+#### pv
+
+output the name, type, value of a variable, attention: the function parameter should be a string
+
+```
+s2 = "abcabcabc"
+
+pv("s2")
+
+// the output ->
+// s2(string): abcabcabc
+```
 
 ---
 
@@ -466,6 +487,17 @@ println(typeof(a))
 
 ---
 
+#### keys
+
+get the keys of a map
+
+---
+
+#### range
+
+range a int64 array
+
+---
 
 #### exit
 
