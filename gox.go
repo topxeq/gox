@@ -145,6 +145,30 @@ func eval(expA string) interface{} {
 	return v
 }
 
+func remove(aryA []interface{}, startA int, endA int) []interface{} {
+	if startA < 0 || startA >= len(aryA) {
+		tk.Pl("Runtime error: %v", "index out of range")
+		exit()
+	}
+
+	if endA < 0 || endA >= len(aryA) {
+		tk.Pl("Runtime error: %v", "index out of range")
+		exit()
+	}
+
+	return append(aryA[:startA], aryA[endA+1:]...)
+	// if idxT == 0 {
+	// 	return ayrA[idxT + 1:]
+	// }
+
+	// if idxT == len(aryA) - 1 {
+	// 	return ayrA[0:len(aryA) - 1]
+	// }
+
+	// return append(aryA[:idxA], aryA[idxA+1:]...)
+
+}
+
 // func printValue(nameA string) {
 // 	if ankVMG == nil {
 // 		return
@@ -193,6 +217,7 @@ func initAnkoVMInstance(vmA *env.Env) {
 	vmA.Define("exit", exit)
 
 	vmA.Define("toStringFromRuneSlice", toStringFromRuneSlice)
+	vmA.Define("remove", remove)
 
 	vmA.Define("eval", eval)
 	vmA.Define("runScript", runScript)

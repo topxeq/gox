@@ -43,3 +43,15 @@ println("c:", c)
 
 _, ok = c["b"]
 println(ok)
+
+println("---")
+
+for k in keys(a) {
+  println("[", k, "]:", a[k])
+}
+
+println("---")
+
+for k, v in a {
+	pl("[%v] %v", k, v)
+}

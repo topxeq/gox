@@ -1,0 +1,66 @@
+a = [1, 2, 3, "abc", 12.3]
+
+println(a)
+
+println(a[2])
+
+println(len(a))
+
+a = []interface {1, 2}
+
+a += "abc"
+a = a + "xyz"
+
+pv("a")
+
+a[0]++
+
+a[1] = [3.2, 16]
+
+// a[5] = "5th"  // will index out of range
+
+a[4] = 1000
+
+a[len(a)] = "last"
+
+pv("a")
+
+pl("a[1][1] = %v", a[1][1])
+
+b = [19, 19]
+
+pl("a + b = %v", a + b)
+
+c = [a] + [b] + b
+
+pv("c")
+
+d = a[3:5]
+
+pv("d")
+
+e = remove(a, 1, 3)
+
+pv("e")
+
+f = make([][]bool)
+
+f[0] = []
+f[0][0] = false
+f[0][1] = true
+
+pv("f")
+
+g = []float64{1.2, 3, 56}
+
+pv("g")
+
+i = 0
+for v in c {
+	pl("i: %v, v: %v", i, v)
+	i ++
+}
+
+for i = 0; i < len(c); i ++ {
+	pl("i: %v, v: %v", i, c[i])
+}
