@@ -24,12 +24,18 @@ import (
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
+
+	// GUI related start
 	"github.com/sqweek/dialog"
+	// GUI related end
+
 	"github.com/topxeq/tk"
 
+	// GUI related start
 	"github.com/AllenDang/giu"
 	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
+	// GUI related end
 )
 
 // Non GUI related
@@ -669,6 +675,8 @@ func importAnkNonGUIPackages() {
 		"GetAllSwitches":                      reflect.ValueOf(tk.GetAllSwitches),
 		"ToLower":                             reflect.ValueOf(tk.ToLower),
 		"ToUpper":                             reflect.ValueOf(tk.ToUpper),
+		"GetEnv":                              reflect.ValueOf(tk.GetEnv),
+		"JoinPath":                            reflect.ValueOf(tk.JoinPath),
 	}
 
 }
