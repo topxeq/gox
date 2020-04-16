@@ -1,0 +1,43 @@
+lcl = import("lcl")
+
+pl("a")
+
+lcl.InitLcl()
+
+pl("b")
+
+application = lcl.GetApplication()
+
+pl("%#v", application)
+
+application.Initialize()
+
+pl("c")
+
+application.SetTitle("Hello World! ")
+application.SetMainFormOnTaskBar(true)
+
+mainForm = application.CreateForm()
+
+pv("mainForm")
+
+mainForm.SetWidth(800)
+mainForm.SetHeight(600)
+
+mainForm.SetOnDestroy(func(sender) {
+	println("Form Destroy.")
+})
+
+
+chk = lcl.NewCheckBox(mainForm)
+chk.SetParent(mainForm)
+chk.SetChecked(true)
+chk.SetCaption("测试")
+chk.SetLeft(1)
+chk.SetTop(60)
+// chk.SetOnClick(func(vcl.IObject) {
+// 	fmt.Println("chk.Checked=", chk.Checked())
+// })
+
+application.Run()
+

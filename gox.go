@@ -35,6 +35,10 @@ import (
 	"github.com/AllenDang/giu"
 	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
+
+	"github.com/ying32/govcl/vcl"
+	"github.com/ying32/govcl/vcl/api"
+	"github.com/ying32/govcl/vcl/rtl"
 	// GUI related end
 )
 
@@ -823,6 +827,26 @@ func loadFont() {
 	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
 }
 
+func initVcl() {
+	api.DoLibInit()
+
+	api.DoResInit()
+
+	api.DoImportInit()
+
+	api.DoDefInit()
+
+	api.DoStyleInit()
+
+	rtl.DoRtlInit()
+
+	vcl.DoInit()
+}
+
+func getVclApplication() *vcl.TApplication {
+	return vcl.Application
+}
+
 func importAnkGUIPackages() {
 	env.Packages["gui"] = map[string]reflect.Value{
 		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
@@ -900,6 +924,20 @@ func importAnkGUIPackages() {
 		"LoopWindow": reflect.ValueOf(loopWindow),
 
 		"LayoutP": reflect.ValueOf(g.Layout{}),
+	}
+
+	env.Packages["lcl"] = map[string]reflect.Value{
+		"GetApplication": reflect.ValueOf(getVclApplication),
+		"NewCheckBox":    reflect.ValueOf(vcl.NewCheckBox),
+		"InitVcl":        reflect.ValueOf(initVcl),
+		"InitLcl":        reflect.ValueOf(initVcl),
+	}
+
+	env.Packages["vcl"] = map[string]reflect.Value{
+		"GetApplication": reflect.ValueOf(getVclApplication),
+		"NewCheckBox":    reflect.ValueOf(vcl.NewCheckBox),
+		"InitVcl":        reflect.ValueOf(initVcl),
+		"InitLcl":        reflect.ValueOf(initVcl),
 	}
 
 	var widget g.Widget

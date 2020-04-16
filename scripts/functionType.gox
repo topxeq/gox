@@ -1,0 +1,38 @@
+myAdd = func(a, b) {
+	return a + b + b
+}
+
+c = myAdd(3, 5)
+
+println(c)
+
+tk = import("tk")
+
+upperPrintln = func(s ...) {
+	for v in s {
+		print(tk.ToUpper(v))
+	}
+
+	println()
+}
+
+upperPrintln("a", "bcd", 123)
+
+sum = func (n...) {
+	t = 0
+	for a in n {
+		t += a
+	}
+	return t
+}
+
+println(sum(1, 2, 3, 1.8))
+
+println2 = func(s ...) {
+	println(s...)
+	println()
+}
+
+println2(1, "abc", 2.6, true)
+
+println2(myAdd(2.9 ,7.1))
