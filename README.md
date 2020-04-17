@@ -274,7 +274,7 @@ type of a2 + b2 is: float64
 
 These "to" function include:
 
-> toString/toStringSlice, toBool(and tryToBool which returns the result like (bool, error))/toBoolSlice, toFloat64/tryToFloat64/toFloat/toFloatSlice, toInt64/tryToInt64, toInt/tryToInt/toIntSlice, toRune/toRuneSlice, toByteSlice, toChar, toDuration
+> toString/toStringSlice, toStringFromRuneSlice, toBool(and tryToBool which returns the result like (bool, error))/toBoolSlice, toFloat64/tryToFloat64/toFloat/toFloatSlice, toInt64/tryToInt64, toInt/tryToInt/toIntSlice, toRune/toRuneSlice, toByteSlice, toChar, toDuration
 
 ## 4. More Topics and Sample Scripts
 
@@ -437,7 +437,7 @@ the same as fmt.Printf but add a new-line character at the end
 
 #### pv
 
-output the name, type, value of a variable, attention: the function parameter should be a string
+output the name, type, value of a variable, attention: the parameter passed to this function should be a string, and only the global varibles are allowed.
 
 ```
 s2 = "abcabcabc"
@@ -499,12 +499,111 @@ range a int64 array
 
 ---
 
+#### remove
+
+remove one or several items from an array
+
+```
+remove(arrayA, startIndexA, endIndexA)
+```
+
+---
+
 #### exit
 
 the same as os.Exit(1), used to terminate\exit the whole script running
 
 ---
 
+#### deepClone
+
+deep copy a struct variable and generate a new one
+
+usage: 
+
+```
+person1 = make(struct {
+	Name string,
+	Age int
+})
+
+person1.Name = "John"
+person1.Age = 20
+
+pl("%#v", person1)
+
+person2 = person1
+
+person2.Name ="Tom"
+
+pv("person1")
+pv("person2")
+
+p3 = deepClone(&person1)
+p3 = *p3
+p3.Name = "abc"
+pv("person1")
+pv("person2")
+pv("p3")
+```
+
+---
+
+#### deepCopy
+
+deep copy a struct variable to another one
+
+---
+
+#### getClipText
+
+get clipboard text
+
+---
+
+#### setClipText
+
+set clipboard text
+
+---
+
+#### runScript
+
+runScript(scriptA, modeA, argsA ...)
+
+```
+modeA == "" || modeA == "1" || modeA == "new" 
+```
+
+run Gox script in a new VM
+
+```
+modeA == "2" || modeA == "current"
+```
+
+run Gox script in a current VM
+
+```
+modeA == "3" || modeA == "js"
+```
+
+run JavaScript
+
+```
+modeA == "5" || modeA == "tg"
+```
+
+run Tengo script
+
+---
+
+#### systemCmd
+
+run a system command
+
+```
+systemCmd(cmdA, argsA ...)
+```
 
 #### edit
 

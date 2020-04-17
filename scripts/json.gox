@@ -1,0 +1,37 @@
+json = import("encoding/json")
+
+jsonStrT = `{"name": "Peter", "age": 19, "father": {"name": "Jordan", "age": 56}}`
+println(jsonStrT)
+
+outT = {}
+
+errT = json.Unmarshal(toByteSlice(jsonStrT), &outT)
+
+if errT != nil {
+	println("invald JSON:", errT)
+	return
+}
+
+println("result:", outT)
+
+println("name:", outT.name)
+println("age:", outT.age)
+println("father:", outT.father)
+
+println("---")
+
+tk = import("tk")
+
+outT, errT = tk.JSONToObjectE(jsonStrT)
+
+if errT != nil {
+	println("invald JSON:", errT)
+	return
+}
+
+println("result:", outT)
+
+println("name:", outT.name)
+println("age:", outT.age)
+println("father:", outT.father)
+

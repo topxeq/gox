@@ -1,0 +1,76 @@
+module rectangle {
+	_length = 1
+	_width = 1
+
+	func setLength (length) {
+		if length <= 0 {
+			return
+		}
+		_length = length
+	}
+
+	func setWidth (width) {
+		if width <= 0 {
+			return
+		}
+		_width = width
+	}
+
+	func area () {
+		return _length * _width
+	}
+
+	func perimeter () {
+		return 2 * (_length + _width)
+	}
+ }
+
+rectangle1 = rectangle
+
+rectangle1.setLength(4)
+rectangle1.setWidth(5)
+
+println(rectangle1.area())
+println(rectangle1.perimeter())
+
+rectangle2 = rectangle
+
+rectangle2.setLength(2)
+rectangle2.setWidth(4)
+
+println(rectangle2.area())
+println(rectangle2.perimeter())
+
+println(rectangle1.area())
+println(rectangle1.perimeter())
+println("---")
+
+module person1 {
+	nameM = ""
+	ageM = 0
+
+	func getName() {
+		return nameM
+	}
+
+	func setName(nameA) {
+		nameM = nameA
+	}
+
+}
+
+var p2 = person1
+p2.setName("Jerry")
+println(p2.getName())
+println(p2.nameM)
+println("---")
+
+p5 = person1
+p5.setName("Lisa")
+println(p5.getName())
+println(p5.nameM)
+println("---")
+
+println(p2.getName())
+println(p2.nameM)
+

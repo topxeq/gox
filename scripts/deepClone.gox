@@ -1,0 +1,17 @@
+person1 = make(struct {
+	Name string,
+	Age int
+})
+
+person1.Name = "John"
+person1.Age = 20
+
+pl("%#v", person1)
+
+p = deepClone(&person1)
+person2 = *p
+person2.Name = "abc"
+person2.Age = 19
+
+pv("person1")
+pv("person2")

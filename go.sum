@@ -8,6 +8,8 @@ github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf h1:FPsprx82rdrX2j
 github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf/go.mod h1:peYoMncQljjNS6tZwI9WVyQB3qZS6u79/N3mBOcnd3I=
 github.com/atotto/clipboard v0.1.2 h1:YZCtFu5Ie8qX2VmVTBnrqLSiU9XOWwqNRmdT3gIQzbY=
 github.com/atotto/clipboard v0.1.2/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
+github.com/chen-chao/transcribe v0.0.0-20200103103926-f1b8419241ed h1:S+FkPshS5o+gdOKzKSd8YMNvPVw7ORleyH+XC73qTOw=
+github.com/chen-chao/transcribe v0.0.0-20200103103926-f1b8419241ed/go.mod h1:sp0mVzS3nZxN2QzifSyUksH8LeEFt959I15PbBH3mEc=
 github.com/d5/tengo v1.24.8 h1:PRJ+NWt7ae/9sSbIfThOBTkPSvNV+dwYoBAvwfNgNJY=
 github.com/d5/tengo v1.24.8/go.mod h1:VhLq8Q2QFhCIJO3NhvM934qOThykMqJi9y9Siqd1ocQ=
 github.com/d5/tengo/v2 v2.1.2 h1:JR5O6qJW2GW9lpv/MfEqK16a/Wpp2y8I0JZZ5fqNOL0=
@@ -33,6 +35,8 @@ github.com/mattn/anko v0.1.6/go.mod h1:C5D2zw4NIv/sB2SrQ3qs5wqPw0wKiA2GZqexy4ctN
 github.com/mattn/go-gtk v0.0.0-20180216084204-5a311a1830ab/go.mod h1:PwzwfeB5syFHXORC3MtPylVcjIoTDT/9cvkKpEndGVI=
 github.com/mattn/go-pointer v0.0.0-20171114154726-1d30dc4b6f28/go.mod h1:2zXcozF6qYGgmsG+SeTZz3oAbFLdD3OWqnUbNvJZAlc=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/qdm12/reprint v0.0.0-20200326205758-722754a53494 h1:wSmWgpuccqS2IOfmYrbRiUgv+g37W5suLLLxwwniTSc=
+github.com/qdm12/reprint v0.0.0-20200326205758-722754a53494/go.mod h1:yipyliwI08eQ6XwDm1fEwKPdF/xdbkiHtrU+1Hg+vc4=
 github.com/skelterjohn/go.wde v0.0.0-20180104102407-a0324cbf3ffe/go.mod h1:zXxNsJHeUYIqpg890APBNEn9GoCbA4Cdnvuv3mx4fBk=
 github.com/sqweek/dialog v0.0.0-20200304031853-0dcd55bfe06a h1:BHv3lo0aZg2IPfeBfgYFjq48DoKehP+JC9dtACUEmT4=
 github.com/sqweek/dialog v0.0.0-20200304031853-0dcd55bfe06a/go.mod h1:QSrNdZLZB8VoFPGlZ2vDuA2oNaVdhld3g0PZLc7soX8=

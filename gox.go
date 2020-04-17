@@ -44,7 +44,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.9a"
+var versionG = "0.91a"
 
 var variableG = make(map[string]interface{})
 
@@ -240,6 +240,15 @@ func initAnkoVMInstance(vmA *env.Env) {
 	vmA.Define("setClipText", setClipText)
 	vmA.Define("getClipText", getClipText)
 
+	vmA.Define("deepCopy", tk.DeepCopyFromTo)
+	vmA.Define("deepClone", tk.DeepClone)
+
+	// vmA.Define("deepCopy", deepCopyEnv)
+	// vmA.Define("deepCopyX", deepCopyX)
+	// vmA.Define("deepCopyX2", deepCopyX2)
+	// vmA.Define("deepCopyX3", deepCopyX3)
+	// vmA.Define("deepCopyX5", deepCopyX5)
+
 	// GUI related start
 
 	vmA.Define("edit", editFile)
@@ -382,6 +391,63 @@ func systemCmd(cmdA string, argsA ...string) string {
 func typeOfValue(vA interface{}) string {
 	return fmt.Sprintf("%T", vA)
 }
+
+// func deepCopyX(a interface{}) interface{} {
+// 	tk.Pl("----> %#v", a)
+
+// 	rs := transcribe.Transcribe(a)
+
+// 	tk.Pl("----> %#v", rs)
+
+// 	return rs
+// }
+
+// func deepCopyX2(a interface{}) interface{} {
+
+// 	// var rs interface{}
+
+// 	tk.Pl("----> %#v", a)
+
+// 	out := reprint.This(a)
+
+// 	tk.Pl("----> %#v", out)
+
+// 	return &out
+
+// 	// reprint.FromTo(&a, &rs)
+
+// 	// tk.Pl("----> %#v", rs)
+
+// 	// return &rs
+// }
+
+// func deepCopyX3(a interface{}, b *interface{}) interface{} {
+
+// 	tk.Pl("----> %#v", a)
+
+// 	reprint.FromTo(&a, b)
+
+// 	tk.Pl("----> %#v", *b)
+
+// 	return b
+// }
+
+// func deepCopyX5(a *interface{}) interface{} {
+// 	tk.Pl("----> %#v", a)
+
+// 	out := transcribe.Transcribe(*a)
+
+// 	// s := reflect.ValueOf(&out).Elem()
+// 	// tk.Pl("----> %#v", s)
+// 	tk.Pl("----> %#v", out)
+
+// 	return &out
+// }
+
+// func deepCopyEnv(envA *env.Env) *env.Env {
+// 	envT := envA.NewEnv()
+// 	return envT.DeepCopy()
+// }
 
 func importAnkNonGUIPackages() {
 
@@ -681,6 +747,9 @@ func importAnkNonGUIPackages() {
 		"ToUpper":                             reflect.ValueOf(tk.ToUpper),
 		"GetEnv":                              reflect.ValueOf(tk.GetEnv),
 		"JoinPath":                            reflect.ValueOf(tk.JoinPath),
+		"DeepClone":                           reflect.ValueOf(tk.DeepClone),
+		"DeepCopyFromTo":                      reflect.ValueOf(tk.DeepCopyFromTo),
+		"JSONToObjectE":                       reflect.ValueOf(tk.JSONToObjectE),
 	}
 
 }
