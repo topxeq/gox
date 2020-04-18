@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"errors"
 	"fmt"
 
 	"github.com/atotto/clipboard"
@@ -24,6 +25,7 @@ import (
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
+	"strconv"
 
 	// GUI related start
 	"github.com/sqweek/dialog"
@@ -199,6 +201,46 @@ func toStringFromRuneSlice(sliceA []rune) string {
 	return string(sliceA)
 }
 
+// toInt converts all reflect.Value-s into int.
+func toInt(vA interface{}) int {
+	v := reflect.ValueOf(&vA)
+	i, _ := tryToInt(v)
+	return i
+}
+
+// tryToInt attempts to convert a value to an int.
+// If it cannot (in the case of a non-numeric string, a struct, etc.)
+// it returns 0 and an error.
+func tryToInt(v reflect.Value) (int, error) {
+	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+		v = v.Elem()
+	}
+	switch v.Kind() {
+	case reflect.Float64, reflect.Float32:
+		return int(v.Float()), nil
+	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
+		return int(v.Int()), nil
+	case reflect.Bool:
+		if v.Bool() {
+			return 1, nil
+		}
+		return 0, nil
+	case reflect.String:
+		s := v.String()
+		var i int64
+		var err error
+		if strings.HasPrefix(s, "0x") {
+			i, err = strconv.ParseInt(s, 16, 64)
+		} else {
+			i, err = strconv.ParseInt(s, 10, 64)
+		}
+		if err == nil {
+			return int(i), nil
+		}
+	}
+	return 0, errors.New("couldn't convert to integer")
+}
+
 func initAnkoVMInstance(vmA *env.Env) {
 	if vmA == nil {
 		return
@@ -242,6 +284,8 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 	vmA.Define("deepCopy", tk.DeepCopyFromTo)
 	vmA.Define("deepClone", tk.DeepClone)
+
+	vmA.Define("toExactInt", toInt)
 
 	// vmA.Define("deepCopy", deepCopyEnv)
 	// vmA.Define("deepCopyX", deepCopyX)
@@ -750,6 +794,13 @@ func importAnkNonGUIPackages() {
 		"DeepClone":                           reflect.ValueOf(tk.DeepClone),
 		"DeepCopyFromTo":                      reflect.ValueOf(tk.DeepCopyFromTo),
 		"JSONToObjectE":                       reflect.ValueOf(tk.JSONToObjectE),
+		"ToJSON":                              reflect.ValueOf(tk.ToJSON),
+		"ToJSONIndent":                        reflect.ValueOf(tk.ToJSONIndent),
+		"FromJSON":                            reflect.ValueOf(tk.FromJSON),
+		"GetJSONNode":                         reflect.ValueOf(tk.GetJSONNode),
+		"GetJSONNodeAny":                      reflect.ValueOf(tk.GetJSONNodeAny),
+		"GetJSONSubNode":                      reflect.ValueOf(tk.GetJSONSubNode),
+		"GetJSONSubNodeAny":                   reflect.ValueOf(tk.GetJSONSubNodeAny),
 	}
 
 }

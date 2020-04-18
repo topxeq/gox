@@ -1,7 +1,9 @@
+// convert JSON string to object with Golang standard library
 json = import("encoding/json")
 
-jsonStrT = `{"name": "Peter", "age": 19, "father": {"name": "Jordan", "age": 56}}`
-println(jsonStrT)
+jsonStrT = `{"name": "Peter", "age": 19, "身高": 175, "father": {"name": "Jordan 约翰", "age": 56, "身高": 172}}`
+println("jsonStrT:", jsonStrT)
+println("\n---\n")
 
 outT = {}
 
@@ -18,11 +20,12 @@ println("name:", outT.name)
 println("age:", outT.age)
 println("father:", outT.father)
 
-println("---")
+println("\n---\n")
 
+// convert JSON string to object with tk package
 tk = import("tk")
 
-outT, errT = tk.JSONToObjectE(jsonStrT)
+outT, errT = tk.FromJSON(jsonStrT)
 
 if errT != nil {
 	println("invald JSON:", errT)
@@ -34,4 +37,99 @@ println("result:", outT)
 println("name:", outT.name)
 println("age:", outT.age)
 println("father:", outT.father)
+println("\n---\n")
 
+
+// convert object to JSON string
+appleT = {
+	"Type": "apple",
+	"Color": "Red红的",
+	"Weight重量": 10,
+	"canEat": true,
+	"Ingredients" : [
+		{
+			"Name": "Protein",
+			"Amount": 0.3,
+		},
+		{
+			"Name": "Sugar糖分",
+			"Amount": 10.4,
+		}
+	]
+}
+
+pv("appleT")
+println("\n---\n")
+
+newJSONT, errT = tk.ToJSON(appleT)
+
+if errT != nil {
+	println("failed to generate JSON:", errT)
+	return
+}
+
+pl("JSON: %v", newJSONT)
+
+// get indented JSON string
+newJSONIndentT, errT = tk.ToJSONIndent(appleT)
+
+if errT != nil {
+	println("failed to generate JSON:", errT)
+	return
+}
+
+println("\n---\n")
+
+pl("Indented JSON: %v", newJSONIndentT)
+
+println("\n---\n")
+
+// get the node as various typed data
+nodeT = tk.GetJSONNode(newJSONT, "Color")
+pv("nodeT")
+
+// lower-cased key is also allowed
+
+node1T = tk.GetJSONNode(newJSONT, "canEat")
+
+println("\n---\n")
+pv("node1T")
+
+println("\n---\n")
+
+node2T = tk.GetJSONNodeAny(newJSONT, "Ingredients")
+pl("Value type: %v", node2T.ValueType())
+
+println("\n---\n")
+
+pv("node2T")
+
+subNode1T = tk.GetJSONSubNode(node2T, 0, "Name")
+
+println("\n---\n")
+
+pv("subNode1T")
+
+subNode2T = tk.GetJSONNode(newJSONT, "Ingredients", 1, "Amount")
+
+println("\n---\n")
+pv("subNode2T")
+
+subNode3T = tk.GetJSONNode(newJSONT, "Ingredients", "*")
+
+println("\n---\n")
+pv("subNode3T")
+
+subSubNodeT = tk.GetJSONSubNode(subNode3T[0], "Name")
+
+println("\n---\n")
+pv("subSubNodeT")
+
+subNode4T = tk.GetJSONNodeAny(newJSONT, "Ingredients", 3, "Name")
+
+println("\n---\n")
+pv("subNode4T")
+
+pl("Value type: %v", subNode4T.ValueType())
+
+pl("Last Error: %v", subNode4T.LastError())
