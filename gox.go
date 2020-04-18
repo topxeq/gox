@@ -287,12 +287,6 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 	vmA.Define("toExactInt", toInt)
 
-	// vmA.Define("deepCopy", deepCopyEnv)
-	// vmA.Define("deepCopyX", deepCopyX)
-	// vmA.Define("deepCopyX2", deepCopyX2)
-	// vmA.Define("deepCopyX3", deepCopyX3)
-	// vmA.Define("deepCopyX5", deepCopyX5)
-
 	// GUI related start
 
 	vmA.Define("edit", editFile)
@@ -435,63 +429,6 @@ func systemCmd(cmdA string, argsA ...string) string {
 func typeOfValue(vA interface{}) string {
 	return fmt.Sprintf("%T", vA)
 }
-
-// func deepCopyX(a interface{}) interface{} {
-// 	tk.Pl("----> %#v", a)
-
-// 	rs := transcribe.Transcribe(a)
-
-// 	tk.Pl("----> %#v", rs)
-
-// 	return rs
-// }
-
-// func deepCopyX2(a interface{}) interface{} {
-
-// 	// var rs interface{}
-
-// 	tk.Pl("----> %#v", a)
-
-// 	out := reprint.This(a)
-
-// 	tk.Pl("----> %#v", out)
-
-// 	return &out
-
-// 	// reprint.FromTo(&a, &rs)
-
-// 	// tk.Pl("----> %#v", rs)
-
-// 	// return &rs
-// }
-
-// func deepCopyX3(a interface{}, b *interface{}) interface{} {
-
-// 	tk.Pl("----> %#v", a)
-
-// 	reprint.FromTo(&a, b)
-
-// 	tk.Pl("----> %#v", *b)
-
-// 	return b
-// }
-
-// func deepCopyX5(a *interface{}) interface{} {
-// 	tk.Pl("----> %#v", a)
-
-// 	out := transcribe.Transcribe(*a)
-
-// 	// s := reflect.ValueOf(&out).Elem()
-// 	// tk.Pl("----> %#v", s)
-// 	tk.Pl("----> %#v", out)
-
-// 	return &out
-// }
-
-// func deepCopyEnv(envA *env.Env) *env.Env {
-// 	envT := envA.NewEnv()
-// 	return envT.DeepCopy()
-// }
 
 func importAnkNonGUIPackages() {
 
@@ -801,6 +738,8 @@ func importAnkNonGUIPackages() {
 		"GetJSONNodeAny":                      reflect.ValueOf(tk.GetJSONNodeAny),
 		"GetJSONSubNode":                      reflect.ValueOf(tk.GetJSONSubNode),
 		"GetJSONSubNodeAny":                   reflect.ValueOf(tk.GetJSONSubNodeAny),
+		"StartsWithBOM":                       reflect.ValueOf(tk.StartsWithBOM),
+		"RemoveBOM":                           reflect.ValueOf(tk.RemoveBOM),
 	}
 
 }
