@@ -274,7 +274,7 @@ type of a2 + b2 is: float64
 
 These "to" function include:
 
-> toString/toStringSlice, toStringFromRuneSlice, toBool(and tryToBool which returns the result like (bool, error))/toBoolSlice, toFloat64/tryToFloat64/toFloat/toFloatSlice, toInt64/tryToInt64, toInt/tryToInt/toIntSlice, toRune/toRuneSlice, toByteSlice, toChar, toDuration
+> toString/toStringSlice, toStringFromRuneSlice, toBool(and tryToBool which returns the result like (bool, error))/toBoolSlice, toFloat64/tryToFloat64/toFloat/toFloatSlice, toInt64/tryToInt64, toInt/toExactInt/tryToInt/toIntSlice, toRune/toRuneSlice, toByteSlice, toChar, toDuration
 
 ## 4. More Topics and Sample Scripts
 
