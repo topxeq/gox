@@ -886,8 +886,47 @@ func loadFont() {
 	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
 }
 
-func initVcl() {
+func initLCLLib() (result error) {
+	defer func() {
+		if r := recover(); r != nil {
+			// tk.Printfln("发生异常，错误信息：%v", r)
+
+			result = tk.Errf("发生异常，错误信息：%v", r)
+
+			return
+		}
+	}()
+
 	api.DoLibInit()
+
+	result = nil
+
+	return result
+}
+
+func initLCL() {
+
+	errT := initLCLLib()
+
+	if errT != nil {
+		tk.Pl("failed to init lib: %v, try to download the LCL lib...", errT)
+
+		applicationPathT := tk.GetApplicationPath()
+
+		rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dll", applicationPathT, "liblcl.dll", false)
+
+		if tk.IsErrorString(rs) {
+			tk.Pl("failed to download LCL file.")
+			return
+		}
+
+		errT = initLCLLib()
+
+		if errT != nil {
+			tk.Pl("failed to install lib: %v", errT)
+			return
+		}
+	}
 
 	api.DoResInit()
 
@@ -895,7 +934,7 @@ func initVcl() {
 
 	api.DoDefInit()
 
-	api.DoStyleInit()
+	// api.DoStyleInit()
 
 	rtl.DoRtlInit()
 
@@ -988,15 +1027,15 @@ func importAnkGUIPackages() {
 	env.Packages["lcl"] = map[string]reflect.Value{
 		"GetApplication": reflect.ValueOf(getVclApplication),
 		"NewCheckBox":    reflect.ValueOf(vcl.NewCheckBox),
-		"InitVcl":        reflect.ValueOf(initVcl),
-		"InitLcl":        reflect.ValueOf(initVcl),
+		"InitVCL":        reflect.ValueOf(initLCL),
+		"InitLCL":        reflect.ValueOf(initLCL),
 	}
 
 	env.Packages["vcl"] = map[string]reflect.Value{
 		"GetApplication": reflect.ValueOf(getVclApplication),
 		"NewCheckBox":    reflect.ValueOf(vcl.NewCheckBox),
-		"InitVcl":        reflect.ValueOf(initVcl),
-		"InitLcl":        reflect.ValueOf(initVcl),
+		"InitVCL":        reflect.ValueOf(initLCL),
+		"InitLCL":        reflect.ValueOf(initLCL),
 	}
 
 	var widget g.Widget
@@ -1640,6 +1679,7 @@ func main() {
 
 	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
 	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
+	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 
 	for _, scriptT := range scriptsT {
@@ -1650,6 +1690,8 @@ func main() {
 				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
 			} else if ifRemoteT {
 				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+			} else if ifCloudT {
+				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
 			} else {
 				fcT = tk.LoadStringFromFile(scriptT)
 			}
@@ -1704,6 +1746,8 @@ func main() {
 				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
 			} else if ifRemoteT {
 				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+			} else if ifCloudT {
+				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
 			} else {
 				fcT = tk.LoadStringFromFile(scriptT)
 			}
@@ -1782,6 +1826,8 @@ func main() {
 				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
 			} else if ifRemoteT {
 				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+			} else if ifCloudT {
+				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
 			} else {
 				fcT = tk.LoadStringFromFile(scriptT)
 			}

@@ -3,7 +3,7 @@
 _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起，或者[这里](https://www.jianshu.com/nb/44919205)看更多的开发指南。_
 
 # gox
-Gox is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko and Tengo. The syntax of Gox language is very similar to Golang.
+Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko and Tengo. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
@@ -371,6 +371,8 @@ It's the same for function parameters and return values.
 ## 7. Library Reference
 
 First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's and Giu's documents.
+
+Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk).
 
 However, Gox provides some convenient global variables and functions decribed as below.
 
