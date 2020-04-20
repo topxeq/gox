@@ -15,5 +15,7 @@ require (
 	github.com/qdm12/reprint v0.0.0-20200326205758-722754a53494
 	github.com/sqweek/dialog v0.0.0-20200304031853-0dcd55bfe06a
 	github.com/topxeq/tk v0.0.0-20200329124121-6b6ee5d551ea
+	github.com/ying32/dylib v0.0.0-20200305075302-6eba4f831b29 // indirect
+	github.com/ying32/govcl v1.2.10
 	golang.org/x/text v0.3.2 // indirect
 )

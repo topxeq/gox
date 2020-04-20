@@ -16,6 +16,8 @@ import (
 	"errors"
 	"fmt"
 
+	"strconv"
+
 	"github.com/atotto/clipboard"
 	"github.com/d5/tengo/stdlib"
 	"github.com/d5/tengo/v2"
@@ -25,7 +27,6 @@ import (
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
-	"strconv"
 
 	// GUI related start
 	"github.com/sqweek/dialog"
@@ -41,6 +42,7 @@ import (
 	"github.com/ying32/govcl/vcl"
 	"github.com/ying32/govcl/vcl/api"
 	"github.com/ying32/govcl/vcl/rtl"
+	"github.com/ying32/govcl/vcl/types"
 	// GUI related end
 )
 
@@ -241,6 +243,16 @@ func tryToInt(v reflect.Value) (int, error) {
 	return 0, errors.New("couldn't convert to integer")
 }
 
+func getUint64Value(v reflect.Value) uint16 {
+	tk.Pl("%x", v.Interface())
+
+	var p *uint16
+
+	p = (v.Interface().(*uint16))
+
+	return *p
+}
+
 func initAnkoVMInstance(vmA *env.Env) {
 	if vmA == nil {
 		return
@@ -248,6 +260,7 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 	vmA.Define("printfln", tk.Pl)
 	vmA.Define("pl", tk.Pl)
+	vmA.Define("plerr", tk.PlErr)
 
 	printValue := func(nameA string) {
 
@@ -263,6 +276,8 @@ func initAnkoVMInstance(vmA *env.Env) {
 	}
 
 	vmA.Define("pv", printValue)
+
+	vmA.Define("getValue", getUint64Value)
 
 	vmA.Define("getInput", tk.GetInputBufferedScan)
 
@@ -1025,17 +1040,110 @@ func importAnkGUIPackages() {
 	}
 
 	env.Packages["lcl"] = map[string]reflect.Value{
-		"GetApplication": reflect.ValueOf(getVclApplication),
-		"NewCheckBox":    reflect.ValueOf(vcl.NewCheckBox),
-		"InitVCL":        reflect.ValueOf(initLCL),
-		"InitLCL":        reflect.ValueOf(initLCL),
+		"GetApplication":    reflect.ValueOf(getVclApplication),
+		"InitVCL":           reflect.ValueOf(initLCL),
+		"InitLCL":           reflect.ValueOf(initLCL),
+		"NewCheckBox":       reflect.ValueOf(vcl.NewCheckBox),
+		"NewLabel":          reflect.ValueOf(vcl.NewLabel),
+		"NewButton":         reflect.ValueOf(vcl.NewButton),
+		"NewComboBox":       reflect.ValueOf(vcl.NewComboBox),
+		"NewEdit":           reflect.ValueOf(vcl.NewEdit),
+		"NewCanvas":         reflect.ValueOf(vcl.NewCanvas),
+		"NewImage":          reflect.ValueOf(vcl.NewImage),
+		"NewList":           reflect.ValueOf(vcl.NewList),
+		"NewListBox":        reflect.ValueOf(vcl.NewListBox),
+		"NewListView":       reflect.ValueOf(vcl.NewListView),
+		"NewListColumns":    reflect.ValueOf(vcl.NewListColumns),
+		"NewListItem":       reflect.ValueOf(vcl.NewListItem),
+		"NewListItems":      reflect.ValueOf(vcl.NewListItems),
+		"NewMainMenu":       reflect.ValueOf(vcl.NewMainMenu),
+		"NewMemo":           reflect.ValueOf(vcl.NewMemo),
+		"NewMenuItem":       reflect.ValueOf(vcl.NewMenuItem),
+		"NewMiniWebview":    reflect.ValueOf(vcl.NewMiniWebview),
+		"NewPaintBox":       reflect.ValueOf(vcl.NewPaintBox),
+		"NewPanel":          reflect.ValueOf(vcl.NewPanel),
+		"NewPicture":        reflect.ValueOf(vcl.NewPicture),
+		"NewPopupMenu":      reflect.ValueOf(vcl.NewPopupMenu),
+		"NewProgressBar":    reflect.ValueOf(vcl.NewProgressBar),
+		"NewRadioButton":    reflect.ValueOf(vcl.NewRadioButton),
+		"NewRadioGroup":     reflect.ValueOf(vcl.NewRadioGroup),
+		"NewScrollBox":      reflect.ValueOf(vcl.NewScrollBox),
+		"NewScrollBar":      reflect.ValueOf(vcl.NewScrollBar),
+		"NewSplitter":       reflect.ValueOf(vcl.NewSplitter),
+		"NewStatusBar":      reflect.ValueOf(vcl.NewStatusBar),
+		"NewStatusPanel":    reflect.ValueOf(vcl.NewStatusPanel),
+		"NewStatusPanels":   reflect.ValueOf(vcl.NewStatusPanels),
+		"NewTimer":          reflect.ValueOf(vcl.NewTimer),
+		"NewToolBar":        reflect.ValueOf(vcl.NewToolBar),
+		"NewToolButton":     reflect.ValueOf(vcl.NewToolButton),
+		"NewTrayIcon":       reflect.ValueOf(vcl.NewTrayIcon),
+		"NewStaticText":     reflect.ValueOf(vcl.NewStaticText),
+		"NewSpinEdit":       reflect.ValueOf(vcl.NewSpinEdit),
+		"NewSpeedButton":    reflect.ValueOf(vcl.NewSpeedButton),
+		"NewShape":          reflect.ValueOf(vcl.NewShape),
+		"NewScreen":         reflect.ValueOf(vcl.NewScreen),
+		"NewSaveDialog":     reflect.ValueOf(vcl.NewSaveDialog),
+		"NewReplaceDialog":  reflect.ValueOf(vcl.NewReplaceDialog),
+		"NewPngImage":       reflect.ValueOf(vcl.NewPngImage),
+		"NewPen":            reflect.ValueOf(vcl.NewPen),
+		"NewPageControl":    reflect.ValueOf(vcl.NewPageControl),
+		"NewOpenDialog":     reflect.ValueOf(vcl.NewOpenDialog),
+		"NewObject":         reflect.ValueOf(vcl.NewObject),
+		"NewMouse":          reflect.ValueOf(vcl.NewMouse),
+		"NewMaskEdit":       reflect.ValueOf(vcl.NewMaskEdit),
+		"NewLinkLabel":      reflect.ValueOf(vcl.NewLinkLabel),
+		"NewLabeledEdit":    reflect.ValueOf(vcl.NewLabeledEdit),
+		"NewJPEGImage":      reflect.ValueOf(vcl.NewJPEGImage),
+		"NewImageList":      reflect.ValueOf(vcl.NewImageList),
+		"NewImageButton":    reflect.ValueOf(vcl.NewImageButton),
+		"NewIcon":           reflect.ValueOf(vcl.NewIcon),
+		"NewGroupBox":       reflect.ValueOf(vcl.NewGroupBox),
+		"NewHeaderControl":  reflect.ValueOf(vcl.NewHeaderControl),
+		"NewHeaderSection":  reflect.ValueOf(vcl.NewHeaderSection),
+		"NewHeaderSections": reflect.ValueOf(vcl.NewHeaderSections),
+		"NewGraphic":        reflect.ValueOf(vcl.NewGraphic),
+		"NewGIFImage":       reflect.ValueOf(vcl.NewGIFImage),
+		"NewGauge":          reflect.ValueOf(vcl.NewGauge),
+		"ShowMessage":       reflect.ValueOf(vcl.ShowMessage),
+		"ShowMessageFmt":    reflect.ValueOf(vcl.ShowMessageFmt),
+		"MessageDlg":        reflect.ValueOf(vcl.MessageDlg),
+		"InputBox":          reflect.ValueOf(vcl.InputBox),
+		"InputQuery":        reflect.ValueOf(vcl.InputQuery),
+		"ThreadSync":        reflect.ValueOf(vcl.ThreadSync),
+		"NewFrame":          reflect.ValueOf(vcl.NewFrame),
+		"SelectDirectory":   reflect.ValueOf(vcl.SelectDirectory1),
+		"SelectDirectory3":  reflect.ValueOf(vcl.SelectDirectory3),
+		"NewForm":           reflect.ValueOf(vcl.NewForm),
+		"NewFontDialog":     reflect.ValueOf(vcl.NewFontDialog),
+		"NewFont":           reflect.ValueOf(vcl.NewFont),
+		"NewFlowPanel":      reflect.ValueOf(vcl.NewFlowPanel),
+		"NewFindDialog":     reflect.ValueOf(vcl.NewFindDialog),
+		"NewDrawGrid":       reflect.ValueOf(vcl.NewDrawGrid),
+		"NewDateTimePicker": reflect.ValueOf(vcl.NewDateTimePicker),
+		"NewControl":        reflect.ValueOf(vcl.NewControl),
+		"NewComboBoxEx":     reflect.ValueOf(vcl.NewComboBoxEx),
+		"NewColorListBox":   reflect.ValueOf(vcl.NewColorListBox),
+		"NewColorDialog":    reflect.ValueOf(vcl.NewColorDialog),
+		"NewColorBox":       reflect.ValueOf(vcl.NewColorBox),
+		"NewCheckListBox":   reflect.ValueOf(vcl.NewCheckListBox),
+		"NewBrush":          reflect.ValueOf(vcl.NewBrush),
+		"NewBitmap":         reflect.ValueOf(vcl.NewBitmap),
+		"NewBitBtn":         reflect.ValueOf(vcl.NewBitBtn),
+		"NewBevel":          reflect.ValueOf(vcl.NewBevel),
+		"NewApplication":    reflect.ValueOf(vcl.NewApplication),
+		"NewAction":         reflect.ValueOf(vcl.NewAction),
+		"NewActionList":     reflect.ValueOf(vcl.NewActionList),
 	}
 
-	env.Packages["vcl"] = map[string]reflect.Value{
-		"GetApplication": reflect.ValueOf(getVclApplication),
-		"NewCheckBox":    reflect.ValueOf(vcl.NewCheckBox),
-		"InitVCL":        reflect.ValueOf(initLCL),
-		"InitLCL":        reflect.ValueOf(initLCL),
+	env.Packages["lcl/types"] = map[string]reflect.Value{
+		"PoDesigned":        reflect.ValueOf(types.PoDesigned),
+		"PoDefault":         reflect.ValueOf(types.PoDefault),
+		"PoDefaultPosOnly":  reflect.ValueOf(types.PoDefaultPosOnly),
+		"PoDefaultSizeOnly": reflect.ValueOf(types.PoDefaultSizeOnly),
+		"PoScreenCenter":    reflect.ValueOf(types.PoScreenCenter),
+		"PoMainFormCenter":  reflect.ValueOf(types.PoMainFormCenter),
+		"PoOwnerFormCenter": reflect.ValueOf(types.PoOwnerFormCenter),
+		"PoWorkAreaCenter":  reflect.ValueOf(types.PoWorkAreaCenter),
 	}
 
 	var widget g.Widget
