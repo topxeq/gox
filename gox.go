@@ -38,10 +38,10 @@ import (
 	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
 
-	"github.com/ying32/govcl/vcl"
-	"github.com/ying32/govcl/vcl/api"
-	"github.com/ying32/govcl/vcl/rtl"
-	"github.com/ying32/govcl/vcl/types"
+	"github.com/topxeq/govcl/vcl"
+	"github.com/topxeq/govcl/vcl/api"
+	"github.com/topxeq/govcl/vcl/rtl"
+	"github.com/topxeq/govcl/vcl/types"
 	// GUI related end
 )
 
@@ -58,6 +58,14 @@ var tengoModulesG = stdlib.GetModuleMap(stdlib.AllModuleNames()...)
 var varMutexG sync.Mutex
 
 func exit() {
+	defer func() {
+		if r := recover(); r != nil {
+			tk.Printfln("发生异常，错误信息：%v", r)
+
+			return
+		}
+	}()
+
 	os.Exit(1)
 }
 
@@ -1132,9 +1140,10 @@ func importAnkGUIPackages() {
 		"NewApplication":    reflect.ValueOf(vcl.NewApplication),
 		"NewAction":         reflect.ValueOf(vcl.NewAction),
 		"NewActionList":     reflect.ValueOf(vcl.NewActionList),
-	}
 
-	env.Packages["lcl/types"] = map[string]reflect.Value{
+		"GetLibVersion": reflect.ValueOf(vcl.GetLibVersion),
+
+		// values
 		"PoDesigned":        reflect.ValueOf(types.PoDesigned),
 		"PoDefault":         reflect.ValueOf(types.PoDefault),
 		"PoDefaultPosOnly":  reflect.ValueOf(types.PoDefaultPosOnly),
@@ -1144,6 +1153,9 @@ func importAnkGUIPackages() {
 		"PoOwnerFormCenter": reflect.ValueOf(types.PoOwnerFormCenter),
 		"PoWorkAreaCenter":  reflect.ValueOf(types.PoWorkAreaCenter),
 	}
+
+	// env.Packages["lcl/types"] = map[string]reflect.Value{
+	// }
 
 	var widget g.Widget
 
@@ -1677,6 +1689,12 @@ func initAnkVM() {
 
 func main() {
 	// var errT error
+	defer func() {
+		err := recover()
+		if err != nil {
+			fmt.Println("Exception: ", err)
+		}
+	}()
 
 	rand.Seed(time.Now().Unix())
 
