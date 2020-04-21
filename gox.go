@@ -16,6 +16,8 @@ import (
 	"errors"
 	"fmt"
 
+	"strconv"
+
 	"github.com/atotto/clipboard"
 	"github.com/d5/tengo/stdlib"
 	"github.com/d5/tengo/v2"
@@ -25,7 +27,6 @@ import (
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
-	"strconv"
 
 	// GUI related start
 	"github.com/sqweek/dialog"
