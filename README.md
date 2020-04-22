@@ -7,9 +7,9 @@ Gox (or Goxlang) is a free, open-source script language or a interpreter written
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
-And thanks to [Giu](https://github.com/AllenDang/giu), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code.
+And thanks to [Giu](https://github.com/AllenDang/giu), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code. Note: this GUI library requires OPENGL.
 
-And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. 
+And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. Since this library doesn't require OPENGL, it's more compatible in some server-side operating systems. It only requires a single library file(dll in Windows or so in Linux and dylib in Mac OS).
 
 Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
 
@@ -309,7 +309,7 @@ println(x+y)
 
 ### Basic script with GUI
 
-A simple calculator with GUI
+A simple calculator with GUI(OPENGL is required).
 
 ```
 var gui = import("gui")
@@ -347,6 +347,8 @@ The screen shot while running the script is like,
 ![Calculator](https://github.com/topxeq/gox/blob/master/docs/calculatorss.png)
 
 ### Basic script with GUI by LCL library
+
+The script below acts almost the same as the script above, but written with LCL library support, and OPENGL is not required, so it's more compatible in the server-side environment.
 
 ```
 lcl = import("lcl")
