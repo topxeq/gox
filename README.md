@@ -7,7 +7,9 @@ Gox (or Goxlang) is a free, open-source script language or a interpreter written
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
-And thanks to [Giu](https://github.com/AllenDang/giu), which enable Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code.
+And thanks to [Giu](https://github.com/AllenDang/giu), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code.
+
+And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. 
 
 Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
 
@@ -343,6 +345,85 @@ mainWindow.Main(loop)
 The screen shot while running the script is like,
 
 ![Calculator](https://github.com/topxeq/gox/blob/master/docs/calculatorss.png)
+
+### Basic script with GUI by LCL library
+
+```
+lcl = import("lcl")
+os = import("os")
+
+errT = lcl.InitLCL()
+
+if errT != nil {
+	plerr(errT)
+	exit()
+}
+
+application = lcl.GetApplication()
+
+application.Initialize()
+
+application.SetTitle("Calculator with LCL")
+application.SetMainFormOnTaskBar(true)
+
+mainForm = application.CreateForm()
+
+mainForm.SetWidth(400)
+mainForm.SetHeight(200)
+mainForm.SetCaption("Calculator with LCL")
+mainForm.SetPosition(lcl.PoScreenCenter)
+
+mainForm.Font().SetSize(11)
+
+mainForm.SetOnDestroy(&func(sender) {
+	println("Form Destroyed.")
+})
+
+label1 = lcl.NewLabel(mainForm)
+label1.SetParent(mainForm)
+label1.SetLeft(10)
+label1.SetTop(10)
+label1.Font().SetName("Arial")
+label1.Font().SetSize(18)
+
+label1.SetCaption("Enter an expression")
+
+edit1 = lcl.NewEdit(mainForm)
+edit1.SetParent(mainForm)
+edit1.SetBounds(10, 48, 200, 32)
+edit1.Font().SetSize(11)
+
+onClick1 = func (objA) {
+	rs = eval(edit1.Text())
+	edit1.SetText(toString(rs))
+}
+
+onClick2 = func(sender) {
+	application.Terminate()
+}
+
+button1 = lcl.NewButton(mainForm)
+button1.SetParent(mainForm)
+button1.SetLeft(20)
+button1.SetTop(90)
+button1.SetCaption("Go")
+button1.SetOnClick(&onClick1)
+
+button2 = lcl.NewButton(mainForm)
+button2.SetParent(mainForm)
+button2.SetLeft(110)
+button2.SetTop(90)
+button2.SetCaption("Close")
+button2.SetOnClick(&onClick2)
+
+application.Run()
+
+
+```
+
+The screen shot while running the script is like,
+
+![Calculator](https://github.com/topxeq/gox/blob/master/docs/lclgui.png)
 
 
 ## 5. More Examples
