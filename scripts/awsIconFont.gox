@@ -1,0 +1,24 @@
+tk = import("tk")
+
+textT = getClipText()
+
+aryT = tk.RegFindAll(textT, `content: "\\(\S*?)";`, 1)
+
+pv("aryT")
+
+strings = import("strings") 
+
+s = make(strings.Builder)
+
+for v in aryT {
+	codeT = tk.HexToInt(v)
+	s.WriteString(`<div class='toprightcorner-tool' id='Anna'>
+	<div class='icn1 notification-message-setting'>
+		<i class="awsui-iconfont" code="`+codeT+`">&#`+codeT+`;</i>
+	</div>
+</div>
+
+`)
+}
+
+tk.Pl("result: %v", s.String())

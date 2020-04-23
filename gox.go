@@ -313,6 +313,7 @@ func initAnkoVMInstance(vmA *env.Env) {
 	// GUI related start
 
 	vmA.Define("edit", editFile)
+	vmA.Define("run", runFile)
 
 	// GUI related end
 
@@ -763,6 +764,7 @@ func importAnkNonGUIPackages() {
 		"GetJSONSubNodeAny":                   reflect.ValueOf(tk.GetJSONSubNodeAny),
 		"StartsWithBOM":                       reflect.ValueOf(tk.StartsWithBOM),
 		"RemoveBOM":                           reflect.ValueOf(tk.RemoveBOM),
+		"HexToInt":                            reflect.ValueOf(tk.HexToInt),
 	}
 
 }
@@ -1535,6 +1537,29 @@ func editFile(fileNameA string) {
 
 }
 
+func runFile(argsA ...string) interface{} {
+	lenT := len(argsA)
+
+	if lenT < 1 {
+		rs := selectFileGUI("Please select file to run...", "All files", "*")
+
+		if tk.IsErrorString(rs) {
+			return tk.Errf("Failed to load file: %v", tk.GetErrorString(rs))
+		}
+
+		fcT := tk.LoadStringFromFile(rs)
+
+		if tk.IsErrorString(fcT) {
+			return tk.Errf("Invalid file content: %v", tk.GetErrorString(fcT))
+		}
+
+		return runScript(fcT, "")
+
+	}
+
+	return nil
+}
+
 // GUI related end
 
 func initTengoVM() {
@@ -1953,6 +1978,9 @@ func main() {
 			} else if ifRemoteT {
 				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 			} else if ifCloudT {
+				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) {
+					scriptT += ".gox"
+				}
 				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
 			} else {
 				fcT = tk.LoadStringFromFile(scriptT)
