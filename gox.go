@@ -938,11 +938,29 @@ func initLCL() {
 
 		applicationPathT := tk.GetApplicationPath()
 
-		rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dll", applicationPathT, "liblcl.dll", false)
+		osT := tk.GetOSName()
 
-		if tk.IsErrorString(rs) {
-			tk.Pl("failed to download LCL file.")
-			return
+		if tk.Contains(osT, "inux") {
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.so", applicationPathT, "liblcl.so", false)
+
+			if tk.IsErrorString(rs) {
+				tk.Pl("failed to download LCL file.")
+				return
+			}
+		} else if tk.Contains(osT, "arwin") {
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dylib", applicationPathT, "liblcl.dylib", false)
+
+			if tk.IsErrorString(rs) {
+				tk.Pl("failed to download LCL file.")
+				return
+			}
+		} else {
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dll", applicationPathT, "liblcl.dll", false)
+
+			if tk.IsErrorString(rs) {
+				tk.Pl("failed to download LCL file.")
+				return
+			}
 		}
 
 		errT = initLCLLib()
