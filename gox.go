@@ -1711,6 +1711,7 @@ func initJSVM() {
 
 }
 
+// init the main VM
 func initAnkVM() {
 	if ankVMG == nil {
 		importAnkNonGUIPackages()
