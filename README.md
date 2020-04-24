@@ -1,4 +1,4 @@
-![Gox](https://github.com/topxeq/gox/blob/master/docs/goxlogo2xs.jpg)
+![Gox](https://gitee.com/topxeq/gox/raw/master/docs/goxlogo2xs.jpg)
 
 _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起，或者[这里](https://www.jianshu.com/nb/44919205)看更多的开发指南。_
 
@@ -126,7 +126,7 @@ or
 
 the screenshot of Gox editor is as below,
 
-![Gox Editor](https://github.com/topxeq/gox/blob/master/docs/goxeditor2.png)
+![Gox Editor](https://gitee.com/topxeq/gox/blob/master/docs/goxeditor2.png)
 
 Although Gox provides a simple code editor, the editors with more powerful functions are recommended, such as Visual Studio Code. Currently, you can set the .gox files the same syntax highlight scheme as Golang files.
 
