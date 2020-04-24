@@ -126,7 +126,7 @@ or
 
 the screenshot of Gox editor is as below,
 
-![Gox Editor](https://gitee.com/topxeq/gox/blob/master/docs/goxeditor2.png)
+![Gox Editor](https://gitee.com/topxeq/gox/raw/master/docs/goxeditor2.png)
 
 Although Gox provides a simple code editor, the editors with more powerful functions are recommended, such as Visual Studio Code. Currently, you can set the .gox files the same syntax highlight scheme as Golang files.
 
@@ -344,7 +344,7 @@ mainWindow.Main(loop)
 
 The screen shot while running the script is like,
 
-![Calculator](https://github.com/topxeq/gox/blob/master/docs/calculatorss.png)
+![Calculator](https://gitee.com/topxeq/gox/raw/master/docs/calculatorss.png)
 
 ### Basic script with GUI by LCL library
 
@@ -425,12 +425,12 @@ application.Run()
 
 The screen shot while running the script is like,
 
-![Calculator](https://github.com/topxeq/gox/blob/master/docs/lclgui.png)
+![Calculator](https://gitee.com/topxeq/gox/raw/master/docs/lclgui.png)
 
 
 ## 5. More Examples
 
-Browse the example scripts [here](https://github.com/topxeq/gox/tree/master/scripts)
+Browse the example scripts [here](https://gitee.com/topxeq/gox/raw/master/scripts)
 
 ## 6. Language
 
@@ -729,7 +729,7 @@ mainWindow = gui.NewMasterWindow("简易计算器", 400, 200, gui.MasterWindowFl
 
 ```
 
-see the example script [here](https://github.com/topxeq/gox/blob/master/scripts/testguic.gox).
+see the example script [here](https://gitee.com/topxeq/gox/raw/master/scripts/testguic.gox).
 
 ---
 
