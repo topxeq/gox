@@ -146,7 +146,7 @@ The global value "argsG" could be used for retrieve command-line arguments, and 
 
 All the command-line switches/flags used by Gox itself are not recommended to be used in the scripts.
 
-An example for command-line handling is as below([source code](https://github.com/topxeq/gox/blob/master/scripts/commandLine.gox)),
+An example for command-line handling is as below([source code](https://gitee.com/topxeq/gox/tree/master/scripts/commandLine.gox)),
 
 ```
 // test command-line functions
@@ -430,7 +430,7 @@ The screen shot while running the script is like,
 
 ## 5. More Examples
 
-Browse the example scripts [here](https://gitee.com/topxeq/gox/raw/master/scripts)
+Browse the example scripts [here](https://gitee.com/topxeq/gox/tree/master/scripts)
 
 ## 6. Language
 
