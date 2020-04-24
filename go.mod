@@ -17,5 +17,6 @@ require (
 	github.com/topxeq/tk v0.0.0-20200329124121-6b6ee5d551ea
 	github.com/ying32/dylib v0.0.0-20200305075302-6eba4f831b29 // indirect
 	github.com/ying32/govcl v1.2.10
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	golang.org/x/text v0.3.2 // indirect
 )

@@ -16,7 +16,11 @@ import (
 	"errors"
 	"fmt"
 
+	"net"
 	"strconv"
+
+	"github.com/melbahja/goph"
+	"golang.org/x/crypto/ssh"
 
 	"github.com/atotto/clipboard"
 	"github.com/d5/tengo/stdlib"
@@ -48,7 +52,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.91a"
+var versionG = "0.92a"
 
 var variableG = make(map[string]interface{})
 
@@ -165,6 +169,54 @@ func eval(expA string) interface{} {
 	}
 
 	return v
+}
+
+func newSSHClient(hostA string, portA int, userA string, passA string) (*goph.Client, error) {
+	authT := goph.Password(passA)
+
+	clientT := &goph.Client{
+		Addr: hostA,
+		Port: portA,
+		User: userA,
+		Auth: authT,
+	}
+
+	errT := goph.Conn(clientT, &ssh.ClientConfig{
+		User:    clientT.User,
+		Auth:    clientT.Auth,
+		Timeout: 20 * time.Second,
+		HostKeyCallback: func(host string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+			// hostFound, err := goph.CheckKnownHost(host, remote, key, "")
+
+			// if hostFound && err != nil {
+			// 	return err
+			// }
+
+			// if hostFound && err == nil {
+			// 	return nil
+			// }
+
+			// return goph.AddKnownHost(host, remote, key, "")
+		},
+	})
+
+	// clientT, errT := goph.NewConn(userA, hostA, authT, func(host string, remote net.Addr, key ssh.PublicKey) error {
+
+	// 	hostFound, err := goph.CheckKnownHost(host, remote, key, "")
+
+	// 	if hostFound && err != nil {
+	// 		return err
+	// 	}
+
+	// 	if hostFound && err == nil {
+	// 		return nil
+	// 	}
+
+	// 	return goph.AddKnownHost(host, remote, key, "")
+	// })
+
+	return clientT, errT
 }
 
 func remove(aryA []interface{}, startA int, endA int) []interface{} {
@@ -309,6 +361,8 @@ func initAnkoVMInstance(vmA *env.Env) {
 	vmA.Define("deepClone", tk.DeepClone)
 
 	vmA.Define("toExactInt", toInt)
+
+	vmA.Define("newSSHClient", newSSHClient)
 
 	// GUI related start
 
@@ -1993,7 +2047,10 @@ func main() {
 			var fcT string
 
 			if ifExampleT {
-				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
+				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) {
+					scriptT += ".gox"
+				}
+				fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
 			} else if ifRemoteT {
 				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 			} else if ifCloudT {

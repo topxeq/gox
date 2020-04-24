@@ -84,11 +84,26 @@ exit status 1
 
 use "quit()" or "exit()" function to exit.
 
-### Run example script from Github directly
+### Select script file to run in REPL mode
+
+> run()
+
+Just call run() function in REPL, a file selection dialog will popup.
+
+### Run example script from Gitee directly
 
 > gox -example basic.gox
 
 Gox will download the example script directly from Github and run it.
+
+### View/Save example script from Gitee
+
+> gox -example -view basic
+
+the basic.gox (the suffix could be omitted) script will be printed to standard output. Use redirect to save the script, i.e.
+
+> gox -example -view basic > d:\scripts\a.gox
+
 
 ### Run online script directly
 
