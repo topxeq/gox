@@ -1,0 +1,78 @@
+tk = import("tk")
+
+// create a SSH client by host name(or IP address), port, user name and password
+clientT, errT = newSSHClient("example.com", 22, "root", "mypassword")
+
+// if error occured, exit the program
+checkError(errT, nil)
+
+// defer function used for the following checkError functions
+deferFunc = func() {
+	clientT.Close()
+}
+
+// run "pwd" command on the remote server and get the output
+cmdT = "pwd"
+
+outT, errT = clientT.Run(cmdT)
+
+checkError(errT, deferFunc)
+
+pathT = tk.Trim(toString(outT))
+
+pl("current path: %v", pathT)
+
+// list the directory
+outT, errT = clientT.Run(`ls -p`)
+
+checkError(errT, deferFunc)
+
+filesT = tk.SplitLines(tk.Trim(toString(outT)))
+
+lenT = len(filesT)
+
+dirCountT = 0
+
+for v in filesT {
+	if tk.EndsWith(v, "/") {
+		dirCountT ++
+	}
+}
+
+pl("%v\n", filesT)
+
+pl("totally %v files, %v of them is directory", lenT, dirCountT)
+
+// create a local file to uplaod
+errStrT = tk.SaveStringToFile("*****test****", `./abc.txt`)
+
+checkErrorString(errStrT, deferFunc)
+
+// upload the local file
+errT = clientT.Upload(`./abc.txt`, tk.Replace(tk.JoinPath(pathT, `abc.txt`), `\`, "/"))
+
+checkError(errT, deferFunc)
+
+// check if the upload process is successful 
+outT, errT = clientT.Run(`ls -p; cat abc.txt`)
+
+checkError(errT, deferFunc)
+
+pl("files: \n%v", toString(outT))
+
+// create a file on the remote server
+clientT.Run(`echo "abc123" > down.txt`)
+
+// download it to local current directory
+errT = clientT.Download(`down.txt`, `./down.txt`)
+
+checkError(errT, deferFunc)
+
+// check and show the file content
+println(systemCmd("dir"))
+
+println("\nfile content: ", tk.LoadStringFromFile(`down.txt`))
+
+// close the SSH client
+clientT.Close()
+
