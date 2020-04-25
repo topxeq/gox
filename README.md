@@ -756,6 +756,8 @@ errT = clientT.Download(`down.txt`, `./down.txt`)
 
 ```
 
+find more in this example script [here](https://gitee.com/topxeq/gox/raw/master/scripts/ssh.gox)
+
 ---
 
 
