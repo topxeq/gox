@@ -171,6 +171,32 @@ func eval(expA string) interface{} {
 	return v
 }
 
+func checkError(errA error, funcA func()) {
+	if errA != nil {
+		tk.PlErr(errA)
+
+		if funcA != nil {
+			funcA()
+		}
+
+		os.Exit(1)
+	}
+
+}
+
+func checkErrorString(strA string, funcA func()) {
+	if tk.IsErrorString(strA) {
+		tk.PlErrString(strA)
+
+		if funcA != nil {
+			funcA()
+		}
+
+		os.Exit(1)
+	}
+
+}
+
 func newSSHClient(hostA string, portA int, userA string, passA string) (*goph.Client, error) {
 	authT := goph.Password(passA)
 
@@ -320,7 +346,10 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 	vmA.Define("printfln", tk.Pl)
 	vmA.Define("pl", tk.Pl)
+	vmA.Define("plv", tk.Plv)
 	vmA.Define("plerr", tk.PlErr)
+	vmA.Define("checkError", checkError)
+	vmA.Define("checkErrorString", checkErrorString)
 
 	printValue := func(nameA string) {
 

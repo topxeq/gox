@@ -535,6 +535,12 @@ the same as fmt.Printf but add a new-line character at the end
 
 ---
 
+#### plv
+
+the same as pl("%#v", v)
+
+---
+
 #### pv
 
 output the name, type, value of a variable, attention: the parameter passed to this function should be a string, and only the global varibles are allowed.
@@ -549,6 +555,34 @@ pv("s2")
 ```
 
 ---
+
+#### plerr
+
+a convenient way to print an error value
+
+---
+
+#### checkError
+
+a convenient way to print an error value if not nil, and terminate the whole program running
+
+```
+outT, errT = clientT.Run(cmdT)
+
+checkError(errT, deferFunc)
+
+```
+
+deferFunc is the function which will be called before terminating the application, if none, pass nil for it, i.e. checkError(errT, nil)
+
+---
+
+#### checkErrorString
+
+the same as checkError, but check a TXERROR string
+
+---
+
 
 #### getInput
 
@@ -704,6 +738,26 @@ run a system command
 ```
 systemCmd(cmdA, argsA ...)
 ```
+
+#### newSSHClient
+
+create a SSH client to run shell commands, upload/download file from a remote server. Thanks to melbahja and visit [here](https://github.com/melbahja/goph) to find more docs.
+
+short examples:
+
+```
+clientT, errT = newSSHClient(hostName, port, userName, password)
+
+outT, errT = clientT.Run(`ls -p; cat abc.txt`)
+
+errT = clientT.Upload(`./abc.txt`, tk.Replace(tk.JoinPath(pathT, `abc.txt`), `\`, "/"))
+
+errT = clientT.Download(`down.txt`, `./down.txt`)
+
+```
+
+---
+
 
 #### edit
 
