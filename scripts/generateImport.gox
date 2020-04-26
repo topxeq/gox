@@ -38,8 +38,8 @@ pl("file content: ", fcT)
 
 aryT = tk.RegFindAll(fcT, `(?m)^func\s*([A-Z]\S*?)\(`, 1)
 
-pl(aryT)
+pl("found: %v", aryT)
 
 for v in aryT {
-	pfl("%#v: reflect.ValueOf(%v.%v),", v, packageNameT, v)
+	printfln("%#v: reflect.ValueOf(%v.%v),", v, packageNameT, v)
 }

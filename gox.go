@@ -32,6 +32,13 @@ import (
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
 
+	_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/godror/godror"
+	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/topxeq/sqltk"
+
 	// GUI related start
 	"github.com/sqweek/dialog"
 	// GUI related end
@@ -538,6 +545,19 @@ func typeOfValue(vA interface{}) string {
 }
 
 func importAnkNonGUIPackages() {
+
+	env.Packages["sqltk"] = map[string]reflect.Value{
+		"ConnectDB":          reflect.ValueOf(sqltk.ConnectDB),
+		"ConnectDBNoPing":    reflect.ValueOf(sqltk.ConnectDBNoPing),
+		"ExecV":              reflect.ValueOf(sqltk.ExecV),
+		"QueryDBS":           reflect.ValueOf(sqltk.QueryDBS),
+		"QueryDBNS":          reflect.ValueOf(sqltk.QueryDBNS),
+		"QueryDBNSS":         reflect.ValueOf(sqltk.QueryDBNSS),
+		"QueryDBI":           reflect.ValueOf(sqltk.QueryDBI),
+		"QueryDBCount":       reflect.ValueOf(sqltk.QueryDBCount),
+		"QueryDBString":      reflect.ValueOf(sqltk.QueryDBString),
+		"OneLineRecordToMap": reflect.ValueOf(sqltk.OneLineRecordToMap),
+	}
 
 	env.Packages["tk"] = map[string]reflect.Value{
 		"CreateTXCollection":                  reflect.ValueOf(tk.CreateTXCollection),
@@ -1658,7 +1678,13 @@ func runFile(argsA ...string) interface{} {
 
 	}
 
-	return nil
+	fcT := tk.LoadStringFromFile(argsA[0])
+
+	if tk.IsErrorString(fcT) {
+		return tk.Errf("Invalid file content: %v", tk.GetErrorString(fcT))
+	}
+
+	return runScript(fcT, "", argsA[1:]...)
 }
 
 // GUI related end

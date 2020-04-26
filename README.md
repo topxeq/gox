@@ -238,7 +238,7 @@ fmt.Printf("%v\n", os.Args)
 
 ```
 
-Along with most of the core Golang libraries, the "tk" package([here](https://github.com/topxeq/tk)) is often used. The "tk" package provides many useful functions. See example scripts for more.
+Along with most of the core Golang libraries, the "tk" package([here](https://github.com/topxeq/tk)) is often used. The "tk" package provides many useful functions. See example scripts for more. And refer to the docs [here](https://pkg.go.dev/github.com/topxeq/tk?tab=doc).
 
 Refer to the documents of these Golang packages for the detailed usage.
 

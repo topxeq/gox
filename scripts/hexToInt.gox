@@ -61,7 +61,10 @@ onClick1 = func (objA) {
 	}
 }
 
+lastResult = ""
+
 onClick2 = func(sender) {
+	lastResult = edit1.Text()
 	application.Terminate()
 }
 
@@ -81,3 +84,4 @@ button2.SetOnClick(&onClick2)
 
 application.Run()
 
+pl("the last result: %v", lastResult)
