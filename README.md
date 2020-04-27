@@ -609,6 +609,32 @@ evaluate an expression and return the result
 
 ---
 
+#### panic
+
+raise a panic manually
+
+```
+
+try {
+	panic("a manual panic")
+} catch e {
+	printfln("error: %v", e)
+} finally {
+	println("final")
+}
+
+
+try {
+	panic(12345678)
+} catch e {
+	printfln(e)
+}
+
+
+```
+
+---
+
 #### typeof/typeOf/kindOf
 
 return the string representation of the type for a variable or expression

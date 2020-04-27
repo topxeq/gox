@@ -1,0 +1,25 @@
+func(x) {
+	return func(y) {
+		x(y)
+	}
+}(func(z) {
+		println("Hi!", z)
+	})("Nice to see you.")
+
+NewAddFunc = func() {
+	var count = 0
+
+	return func(n) {
+		count += n
+
+		return count
+	}
+}
+
+f2 = NewAddFunc()
+
+println(f2(3))
+	
+println(f2(5))
+
+println(f2(9))

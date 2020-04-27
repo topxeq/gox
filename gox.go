@@ -39,6 +39,10 @@ import (
 
 	"github.com/topxeq/sqltk"
 
+	"github.com/dgraph-io/badger"
+
+	"github.com/beevik/etree"
+
 	// GUI related start
 	"github.com/sqweek/dialog"
 	// GUI related end
@@ -59,7 +63,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.92a"
+var versionG = "0.93a"
 
 var variableG = make(map[string]interface{})
 
@@ -176,6 +180,10 @@ func eval(expA string) interface{} {
 	}
 
 	return v
+}
+
+func panicIt(valueA interface{}) {
+	panic(valueA)
 }
 
 func checkError(errA error, funcA func()) {
@@ -386,6 +394,7 @@ func initAnkoVMInstance(vmA *env.Env) {
 	vmA.Define("runScript", runScript)
 	vmA.Define("systemCmd", systemCmd)
 	vmA.Define("typeof", typeOfValue)
+	vmA.Define("panic", panicIt)
 
 	vmA.Define("setVar", setVar)
 	vmA.Define("getVar", getVar)
@@ -545,6 +554,15 @@ func typeOfValue(vA interface{}) string {
 }
 
 func importAnkNonGUIPackages() {
+
+	env.Packages["etree"] = map[string]reflect.Value{
+		"NewDocument": reflect.ValueOf(etree.NewDocument),
+	}
+
+	env.PackageTypes["badger"] = map[string]reflect.Type{
+		"IteratorOptions": reflect.TypeOf(badger.IteratorOptions{}),
+		// "IteratorOptions": reflect.TypeOf(&widget).Elem(),
+	}
 
 	env.Packages["sqltk"] = map[string]reflect.Value{
 		"ConnectDB":          reflect.ValueOf(sqltk.ConnectDB),

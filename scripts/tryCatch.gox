@@ -1,0 +1,15 @@
+try {
+	panic({"a": 10, "b": "good morning", "c": true})
+} catch e {
+	printfln("error: %v", e)
+} finally {
+	println("final")
+}
+
+try {
+	panic(123)
+} catch e {
+	printfln("error: %v", e)
+}
+
+

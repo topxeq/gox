@@ -1,0 +1,83 @@
+i = 0
+for {
+	println(i)
+	i++
+	if i > 1 {
+		break
+	}
+}
+
+println("")
+
+for i in [0, 1] {
+	println(i)
+}
+
+println("")
+
+for key, value in {"a": "b"} {
+	println(key, value)
+}
+
+println("")
+
+m = {"a": "b", "c": 3}
+
+for k in keys(m) {
+	println(k, m[k])
+}
+
+println("")
+
+i = 0
+for i < 2 {
+	println(i)
+	i++
+}
+
+println("")
+
+for i = 0; i < 2; i++ {
+	println(i)
+}
+
+println("")
+
+
+for i = 0; i < 10; i++ {
+	println(i)
+	if i < 1 {
+		continue
+	}
+
+	break
+}
+
+println("")
+
+for i in range(7) {
+
+	if i > 2 && i < 5 {
+		println(i)
+	} else {
+		printfln("not in range: %v", i)
+	}
+}
+
+println("")
+
+aryT = [3, "abc", true, 2.8]
+
+for v in aryT {
+	printf("v: %v ", v)
+	switch v {
+	case typeOf(v) == "bool":
+		println("is bool:", v)
+	case typeOf(v) == "string":
+		println("is string")
+	case 2.8, 3:
+		println("is number")
+	default:
+		println("unknown:", v)
+	}
+}
