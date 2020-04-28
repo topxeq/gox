@@ -1,0 +1,77 @@
+plot = import("plot")
+
+p, _ = plot.New()
+
+p.Title.Text = "Gonum Plot Example"
+p.X.Label.Text = "X"
+p.Y.Label.Text = "Y"
+
+points = make(plot.XYs)
+
+points[0] = make(plot.XY)
+points[0].X = 0.0
+points[0].Y = 0.0
+
+points[1] = plot.NewXY(1.0, 1.0)
+
+points[2] = plot.NewXY(2.0, 4.0)
+
+points[3] = plot.NewXY(3.0, 9.0)
+
+plot.AddLinePoints(p, "y = x * x", points)
+
+image = import("image")
+
+rgbaT, errT = image.LoadPlotImage(p, 4*plot.Inch, 4*plot.Inch)
+
+checkError(errT, nil)
+
+p.Save(4*plot.Inch, 4*plot.Inch, `c:\test\points.png`)
+
+var gui = import("gui")
+
+func onButtonClick() {
+	exit()
+}
+
+textureT = nil
+
+flagT = 0
+
+f = func() {
+	if flagT != 0 {
+		return
+	}
+
+	flagT = 1
+
+	textureT, errT = gui.NewTextureFromRgba(rgbaT)
+
+	if errT != nil {
+		plerr(errT)
+		return
+	}
+}
+
+func loop() {
+	go f()
+
+	layoutT = []gui.Widget{
+		gui.ImageWithFile(`c:\test\points.png`, 300, 300), 
+		gui.Custom(func() {
+			if textureT != nil {
+				gui.Image(textureT, 348, 348).Build()
+			}
+		}),
+		gui.Button("Close", onButtonClick),
+	}
+
+	gui.SingleWindow("Plot Diagram", layoutT)
+}
+
+mainWindow = gui.NewMasterWindow("Plot Diagram", 400, 750, gui.MasterWindowFlagsNotResizable, nil)
+
+gui.LoopWindow(mainWindow, loop)
+
+
+

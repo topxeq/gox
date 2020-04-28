@@ -44,7 +44,15 @@ import (
 	_ "github.com/godror/godror"
 
 	"github.com/fogleman/gg"
+	"image"
 	"image/color"
+	"image/draw"
+	"image/png"
+
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
+	"gonum.org/v1/plot/vg"
 
 	// full version related end
 
@@ -599,6 +607,73 @@ func newRGBAFromHex(strA string) color.RGBA {
 	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 }
 
+func newPlotXY(xA, yA float64) plotter.XY {
+	return plotter.XY{X: xA, Y: yA}
+}
+
+func loadRGBAFromImage(imageA image.Image) (*image.RGBA, error) {
+	switch imageT := imageA.(type) {
+	case *image.RGBA:
+		return imageT, nil
+	default:
+		rgba := image.NewRGBA(imageT.Bounds())
+		draw.Draw(rgba, imageT.Bounds(), imageT, image.Pt(0, 0), draw.Src)
+		return rgba, nil
+	}
+
+}
+
+func LoadPlotImage(p *plot.Plot, w vg.Length, h vg.Length) (*image.RGBA, error) {
+
+	var bufT bytes.Buffer
+
+	writerT, errT := p.WriterTo(w, h, "png")
+
+	if errT != nil {
+		return nil, errT
+	}
+
+	_, errT = writerT.WriteTo(&bufT)
+
+	if errT != nil {
+		return nil, errT
+	}
+
+	readerT := bytes.NewReader(bufT.Bytes())
+
+	// defer readerT.Close()
+
+	// imgFile, err := os.Open(imgPath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer imgFile.Close()
+
+	img, err := png.Decode(readerT)
+	if err != nil {
+		return nil, err
+	}
+
+	switch trueImg := img.(type) {
+	case *image.RGBA:
+		return trueImg, nil
+	default:
+		rgba := image.NewRGBA(trueImg.Bounds())
+		draw.Draw(rgba, trueImg.Bounds(), trueImg, image.Pt(0, 0), draw.Src)
+		return rgba, nil
+	}
+}
+
+// type MyXYer plotter.XY
+
+// func (v MyXYer) Len() int {
+// 	return 1
+// }
+
+// func (v MyXYer) XY(int) (x, y float64) {
+// 	return 1
+// }
+
 // full version related end
 
 func importAnkNonGUIPackages() {
@@ -611,6 +686,27 @@ func importAnkNonGUIPackages() {
 	env.PackageTypes["badger"] = map[string]reflect.Type{
 		"IteratorOptions": reflect.TypeOf(badger.IteratorOptions{}),
 		// "IteratorOptions": reflect.TypeOf(&widget).Elem(),
+	}
+
+	// var tmpxys = []plotter.XYer{}
+
+	// var tmpxy plotter.XYs
+
+	// tk.Pl("%#v", tmpxy)
+
+	env.PackageTypes["plot"] = map[string]reflect.Type{
+		// "XYs": reflect.TypeOf(&tmpxy).Elem(),
+		"XYs": reflect.TypeOf(plotter.XYs{}),
+		"XY":  reflect.TypeOf(plotter.XY{}),
+		// "XYer":  reflect.TypeOf(tmpxy),
+		// "XYers": reflect.TypeOf(tmpxys),
+	}
+
+	env.Packages["plot"] = map[string]reflect.Value{
+		"New":           reflect.ValueOf(plot.New),
+		"NewXY":         reflect.ValueOf(newPlotXY),
+		"AddLinePoints": reflect.ValueOf(plotutil.AddLinePoints),
+		"Inch":          reflect.ValueOf(vg.Inch),
 	}
 
 	env.Packages["gg"] = map[string]reflect.Value{
@@ -633,6 +729,17 @@ func importAnkNonGUIPackages() {
 		// "NewContextForRGBA":  reflect.ValueOf(gg.NewContextForRGBA),
 		// "NewRadialGradient":  reflect.ValueOf(gg.NewRadialGradient),
 		// "NewLinearGradient":  reflect.ValueOf(gg.NewLinearGradient),
+	}
+
+	env.Packages["image/png"] = map[string]reflect.Value{
+		"Decode": reflect.ValueOf(png.Decode),
+	}
+
+	env.Packages["image"] = map[string]reflect.Value{
+		"LoadRGBAFromImage": reflect.ValueOf(loadRGBAFromImage),
+		"LoadPlotImage":     reflect.ValueOf(LoadPlotImage),
+		"NewRGBA":           reflect.ValueOf(image.NewRGBA),
+		"Rect":              reflect.ValueOf(image.Rect),
 	}
 
 	// full version related end
@@ -1201,6 +1308,8 @@ func importAnkGUIPackages() {
 
 		// "Layout":          reflect.ValueOf(g.Layout),
 
+		"NewTextureFromRgba": reflect.ValueOf(g.NewTextureFromRgba),
+
 		"Label":                  reflect.ValueOf(g.Label),
 		"Line":                   reflect.ValueOf(g.Line),
 		"Button":                 reflect.ValueOf(g.Button),
@@ -1215,6 +1324,8 @@ func importAnkGUIPackages() {
 		"ContextMenu":            reflect.ValueOf(g.ContextMenu),
 		"Group":                  reflect.ValueOf(g.Group),
 		"Image":                  reflect.ValueOf(g.Image),
+		"ImageWithFile":          reflect.ValueOf(g.ImageWithFile),
+		"ImageWithUrl":           reflect.ValueOf(g.ImageWithUrl),
 		"InputText":              reflect.ValueOf(g.InputText),
 		"InputTextV":             reflect.ValueOf(g.InputTextV),
 		"InputTextFlagsPassword": reflect.ValueOf(g.InputTextFlagsPassword),

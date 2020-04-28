@@ -15,7 +15,7 @@ Gox supports password-protect your source code file, it's also a major differenc
 
 ## 1. Installation
 
-Download the latest Gox executable file from the [official website](http://gox.topget.org/) or [Github](https://github.com/topxeq/gox/releases). Then put it into a directory in the system path. If you download the zip file, extract it first.
+Download the latest Gox executable file from the [official website](http://gox.topget.org/) or [Github](https://github.com/topxeq/gox/releases) or [Gitee](https://gitee.com/topxeq/gox/releases) (due to the speed issue, official website and Gitee are recommended). Then put it into a directory in the system path. If you download the zip file, extract it first.
 
 A command-line only version of gox (named goxc, no GUI features) is also available. This version will be more fast, and of course smaller in file size.
 
@@ -472,7 +472,7 @@ It's the same for function parameters and return values.
 
 First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's, Govcl's and Giu's documents.
 
-The default Golang packages available(could imported in Gox code) include: bytes, encoding/json, errors, flag, fmt, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
+The default Golang packages available(could imported in Gox code) include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
 
 Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk) or [here](https://pkg.go.dev/github.com/topxeq/tk).
 
