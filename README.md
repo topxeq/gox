@@ -19,6 +19,8 @@ Download the latest Gox executable file from the [official website](http://gox.t
 
 A command-line only version of gox (named goxc, no GUI features) is also available. This version will be more fast, and of course smaller in file size.
 
+Since the more features added makes the Gox executable became very large, the Tiny Gox Version is now available to download. Some features are removed from Gox tiny version, such as OpenGL GUI, drawing, NoSQL, some database drivers(Oracle, MS-SQL), etc.
+
 ## 2.usage
 
 ### Check the version.
@@ -468,9 +470,11 @@ It's the same for function parameters and return values.
 
 ## 7. Library Reference
 
-First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's and Giu's documents.
+First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's, Govcl's and Giu's documents.
 
-Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk).
+The default Golang packages available(could imported in Gox code) include: bytes, encoding/json, errors, flag, fmt, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
+
+Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk) or [here](https://pkg.go.dev/github.com/topxeq/tk).
 
 However, Gox provides some convenient global variables and functions decribed as below.
 
@@ -858,6 +862,8 @@ the same as edit function, or command-line switch "-edit"
 
 ## Development
 
+Feel free to modify the source code to make a custom version of Gox. You can remove some packages not necessary for you, or add some Golang or third-party packages into it.
+
 The script [here](https://github.com/topxeq/gox/blob/master/scripts/generateImport.gox) is used for developers to add imported libraries to Gox.
 
 The usage is as below:
@@ -882,3 +888,6 @@ then add it to the Gox source file in the code block to import variables/functio
 		"StartsWithIgnoreCase":                  reflect.ValueOf(package1.StartsWithIgnoreCase),
     }
 ```
+
+The script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxc.gox) is used to generate command-line version and the script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxt.gox) is used to generate Gox tiny version.
+

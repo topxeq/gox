@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"bytes"
+	// full version related start
 	"context"
+	// full version related end
 	"io"
 	"math/rand"
 	"os"
@@ -23,36 +25,50 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/atotto/clipboard"
+
+	// full version related start
 	"github.com/d5/tengo/stdlib"
 	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
+	// full version related end
+
 	"github.com/mattn/anko/core"
 	"github.com/mattn/anko/env"
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
 
+	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/dgraph-io/badger"
 	_ "github.com/godror/godror"
+
+	"github.com/fogleman/gg"
+	"image/color"
+
+	// full version related end
+
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/topxeq/sqltk"
 
-	"github.com/dgraph-io/badger"
-
 	"github.com/beevik/etree"
 
 	// GUI related start
+	// full version related start
 	"github.com/sqweek/dialog"
+	// full version related end
 	// GUI related end
 
 	"github.com/topxeq/tk"
 
 	// GUI related start
+	// full version related start
 	"github.com/AllenDang/giu"
 	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
+	// full version related end
 
 	"github.com/topxeq/govcl/vcl"
 	"github.com/topxeq/govcl/vcl/api"
@@ -63,13 +79,17 @@ import (
 
 // Non GUI related
 
-var versionG = "0.93a"
+var versionG = "0.95a"
 
 var variableG = make(map[string]interface{})
 
+// full version related start
 var jsVMG *goja.Runtime = nil
-var ankVMG *env.Env = nil
 var tengoModulesG = stdlib.GetModuleMap(stdlib.AllModuleNames()...)
+
+// full version related end
+
+var ankVMG *env.Env = nil
 
 var varMutexG sync.Mutex
 
@@ -102,6 +122,8 @@ func setVar(nameA string, valueA interface{}) {
 	varMutexG.Unlock()
 }
 
+// full version related start
+
 func getVarTengo(objsA ...tengo.Object) (tengo.Object, error) {
 	if len(objsA) < 1 {
 		return tengo.FromInterface(tk.GenerateErrorString("not enough parameters"))
@@ -130,6 +152,8 @@ func setVarTengo(nameA string, valueA interface{}) {
 	varMutexG.Unlock()
 }
 
+// full version related end
+
 func getClipText() string {
 	textT, errT := clipboard.ReadAll()
 	if errT != nil {
@@ -143,35 +167,35 @@ func setClipText(textA string) {
 	clipboard.WriteAll(textA)
 }
 
-func times(objsA ...tengo.Object) (tengo.Object, error) {
-	lenT := len(objsA)
+// func times(objsA ...tengo.Object) (tengo.Object, error) {
+// 	lenT := len(objsA)
 
-	intListT := make([]int, lenT)
+// 	intListT := make([]int, lenT)
 
-	// 用一个循环将函数不定个数参数中的所有数值存入整数切片中
-	for i, v := range objsA {
-		// 调用objects.ToInt函数将objects.Object对象转换为整数
-		cT, ok := tengo.ToInt(v)
+// 	// 用一个循环将函数不定个数参数中的所有数值存入整数切片中
+// 	for i, v := range objsA {
+// 		// 调用objects.ToInt函数将objects.Object对象转换为整数
+// 		cT, ok := tengo.ToInt(v)
 
-		if ok {
-			intListT[i] = cT
-		}
-	}
+// 		if ok {
+// 			intListT[i] = cT
+// 		}
+// 	}
 
-	// 进行累乘与那算
-	r := 1
+// 	// 进行累乘与那算
+// 	r := 1
 
-	for i := 0; i < lenT; i++ {
-		r = r * intListT[i]
-	}
+// 	for i := 0; i < lenT; i++ {
+// 		r = r * intListT[i]
+// 	}
 
-	// 输出结果值供参考
-	fmt.Printf("result: %v\n", r)
+// 	// 输出结果值供参考
+// 	fmt.Printf("result: %v\n", r)
 
-	// 也作为函数返回值返回，返回前要转换为objects.Object类型
-	// objects.Int类型实现了objects.Object类型，因此可以用作返回值
-	return &tengo.Int{Value: int64(r)}, nil
-}
+// 	// 也作为函数返回值返回，返回前要转换为objects.Object类型
+// 	// objects.Int类型实现了objects.Object类型，因此可以用作返回值
+// 	return &tengo.Int{Value: int64(r)}, nil
+// }
 
 func eval(expA string) interface{} {
 	v, errT := vm.Execute(ankVMG, nil, expA)
@@ -411,7 +435,10 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 	// GUI related start
 
+	// full version related start
 	vmA.Define("edit", editFile)
+	// full version related end
+
 	vmA.Define("run", runFile)
 
 	// GUI related end
@@ -479,6 +506,7 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 		return v
 
+		// full version related start
 	} else if modeA == "3" || modeA == "js" {
 		initJSVM()
 
@@ -499,12 +527,12 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 		scriptT.SetImports(tengoModulesG)
 
 		_ = scriptT.Add("setVar", setVarTengo)
-		errT := scriptT.Add("times", times)
-		if errT != nil {
-			return tk.GenerateErrorStringF("failed to add times(%v) error: %v", "", errT)
-		}
+		// errT := scriptT.Add("times", times)
+		// if errT != nil {
+		// 	return tk.GenerateErrorStringF("failed to add times(%v) error: %v", "", errT)
+		// }
 
-		errT = scriptT.Add("getVar", getVarTengo)
+		errT := scriptT.Add("getVar", getVarTengo)
 		if errT != nil {
 			return tk.GenerateErrorStringF("failed to add getVar(%v) error: %v", "", errT)
 		}
@@ -527,6 +555,7 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 		result := compiledT.Get("resultG")
 		return result
 
+		// full version related end
 	} else {
 		return systemCmd("gox", append([]string{codeA}, argsA...)...)
 	}
@@ -553,16 +582,60 @@ func typeOfValue(vA interface{}) string {
 	return fmt.Sprintf("%T", vA)
 }
 
+// full version related start
+func newRGBA(r, g, b, a uint8) color.RGBA {
+	return color.RGBA{r, g, b, a}
+}
+
+func newNRGBAFromHex(strA string) color.NRGBA {
+	r, g, b, a := tk.ParseHexColor(strA)
+
+	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+}
+
+func newRGBAFromHex(strA string) color.RGBA {
+	r, g, b, a := tk.ParseHexColor(strA)
+
+	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+}
+
+// full version related end
+
 func importAnkNonGUIPackages() {
 
 	env.Packages["etree"] = map[string]reflect.Value{
 		"NewDocument": reflect.ValueOf(etree.NewDocument),
 	}
 
+	// full version related start
 	env.PackageTypes["badger"] = map[string]reflect.Type{
 		"IteratorOptions": reflect.TypeOf(badger.IteratorOptions{}),
 		// "IteratorOptions": reflect.TypeOf(&widget).Elem(),
 	}
+
+	env.Packages["gg"] = map[string]reflect.Value{
+		"NewContext":         reflect.ValueOf(gg.NewContext),
+		"NewContextForImage": reflect.ValueOf(gg.NewContextForImage),
+		"NewContextForRGBA":  reflect.ValueOf(gg.NewContextForRGBA),
+		"NewRadialGradient":  reflect.ValueOf(gg.NewRadialGradient),
+		"NewLinearGradient":  reflect.ValueOf(gg.NewLinearGradient),
+	}
+
+	env.PackageTypes["image/color"] = map[string]reflect.Type{
+		"RGBA": reflect.TypeOf(color.RGBA{}),
+	}
+
+	env.Packages["image/color"] = map[string]reflect.Value{
+		"NewRGBA":         reflect.ValueOf(newRGBA),
+		"NewRGBAFromHex":  reflect.ValueOf(newRGBAFromHex),
+		"NewNRGBAFromHex": reflect.ValueOf(newNRGBAFromHex),
+		// "NewContextForImage": reflect.ValueOf(gg.NewContextForImage),
+		// "NewContextForRGBA":  reflect.ValueOf(gg.NewContextForRGBA),
+		// "NewRadialGradient":  reflect.ValueOf(gg.NewRadialGradient),
+		// "NewLinearGradient":  reflect.ValueOf(gg.NewLinearGradient),
+	}
+
+	// full version related end
 
 	env.Packages["sqltk"] = map[string]reflect.Value{
 		"ConnectDB":          reflect.ValueOf(sqltk.ConnectDB),
@@ -981,6 +1054,8 @@ func runInteractive() int {
 
 // GUI related start
 
+// full version related start
+
 func loadFont() {
 	fonts := giu.Context.IO().Fonts()
 
@@ -1031,6 +1106,8 @@ func loadFont() {
 	// fonts.AddFontFromFileTTF(fontPath, 14)
 	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
 }
+
+// full version related end
 
 func initLCLLib() (result error) {
 	defer func() {
@@ -1110,6 +1187,7 @@ func getVclApplication() *vcl.TApplication {
 }
 
 func importAnkGUIPackages() {
+	// full version related start
 	env.Packages["gui"] = map[string]reflect.Value{
 		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
 		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
@@ -1187,6 +1265,8 @@ func importAnkGUIPackages() {
 
 		"LayoutP": reflect.ValueOf(g.Layout{}),
 	}
+
+	// full version related end
 
 	env.Packages["lcl"] = map[string]reflect.Value{
 		"GetApplication":    reflect.ValueOf(getVclApplication),
@@ -1299,6 +1379,7 @@ func importAnkGUIPackages() {
 	// env.Packages["lcl/types"] = map[string]reflect.Value{
 	// }
 
+	// full version related start
 	var widget g.Widget
 
 	env.PackageTypes["gui"] = map[string]reflect.Type{
@@ -1306,9 +1387,11 @@ func importAnkGUIPackages() {
 		// "Signal": reflect.TypeOf(&signal).Elem(),
 		"Widget": reflect.TypeOf(&widget).Elem(),
 	}
+	// full version related end
 
 }
 
+// full version related start
 func getConfirmGUI(titleA string, messageA string) bool {
 	return dialog.Message("%v", messageA).Title(titleA).YesNo()
 }
@@ -1676,9 +1759,12 @@ func editFile(fileNameA string) {
 
 }
 
+// full version related end
+
 func runFile(argsA ...string) interface{} {
 	lenT := len(argsA)
 
+	// full version related start
 	if lenT < 1 {
 		rs := selectFileGUI("Please select file to run...", "All files", "*")
 
@@ -1695,6 +1781,11 @@ func runFile(argsA ...string) interface{} {
 		return runScript(fcT, "")
 
 	}
+	// full version related end
+
+	if lenT < 1 {
+		return nil
+	}
 
 	fcT := tk.LoadStringFromFile(argsA[0])
 
@@ -1707,6 +1798,7 @@ func runFile(argsA ...string) interface{} {
 
 // GUI related end
 
+// full version related start
 func initTengoVM() {
 
 }
@@ -1838,6 +1930,8 @@ func initJSVM() {
 
 }
 
+// full version related end
+
 // init the main VM
 func initAnkVM() {
 	if ankVMG == nil {
@@ -1888,6 +1982,7 @@ func main() {
 
 	// GUI related start
 
+	// full version related start
 	if tk.IfSwitchExistsWhole(argsT, "-edit") {
 		if lenT < 1 {
 			editFile("")
@@ -1897,6 +1992,7 @@ func main() {
 
 		return
 	}
+	// full version related end
 
 	// GUI related end
 
@@ -1980,6 +2076,7 @@ func main() {
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 
 	for _, scriptT := range scriptsT {
+		// full version related start
 		if tk.EndsWith(scriptT, ".js") {
 			var fcT string
 
@@ -2081,13 +2178,13 @@ func main() {
 			scriptT.SetImports(tengoModulesG)
 
 			_ = scriptT.Add("setVar", setVarTengo)
-			errT := scriptT.Add("times", times)
-			if errT != nil {
-				tk.Pl("failed to add times(%v) error: %v", "", errT)
-				continue
-			}
+			// errT := scriptT.Add("times", times)
+			// if errT != nil {
+			// 	tk.Pl("failed to add times(%v) error: %v", "", errT)
+			// 	continue
+			// }
 
-			errT = scriptT.Add("getVar", getVarTengo)
+			errT := scriptT.Add("getVar", getVarTengo)
 			if errT != nil {
 				tk.Pl("failed to add getVar(%v) error: %v", "", errT)
 				continue
@@ -2117,6 +2214,8 @@ func main() {
 			// }
 
 		} else { // if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".gox") {
+			// full version related end
+
 			var fcT string
 
 			if ifExampleT {
@@ -2186,7 +2285,9 @@ func main() {
 
 				tk.Pl("failed to execute script(%v%v) error: %v\n%#v\n", scriptT, posStrT, errT, rs1)
 				continue
+				// full version related start
 			}
+			// full version related end
 
 			rs, errT := ankVMG.Get("outG")
 
