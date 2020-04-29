@@ -1298,6 +1298,11 @@ func getVclApplication() *vcl.TApplication {
 	return vcl.Application
 }
 
+// func newLclAnchors() *types.TAnchors {
+// 	a := types.TAnchors(rtl.Include(0, types.AkTop, types.AkBottom, types.AkLeft, types.AkRight))
+
+// }
+
 func importAnkGUIPackages() {
 	// full version related start
 	env.Packages["gui"] = map[string]reflect.Value{
@@ -1479,6 +1484,14 @@ func importAnkGUIPackages() {
 		"NewAction":         reflect.ValueOf(vcl.NewAction),
 		"NewActionList":     reflect.ValueOf(vcl.NewActionList),
 		"NewMemoryStream":   reflect.ValueOf(vcl.NewMemoryStream),
+
+		// "NewAnchors": reflect.ValueOf(types.TAnchors),
+		// "RTLInclude": reflect.ValueOf(rtl.Include),
+		"NewSet":   reflect.ValueOf(types.NewSet),
+		"AkTop":    reflect.ValueOf(types.AkTop),
+		"AkBottom": reflect.ValueOf(types.AkBottom),
+		"AkLeft":   reflect.ValueOf(types.AkLeft),
+		"AkRight":  reflect.ValueOf(types.AkRight),
 
 		"GetLibVersion": reflect.ValueOf(vcl.GetLibVersion),
 
