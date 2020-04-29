@@ -44,6 +44,7 @@ import (
 	_ "github.com/godror/godror"
 
 	"github.com/fogleman/gg"
+	"github.com/topxeq/imagetk"
 	"image"
 	"image/color"
 	"image/draw"
@@ -740,6 +741,10 @@ func importAnkNonGUIPackages() {
 		"LoadPlotImage":     reflect.ValueOf(LoadPlotImage),
 		"NewRGBA":           reflect.ValueOf(image.NewRGBA),
 		"Rect":              reflect.ValueOf(image.Rect),
+	}
+
+	env.Packages["imagetk"] = map[string]reflect.Value{
+		"NewImageTK": reflect.ValueOf(imagetk.NewImageTK),
 	}
 
 	// full version related end
@@ -1473,6 +1478,7 @@ func importAnkGUIPackages() {
 		"NewApplication":    reflect.ValueOf(vcl.NewApplication),
 		"NewAction":         reflect.ValueOf(vcl.NewAction),
 		"NewActionList":     reflect.ValueOf(vcl.NewActionList),
+		"NewMemoryStream":   reflect.ValueOf(vcl.NewMemoryStream),
 
 		"GetLibVersion": reflect.ValueOf(vcl.GetLibVersion),
 
