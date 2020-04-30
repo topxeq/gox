@@ -470,7 +470,7 @@ It's the same for function parameters and return values.
 
 ## 7. Library Reference
 
-First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's, Govcl's and Giu's documents.
+First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and Giu's documents.
 
 The default Golang packages available(could imported in Gox code) include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
 
@@ -862,9 +862,9 @@ the same as edit function, or command-line switch "-edit"
 
 ## Development
 
-Feel free to modify the source code to make a custom version of Gox. You can remove some packages not necessary for you, or add some Golang or third-party packages into it.
+- Feel free to modify the source code to make a custom version of Gox. You can remove some packages not necessary for you, or add some Golang or third-party packages into it.
 
-The script [here](https://github.com/topxeq/gox/blob/master/scripts/generateImport.gox) is used for developers to add imported libraries to Gox.
+- The script [here](https://github.com/topxeq/gox/blob/master/scripts/generateImport.gox) is used for developers to add imported libraries to Gox.
 
 The usage is as below:
 
@@ -889,5 +889,13 @@ then add it to the Gox source file in the code block to import variables/functio
     }
 ```
 
-The script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxc.gox) is used to generate command-line version and the script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxt.gox) is used to generate Gox tiny version.
+- The script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxc.gox) is used to generate command-line version and the script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxt.gox) is used to generate Gox tiny version.
+
+- Add the following flag while building on Windows will generate a version without command-line console(for the goxg verison).
+
+> go install -ldflags="-H windowsgui"
+
+- Add the following flags while building will generate a more small-sized version without symbol and other debug information embedded in the executable.
+
+> go install -ldflags="-s -w"
 
