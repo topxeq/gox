@@ -21,6 +21,8 @@ A command-line only version of gox (named goxc, no GUI features) is also availab
 
 Since the more features added makes the Gox executable became very large, the Tiny Gox Version is now available to download. Some features are removed from Gox tiny version, such as OpenGL GUI, drawing, NoSQL, some database drivers(Oracle, MS-SQL), etc.
 
+Goxg version is used to run GUI only programs, it will not open a CMD console.
+
 ## 2.usage
 
 ### Check the version.
