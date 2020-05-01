@@ -1,0 +1,6 @@
+
+// do simple add operation
+x = 1.2
+y = x + 1
+
+println(x+y)

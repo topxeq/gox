@@ -528,7 +528,7 @@ the same as fmt.Printf
 ---
 
 
-#### println
+#### println/pln
 
 the same as fmt.Println
 

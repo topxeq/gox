@@ -1,0 +1,302 @@
+tk = import("tk")
+gui = import("gui")
+
+func quickCheck(bytesA) {
+	lenT = len(bytesA)
+
+	if lenT < 3 {
+		return ""
+	}
+
+	if bytesA[0] == 0xef && bytesA[1] == 0xbb && bytesA[2] == 0xbf {
+		return "UTF8-BOM"
+	}
+
+	if lenT < 4 {
+		return ""
+	}
+
+	if bytesA[0] == 0x84 && bytesA[1] == 0x31 && bytesA[2] == 0x95 && bytesA[3] == 0x33 {
+		return "GB18030"
+	}
+
+	return ""
+}
+
+func isUTF8(c) {
+
+}
+
+func checkUTF8(bytesA) {
+	var utf8ByteT = 0
+
+	for v in bytesA {
+		c = toInt(v)
+		// pl("c: %d, %T, %T, %d, %v", c, c, 0x7F, 0x7F, c <= 0x7F)
+
+		if utf8ByteT == 0 {
+			if c >= 0x00 && c <= 0x7F {
+				continue
+			}
+
+			if c >= 0xC0 && c <= 0xDF {
+				utf8ByteT = 1
+				continue
+			}
+
+			if c >= 0xE0 && c <= 0xEF {
+				utf8ByteT = 2
+				continue
+			}
+
+			if c >= 0xF0 && c <= 0xF7 {
+				utf8ByteT = 3
+				continue
+			}
+
+		} else {
+			if c >= 0x80 && c <= 0xBF {
+				utf8ByteT -= 1
+				continue
+			}
+		}
+
+		return false
+	}
+
+	return true
+}
+
+func checkGB18030(bytesA) {
+	var gbByteT = 0
+
+	for v in bytesA {
+		c = toInt(v)
+		// pl("c: %d, %T, %T, %d, %v", c, c, 0x7F, 0x7F, c <= 0x7F)
+
+		if gbByteT == 0 {
+			if c >= 0x00 && c <= 0x7F {
+				continue
+			}
+			if c >= 0x81 && c <= 0xFE {
+				gbByteT = 1
+				continue
+			}
+
+		} else if gbByteT == 1 {
+			if (c >= 0x40 && c <= 0x7E) || (c >= 0x80 && c <= 0xFE) {
+				gbByteT = 0
+				continue
+			}
+			if c >= 0x30 && c <= 0x39 {
+				gbByteT = 2
+				continue
+			}
+
+		} else if gbByteT == 2 {
+			if c >= 0x81 && c <= 0xFE {
+				gbByteT = 3
+				continue
+			}
+
+		} else {
+			if c >= 0x30 && c <= 0x39 {
+				gbByteT = 0
+				continue
+			}
+		}
+
+		return false
+	}
+
+	return true
+}
+
+func detailCheck(bytesA) {
+
+	if checkUTF8(bytesA) {
+		return "UTF-8"
+	}
+
+	if checkGB18030(bytesA) {
+		return "GB18030"
+	}
+
+
+	return ""
+}
+
+
+// pl("Quick check result: %v", quickCheck(bytesT))
+
+
+// pl("Detail check result: %v", detailCheck(bytesT))
+
+// return
+
+func checkText(bytesA) {
+	rs = quickCheck(bytesA)
+	
+	if rs == "" {
+		rs = detailCheck(bytesA)
+	}
+
+	return rs
+}
+
+// func checkFile() {
+// 	// fileNameT = gui.SelectFile("Select the file to open...", "All files", "*")
+	
+// 	// if tk.IsErrorString(fileNameNewT) {
+// 	// 	tk.PlErrString(fileNameNewT)
+// 	// 	exit()
+// 	// }
+	
+// 	fileNameT = `E:\tmpx\csstest1.txt`  
+	
+// 	bytesT, errT = tk.LoadBytesFromFileE(fileNameT, -1)
+	
+// 	checkError(errT)
+
+// 	pln(checkText(bytesT))
+	
+// }
+	
+	
+lcl = import("lcl")
+
+errT = lcl.InitLCL()
+
+if errT != nil {
+	plerr(errT)
+	exit()
+}
+
+pln(tk.GetCurrentThreadID())
+
+application = lcl.GetApplication()
+pln(application)
+application.Initialize()
+
+application.SetTitle("编码检测与转换")
+application.SetMainFormOnTaskBar(true)
+
+mainForm = application.CreateForm()
+
+mainForm.SetWidth(620)
+mainForm.SetHeight(480)
+mainForm.SetCaption("编码检测与转换")
+mainForm.SetPosition(lcl.PoScreenCenter)
+
+mainForm.Font().SetSize(11)
+
+memo1 = lcl.NewMemo(mainForm)
+memo1.SetParent(mainForm)
+memo1.SetBounds(10, 20, 600, 400)
+memo1.Font().SetSize(11)
+memo1.SetAnchors(lcl.NewSet(lcl.AkTop, lcl.AkBottom, lcl.AkLeft, lcl.AkRight))
+memo1.SetScrollBars(lcl.SsAutoVertical)
+memo1.SetWordWrap(true)
+
+
+onButtonOpenClick = func(sender) {
+	fileNameT = gui.SelectFile("选择文件……", "所有类型", "*")
+	
+	if tk.IsErrorString(fileNameT) {
+		gui.SimpleError("错误提示", tk.GetErrorString(fileNameT))
+		return
+	}
+	
+	bytesT, errT = tk.LoadBytesFromFileE(fileNameT, -1)
+	
+	if errT != nil {
+		gui.SimpleError("错误提示", errT.Error())
+		return
+	}
+
+	rs = checkText(bytesT)
+
+	if rs == "" {
+		gui.SimpleError("错误提示", "无法推测编码")
+		return
+	}
+
+	var outStrT = ""
+
+	if rs == "GB18030" {
+		confirmT = gui.GetConfirm("请选择", "文件编码是"+rs+"，是否转换为UTF-8？")
+
+		if confirmT {
+			outStrT = tk.ConvertToUTF8(bytesT, "GB18030")
+		} else {
+			outStrT = toString(bytesT)
+		}
+	}
+
+	memo1.SetText(outStrT)
+}
+
+onButtonSaveAsClick = func(sender) {
+	confirmT = gui.GetConfirm("请选择", "如果文件没有转换为UTF-8，保存时可能会造成字符错乱并无法恢复，是否要继续？")
+
+	if !confirmT {
+		return
+	}
+
+	fileNameT = gui.SelectSaveFile("选择文件……", "所有类型", "*")
+	
+	if tk.IsErrorString(fileNameT) {
+		gui.SimpleError("错误提示", tk.GetErrorString(fileNameT))
+		return
+	}
+
+	textT = memo1.Text()
+
+	rs = tk.SaveStringToFile(textT, fileNameT)
+
+	if tk.IsErrorString(rs) {
+		gui.SimpleError("错误提示", tk.GetErrorString(rs))
+		return
+	}
+
+	gui.SimpleInfo("信息提示", "文件已保存至：" + fileNameT)
+}
+
+onButtonCloseClick = func(sender) {
+	application.Terminate()
+
+	memo1.Free()
+
+	buttonOpen.Free()
+	buttonSaveAs.Free()
+	buttonClose.Free()
+
+	mainForm.Free()
+	application.Free()
+}
+
+buttonOpen = lcl.NewButton(mainForm)
+buttonOpen.SetParent(mainForm)
+buttonOpen.SetLeft(10)
+buttonOpen.SetTop(435)
+buttonOpen.SetCaption("打开文件")
+buttonOpen.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
+buttonOpen.SetOnClick(&onButtonOpenClick)
+
+buttonSaveAs = lcl.NewButton(mainForm)
+buttonSaveAs.SetParent(mainForm)
+buttonSaveAs.SetLeft(110)
+buttonSaveAs.SetTop(435)
+buttonSaveAs.SetCaption("另存")
+buttonSaveAs.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
+buttonSaveAs.SetOnClick(&onButtonSaveAsClick)
+pln("here2")
+buttonClose = lcl.NewButton(mainForm)
+buttonClose.SetParent(mainForm)
+buttonClose.SetLeft(210)
+buttonClose.SetTop(435)
+buttonClose.SetCaption("关闭")
+buttonClose.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
+buttonClose.SetOnClick(&onButtonCloseClick)
+
+pln(application.Run())

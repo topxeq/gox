@@ -36,14 +36,14 @@ application = lcl.GetApplication()
 
 application.Initialize()
 
-application.SetTitle("Calculator with LCL")
+application.SetTitle("Gonum Plot Example")
 application.SetMainFormOnTaskBar(true)
 
 mainForm = application.CreateForm()
 
 mainForm.SetWidth(880)
 mainForm.SetHeight(480)
-mainForm.SetCaption("Calculator with LCL")
+mainForm.SetCaption("Gonum Plot Example")
 mainForm.SetPosition(lcl.PoScreenCenter)
 
 mainForm.Font().SetSize(11)
