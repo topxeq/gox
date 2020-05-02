@@ -3,7 +3,7 @@
 _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起，或者[这里](https://www.jianshu.com/nb/44919205)看更多的开发指南。_
 
 # gox
-Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Anko](https://github.com/mattn/anko) and [Goja](https://github.com/dop251/goja), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Anko and Tengo. The syntax of Gox language is very similar to Golang.
+Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), [Anko](https://github.com/mattn/anko) [Goja](https://github.com/dop251/goja) and [Tengo](https://github.com/d5/tengo), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Qlang, Anko and Tengo. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
@@ -22,6 +22,8 @@ A command-line only version of gox (named goxc, no GUI features) is also availab
 Since the more features added makes the Gox executable became very large, the Tiny Gox Version is now available to download. Some features are removed from Gox tiny version, such as OpenGL GUI, drawing, NoSQL, some database drivers(Oracle, MS-SQL), etc.
 
 Goxg version is used to run GUI only programs, it will not open a CMD console.
+
+From version 0.97a, Qlang became the default script-engine for Gox, and is prefered to use.
 
 ## 2.usage
 
@@ -165,11 +167,11 @@ The global value "argsG" could be used for retrieve command-line arguments, and 
 
 All the command-line switches/flags used by Gox itself are not recommended to be used in the scripts.
 
-An example for command-line handling is as below([source code](https://gitee.com/topxeq/gox/tree/master/scripts/commandLine.gox)),
+An example for command-line handling is as below([source code](https://gitee.com/topxeq/gox/tree/master/scripts/commandLine.ank)),
 
 ```
 // test command-line functions
-// for example: gox scripts\commandLine.gox abc -file=a.txt
+// for example: gox scripts\commandLine.ank abc -file=a.txt
 
 os = import("os")
 
@@ -229,7 +231,7 @@ true
 
 ### Import packages
 
-In Gox, the packages can be imported any time, but remember to assign it to a variable, such as,
+In Gox with Anko engine, the packages can be imported any time, but remember to assign it to a variable, such as,
 
 ```
 var fmt = import("fmt")
@@ -248,7 +250,7 @@ Refer to the documents of these Golang packages for the detailed usage.
 
 ### Data type conversion
 
-some "to" functions could be used as below,
+If using Anko engine, some "to" functions could be used as below,
 
 ```
 a = 1
@@ -280,7 +282,7 @@ printfln("type of a2 + b2 is: %T", a2+b2)
 the running result is,
 
 ```
-λ gox scripts\dataTypeConversion.gox
+λ gox scripts\dataTypeConversion.ank
 type of a is: int64
 a + b = 3
 a + b = 3
@@ -328,7 +330,7 @@ println(x+y)
 
 ### Basic script with GUI
 
-A simple calculator with GUI(OPENGL is required).
+A simple calculator with GUI(OPENGL is required) in Anko engine.
 
 ```
 var gui = import("gui")
@@ -367,7 +369,7 @@ The screen shot while running the script is like,
 
 ### Basic script with GUI by LCL library
 
-The script below acts almost the same as the script above, but written with LCL library support, and OPENGL is not required, so it's more compatible in the server-side environment.
+The script below(use Anko engine) acts almost the same as the script above, but written with LCL library support, and OPENGL is not required, so it's more compatible in the server-side environment.
 
 ```
 lcl = import("lcl")
@@ -462,19 +464,19 @@ a = 10
 
 a = "this"
 
-func f(p1, p2) {
+f = fn(p1, p2) {
 
 }
 
 ```
 
-It's the same for function parameters and return values.
+It's very similar for function parameters and return values.
 
 ## 7. Library Reference
 
-First, since Gox is based on Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Anko's, Goja's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and Giu's documents.
+First, since Gox is based on Qlang/Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Qlang's, Anko's, Goja's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and Giu's documents.
 
-The default Golang packages available(could imported in Gox code) include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
+The default Golang packages available(could imported in Gox code while using Anko engine) include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
 
 Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk) or [here](https://pkg.go.dev/github.com/topxeq/tk).
 
@@ -493,6 +495,8 @@ The global value "argsG" could be used for retrieve command-line arguments, and 
 
 ### Functions
 
+Note: some functions may exist or not in different script engine, and may have some slight differences.
+
 ---
 
 
@@ -505,6 +509,23 @@ get global variable
 #### setVar
 
 set global variable
+
+---
+
+### setValue
+
+assign a value by a pointer, used in Qlang engine.
+
+```
+s = new(string)
+
+// *s = "abc" is not correct in Qlang engine
+
+setValue(s, "abc")
+
+println(*s)  // use * for dereference a value from pointer is allowed
+
+```
 
 ---
 
@@ -598,6 +619,24 @@ get user input from command-line
 printf("A:")
 
 a = getInput()
+
+printf("B:")
+
+b = getInput()
+
+println("A + B =", a+b)
+```
+
+---
+
+#### getInputf
+
+the same as getInput, but use printf to print a prompt string
+
+```
+n = 3
+
+a = getInputf("Please enter the %v value: ", n)
 
 printf("B:")
 
@@ -741,13 +780,13 @@ runScript(scriptA, modeA, argsA ...)
 modeA == "" || modeA == "1" || modeA == "new" 
 ```
 
-run Gox script in a new VM
+run Anko script in a new VM
 
 ```
 modeA == "2" || modeA == "current"
 ```
 
-run Gox script in a current VM
+run Anko script in a current VM
 
 ```
 modeA == "3" || modeA == "js"

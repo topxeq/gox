@@ -756,14 +756,21 @@ func importQLNonGUIPackages() {
 	}
 
 	var defaultExports = map[string]interface{}{
-		"eval":      qlEval,
-		"printfln":  tk.Pl,
-		"pl":        tk.Pl,
-		"pln":       fmt.Println,
-		"pv":        printValue,
-		"exit":      exit,
-		"setString": setString,
-		"setValue":  setValue,
+		"eval":             qlEval,
+		"printfln":         tk.Pl,
+		"pl":               tk.Pl,
+		"pln":              fmt.Println,
+		"plerr":            tk.PlErr,
+		"pv":               printValue,
+		"exit":             exit,
+		"setString":        setString,
+		"setValue":         setValue,
+		"setVar":           setVar,
+		"getVar":           getVar,
+		"checkError":       checkError,
+		"checkErrorString": checkErrorString,
+		"getInput":         tk.GetUserInput,
+		"getInputf":        tk.GetInputf,
 	}
 
 	qlang.Import("", defaultExports)
@@ -1778,7 +1785,28 @@ func NewTKeyEvent(funcA *execq.Function) *vcl.TKeyEvent {
 	return &f
 }
 
+var vgInch = float64(vg.Inch)
+
 func importQLGUIPackages() {
+	var plotExports = map[string]interface{}{
+		"New": plot.New,
+		// "SetTitleText":  plot.SetTitleText,
+		"NewXY":         newPlotXY,
+		"AddLinePoints": plotutil.AddLinePoints,
+		"Inch":          vgInch,
+
+		"XYs": specq.StructOf((*plotter.XYs)(nil)),
+		"XY":  specq.StructOf((*plotter.XY)(nil)),
+	}
+
+	qlang.Import("plot", plotExports)
+
+	var imagetkExports = map[string]interface{}{
+		"NewImageTK": imagetk.NewImageTK,
+	}
+
+	qlang.Import("imagetk", imagetkExports)
+
 	var guiExports = map[string]interface{}{
 		"NewMasterWindow":         g.NewMasterWindow,
 		"SingleWindow":            g.SingleWindow,
@@ -2807,6 +2835,8 @@ func main() {
 		}
 	}()
 
+	test()
+
 	rand.Seed(time.Now().Unix())
 
 	argsT := os.Args
@@ -2935,45 +2965,57 @@ func main() {
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
 	for _, scriptT := range scriptsT {
+		var fcT string
+
+		if ifExampleT {
+			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
+				scriptT += ".gox"
+			}
+			fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
+		} else if ifRemoteT {
+			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+		} else if ifCloudT {
+			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
+				scriptT += ".gox"
+			}
+			fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
+		} else if ifGoPathT {
+			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
+				scriptT += ".gox"
+			}
+
+			fcT = tk.LoadStringFromFile(filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT))
+		} else {
+			fcT = tk.LoadStringFromFile(scriptT)
+		}
+
+		if tk.IsErrorString(fcT) {
+			tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+
+			continue
+		}
+
+		if tk.StartsWith(fcT, "//TXDEF#") {
+			if decryptRunCodeT == "" {
+				tk.Prf("Password: ")
+				decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+				// fcT = fcT[8:]
+			}
+		}
+
+		if decryptRunCodeT != "" {
+			fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+		}
+
+		if ifViewT {
+			tk.Pl("%v", fcT)
+
+			return
+		}
+
 		// full version related start
 		if tk.EndsWith(scriptT, ".js") {
-			var fcT string
-
-			if ifExampleT {
-				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
-			} else if ifRemoteT {
-				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-			} else if ifCloudT {
-				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
-			} else {
-				fcT = tk.LoadStringFromFile(scriptT)
-			}
-
-			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
-
-				continue
-			}
-
-			if tk.StartsWith(fcT, "//TXDEF#") {
-				if decryptRunCodeT == "" {
-					tk.Prf("Password: ")
-					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
-
-					// fcT = fcT[8:]
-				}
-			}
-
-			if decryptRunCodeT != "" {
-				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-			}
-
-			if ifViewT {
-				tk.Pl("%v", fcT)
-
-				return
-			}
-
 			initJSVM()
 
 			jsVMG.Set("argsG", jsVMG.ToValue(argsT))
@@ -2993,43 +3035,6 @@ func main() {
 
 			return
 		} else if tk.EndsWith(scriptT, ".tg") || tk.EndsWith(scriptT, ".tengo") {
-			var fcT string
-
-			if ifExampleT {
-				fcT = tk.DownloadPageUTF8("https://raw.githubusercontent.com/topxeq/gox/master/scripts/"+scriptT, nil, "", 30)
-			} else if ifRemoteT {
-				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-			} else if ifCloudT {
-				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
-			} else {
-				fcT = tk.LoadStringFromFile(scriptT)
-			}
-
-			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
-
-				continue
-			}
-
-			if tk.StartsWith(fcT, "//TXDEF#") {
-				if decryptRunCodeT == "" {
-					tk.Prf("Password: ")
-					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
-
-					// fcT = fcT[8:]
-				}
-			}
-
-			if decryptRunCodeT != "" {
-				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-			}
-
-			if ifViewT {
-				tk.Pl("%v", fcT)
-
-				return
-			}
-
 			initTengoVM()
 
 			scriptT := tengo.NewScript([]byte(fcT))
@@ -3072,51 +3077,8 @@ func main() {
 			tk.Pl("%#v", rs)
 			// }
 
-		} else if tk.EndsWith(scriptT, ".ank") /* || tk.EndsWith(scriptT, ".gox")*/ {
+		} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".anko") {
 			// full version related end
-
-			var fcT string
-
-			if ifExampleT {
-				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
-					scriptT += ".ank"
-				}
-				fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
-			} else if ifRemoteT {
-				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-			} else if ifCloudT {
-				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
-					scriptT += ".ank"
-				}
-				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
-			} else {
-				fcT = tk.LoadStringFromFile(scriptT)
-			}
-
-			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
-
-				continue
-			}
-
-			if tk.StartsWith(fcT, "//TXDEF#") {
-				if decryptRunCodeT == "" {
-					tk.Prf("Password: ")
-					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
-
-					// fcT = fcT[8:]
-				}
-			}
-
-			if decryptRunCodeT != "" {
-				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-			}
-
-			if ifViewT {
-				tk.Pl("%v", fcT)
-
-				return
-			}
 
 			initAnkVM()
 
@@ -3169,58 +3131,9 @@ func main() {
 
 		} else { // if tk.EndsWith(scriptT, ".ql") || tk.EndsWith(scriptT, ".goxq") {
 
-			var fcT string
-
-			if ifExampleT {
-				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
-					scriptT += ".gox"
-				}
-				fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
-			} else if ifRemoteT {
-				fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-			} else if ifCloudT {
-				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
-					scriptT += ".gox"
-				}
-				fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
-			} else if ifGoPathT {
-				if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
-					scriptT += ".gox"
-				}
-
-				fcT = tk.LoadStringFromFile(filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT))
-			} else {
-				fcT = tk.LoadStringFromFile(scriptT)
-			}
-
-			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
-
-				continue
-			}
-
-			if tk.StartsWith(fcT, "//TXDEF#") {
-				if decryptRunCodeT == "" {
-					tk.Prf("Password: ")
-					decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
-
-					// fcT = fcT[8:]
-				}
-			}
-
-			if decryptRunCodeT != "" {
-				fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-			}
-
-			if ifViewT {
-				tk.Pl("%v", fcT)
-
-				return
-			}
-
 			initQLVM()
 
-			script := fcT //`println("Hello World :)")`
+			script := fcT
 
 			errT := qlVMG.SafeEval(script)
 			if errT != nil {
@@ -3237,4 +3150,32 @@ func main() {
 
 		}
 	}
+}
+
+func test() {
+	return
+
+	p, _ := plot.New()
+
+	p.Title.Text = "a"
+
+	p.SetTitleText("bbb")
+
+	tk.Pl("p: %#v", p)
+
+	typeT := reflect.TypeOf(p)
+
+	m := 1
+	kind := 2
+	name := "aa"
+
+	fmt.Printf("1m: %#v, obj: %#v, kind: %v, %v, Name: %v\n", m, typeT, kind, m, name)
+	lenT := typeT.NumMethod()
+
+	fmt.Printf("typeT: %#v, methodNum: %#v\n", typeT, lenT)
+	for i := 0; i < lenT; i++ {
+		fmt.Printf("m %v: %#v, method: %#v\n", i, typeT.Method(i), typeT.Method(i).Name)
+
+	}
+
 }

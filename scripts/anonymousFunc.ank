@@ -1,22 +1,20 @@
-fn(x) {
-	return fn(y) {
+func(x) {
+	return func(y) {
 		x(y)
 	}
-}(fn(z) {
+}(func(z) {
 		println("Hi!", z)
 	})("Nice to see you.")
 
-NewAddFunc = fn() {
-	count = 0
+NewAddFunc = func() {
+	var count = 0
 
-	return fn(n) {
+	return func(n) {
 		count += n
 
 		return count
 	}
 }
-
-println("count=", count)
 
 f2 = NewAddFunc()
 

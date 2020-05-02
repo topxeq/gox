@@ -216,3 +216,5 @@ b2 = tk.StrToFloat64WithDefaultValue(b1, 0)
 
 printfln("a2 + b2 = %#v", a2+b2)
 printfln("type of a2 + b2 is: %T", a2+b2)
+
+getInputf("Press enter to exit...")

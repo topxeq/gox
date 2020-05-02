@@ -1,17 +1,16 @@
+plot = import("plot")
+
 p, _ = plot.New()
 
 p.Title.Text = "Gonum Plot Example"
-
-// p.SetTitleText("Gonum Plot Example")
-
 p.X.Label.Text = "X"
 p.Y.Label.Text = "Y"
 
-points = make(plot.XYs, 4)
+points = make(plot.XYs)
 
-a = &plot.XY{X: 0.0, Y: 0.0}
-
-points[0] = *a
+points[0] = make(plot.XY)
+points[0].X = 0.0
+points[0].Y = 0.0
 
 points[1] = plot.NewXY(1.0, 1.0)
 
@@ -21,7 +20,10 @@ points[3] = plot.NewXY(3.0, 9.0)
 
 plot.AddLinePoints(p, "y = x * x", points)
 
-p.Save(4*plot.Inch, 4.0*plot.Inch, `c:\test\points.png`)
+p.Save(4*plot.Inch, 4*plot.Inch, `c:\test\points.png`)
+
+lcl = import("lcl")
+os = import("os")
 
 errT = lcl.InitLCL()
 
@@ -53,6 +55,8 @@ img1.Picture().LoadFromFile(`c:\test\points.png`)
 img1.SetStretch(true)
 img1.SetProportional(true)
 
+imagetk = import("imagetk")
+
 itk = imagetk.NewImageTK()
 
 bufT, errT = itk.LoadPlotImageInMemory(p, 4*plot.Inch, 4*plot.Inch, "png")
@@ -63,6 +67,7 @@ mem = lcl.NewMemoryStream()
 mem.Write(bufT.Bytes())
 mem.SetPosition(0)
 
+
 img2 = lcl.NewImage(mainForm)
 img2.SetBounds(420, 10, 400, 400)
 img2.SetParent(mainForm)
@@ -72,7 +77,7 @@ img2.SetProportional(true)
 
 mem.Free()
 
-onButtonCloseClick = fn(sender) {
+onButtonCloseClick = func(sender) {
 	application.Terminate()
 }
 
@@ -81,7 +86,7 @@ buttonClose.SetParent(mainForm)
 buttonClose.SetLeft(10)
 buttonClose.SetTop(420)
 buttonClose.SetCaption("Close")
-buttonClose.SetOnClick(lcl.NewTNotifyEvent(onButtonCloseClick))
+buttonClose.SetOnClick(&onButtonCloseClick)
 
 application.Run()
 

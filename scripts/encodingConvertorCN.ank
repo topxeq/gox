@@ -1,4 +1,7 @@
-quickCheck = fn(bytesA) {
+tk = import("tk")
+gui = import("gui")
+
+func quickCheck(bytesA) {
 	lenT = len(bytesA)
 
 	if lenT < 3 {
@@ -20,11 +23,16 @@ quickCheck = fn(bytesA) {
 	return ""
 }
 
-checkUTF8 = fn(bytesA) {
-	utf8ByteT = 0
+func isUTF8(c) {
 
-	for i, v = range bytesA {
-		c = int(v)
+}
+
+func checkUTF8(bytesA) {
+	var utf8ByteT = 0
+
+	for v in bytesA {
+		c = toInt(v)
+		// pl("c: %d, %T, %T, %d, %v", c, c, 0x7F, 0x7F, c <= 0x7F)
 
 		if utf8ByteT == 0 {
 			if c >= 0x00 && c <= 0x7F {
@@ -59,11 +67,12 @@ checkUTF8 = fn(bytesA) {
 	return true
 }
 
-checkGB18030 = fn(bytesA) {
-	gbByteT = 0
+func checkGB18030(bytesA) {
+	var gbByteT = 0
 
-	for i, v = range bytesA {
-		c = int(v)
+	for v in bytesA {
+		c = toInt(v)
+		// pl("c: %d, %T, %T, %d, %v", c, c, 0x7F, 0x7F, c <= 0x7F)
 
 		if gbByteT == 0 {
 			if c >= 0x00 && c <= 0x7F {
@@ -74,7 +83,7 @@ checkGB18030 = fn(bytesA) {
 				continue
 			}
 
-		} elif gbByteT == 1 {
+		} else if gbByteT == 1 {
 			if (c >= 0x40 && c <= 0x7E) || (c >= 0x80 && c <= 0xFE) {
 				gbByteT = 0
 				continue
@@ -84,7 +93,7 @@ checkGB18030 = fn(bytesA) {
 				continue
 			}
 
-		} elif gbByteT == 2 {
+		} else if gbByteT == 2 {
 			if c >= 0x81 && c <= 0xFE {
 				gbByteT = 3
 				continue
@@ -103,7 +112,7 @@ checkGB18030 = fn(bytesA) {
 	return true
 }
 
-detailCheck = fn(bytesA) {
+func detailCheck(bytesA) {
 
 	if checkUTF8(bytesA) {
 		return "UTF-8"
@@ -118,7 +127,14 @@ detailCheck = fn(bytesA) {
 }
 
 
-checkText = fn(bytesA) {
+// pl("Quick check result: %v", quickCheck(bytesT))
+
+
+// pl("Detail check result: %v", detailCheck(bytesT))
+
+// return
+
+func checkText(bytesA) {
 	rs = quickCheck(bytesA)
 	
 	if rs == "" {
@@ -128,6 +144,27 @@ checkText = fn(bytesA) {
 	return rs
 }
 
+// func checkFile() {
+// 	// fileNameT = gui.SelectFile("Select the file to open...", "All files", "*")
+	
+// 	// if tk.IsErrorString(fileNameNewT) {
+// 	// 	tk.PlErrString(fileNameNewT)
+// 	// 	exit()
+// 	// }
+	
+// 	fileNameT = `E:\tmpx\csstest1.txt`  
+	
+// 	bytesT, errT = tk.LoadBytesFromFileE(fileNameT, -1)
+	
+// 	checkError(errT)
+
+// 	pln(checkText(bytesT))
+	
+// }
+	
+	
+lcl = import("lcl")
+
 errT = lcl.InitLCL()
 
 if errT != nil {
@@ -135,7 +172,10 @@ if errT != nil {
 	exit()
 }
 
+pln(tk.GetCurrentThreadID())
+
 application = lcl.GetApplication()
+pln(application)
 application.Initialize()
 
 application.SetTitle("编码检测与转换")
@@ -159,14 +199,14 @@ memo1.SetScrollBars(lcl.SsAutoVertical)
 memo1.SetWordWrap(true)
 
 
-onButtonOpenClick = fn(sender) {
+onButtonOpenClick = func(sender) {
 	fileNameT = gui.SelectFile("选择文件……", "所有类型", "*")
 	
 	if tk.IsErrorString(fileNameT) {
 		gui.SimpleError("错误提示", tk.GetErrorString(fileNameT))
 		return
 	}
-
+	
 	bytesT, errT = tk.LoadBytesFromFileE(fileNameT, -1)
 	
 	if errT != nil {
@@ -181,7 +221,7 @@ onButtonOpenClick = fn(sender) {
 		return
 	}
 
-	outStrT = ""
+	var outStrT = ""
 
 	if rs == "GB18030" {
 		confirmT = gui.GetConfirm("请选择", "文件编码是"+rs+"，是否转换为UTF-8？")
@@ -189,24 +229,14 @@ onButtonOpenClick = fn(sender) {
 		if confirmT {
 			outStrT = tk.ConvertToUTF8(bytesT, "GB18030")
 		} else {
-			outStrT = string(bytesT)
+			outStrT = toString(bytesT)
 		}
-	} elif rs == "UTF8-BOM" {
-		confirmT = gui.GetConfirm("请选择", "文件编码是"+rs+"，是否去除BOM头？")
-
-		if confirmT {
-			outStrT = string(bytesT[3:])
-		} else {
-			outStrT = string(bytesT)
-		}
-	} else {
-		outStrT = string(bytesT)
 	}
 
 	memo1.SetText(outStrT)
 }
 
-onButtonSaveAsClick = fn(sender) {
+onButtonSaveAsClick = func(sender) {
 	confirmT = gui.GetConfirm("请选择", "如果文件没有转换为UTF-8，保存时可能会造成字符错乱并无法恢复，是否要继续？")
 
 	if !confirmT {
@@ -232,8 +262,17 @@ onButtonSaveAsClick = fn(sender) {
 	gui.SimpleInfo("信息提示", "文件已保存至：" + fileNameT)
 }
 
-onButtonCloseClick = fn(sender) {
+onButtonCloseClick = func(sender) {
 	application.Terminate()
+
+	memo1.Free()
+
+	buttonOpen.Free()
+	buttonSaveAs.Free()
+	buttonClose.Free()
+
+	mainForm.Free()
+	application.Free()
 }
 
 buttonOpen = lcl.NewButton(mainForm)
@@ -242,7 +281,7 @@ buttonOpen.SetLeft(10)
 buttonOpen.SetTop(435)
 buttonOpen.SetCaption("打开文件")
 buttonOpen.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
-buttonOpen.SetOnClick(lcl.NewTNotifyEvent(onButtonOpenClick))
+buttonOpen.SetOnClick(&onButtonOpenClick)
 
 buttonSaveAs = lcl.NewButton(mainForm)
 buttonSaveAs.SetParent(mainForm)
@@ -250,14 +289,14 @@ buttonSaveAs.SetLeft(110)
 buttonSaveAs.SetTop(435)
 buttonSaveAs.SetCaption("另存")
 buttonSaveAs.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
-buttonSaveAs.SetOnClick(lcl.NewTNotifyEvent(onButtonSaveAsClick))
-
+buttonSaveAs.SetOnClick(&onButtonSaveAsClick)
+pln("here2")
 buttonClose = lcl.NewButton(mainForm)
 buttonClose.SetParent(mainForm)
 buttonClose.SetLeft(210)
 buttonClose.SetTop(435)
 buttonClose.SetCaption("关闭")
 buttonClose.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
-buttonClose.SetOnClick(lcl.NewTNotifyEvent(onButtonCloseClick))
+buttonClose.SetOnClick(&onButtonCloseClick)
 
-application.Run()
+pln(application.Run())

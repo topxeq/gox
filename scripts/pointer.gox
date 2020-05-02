@@ -10,7 +10,7 @@ println(d)
 
 e = false
 
-f = &e
+f = ^e
 
 printfln("%x", f)
 
