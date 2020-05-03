@@ -529,9 +529,36 @@ println(*s)  // use * for dereference a value from pointer is allowed
 
 ---
 
+### getValue
+
+get a value referenced by a pointer, used in Qlang engine.
+
+```
+s = new(string)
+
+// *s = "abc" is not correct in Qlang engine
+
+setValue(s, "abc")
+
+println(*s)  // use * for dereference a value from pointer is allowed
+
+v = getValue(s)
+
+println(v) // will be "abc"
+
+```
+
+---
+
+#### bitXor
+
+bitwise XOR operation, since in Qlang engine, ^ is used for get address/pointer of a variable(like & in other engine),
+so the origin bitwise XOR operator in Golang is used and we will use bitXor function instead.
+---
+
 #### defined
 
-check if a variable is defined
+check if a variable is defined(only available in Anko engine)
 
 ---
 

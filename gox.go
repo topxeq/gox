@@ -39,10 +39,11 @@ import (
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
 
-	"github.com/qiniu/qlang"
-	execq "github.com/qiniu/qlang/exec"
-	_ "github.com/qiniu/qlang/lib/builtin" // 导入 builtin 包
-	specq "github.com/qiniu/qlang/spec"
+	"github.com/topxeq/qlang"
+	execq "github.com/topxeq/qlang/exec"
+	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
+	qlos "github.com/topxeq/qlang/lib/os"
+	specq "github.com/topxeq/qlang/spec"
 
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
@@ -94,7 +95,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.97a"
+var versionG = "0.98a"
 
 var verboseG = false
 
@@ -467,6 +468,11 @@ func initAnkoVMInstance(vmA *env.Env) {
 	vmA.Define("typeof", typeOfValue)
 	vmA.Define("panic", panicIt)
 
+	vmA.Define("bitXor", bitXor)
+
+	vmA.Define("setValue", setValue)
+	vmA.Define("getValue", getValue)
+
 	vmA.Define("setVar", setVar)
 	vmA.Define("getVar", getVar)
 
@@ -715,6 +721,47 @@ func LoadPlotImage(p *plot.Plot, w vg.Length, h vg.Length) (*image.RGBA, error) 
 
 // full version related end
 
+func setValue(p interface{}, v interface{}) {
+	// tk.Pl("%#v", reflect.TypeOf(p).Kind())
+	// p = v
+
+	srcRef := reflect.ValueOf(v)
+	vp := reflect.ValueOf(p)
+	vp.Elem().Set(srcRef)
+}
+
+func getValue(p interface{}) interface{} {
+	vp := reflect.Indirect(reflect.ValueOf(p))
+	return vp.Interface()
+}
+
+func bitXor(p interface{}, v interface{}) interface{} {
+	switch p.(type) {
+	case int:
+		return p.(int) ^ v.(int)
+	case int64:
+		return p.(int64) ^ v.(int64)
+	case int32:
+		return p.(int32) ^ v.(int32)
+	case int16:
+		return p.(int16) ^ v.(int16)
+	case int8:
+		return p.(int8) ^ v.(int8)
+	case uint64:
+		return p.(uint64) ^ v.(uint64)
+	case uint32:
+		return p.(uint32) ^ v.(uint32)
+	case uint16:
+		return p.(uint16) ^ v.(uint16)
+	case uint8:
+		return p.(uint8) ^ v.(uint8)
+	case uint:
+		return p.(uint) ^ v.(uint)
+	}
+
+	return 0
+}
+
 func importQLNonGUIPackages() {
 	printValue := func(nameA string) {
 
@@ -746,15 +793,6 @@ func importQLNonGUIPackages() {
 		*p = strA
 	}
 
-	setValue := func(p interface{}, v interface{}) {
-		// tk.Pl("%#v", reflect.TypeOf(p).Kind())
-		// p = v
-
-		srcRef := reflect.ValueOf(v)
-		vp := reflect.ValueOf(p)
-		vp.Elem().Set(srcRef)
-	}
-
 	var defaultExports = map[string]interface{}{
 		"eval":             qlEval,
 		"printfln":         tk.Pl,
@@ -765,12 +803,22 @@ func importQLNonGUIPackages() {
 		"exit":             exit,
 		"setString":        setString,
 		"setValue":         setValue,
+		"getValue":         getValue,
+		"bitXor":           bitXor,
 		"setVar":           setVar,
 		"getVar":           getVar,
 		"checkError":       checkError,
 		"checkErrorString": checkErrorString,
 		"getInput":         tk.GetUserInput,
 		"getInputf":        tk.GetInputf,
+		"newSSHClient":     newSSHClient,
+		"run":              runFile,
+		// GUI related start
+
+		// full version related start
+		"edit": editFile,
+		// full version related end
+		// GUI related end
 	}
 
 	qlang.Import("", defaultExports)
@@ -953,145 +1001,149 @@ func importQLNonGUIPackages() {
 		"RemoveLastSubString":                 tk.RemoveLastSubString,
 		"AddLastSubString":                    tk.AddLastSubString,
 		"GenerateFileListRecursively":         tk.GenerateFileListRecursively,
-		"GetAvailableFileName":                tk.GetAvailableFileName,
-		"LoadStringFromFile":                  tk.LoadStringFromFile,
-		"LoadStringFromFileWithDefault":       tk.LoadStringFromFileWithDefault,
-		"LoadStringFromFileE":                 tk.LoadStringFromFileE,
-		"LoadStringFromFileB":                 tk.LoadStringFromFileB,
-		"LoadBytes":                           tk.LoadBytes,
-		"LoadBytesFromFileE":                  tk.LoadBytesFromFileE,
-		"SaveStringToFile":                    tk.SaveStringToFile,
-		"SaveStringToFileE":                   tk.SaveStringToFileE,
-		"AppendStringToFile":                  tk.AppendStringToFile,
-		"LoadStringList":                      tk.LoadStringList,
-		"LoadStringListFromFile":              tk.LoadStringListFromFile,
-		"LoadStringListBuffered":              tk.LoadStringListBuffered,
-		"SaveStringList":                      tk.SaveStringList,
-		"SaveStringListWin":                   tk.SaveStringListWin,
-		"SaveStringListBufferedByRange":       tk.SaveStringListBufferedByRange,
-		"SaveStringListBuffered":              tk.SaveStringListBuffered,
-		"ReadLineFromBufioReader":             tk.ReadLineFromBufioReader,
-		"RestoreLineEnds":                     tk.RestoreLineEnds,
-		"LoadDualLineList":                    tk.LoadDualLineList,
-		"SaveDualLineList":                    tk.SaveDualLineList,
-		"RemoveDuplicateInDualLineList":       tk.RemoveDuplicateInDualLineList,
-		"AppendDualLineList":                  tk.AppendDualLineList,
-		"LoadSimpleMapFromFile":               tk.LoadSimpleMapFromFile,
-		"LoadSimpleMapFromFileE":              tk.LoadSimpleMapFromFileE,
-		"SimpleMapToString":                   tk.SimpleMapToString,
-		"LoadSimpleMapFromString":             tk.LoadSimpleMapFromString,
-		"LoadSimpleMapFromStringE":            tk.LoadSimpleMapFromStringE,
-		"ReplaceLineEnds":                     tk.ReplaceLineEnds,
-		"SaveSimpleMapToFile":                 tk.SaveSimpleMapToFile,
-		"AppendSimpleMapFromFile":             tk.AppendSimpleMapFromFile,
-		"LoadSimpleMapFromDir":                tk.LoadSimpleMapFromDir,
-		"EncodeToXMLString":                   tk.EncodeToXMLString,
-		"ObjectToJSON":                        tk.ObjectToJSON,
-		"ObjectToJSONIndent":                  tk.ObjectToJSONIndent,
-		"JSONToMapStringString":               tk.JSONToMapStringString,
-		"JSONToObject":                        tk.JSONToObject,
-		"SafelyGetStringForKeyWithDefault":    tk.SafelyGetStringForKeyWithDefault,
-		"SafelyGetFloat64ForKeyWithDefault":   tk.SafelyGetFloat64ForKeyWithDefault,
-		"SafelyGetIntForKeyWithDefault":       tk.SafelyGetIntForKeyWithDefault,
-		"JSONToStringArray":                   tk.JSONToStringArray,
-		"EncodeStringSimple":                  tk.EncodeStringSimple,
-		"EncodeStringUnderline":               tk.EncodeStringUnderline,
-		"EncodeStringCustom":                  tk.EncodeStringCustom,
-		"DecodeStringSimple":                  tk.DecodeStringSimple,
-		"DecodeStringUnderline":               tk.DecodeStringUnderline,
-		"DecodeStringCustom":                  tk.DecodeStringCustom,
-		"MD5Encrypt":                          tk.MD5Encrypt,
-		"BytesToHex":                          tk.BytesToHex,
-		"HexToBytes":                          tk.HexToBytes,
-		"GetRandomByte":                       tk.GetRandomByte,
-		"EncryptDataByTXDEE":                  tk.EncryptDataByTXDEE,
-		"SumBytes":                            tk.SumBytes,
-		"EncryptDataByTXDEF":                  tk.EncryptDataByTXDEF,
-		"EncryptStreamByTXDEF":                tk.EncryptStreamByTXDEF,
-		"DecryptStreamByTXDEF":                tk.DecryptStreamByTXDEF,
-		"DecryptDataByTXDEE":                  tk.DecryptDataByTXDEE,
-		"DecryptDataByTXDEF":                  tk.DecryptDataByTXDEF,
-		"EncryptStringByTXTE":                 tk.EncryptStringByTXTE,
-		"DecryptStringByTXTE":                 tk.DecryptStringByTXTE,
-		"EncryptStringByTXDEE":                tk.EncryptStringByTXDEE,
-		"DecryptStringByTXDEE":                tk.DecryptStringByTXDEE,
-		"EncryptStringByTXDEF":                tk.EncryptStringByTXDEF,
-		"DecryptStringByTXDEF":                tk.DecryptStringByTXDEF,
-		"EncryptFileByTXDEF":                  tk.EncryptFileByTXDEF,
-		"EncryptFileByTXDEFStream":            tk.EncryptFileByTXDEFStream,
-		"DecryptFileByTXDEFStream":            tk.DecryptFileByTXDEFStream,
-		"ErrorToString":                       tk.ErrorToString,
-		"EncryptFileByTXDEFS":                 tk.EncryptFileByTXDEFS,
-		"EncryptFileByTXDEFStreamS":           tk.EncryptFileByTXDEFStreamS,
-		"DecryptFileByTXDEF":                  tk.DecryptFileByTXDEF,
-		"DecryptFileByTXDEFS":                 tk.DecryptFileByTXDEFS,
-		"DecryptFileByTXDEFStreamS":           tk.DecryptFileByTXDEFStreamS,
-		"Pkcs7Padding":                        tk.Pkcs7Padding,
-		"AESEncrypt":                          tk.AESEncrypt,
-		"AESDecrypt":                          tk.AESDecrypt,
-		"AnalyzeURLParams":                    tk.AnalyzeURLParams,
-		"UrlEncode":                           tk.UrlEncode,
-		"UrlEncode2":                          tk.UrlEncode2,
-		"UrlDecode":                           tk.UrlDecode,
-		"JoinURL":                             tk.JoinURL,
-		"AddDebug":                            tk.AddDebug,
-		"AddDebugF":                           tk.AddDebugF,
-		"ClearDebug":                          tk.ClearDebug,
-		"GetDebug":                            tk.GetDebug,
-		"DownloadPageUTF8":                    tk.DownloadPageUTF8,
-		"DownloadPage":                        tk.DownloadPage,
-		"DownloadPageByMap":                   tk.DownloadPageByMap,
-		"GetLastComponentOfUrl":               tk.GetLastComponentOfUrl,
-		"DownloadFile":                        tk.DownloadFile,
-		"DownloadBytes":                       tk.DownloadBytes,
-		"PostRequest":                         tk.PostRequest,
-		"PostRequestX":                        tk.PostRequestX,
-		"PostRequestBytesX":                   tk.PostRequestBytesX,
-		"PostRequestBytesWithMSSHeaderX":      tk.PostRequestBytesWithMSSHeaderX,
-		"PostRequestBytesWithCookieX":         tk.PostRequestBytesWithCookieX,
-		"GetFormValueWithDefaultValue":        tk.GetFormValueWithDefaultValue,
-		"GenerateJSONPResponse":               tk.GenerateJSONPResponse,
-		"GenerateJSONPResponseWithObject":     tk.GenerateJSONPResponseWithObject,
-		"GenerateJSONPResponseWith2Object":    tk.GenerateJSONPResponseWith2Object,
-		"GenerateJSONPResponseWith3Object":    tk.GenerateJSONPResponseWith3Object,
-		"GetSuccessValue":                     tk.GetSuccessValue,
-		"Float32ArrayToFloat64Array":          tk.Float32ArrayToFloat64Array,
-		"CalCosineSimilarityBetweenFloatsBig": tk.CalCosineSimilarityBetweenFloatsBig,
-		"GetDBConnection":                     tk.GetDBConnection,
-		"GetDBRowCount":                       tk.GetDBRowCount,
-		"GetDBRowCountCompact":                tk.GetDBRowCountCompact,
-		"GetDBResultString":                   tk.GetDBResultString,
-		"GetDBResultArray":                    tk.GetDBResultArray,
-		"ConvertToGB18030":                    tk.ConvertToGB18030,
-		"ConvertToGB18030Bytes":               tk.ConvertToGB18030Bytes,
-		"ConvertToUTF8":                       tk.ConvertToUTF8,
-		"ConvertStringToUTF8":                 tk.ConvertStringToUTF8,
-		"CreateSimpleEvent":                   tk.CreateSimpleEvent,
-		"GetAllParameters":                    tk.GetAllParameters,
-		"GetAllSwitches":                      tk.GetAllSwitches,
-		"ToLower":                             tk.ToLower,
-		"ToUpper":                             tk.ToUpper,
-		"GetEnv":                              tk.GetEnv,
-		"JoinPath":                            tk.JoinPath,
-		"DeepClone":                           tk.DeepClone,
-		"DeepCopyFromTo":                      tk.DeepCopyFromTo,
-		"JSONToObjectE":                       tk.JSONToObjectE,
-		"ToJSON":                              tk.ToJSON,
-		"ToJSONIndent":                        tk.ToJSONIndent,
-		"FromJSON":                            tk.FromJSON,
-		"GetJSONNode":                         tk.GetJSONNode,
-		"GetJSONNodeAny":                      tk.GetJSONNodeAny,
-		"GetJSONSubNode":                      tk.GetJSONSubNode,
-		"GetJSONSubNodeAny":                   tk.GetJSONSubNodeAny,
-		"StartsWithBOM":                       tk.StartsWithBOM,
-		"RemoveBOM":                           tk.RemoveBOM,
-		"HexToInt":                            tk.HexToInt,
-		"GetCurrentThreadID":                  tk.GetCurrentThreadID,
-		"Exit":                                tk.Exit,
+		"GenerateFileListRecursivelyWithExclusive": tk.GenerateFileListRecursivelyWithExclusive,
+		"GetAvailableFileName":                     tk.GetAvailableFileName,
+		"LoadStringFromFile":                       tk.LoadStringFromFile,
+		"LoadStringFromFileWithDefault":            tk.LoadStringFromFileWithDefault,
+		"LoadStringFromFileE":                      tk.LoadStringFromFileE,
+		"LoadStringFromFileB":                      tk.LoadStringFromFileB,
+		"LoadBytes":                                tk.LoadBytes,
+		"LoadBytesFromFileE":                       tk.LoadBytesFromFileE,
+		"SaveStringToFile":                         tk.SaveStringToFile,
+		"SaveStringToFileE":                        tk.SaveStringToFileE,
+		"AppendStringToFile":                       tk.AppendStringToFile,
+		"LoadStringList":                           tk.LoadStringList,
+		"LoadStringListFromFile":                   tk.LoadStringListFromFile,
+		"LoadStringListBuffered":                   tk.LoadStringListBuffered,
+		"SaveStringList":                           tk.SaveStringList,
+		"SaveStringListWin":                        tk.SaveStringListWin,
+		"SaveStringListBufferedByRange":            tk.SaveStringListBufferedByRange,
+		"SaveStringListBuffered":                   tk.SaveStringListBuffered,
+		"ReadLineFromBufioReader":                  tk.ReadLineFromBufioReader,
+		"RestoreLineEnds":                          tk.RestoreLineEnds,
+		"LoadDualLineList":                         tk.LoadDualLineList,
+		"SaveDualLineList":                         tk.SaveDualLineList,
+		"RemoveDuplicateInDualLineList":            tk.RemoveDuplicateInDualLineList,
+		"AppendDualLineList":                       tk.AppendDualLineList,
+		"LoadSimpleMapFromFile":                    tk.LoadSimpleMapFromFile,
+		"LoadSimpleMapFromFileE":                   tk.LoadSimpleMapFromFileE,
+		"SimpleMapToString":                        tk.SimpleMapToString,
+		"LoadSimpleMapFromString":                  tk.LoadSimpleMapFromString,
+		"LoadSimpleMapFromStringE":                 tk.LoadSimpleMapFromStringE,
+		"ReplaceLineEnds":                          tk.ReplaceLineEnds,
+		"SaveSimpleMapToFile":                      tk.SaveSimpleMapToFile,
+		"AppendSimpleMapFromFile":                  tk.AppendSimpleMapFromFile,
+		"LoadSimpleMapFromDir":                     tk.LoadSimpleMapFromDir,
+		"EncodeToXMLString":                        tk.EncodeToXMLString,
+		"ObjectToJSON":                             tk.ObjectToJSON,
+		"ObjectToJSONIndent":                       tk.ObjectToJSONIndent,
+		"JSONToMapStringString":                    tk.JSONToMapStringString,
+		"JSONToObject":                             tk.JSONToObject,
+		"SafelyGetStringForKeyWithDefault":         tk.SafelyGetStringForKeyWithDefault,
+		"SafelyGetFloat64ForKeyWithDefault":        tk.SafelyGetFloat64ForKeyWithDefault,
+		"SafelyGetIntForKeyWithDefault":            tk.SafelyGetIntForKeyWithDefault,
+		"JSONToStringArray":                        tk.JSONToStringArray,
+		"EncodeStringSimple":                       tk.EncodeStringSimple,
+		"EncodeStringUnderline":                    tk.EncodeStringUnderline,
+		"EncodeStringCustom":                       tk.EncodeStringCustom,
+		"DecodeStringSimple":                       tk.DecodeStringSimple,
+		"DecodeStringUnderline":                    tk.DecodeStringUnderline,
+		"DecodeStringCustom":                       tk.DecodeStringCustom,
+		"MD5Encrypt":                               tk.MD5Encrypt,
+		"BytesToHex":                               tk.BytesToHex,
+		"HexToBytes":                               tk.HexToBytes,
+		"GetRandomByte":                            tk.GetRandomByte,
+		"EncryptDataByTXDEE":                       tk.EncryptDataByTXDEE,
+		"SumBytes":                                 tk.SumBytes,
+		"EncryptDataByTXDEF":                       tk.EncryptDataByTXDEF,
+		"EncryptStreamByTXDEF":                     tk.EncryptStreamByTXDEF,
+		"DecryptStreamByTXDEF":                     tk.DecryptStreamByTXDEF,
+		"DecryptDataByTXDEE":                       tk.DecryptDataByTXDEE,
+		"DecryptDataByTXDEF":                       tk.DecryptDataByTXDEF,
+		"EncryptStringByTXTE":                      tk.EncryptStringByTXTE,
+		"DecryptStringByTXTE":                      tk.DecryptStringByTXTE,
+		"EncryptStringByTXDEE":                     tk.EncryptStringByTXDEE,
+		"DecryptStringByTXDEE":                     tk.DecryptStringByTXDEE,
+		"EncryptStringByTXDEF":                     tk.EncryptStringByTXDEF,
+		"DecryptStringByTXDEF":                     tk.DecryptStringByTXDEF,
+		"EncryptFileByTXDEF":                       tk.EncryptFileByTXDEF,
+		"EncryptFileByTXDEFStream":                 tk.EncryptFileByTXDEFStream,
+		"DecryptFileByTXDEFStream":                 tk.DecryptFileByTXDEFStream,
+		"ErrorToString":                            tk.ErrorToString,
+		"EncryptFileByTXDEFS":                      tk.EncryptFileByTXDEFS,
+		"EncryptFileByTXDEFStreamS":                tk.EncryptFileByTXDEFStreamS,
+		"DecryptFileByTXDEF":                       tk.DecryptFileByTXDEF,
+		"DecryptFileByTXDEFS":                      tk.DecryptFileByTXDEFS,
+		"DecryptFileByTXDEFStreamS":                tk.DecryptFileByTXDEFStreamS,
+		"Pkcs7Padding":                             tk.Pkcs7Padding,
+		"AESEncrypt":                               tk.AESEncrypt,
+		"AESDecrypt":                               tk.AESDecrypt,
+		"AnalyzeURLParams":                         tk.AnalyzeURLParams,
+		"UrlEncode":                                tk.UrlEncode,
+		"UrlEncode2":                               tk.UrlEncode2,
+		"UrlDecode":                                tk.UrlDecode,
+		"JoinURL":                                  tk.JoinURL,
+		"AddDebug":                                 tk.AddDebug,
+		"AddDebugF":                                tk.AddDebugF,
+		"ClearDebug":                               tk.ClearDebug,
+		"GetDebug":                                 tk.GetDebug,
+		"DownloadPageUTF8":                         tk.DownloadPageUTF8,
+		"DownloadPage":                             tk.DownloadPage,
+		"DownloadPageByMap":                        tk.DownloadPageByMap,
+		"GetLastComponentOfUrl":                    tk.GetLastComponentOfUrl,
+		"DownloadFile":                             tk.DownloadFile,
+		"DownloadBytes":                            tk.DownloadBytes,
+		"PostRequest":                              tk.PostRequest,
+		"PostRequestX":                             tk.PostRequestX,
+		"PostRequestBytesX":                        tk.PostRequestBytesX,
+		"PostRequestBytesWithMSSHeaderX":           tk.PostRequestBytesWithMSSHeaderX,
+		"PostRequestBytesWithCookieX":              tk.PostRequestBytesWithCookieX,
+		"GetFormValueWithDefaultValue":             tk.GetFormValueWithDefaultValue,
+		"GenerateJSONPResponse":                    tk.GenerateJSONPResponse,
+		"GenerateJSONPResponseWithObject":          tk.GenerateJSONPResponseWithObject,
+		"GenerateJSONPResponseWith2Object":         tk.GenerateJSONPResponseWith2Object,
+		"GenerateJSONPResponseWith3Object":         tk.GenerateJSONPResponseWith3Object,
+		"GetSuccessValue":                          tk.GetSuccessValue,
+		"Float32ArrayToFloat64Array":               tk.Float32ArrayToFloat64Array,
+		"CalCosineSimilarityBetweenFloatsBig":      tk.CalCosineSimilarityBetweenFloatsBig,
+		"GetDBConnection":                          tk.GetDBConnection,
+		"GetDBRowCount":                            tk.GetDBRowCount,
+		"GetDBRowCountCompact":                     tk.GetDBRowCountCompact,
+		"GetDBResultString":                        tk.GetDBResultString,
+		"GetDBResultArray":                         tk.GetDBResultArray,
+		"ConvertToGB18030":                         tk.ConvertToGB18030,
+		"ConvertToGB18030Bytes":                    tk.ConvertToGB18030Bytes,
+		"ConvertToUTF8":                            tk.ConvertToUTF8,
+		"ConvertStringToUTF8":                      tk.ConvertStringToUTF8,
+		"CreateSimpleEvent":                        tk.CreateSimpleEvent,
+		"GetAllParameters":                         tk.GetAllParameters,
+		"GetAllSwitches":                           tk.GetAllSwitches,
+		"ToLower":                                  tk.ToLower,
+		"ToUpper":                                  tk.ToUpper,
+		"GetEnv":                                   tk.GetEnv,
+		"JoinPath":                                 tk.JoinPath,
+		"DeepClone":                                tk.DeepClone,
+		"DeepCopyFromTo":                           tk.DeepCopyFromTo,
+		"JSONToObjectE":                            tk.JSONToObjectE,
+		"ToJSON":                                   tk.ToJSON,
+		"ToJSONIndent":                             tk.ToJSONIndent,
+		"FromJSON":                                 tk.FromJSON,
+		"GetJSONNode":                              tk.GetJSONNode,
+		"GetJSONNodeAny":                           tk.GetJSONNodeAny,
+		"GetJSONSubNode":                           tk.GetJSONSubNode,
+		"GetJSONSubNodeAny":                        tk.GetJSONSubNodeAny,
+		"StartsWithBOM":                            tk.StartsWithBOM,
+		"RemoveBOM":                                tk.RemoveBOM,
+		"HexToInt":                                 tk.HexToInt,
+		"GetCurrentThreadID":                       tk.GetCurrentThreadID,
+		"Exit":                                     tk.Exit,
+		"GetInputf":                                tk.GetInputf,
+		"RunWinFileWithSystemDefault":              tk.RunWinFileWithSystemDefault,
 	}
 
 	qlang.Import("tk", tkExports)
 
+	qlang.Import("os", qlos.Exports)
 }
 
 func importAnkNonGUIPackages() {
@@ -3014,8 +3066,26 @@ func main() {
 			return
 		}
 
+		codeTypeT := "ql"
+
+		if tk.StartsWith(fcT, "// qlang") {
+			codeTypeT = "ql"
+		} else if tk.StartsWith(fcT, "// ank") {
+			codeTypeT = "anko"
+		} else if tk.StartsWith(fcT, "// js") {
+			codeTypeT = "js"
+		} else if tk.StartsWith(fcT, "// tengo") || tk.StartsWith(fcT, "// tg") {
+			codeTypeT = "tengo"
+		} else if tk.EndsWith(scriptT, ".js") {
+			codeTypeT = "js"
+		} else if tk.EndsWith(scriptT, ".tg") || tk.EndsWith(scriptT, ".tengo") {
+			codeTypeT = "tengo"
+		} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".anko") {
+			codeTypeT = "anko"
+		}
+
 		// full version related start
-		if tk.EndsWith(scriptT, ".js") {
+		if codeTypeT == "js" {
 			initJSVM()
 
 			jsVMG.Set("argsG", jsVMG.ToValue(argsT))
@@ -3034,7 +3104,7 @@ func main() {
 			}
 
 			return
-		} else if tk.EndsWith(scriptT, ".tg") || tk.EndsWith(scriptT, ".tengo") {
+		} else if codeTypeT == "tengo" {
 			initTengoVM()
 
 			scriptT := tengo.NewScript([]byte(fcT))
@@ -3077,7 +3147,7 @@ func main() {
 			tk.Pl("%#v", rs)
 			// }
 
-		} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".anko") {
+		} else if codeTypeT == "anko" {
 			// full version related end
 
 			initAnkVM()

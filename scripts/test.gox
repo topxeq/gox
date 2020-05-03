@@ -1,22 +1,14 @@
-a = 1.81
+var a int
 
-c = new(string)
+// a = 1
 
-setValue(c, "abb")
+// f1 = fn() {
 
-d = *c
+// 	a; a = 2
+// }
 
-println(d)
+// f1()
 
-e = false
+// println(a)
 
-f = &e
-
-printfln("%x", f)
-
-println(*f)
-
-setValue(f, true)
-
-println(*f)
 

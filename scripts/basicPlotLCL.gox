@@ -13,7 +13,7 @@ a = &plot.XY{X: 0.0, Y: 0.0}
 
 points[0] = *a
 
-points[1] = plot.NewXY(1.0, 1.0)
+points[1] = *(&plot.XY{X: 1.0, Y: 1.0})
 
 points[2] = plot.NewXY(2.0, 4.0)
 

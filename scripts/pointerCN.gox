@@ -1,0 +1,53 @@
+// 注：本代码例子中仅适用于Gox语言在使用Qlang-like引擎时
+
+// b是用内置函数new新创建的一个string类型的指针
+b = new(string)
+
+printfln("b: %#v", b)
+
+// 对于指针只能用setValue函数来给其对应的值赋新值
+// 类似这样的操作：*b = "abb"是不允许的
+setValue(b, "abb")
+
+// 但是同其他语言类似，*可以用于将指针变量对应的值取出来
+c = *b
+
+println("c:", c)
+
+// 也可以用内置函数getValue从指针中取值
+d = getValue(b)
+
+println("d:", d)
+
+e = false
+
+println("e:", e)
+
+// Gox语言中是使用 ^ 来进行取地址/引用操作的
+// 注意，因此^不能被用于异或操作
+f = ^e
+
+printfln("f: %#v", f)
+
+printfln("hex value of f: %x", f)
+
+// *f表示指针变量e指向的值
+println("*f:", *f)
+
+setValue(f, true)
+
+println("*f:", e)
+
+// e对应的值在使用了setValue后改变了
+println("e:", e)
+
+// 对于复合变量
+a = []string{"first", "second", "3rd"} // &[]string{"aa", "bb"} 这种方式在Gox语言（Qlang引擎）中是不允许的，&不能用于取指针
+
+println("a:", a)
+
+// 但是可以用这种方式获得需要的指针
+pa = ^a
+
+printfln("pa: %#v", pa)
+

@@ -1,22 +1,56 @@
-a = 1.81
+// b is a string type pointer newly created
+b = new(string)
 
-c = new(string)
+printfln("b: %#v", b)
 
-setValue(c, "abb")
+// use built-in function setValue to assign values refered by pointers
+// This kind of assignment operation, *b = "abb", is not allowed
+setValue(b, "abb")
 
-d = *c
+// but * could be used as dereference operator
+c = *b
 
-println(d)
+println("c:", c)
+
+// built-in function getValue is also available to get value from pointer
+d = getValue(b)
+
+println("d:", d)
 
 e = false
 
+println("e:", e)
+
+// use ^ to get reference/pointer instead of & in Gox
 f = ^e
 
-printfln("%x", f)
+printfln("f: %#v", f)
 
-println(*f)
+printfln("hex value of f: %x", f)
+
+// *f represents the value in variable e
+println("*f:", *f)
 
 setValue(f, true)
 
-println(*f)
+println("*f:", e)
 
+// value in e is changed after setValue called
+println("e:", e)
+
+// for complex types
+a = []string{"first", "second", "3rd"} // &[]string{"aa", "bb"} 这种方式在Gox语言（Qlang引擎）中是不允许的
+
+println("a:", a)
+
+// but you can retrieve pointer by this way
+pa = ^a
+
+printfln("pa: %#v", pa)
+
+b1 = 0x7A // 01111010
+
+b2 = 0x21 // 00100001
+
+// 01111010 XOR 00100001 = 01011011
+printfln("b1 XOR b2 = %b", bitXor(b1, b2))
