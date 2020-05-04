@@ -1706,11 +1706,17 @@ func runInteractiveQlang() int {
 		// 	}
 		// }
 
+		retG = notFoundG
+
 		err := qlVMG.SafeEval(source)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			continue
+		}
+
+		if retG != notFoundG {
+			fmt.Println(retG)
 		}
 
 		following = false
@@ -2938,8 +2944,15 @@ func initJSVM() {
 
 // init the main VM
 
+var retG interface{}
+var notFoundG = interface{}(errors.New("not found"))
+
 func initQLVM() {
 	if qlVMG == nil {
+		qlang.SetOnPop(func(v interface{}) {
+			retG = v
+		})
+
 		importQLNonGUIPackages()
 
 		// GUI related start
