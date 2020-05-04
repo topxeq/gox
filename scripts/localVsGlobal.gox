@@ -1,0 +1,15 @@
+a = 1
+
+fn() {
+	a = 2
+}()
+
+println(a)
+
+b = "I'm fine."
+
+fn(b) {
+	b = "Hi!"
+}(b)
+
+println(b)

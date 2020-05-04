@@ -1,14 +1,7 @@
-var a int
+a = [1, 2, 3, "abc", 12.3]
 
-// a = 1
+println(a)
 
-// f1 = fn() {
+println(a[2])
 
-// 	a; a = 2
-// }
-
-// f1()
-
-// println(a)
-
-
+println(len(a))

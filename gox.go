@@ -502,7 +502,27 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
-	if modeA == "" || modeA == "1" || modeA == "new" {
+	if modeA == "" || modeA == "0" || modeA == "ql" {
+		vmT := qlang.New()
+
+		if argsA != nil && len(argsA) > 0 {
+			vmT.SetVar("argsG", argsA)
+		}
+
+		errT := vmT.SafeEval(codeA)
+
+		if errT != nil {
+			return errT.Error()
+		}
+
+		rs, _ := vmT.GetVar("outG")
+
+		// if !ok {
+		// 	return ""
+		// }
+
+		return rs
+	} else if modeA == "1" || modeA == "new" {
 		var vmT *env.Env
 
 		vmT = env.NewEnv()
@@ -633,6 +653,11 @@ func systemCmd(cmdA string, argsA ...string) string {
 
 func typeOfValue(vA interface{}) string {
 	return fmt.Sprintf("%T", vA)
+}
+
+func typeOfValueReflect(vA interface{}) string {
+	rs := reflect.TypeOf(vA)
+	return rs.String()
 }
 
 // full version related start
@@ -813,6 +838,8 @@ func importQLNonGUIPackages() {
 		"getInputf":        tk.GetInputf,
 		"newSSHClient":     newSSHClient,
 		"run":              runFile,
+		"typeOf":           typeOfValueReflect,
+		"remove":           remove,
 		// GUI related start
 
 		// full version related start
@@ -1554,7 +1581,7 @@ func showHelp() {
 
 }
 
-func runInteractive() int {
+func runInteractiveAnko() int {
 	var following bool
 	var source string
 	scanner := bufio.NewScanner(os.Stdin)
@@ -1621,6 +1648,73 @@ func runInteractive() int {
 		}
 
 		fmt.Printf("%#v\n", v)
+	}
+
+	if err := scanner.Err(); err != nil {
+		if err != io.EOF {
+			fmt.Fprintln(os.Stderr, "ReadString error:", err)
+			return 12
+		}
+	}
+
+	return 0
+}
+
+func runInteractiveQlang() int {
+	var following bool
+	var source string
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		if following {
+			source += "\n"
+			fmt.Print("  ")
+		} else {
+			fmt.Print("> ")
+		}
+
+		if !scanner.Scan() {
+			break
+		}
+		source += scanner.Text()
+		if source == "" {
+			continue
+		}
+		if source == "quit()" {
+			break
+		}
+
+		// stmts, err := parser.ParseSrc(source)
+
+		// if e, ok := err.(*parser.Error); ok {
+		// 	es := e.Error()
+		// 	if strings.HasPrefix(es, "syntax error: unexpected") {
+		// 		if strings.HasPrefix(es, "syntax error: unexpected $end,") {
+		// 			following = true
+		// 			continue
+		// 		}
+		// 	} else {
+		// 		if e.Pos.Column == len(source) && !e.Fatal {
+		// 			fmt.Fprintln(os.Stderr, e)
+		// 			following = true
+		// 			continue
+		// 		}
+		// 		if e.Error() == "unexpected EOF" {
+		// 			following = true
+		// 			continue
+		// 		}
+		// 	}
+		// }
+
+		err := qlVMG.SafeEval(source)
+
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			continue
+		}
+
+		following = false
+		source = ""
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -2504,7 +2598,7 @@ func editDecryptClick() {
 func editRun() {
 	imgui.CloseCurrentPopup()
 
-	runScript(editorG.GetText(), "new", editArgsG)
+	runScript(editorG.GetText(), "", editArgsG)
 }
 
 func editRunClick() {
@@ -2845,7 +2939,7 @@ func initJSVM() {
 // init the main VM
 
 func initQLVM() {
-	if ankVMG == nil {
+	if qlVMG == nil {
 		importQLNonGUIPackages()
 
 		// GUI related start
@@ -2930,9 +3024,9 @@ func main() {
 		if tk.IfFileExists(autoPathT) {
 			scriptsT = []string{autoPathT}
 		} else {
-			initAnkVM()
+			initQLVM()
 
-			runInteractive()
+			runInteractiveQlang()
 
 			// tk.Pl("not enough parameters")
 
