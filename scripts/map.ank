@@ -1,4 +1,4 @@
-a = map[var]var{}
+a = {}
 
 a["Num"] = 3
 a[5] = "abc"
@@ -15,25 +15,25 @@ pl("a.Num: %v", a.Num)
 a["Num"]++
 println(a["Num"])
 
-a[5]=a[5]+a[5]
-a[5] = a[5][1:]
+a[5]*=2
+a[5] = a[5] * 3 
 println(a[5])
 
-b = map[var]var{}
+b = map[interface]interface{}
 
 pv("b")
 
-c = map[int]string{}
+c = map[int]interface{}
 
-c[3] = "3"
+c[3] = 3
 c[18] = "abc"
-c[-198] = "true"
+c[-198] = true
 
 pv("c")
 
-v = c[18]
+v, ok = c[18]
 
-if v == undefined {
+if ok {
 	println("v:", v)
 }
 
@@ -41,12 +41,17 @@ delete(c, 18)
 
 println("c:", c)
 
-// ok = c["b"] // will cause runtime error, since key should be int
-// println(ok)
+_, ok = c["b"]
+println(ok)
 
 println("---")
 
-for k, v = range a {
-  println("[", k, "]:", v)
+for k in keys(a) {
+  println("[", k, "]:", a[k])
 }
 
+println("---")
+
+for k, v in a {
+	pl("[%v] %v", k, v)
+}

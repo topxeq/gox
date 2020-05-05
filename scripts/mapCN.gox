@@ -1,5 +1,12 @@
-a = map[var]var{}
+// 默认的映射是map[string]interface{}类型的，相当于Gox中的map[string]var
+a = {}
+pv("a")
 
+// 如果要键值非string，可以指定var或者其他的类型
+a = map[var]var{}
+pv("a")
+
+// var类型支持各种值
 a["Num"] = 3
 a[5] = "abc"
 a[-1] = true
@@ -9,9 +16,13 @@ a.Item1 = "item 1"
 
 pv("a")
 
+// 内置函数len用于取映射长度，即其中的键值对数
 pl("length of a: %v", len(a))
+
+// 可以用“.key”的方式来取map中对应的键值
 pl("a.Num: %v", a.Num)
 
+// 键值项可以直接进行计算和其他操作
 a["Num"]++
 println(a["Num"])
 
@@ -19,10 +30,8 @@ a[5]=a[5]+a[5]
 a[5] = a[5][1:]
 println(a[5])
 
-b = map[var]var{}
 
-pv("b")
-
+// 直接定义以int类型作为键类型
 c = map[int]string{}
 
 c[3] = "3"
@@ -31,22 +40,27 @@ c[-198] = "true"
 
 pv("c")
 
+// 此时v是有值的
 v = c[18]
-
 if v == undefined {
 	println("v:", v)
 }
 
+// 删除掉该项
 delete(c, 18)
 
 println("c:", c)
 
+// 这样索引取键值会报错
 // ok = c["b"] // will cause runtime error, since key should be int
 // println(ok)
 
 println("---")
 
+// 遍历map的方法
 for k, v = range a {
   println("[", k, "]:", v)
 }
 
+a = {"a": 3, "b": "abc"}
+pv("a")
