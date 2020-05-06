@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+
 	// full version related start
 	"context"
 	// full version related end
@@ -31,6 +32,7 @@ import (
 	"github.com/d5/tengo/stdlib"
 	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
+
 	// full version related end
 
 	"github.com/mattn/anko/core"
@@ -42,20 +44,41 @@ import (
 	"github.com/topxeq/qlang"
 	execq "github.com/topxeq/qlang/exec"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
-	qlos "github.com/topxeq/qlang/lib/os"
 	specq "github.com/topxeq/qlang/spec"
+
+	qlcryptohmac "github.com/topxeq/qlang/lib/crypto/hmac"
+	qlcryptomd5 "github.com/topxeq/qlang/lib/crypto/md5"
+	qlcryptorand "github.com/topxeq/qlang/lib/crypto/rand"
+	qlcryptorsa "github.com/topxeq/qlang/lib/crypto/rsa"
+	qlcryptosha1 "github.com/topxeq/qlang/lib/crypto/sha1"
+	qlcryptosha256 "github.com/topxeq/qlang/lib/crypto/sha256"
+	qlcryptox509 "github.com/topxeq/qlang/lib/crypto/x509"
+	qlencodingbase64 "github.com/topxeq/qlang/lib/encoding/base64"
+	qlencodinghex "github.com/topxeq/qlang/lib/encoding/hex"
+	qlencodingjson "github.com/topxeq/qlang/lib/encoding/json"
+	qlencodingpem "github.com/topxeq/qlang/lib/encoding/pem"
+	qlencodingxml "github.com/topxeq/qlang/lib/encoding/xml"
+	qlneturl "github.com/topxeq/qlang/lib/net/url"
+	qlos "github.com/topxeq/qlang/lib/os"
+	qlpath "github.com/topxeq/qlang/lib/path"
+	qlpathfilepath "github.com/topxeq/qlang/lib/path/filepath"
+	qlsort "github.com/topxeq/qlang/lib/sort"
+	qlstrings "github.com/topxeq/qlang/lib/strings"
+
+	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
 
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/dgraph-io/badger"
 	_ "github.com/godror/godror"
 
-	"github.com/fogleman/gg"
-	"github.com/topxeq/imagetk"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
+
+	"github.com/fogleman/gg"
+	"github.com/topxeq/imagetk"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -84,6 +107,7 @@ import (
 	"github.com/AllenDang/giu"
 	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
+
 	// full version related end
 
 	"github.com/topxeq/govcl/vcl"
@@ -1171,6 +1195,33 @@ func importQLNonGUIPackages() {
 	qlang.Import("tk", tkExports)
 
 	qlang.Import("os", qlos.Exports)
+
+	qlang.Import("strings", qlstrings.Exports)
+
+	qlang.Import("sort", qlsort.Exports)
+
+	qlang.Import("net_url", qlneturl.Exports)
+
+	qlang.Import("path_filepath", qlpathfilepath.Exports)
+	qlang.Import("path", qlpath.Exports)
+
+	qlang.Import("encoding_pem", qlencodingpem.Exports)
+	qlang.Import("encoding_base64", qlencodingbase64.Exports)
+	qlang.Import("encoding_csv", qlencodingbase64.Exports)
+	qlang.Import("encoding_hex", qlencodinghex.Exports)
+	qlang.Import("encoding_json", qlencodingjson.Exports)
+	qlang.Import("encoding_xml", qlencodingxml.Exports)
+
+	qlang.Import("crypto_rand", qlcryptorand.Exports)
+	qlang.Import("crypto_hmac", qlcryptohmac.Exports)
+	qlang.Import("crypto_rsa", qlcryptorsa.Exports)
+	qlang.Import("crypto_sha256", qlcryptosha256.Exports)
+	qlang.Import("crypto_sha1", qlcryptosha1.Exports)
+	qlang.Import("crypto_x509", qlcryptox509.Exports)
+	qlang.Import("crypto_md5", qlcryptomd5.Exports)
+
+	qlang.Import("github_beevik_etree", qlgithubbeeviketree.Exports)
+
 }
 
 func importAnkNonGUIPackages() {
@@ -3335,8 +3386,6 @@ func test() {
 	p, _ := plot.New()
 
 	p.Title.Text = "a"
-
-	p.SetTitleText("bbb")
 
 	tk.Pl("p: %#v", p)
 
