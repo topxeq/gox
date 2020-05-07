@@ -9,6 +9,7 @@ require (
 	github.com/chen-chao/transcribe v0.0.0-20200103103926-f1b8419241ed
 	github.com/d5/tengo v1.24.8
 	github.com/d5/tengo/v2 v2.1.2
+	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
 	github.com/dgraph-io/badger v1.6.1
 	github.com/dlclark/regexp2 v1.2.0 // indirect
 	github.com/dop251/goja v0.0.0-20200326102500-6438c8ddc517

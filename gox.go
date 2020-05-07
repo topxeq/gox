@@ -46,6 +46,9 @@ import (
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	specq "github.com/topxeq/qlang/spec"
 
+	qlarchivezip "github.com/topxeq/qlang/lib/archive/zip"
+	qlbytes "github.com/topxeq/qlang/lib/bytes"
+	qlcrypto "github.com/topxeq/qlang/lib/crypto"
 	qlcryptohmac "github.com/topxeq/qlang/lib/crypto/hmac"
 	qlcryptomd5 "github.com/topxeq/qlang/lib/crypto/md5"
 	qlcryptorand "github.com/topxeq/qlang/lib/crypto/rand"
@@ -58,6 +61,7 @@ import (
 	qlencodingjson "github.com/topxeq/qlang/lib/encoding/json"
 	qlencodingpem "github.com/topxeq/qlang/lib/encoding/pem"
 	qlencodingxml "github.com/topxeq/qlang/lib/encoding/xml"
+	qlioioutil "github.com/topxeq/qlang/lib/io/ioutil"
 	qlneturl "github.com/topxeq/qlang/lib/net/url"
 	qlos "github.com/topxeq/qlang/lib/os"
 	qlpath "github.com/topxeq/qlang/lib/path"
@@ -119,7 +123,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.98a"
+var versionG = "0.981a"
 
 var verboseG = false
 
@@ -1197,6 +1201,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("os", qlos.Exports)
 
 	qlang.Import("strings", qlstrings.Exports)
+	qlang.Import("bytes", qlbytes.Exports)
+	qlang.Import("io_ioutil", qlioioutil.Exports)
 
 	qlang.Import("sort", qlsort.Exports)
 
@@ -1205,6 +1211,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("path_filepath", qlpathfilepath.Exports)
 	qlang.Import("path", qlpath.Exports)
 
+	qlang.Import("archive_zip", qlarchivezip.Exports)
+
 	qlang.Import("encoding_pem", qlencodingpem.Exports)
 	qlang.Import("encoding_base64", qlencodingbase64.Exports)
 	qlang.Import("encoding_csv", qlencodingbase64.Exports)
@@ -1212,6 +1220,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("encoding_json", qlencodingjson.Exports)
 	qlang.Import("encoding_xml", qlencodingxml.Exports)
 
+	qlang.Import("crypto", qlcrypto.Exports)
 	qlang.Import("crypto_rand", qlcryptorand.Exports)
 	qlang.Import("crypto_hmac", qlcryptohmac.Exports)
 	qlang.Import("crypto_rsa", qlcryptorsa.Exports)
@@ -3367,6 +3376,10 @@ func main() {
 			if errT != nil {
 
 				tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
+
+				// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
+				// tk.Pl("Next line: %v, %v", f, l)
+
 				continue
 			}
 
