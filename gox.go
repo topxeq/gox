@@ -42,9 +42,13 @@ import (
 	"github.com/mattn/anko/vm"
 
 	"github.com/topxeq/qlang"
-	execq "github.com/topxeq/qlang/exec"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
+
+	// GUI related start
+	execq "github.com/topxeq/qlang/exec"
 	specq "github.com/topxeq/qlang/spec"
+
+	// GUI related end
 
 	qlarchivezip "github.com/topxeq/qlang/lib/archive/zip"
 	qlbytes "github.com/topxeq/qlang/lib/bytes"
@@ -62,7 +66,13 @@ import (
 	qlencodingpem "github.com/topxeq/qlang/lib/encoding/pem"
 	qlencodingxml "github.com/topxeq/qlang/lib/encoding/xml"
 	qlioioutil "github.com/topxeq/qlang/lib/io/ioutil"
+
+	qlnethttp "github.com/topxeq/qlang/lib/net/http"
 	qlneturl "github.com/topxeq/qlang/lib/net/url"
+
+	qlruntime "github.com/topxeq/qlang/lib/runtime"
+	qlruntimedebug "github.com/topxeq/qlang/lib/runtime/debug"
+
 	qlos "github.com/topxeq/qlang/lib/os"
 	qlpath "github.com/topxeq/qlang/lib/path"
 	qlpathfilepath "github.com/topxeq/qlang/lib/path/filepath"
@@ -459,6 +469,8 @@ func initAnkoVMInstance(vmA *env.Env) {
 	}
 
 	vmA.Define("printfln", tk.Pl)
+	vmA.Define("fprintf", fmt.Fprintf)
+	vmA.Define("fprintln", fmt.Fprintln)
 	vmA.Define("pl", tk.Pl)
 	vmA.Define("pln", fmt.Println)
 	vmA.Define("plv", tk.Plv)
@@ -520,9 +532,9 @@ func initAnkoVMInstance(vmA *env.Env) {
 	vmA.Define("edit", editFile)
 	// full version related end
 
-	vmA.Define("run", runFile)
-
 	// GUI related end
+
+	vmA.Define("run", runFile)
 
 	core.Import(vmA)
 
@@ -849,6 +861,7 @@ func importQLNonGUIPackages() {
 	var defaultExports = map[string]interface{}{
 		"eval":             qlEval,
 		"printfln":         tk.Pl,
+		"fprintf":          fmt.Fprintf,
 		"pl":               tk.Pl,
 		"pln":              fmt.Println,
 		"plerr":            tk.PlErr,
@@ -1190,10 +1203,10 @@ func importQLNonGUIPackages() {
 		"StartsWithBOM":                            tk.StartsWithBOM,
 		"RemoveBOM":                                tk.RemoveBOM,
 		"HexToInt":                                 tk.HexToInt,
-		"GetCurrentThreadID":                       tk.GetCurrentThreadID,
-		"Exit":                                     tk.Exit,
-		"GetInputf":                                tk.GetInputf,
-		"RunWinFileWithSystemDefault":              tk.RunWinFileWithSystemDefault,
+		// "GetCurrentThreadID":                       tk.GetCurrentThreadID,
+		"Exit":                        tk.Exit,
+		"GetInputf":                   tk.GetInputf,
+		"RunWinFileWithSystemDefault": tk.RunWinFileWithSystemDefault,
 	}
 
 	qlang.Import("tk", tkExports)
@@ -1207,6 +1220,10 @@ func importQLNonGUIPackages() {
 	qlang.Import("sort", qlsort.Exports)
 
 	qlang.Import("net_url", qlneturl.Exports)
+	qlang.Import("net_http", qlnethttp.Exports)
+
+	qlang.Import("runtime", qlruntime.Exports)
+	qlang.Import("runtime_debug", qlruntimedebug.Exports)
 
 	qlang.Import("path_filepath", qlpathfilepath.Exports)
 	qlang.Import("path", qlpath.Exports)
@@ -1628,7 +1645,7 @@ func importAnkNonGUIPackages() {
 		"StartsWithBOM":                       reflect.ValueOf(tk.StartsWithBOM),
 		"RemoveBOM":                           reflect.ValueOf(tk.RemoveBOM),
 		"HexToInt":                            reflect.ValueOf(tk.HexToInt),
-		"GetCurrentThreadID":                  reflect.ValueOf(tk.GetCurrentThreadID),
+		// "GetCurrentThreadID":                  reflect.ValueOf(tk.GetCurrentThreadID),
 	}
 
 }
@@ -1873,7 +1890,7 @@ func syncInitLCL() error {
 
 func initLCL() error {
 
-	startThreadID := tk.GetCurrentThreadID()
+	// startThreadID := tk.GetCurrentThreadID()
 
 	api.CloseLib()
 
@@ -1917,45 +1934,45 @@ func initLCL() error {
 		}
 	}
 
-	if verboseG {
-		tk.Pl("now1 tid: %v", tk.GetCurrentThreadID())
-	}
+	// if verboseG {
+	// 	tk.Pl("now1 tid: %v", tk.GetCurrentThreadID())
+	// }
 
 	api.DoResInit()
-	if verboseG {
-		tk.Pl("now2 tid: %v", tk.GetCurrentThreadID())
-	}
+	// if verboseG {
+	// 	tk.Pl("now2 tid: %v", tk.GetCurrentThreadID())
+	// }
 
 	api.DoImportInit()
-	if verboseG {
-		tk.Pl("now3 tid: %v", tk.GetCurrentThreadID())
-	}
+	// if verboseG {
+	// 	tk.Pl("now3 tid: %v", tk.GetCurrentThreadID())
+	// }
 
 	api.DoDefInit()
 
-	if verboseG {
-		tk.Pl("now4 tid: %v", tk.GetCurrentThreadID())
-	}
+	// if verboseG {
+	// 	tk.Pl("now4 tid: %v", tk.GetCurrentThreadID())
+	// }
 
 	// api.DoStyleInit()
 
 	rtl.DoRtlInit()
-	if verboseG {
-		tk.Pl("now5 tid: %v", tk.GetCurrentThreadID())
-	}
+	// if verboseG {
+	// 	tk.Pl("now5 tid: %v", tk.GetCurrentThreadID())
+	// }
 
 	vcl.DoInit()
 
-	if verboseG {
+	// if verboseG {
 
-		endThreadID := tk.GetCurrentThreadID()
+	// 	endThreadID := tk.GetCurrentThreadID()
 
-		tk.Pl("start tid: %v, end tid: %v", startThreadID, endThreadID)
+	// 	tk.Pl("start tid: %v, end tid: %v", startThreadID, endThreadID)
 
-		if endThreadID != startThreadID {
-			return tk.Errf("failed to init lcl lib: %v", "thread not same")
-		}
-	}
+	// 	if endThreadID != startThreadID {
+	// 		return tk.Errf("failed to init lcl lib: %v", "thread not same")
+	// 	}
+	// }
 
 	return nil
 }
@@ -2831,10 +2848,14 @@ func editFile(fileNameA string) {
 
 // full version related end
 
+// GUI related end
+
 func runFile(argsA ...string) interface{} {
 	lenT := len(argsA)
 
 	// full version related start
+	// GUI related start
+
 	if lenT < 1 {
 		rs := selectFileGUI("Please select file to run...", "All files", "*")
 
@@ -2851,6 +2872,7 @@ func runFile(argsA ...string) interface{} {
 		return runScript(fcT, "")
 
 	}
+	// GUI related end
 	// full version related end
 
 	if lenT < 1 {
@@ -2865,8 +2887,6 @@ func runFile(argsA ...string) interface{} {
 
 	return runScript(fcT, "", argsA[1:]...)
 }
-
-// GUI related end
 
 // full version related start
 func initTengoVM() {
@@ -3012,6 +3032,8 @@ func initQLVM() {
 		qlang.SetOnPop(func(v interface{}) {
 			retG = v
 		})
+
+		// qlang.SetDumpCode("1")
 
 		importQLNonGUIPackages()
 
@@ -3172,9 +3194,9 @@ func main() {
 		scriptsT = scriptsT[0:1]
 	}
 
-	if verboseG {
-		tk.Pl("currenttid: %v", tk.GetCurrentThreadID())
-	}
+	// if verboseG {
+	// 	tk.Pl("currenttid: %v", tk.GetCurrentThreadID())
+	// }
 
 	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
 	ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
@@ -3233,6 +3255,7 @@ func main() {
 			return
 		}
 
+		// full version related start
 		codeTypeT := "ql"
 
 		if tk.StartsWith(fcT, "// qlang") {
@@ -3251,7 +3274,6 @@ func main() {
 			codeTypeT = "anko"
 		}
 
-		// full version related start
 		if codeTypeT == "js" {
 			initJSVM()
 
@@ -3315,7 +3337,6 @@ func main() {
 			// }
 
 		} else if codeTypeT == "anko" {
-			// full version related end
 
 			initAnkVM()
 
@@ -3356,9 +3377,7 @@ func main() {
 
 				tk.Pl("failed to execute script(%v%v) error: %v\n%#v\n", scriptT, posStrT, errT, rs1)
 				continue
-				// full version related start
 			}
-			// full version related end
 
 			rs, errT := ankVMG.Get("outG")
 
@@ -3367,6 +3386,7 @@ func main() {
 			}
 
 		} else { // if tk.EndsWith(scriptT, ".ql") || tk.EndsWith(scriptT, ".goxq") {
+			// full version related end
 
 			initQLVM()
 
@@ -3388,33 +3408,35 @@ func main() {
 			if ok {
 				tk.Pl("%#v", rs)
 			}
+			// full version related start
 
 		}
+		// full version related end
 	}
 }
 
 func test() {
-	return
+	// return
 
-	p, _ := plot.New()
+	// p, _ := plot.New()
 
-	p.Title.Text = "a"
+	// p.Title.Text = "a"
 
-	tk.Pl("p: %#v", p)
+	// tk.Pl("p: %#v", p)
 
-	typeT := reflect.TypeOf(p)
+	// typeT := reflect.TypeOf(p)
 
-	m := 1
-	kind := 2
-	name := "aa"
+	// m := 1
+	// kind := 2
+	// name := "aa"
 
-	fmt.Printf("1m: %#v, obj: %#v, kind: %v, %v, Name: %v\n", m, typeT, kind, m, name)
-	lenT := typeT.NumMethod()
+	// fmt.Printf("1m: %#v, obj: %#v, kind: %v, %v, Name: %v\n", m, typeT, kind, m, name)
+	// lenT := typeT.NumMethod()
 
-	fmt.Printf("typeT: %#v, methodNum: %#v\n", typeT, lenT)
-	for i := 0; i < lenT; i++ {
-		fmt.Printf("m %v: %#v, method: %#v\n", i, typeT.Method(i), typeT.Method(i).Name)
+	// fmt.Printf("typeT: %#v, methodNum: %#v\n", typeT, lenT)
+	// for i := 0; i < lenT; i++ {
+	// 	fmt.Printf("m %v: %#v, method: %#v\n", i, typeT.Method(i), typeT.Method(i).Name)
 
-	}
+	// }
 
 }

@@ -589,6 +589,12 @@ the same as fmt.Printf but add a new-line character at the end
 
 ---
 
+#### fprintln/fprintf
+
+the same as fmt.Fprintln/fmt.Fprintf
+
+---
+
 #### plv
 
 the same as pl("%#v", v)

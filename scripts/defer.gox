@@ -1,0 +1,29 @@
+defer fn() {
+	r = recover()
+	if r != nil {
+		println("recover:", r)
+		// tk.Pl("japi: Recovered: %v\n%v", r, string(debug.Stack()))
+		// tk.Pl("japi Recovered: %v\n%v", r, string(debug.Stack()))
+	}
+}()
+
+f, err = os.Open("file.ql")
+if err != nil {
+	fprintln(os.Stderr, err)
+	return 1
+}
+defer println("exit!")
+defer f.Close()
+
+println(10/0)
+
+// return
+
+b = make([]byte, 8)
+n, err = f.Read(b)
+if err != nil {
+	fprintln(os.Stderr, "Read failed:", err)
+	return 2
+}
+
+println(string(b[:n]))

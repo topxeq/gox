@@ -1,3 +1,6 @@
+tk = import("tk")
+os = import("os")
+
 gopathT = os.Getenv("GOPATH")
 
 if gopathT == "" {

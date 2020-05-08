@@ -1,0 +1,11 @@
+mux = net_http.NewServeMux()
+mux.Handle("/404", net_http.NotFoundHandler())
+
+mux.HandleFunc("/", fn(w, req) {
+	fprintf(w, "%v, %v, %v, %v\n", "host:", req.Host, "path:", req.URL)
+})
+
+err = net_http.ListenAndServe(":8888", mux)
+if err != nil {
+	fprintln(os.Stderr, err)
+}
