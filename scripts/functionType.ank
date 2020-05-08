@@ -1,4 +1,4 @@
-myAdd = fn(a, b) {
+myAdd = func(a, b) {
 	return a + b + b
 }
 
@@ -6,13 +6,11 @@ c = myAdd(3, 5)
 
 println(c)
 
-upperPrintln = fn(s ...) {
-	for _, v = range(s) {
-		if typeOf(v) == "string" {
-			print(tk.ToUpper(v))
-		} else {
-			printf("%v", v)
-		}
+tk = import("tk")
+
+upperPrintln = func(s ...) {
+	for v in s {
+		print(tk.ToUpper(v))
 	}
 
 	println()
@@ -20,9 +18,9 @@ upperPrintln = fn(s ...) {
 
 upperPrintln("a", "bcd", 123)
 
-sum = fn(n...) {
+sum = func (n...) {
 	t = 0
-	for _, a = range(n) {
+	for a in n {
 		t += a
 	}
 	return t
@@ -30,9 +28,8 @@ sum = fn(n...) {
 
 println(sum(1, 2, 3, 1.8))
 
-println2 = fn(s...) {
+println2 = func(s ...) {
 	println(s...)
-	println(s)
 	println()
 }
 
