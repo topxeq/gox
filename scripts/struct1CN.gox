@@ -1,0 +1,17 @@
+// 创建一个Go语言标准库中net/http包内的Client结构/对象
+// 并在创建时对其成员Timeout赋以初值15秒
+// 由于数据类型的要求，必须强制转换为time.Duration类型
+client1T = &net_http.Client{Timeout: time.Duration(15 * time.Second)}
+
+// 这样创建出来的是一个指针/引用
+pl("%#v", client1T)
+
+// 用内置函数new也可以创建Go语言中的结构体或对象，获得的也是指针
+client2T = new(net_http.Client)
+
+pl("%#v", client2T)
+
+// 然后可以对其字段进行单独赋值
+client2T.Timeout = time.Duration(30)
+
+pl("%#v", client2T)

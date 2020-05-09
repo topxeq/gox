@@ -1,0 +1,11 @@
+client1T = &net_http.Client{Timeout: time.Duration(15 * time.Second)}
+
+pl("%#v", client1T)
+
+client2T = new(net_http.Client)
+
+pl("%#v", client2T)
+
+client2T.Timeout = time.Duration(30)
+
+pl("%#v", client2T)

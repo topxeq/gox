@@ -70,6 +70,8 @@ import (
 	qlnethttp "github.com/topxeq/qlang/lib/net/http"
 	qlneturl "github.com/topxeq/qlang/lib/net/url"
 
+	qltime "github.com/topxeq/qlang/lib/time"
+
 	qlruntime "github.com/topxeq/qlang/lib/runtime"
 	qlruntimedebug "github.com/topxeq/qlang/lib/runtime/debug"
 
@@ -1218,6 +1220,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("io_ioutil", qlioioutil.Exports)
 
 	qlang.Import("sort", qlsort.Exports)
+
+	qlang.Import("time", qltime.Exports)
 
 	qlang.Import("net_url", qlneturl.Exports)
 	qlang.Import("net_http", qlnethttp.Exports)

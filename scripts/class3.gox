@@ -1,0 +1,48 @@
+Person = class {
+	fn _init(argsA...) {
+		lenT = len(argsA)
+
+		if lenT > 0 {
+			this.name = argsA[0]
+		}
+
+		if lenT > 1 {
+			typeT = type(argsA[1]).String()
+			if typeT == "string" {
+				this.gender = argsA[1]
+			} else {
+				this.age = argsA[1]
+			}
+		}
+
+		if lenT > 2 {
+			typeT = type(argsA[2]).String()
+			if typeT == "int" {
+				this.age = argsA[2]
+			} else {
+				this.gender = argsA[2]
+			}
+		}
+
+		if this.age == undefined {
+			this.age = "unknown"
+		}
+	}
+
+	fn info() {
+		printfln(`Name: %v, Gender: %v, Age: %v`, this.name, this.gender, this.age)	
+	}
+}
+
+person3 = new Person("Lisa", "female", 18)
+
+person3.info()
+
+person4 = new Person("Michael", "male")
+
+person4.info()
+
+person5 = new Person("Tony", 9)
+
+person5.info()
+

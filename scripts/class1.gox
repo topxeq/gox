@@ -1,0 +1,15 @@
+Person = class {
+	fn setName(s) {
+		this.name = s
+	}
+
+	fn say(s) {
+		println(this.name, "says", s)	
+	}
+}
+
+person1 = new Person
+
+person1.setName("Tom")
+
+person1.say("Hello!")

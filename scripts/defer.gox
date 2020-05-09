@@ -2,8 +2,6 @@ defer fn() {
 	r = recover()
 	if r != nil {
 		println("recover:", r)
-		// tk.Pl("japi: Recovered: %v\n%v", r, string(debug.Stack()))
-		// tk.Pl("japi Recovered: %v\n%v", r, string(debug.Stack()))
 	}
 }()
 
@@ -16,8 +14,6 @@ defer println("exit!")
 defer f.Close()
 
 println(10/0)
-
-// return
 
 b = make([]byte, 8)
 n, err = f.Read(b)

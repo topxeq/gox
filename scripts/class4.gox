@@ -1,0 +1,17 @@
+Times = class {
+	fn add(timeA, durationA) {
+		return timeA.Add(durationA)
+	}
+
+	fn sub(time1, time2) {
+		return time1.Sub(time2)
+	}
+}
+
+t1 = time.now()
+
+printfln("t1 + 3min = %v", Times.add(nil, t1, time.Second * 60))
+
+instance1 = new Times
+
+printfln("%v", instance1.add(t1, time.Second * 60))

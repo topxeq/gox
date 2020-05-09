@@ -1,0 +1,18 @@
+Person = class {
+	fn _init(nameA) {
+		this.setName(nameA)
+	}
+
+	fn setName(s) {
+		this.name = s
+	}
+
+	fn say(s) {
+		printfln(`%v says "%v".`, this.name, s)	
+	}
+}
+
+person2 = new Person("Jerry")
+
+person2.say("I'm fine.")
+

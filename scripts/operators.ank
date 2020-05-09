@@ -67,5 +67,9 @@ println(a)
 println("-----")
 
 // bitwise complement
-a = bitXor(1.1, 2)
+a = ^1.1
+println(a)
+
+// string manipulation
+a = "a" * 4
 println(a)
