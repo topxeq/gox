@@ -1,20 +1,22 @@
-c = make(chan int)
+tk = import("tk")
 
-go fn() {
+c = make(chan int64)
+
+go func() {
 	for {
 		c <- 1
 		tk.SleepSeconds(1)
 	}
 }()
 
-go fn() {
+go func() {
 	for {
 		c <- 200
 		tk.SleepSeconds(1)
 	}
 }()
 
-go fn() {
+go func() {
 	for {
 		tmp = <-c
 		println(tmp)

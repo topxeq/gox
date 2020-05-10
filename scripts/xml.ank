@@ -1,6 +1,8 @@
-etree = github_beevik_etree
+tk = import("tk")
+etree = import("etree")
+strings = import("strings")
 
-reshapeXMLX = fn(xmlA) {
+func reshapeXMLX(xmlA) {
 	treeT = etree.NewDocument()
 
 	if treeT == nil {
@@ -25,7 +27,7 @@ reshapeXMLX = fn(xmlA) {
 
 }
 
-flattenXML = fn(xmlA, nodeA) {
+func flattenXML(xmlA, nodeA) {
 	treeT = etree.NewDocument()
 
 	if treeT == nil {
@@ -46,21 +48,24 @@ flattenXML = fn(xmlA, nodeA) {
 
 	nodesT = rootNodeT.ChildElements()
 
-	bufT = new(strings.Builder)
+	bufT = make(strings.Builder)
 
-	for i, v = range nodesT {
+	i = 0
+	for v in nodesT {
 		if i > 0 {
 			bufT.WriteString("\n")
 		}
 
 		bufT.WriteString(tk.Spr("%v: %v", v.Tag, v.Text()))
+
+		i++
 	}
 
 	return bufT.String()
 
 }
 
-getMSSFromXML = fn(xmlA, nodeA) {
+func getMSSFromXML(xmlA, nodeA) {
 	treeT = etree.NewDocument()
 
 	if treeT == nil {
@@ -82,14 +87,14 @@ getMSSFromXML = fn(xmlA, nodeA) {
 	nodesT = rootNodeT.ChildElements()
 
 	mapT = make(map[string]string, len(nodesT))
-	for _, jv = range nodesT {
-		mapT[*jv.Tag] = jv.Text()
+	for jv in nodesT {
+		mapT[jv.Tag] = jv.Text()
 	}
 
 	return mapT, nil
 }
 
-getMSSArrayFromXML = fn(xmlA, nodeA) {
+func getMSSArrayFromXML(xmlA, nodeA) {
 	treeT = etree.NewDocument()
 
 	if treeT == nil {
@@ -112,15 +117,15 @@ getMSSArrayFromXML = fn(xmlA, nodeA) {
 
 	aryT = make([]map[string]string, 0)
 
-	for _, v = range nodesT {
+	for v in nodesT {
 		internalNodesT = v.ChildElements()
 
 		mapT = make(map[string]string, len(internalNodesT))
-		for _, jv = range internalNodesT {
-			mapT[*jv.Tag] = jv.Text()
+		for jv in internalNodesT {
+			mapT[jv.Tag] = jv.Text()
 		}
 
-		aryT = append(aryT, mapT)
+		aryT += mapT
 	}
 
 	return aryT, nil

@@ -16,12 +16,21 @@ NewAddFunc = fn() {
 	}
 }
 
-println("count=", count)
+main {
+	println("count=", count)
 
-f2 = NewAddFunc()
-
-println(f2(3))
+	f2 = NewAddFunc()
 	
-println(f2(5))
+	println(f2(3))
+		
+	println(f2(5))
+	
+	println(f2(9))
+	
+	count += 20
+	
+	println("count=", count)
+	
+}
 
-println(f2(9))
+

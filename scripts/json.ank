@@ -1,11 +1,13 @@
 // convert JSON string to object with Golang standard library
+json = import("encoding/json")
 
 jsonStrT = `{"name": "Peter", "age": 19, "身高": 175, "father": {"name": "Jordan 约翰", "age": 56, "身高": 172}}`
 println("jsonStrT:", jsonStrT)
 println("\n---\n")
 
+outT = {}
 
-outT, errT = encoding_json.Unmarshal([]byte(jsonStrT))
+errT = json.Unmarshal(toByteSlice(jsonStrT), &outT)
 
 if errT != nil {
 	println("invald JSON:", errT)
@@ -21,6 +23,7 @@ println("father:", outT.father)
 println("\n---\n")
 
 // convert JSON string to object with tk package
+tk = import("tk")
 
 outT, errT = tk.FromJSON(jsonStrT)
 
@@ -51,8 +54,8 @@ appleT = {
 		{
 			"Name": "Sugar糖分",
 			"Amount": 10.4,
-		},
-	],
+		}
+	]
 }
 
 pv("appleT")

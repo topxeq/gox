@@ -1,9 +1,12 @@
-valueG = 0
-groupG = new(sync.WaitGroup)
+sync = import("sync")
+tk = import("tk")
 
-mutexG = new(sync.Mutex)
+var valueG = 0
+var groupG = make(sync.WaitGroup)
 
-addRoutine = fn(countA) {
+var mutexG = make(sync.Mutex)
+
+func addRoutine(countA) {
 
 	for i = 0; i < countA; i++ {
 		mutexG.Lock()
@@ -15,7 +18,7 @@ addRoutine = fn(countA) {
 
 }
 
-minusRoutine = fn(countA) {
+func minusRoutine(countA) {
 
 	for i = 0; i < countA; i++ {
 		mutexG.Lock()

@@ -43,6 +43,7 @@ import (
 
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
+	_ "github.com/topxeq/qlang/lib/chan"
 
 	// GUI related start
 	execq "github.com/topxeq/qlang/exec"
@@ -70,6 +71,7 @@ import (
 	qlnethttp "github.com/topxeq/qlang/lib/net/http"
 	qlneturl "github.com/topxeq/qlang/lib/net/url"
 
+	qlsync "github.com/topxeq/qlang/lib/sync"
 	qltime "github.com/topxeq/qlang/lib/time"
 
 	qlruntime "github.com/topxeq/qlang/lib/runtime"
@@ -135,7 +137,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.981a"
+var versionG = "0.982a"
 
 var verboseG = false
 
@@ -866,6 +868,7 @@ func importQLNonGUIPackages() {
 		"fprintf":          fmt.Fprintf,
 		"pl":               tk.Pl,
 		"pln":              fmt.Println,
+		"plv":              tk.Plv,
 		"plerr":            tk.PlErr,
 		"pv":               printValue,
 		"exit":             exit,
@@ -1222,6 +1225,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("sort", qlsort.Exports)
 
 	qlang.Import("time", qltime.Exports)
+	qlang.Import("sync", qlsync.Exports)
 
 	qlang.Import("net_url", qlneturl.Exports)
 	qlang.Import("net_http", qlnethttp.Exports)
