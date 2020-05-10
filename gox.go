@@ -33,13 +33,13 @@ import (
 	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
 
-	// full version related end
-
 	"github.com/mattn/anko/core"
 	"github.com/mattn/anko/env"
 	_ "github.com/mattn/anko/packages"
 	"github.com/mattn/anko/parser"
 	"github.com/mattn/anko/vm"
+
+	// full version related end
 
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
@@ -110,7 +110,9 @@ import (
 
 	"github.com/topxeq/sqltk"
 
+	// full version related start
 	"github.com/beevik/etree"
+	// full version related end
 
 	// GUI related start
 	// full version related start
@@ -146,12 +148,11 @@ var variableG = make(map[string]interface{})
 // full version related start
 var jsVMG *goja.Runtime = nil
 var tengoModulesG = stdlib.GetModuleMap(stdlib.AllModuleNames()...)
+var ankVMG *env.Env = nil
 
 // full version related end
 
 var qlVMG *qlang.Qlang = nil
-
-var ankVMG *env.Env = nil
 
 var varMutexG sync.Mutex
 
@@ -241,35 +242,7 @@ func setClipText(textA string) {
 	clipboard.WriteAll(textA)
 }
 
-// func times(objsA ...tengo.Object) (tengo.Object, error) {
-// 	lenT := len(objsA)
-
-// 	intListT := make([]int, lenT)
-
-// 	// 用一个循环将函数不定个数参数中的所有数值存入整数切片中
-// 	for i, v := range objsA {
-// 		// 调用objects.ToInt函数将objects.Object对象转换为整数
-// 		cT, ok := tengo.ToInt(v)
-
-// 		if ok {
-// 			intListT[i] = cT
-// 		}
-// 	}
-
-// 	// 进行累乘与那算
-// 	r := 1
-
-// 	for i := 0; i < lenT; i++ {
-// 		r = r * intListT[i]
-// 	}
-
-// 	// 输出结果值供参考
-// 	fmt.Printf("result: %v\n", r)
-
-// 	// 也作为函数返回值返回，返回前要转换为objects.Object类型
-// 	// objects.Int类型实现了objects.Object类型，因此可以用作返回值
-// 	return &tengo.Int{Value: int64(r)}, nil
-// }
+// full version related start
 
 func eval(expA string) interface{} {
 	v, errT := vm.Execute(ankVMG, nil, expA)
@@ -279,6 +252,8 @@ func eval(expA string) interface{} {
 
 	return v
 }
+
+// full version related end
 
 func panicIt(valueA interface{}) {
 	panic(valueA)
@@ -467,6 +442,8 @@ func getUint64Value(v reflect.Value) uint16 {
 	return *p
 }
 
+// full version related start
+
 func initAnkoVMInstance(vmA *env.Env) {
 	if vmA == nil {
 		return
@@ -532,9 +509,7 @@ func initAnkoVMInstance(vmA *env.Env) {
 
 	// GUI related start
 
-	// full version related start
 	vmA.Define("edit", editFile)
-	// full version related end
 
 	// GUI related end
 
@@ -543,6 +518,8 @@ func initAnkoVMInstance(vmA *env.Env) {
 	core.Import(vmA)
 
 }
+
+// full version related end
 
 func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
@@ -566,6 +543,7 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 		// }
 
 		return rs
+		// full version related start
 	} else if modeA == "1" || modeA == "new" {
 		var vmT *env.Env
 
@@ -623,7 +601,6 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 		return v
 
-		// full version related start
 	} else if modeA == "3" || modeA == "js" {
 		initJSVM()
 
@@ -1258,13 +1235,14 @@ func importQLNonGUIPackages() {
 
 }
 
+// full version related start
+
 func importAnkNonGUIPackages() {
 
 	env.Packages["etree"] = map[string]reflect.Value{
 		"NewDocument": reflect.ValueOf(etree.NewDocument),
 	}
 
-	// full version related start
 	env.PackageTypes["badger"] = map[string]reflect.Type{
 		"IteratorOptions": reflect.TypeOf(badger.IteratorOptions{}),
 		// "IteratorOptions": reflect.TypeOf(&widget).Elem(),
@@ -1327,8 +1305,6 @@ func importAnkNonGUIPackages() {
 	env.Packages["imagetk"] = map[string]reflect.Value{
 		"NewImageTK": reflect.ValueOf(imagetk.NewImageTK),
 	}
-
-	// full version related end
 
 	env.Packages["sqltk"] = map[string]reflect.Value{
 		"ConnectDB":          reflect.ValueOf(sqltk.ConnectDB),
@@ -1658,6 +1634,8 @@ func importAnkNonGUIPackages() {
 
 }
 
+// full version related end
+
 func showHelp() {
 	tk.Pl("Gox by TopXeQ V%v\n", versionG)
 
@@ -1665,6 +1643,8 @@ func showHelp() {
 	tk.Pl("or just gox without arguments to start REPL instead.\n")
 
 }
+
+// full version related start
 
 func runInteractiveAnko() int {
 	var following bool
@@ -1744,6 +1724,8 @@ func runInteractiveAnko() int {
 
 	return 0
 }
+
+// full version related end
 
 func runInteractiveQlang() int {
 	var following bool
@@ -2022,9 +2004,14 @@ func NewTKeyEvent(funcA *execq.Function) *vcl.TKeyEvent {
 	return &f
 }
 
+// full version related start
+
 var vgInch = float64(vg.Inch)
 
+// full version related end
+
 func importQLGUIPackages() {
+	// full version related start
 	var plotExports = map[string]interface{}{
 		"New": plot.New,
 		// "SetTitleText":  plot.SetTitleText,
@@ -2129,6 +2116,7 @@ func importQLGUIPackages() {
 	}
 
 	qlang.Import("gui", guiExports)
+	// full version related end
 
 	var lclExports = map[string]interface{}{
 		"NewTNotifyEvent": NewTNotifyEvent,
@@ -2260,8 +2248,9 @@ func importQLGUIPackages() {
 	qlang.Import("lcl", lclExports)
 }
 
+// full version related start
+
 func importAnkGUIPackages() {
-	// full version related start
 	env.Packages["gui"] = map[string]reflect.Value{
 		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
 		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
@@ -2343,8 +2332,6 @@ func importAnkGUIPackages() {
 
 		"LayoutP": reflect.ValueOf(g.Layout{}),
 	}
-
-	// full version related end
 
 	env.Packages["lcl"] = map[string]reflect.Value{
 		"GetApplication": reflect.ValueOf(getVclApplication),
@@ -2474,7 +2461,6 @@ func importAnkGUIPackages() {
 	// env.Packages["lcl/types"] = map[string]reflect.Value{
 	// }
 
-	// full version related start
 	var widget g.Widget
 
 	env.PackageTypes["gui"] = map[string]reflect.Type{
@@ -2482,9 +2468,10 @@ func importAnkGUIPackages() {
 		// "Signal": reflect.TypeOf(&signal).Elem(),
 		"Widget": reflect.TypeOf(&widget).Elem(),
 	}
-	// full version related end
 
 }
+
+// full version related end
 
 // full version related start
 func getConfirmGUI(titleA string, messageA string) bool {
@@ -3055,6 +3042,8 @@ func initQLVM() {
 	}
 }
 
+// full version related start
+
 func initAnkVM() {
 	if ankVMG == nil {
 		importAnkNonGUIPackages()
@@ -3074,6 +3063,8 @@ func initAnkVM() {
 	}
 
 }
+
+// full version related end
 
 func main() {
 	// var errT error

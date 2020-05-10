@@ -1,3 +1,6 @@
+tk = import("tk")
+os = import("os")
+
 gopathT = os.Getenv("GOPATH")
 
 if gopathT == "" {
@@ -32,6 +35,6 @@ rsT = tk.SaveStringToFile(fcNewT, newFilePathT)
 if tk.IsErrorString(rsT) {
 	pl("failed to save destination file: %v", tk.GetErrorString(rsT))
 	return
-}
+} 
 
 pl("Done")
