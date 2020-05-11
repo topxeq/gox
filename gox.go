@@ -530,19 +530,25 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 			vmT.SetVar("argsG", argsA)
 		}
 
+		retG = notFoundG
+
 		errT := vmT.SafeEval(codeA)
 
 		if errT != nil {
 			return errT.Error()
 		}
 
-		rs, _ := vmT.GetVar("outG")
+		// if retG != notFoundG {
+		// 	fmt.Println(retG)
+		// }
+
+		// rs, _ := vmT.GetVar("outG")
 
 		// if !ok {
 		// 	return ""
 		// }
 
-		return rs
+		return retG
 		// full version related start
 	} else if modeA == "1" || modeA == "new" {
 		var vmT *env.Env
@@ -863,6 +869,9 @@ func importQLNonGUIPackages() {
 		"run":              runFile,
 		"typeOf":           typeOfValueReflect,
 		"remove":           remove,
+		"runScript":        runScript,
+		"getClipText":      getClipText,
+		"setClipText":      setClipText,
 		// GUI related start
 
 		// full version related start
@@ -1189,6 +1198,7 @@ func importQLNonGUIPackages() {
 		"Exit":                        tk.Exit,
 		"GetInputf":                   tk.GetInputf,
 		"RunWinFileWithSystemDefault": tk.RunWinFileWithSystemDefault,
+		"TXString":                    specq.StructOf((*tk.TXString)(nil)),
 	}
 
 	qlang.Import("tk", tkExports)
@@ -2112,6 +2122,7 @@ func importQLGUIPackages() {
 
 		"LayoutP": g.Layout{},
 
+		"Layout": specq.StructOf((*g.Layout)(nil)),
 		"Widget": specq.StructOf((*g.Widget)(nil)),
 	}
 

@@ -1,4 +1,5 @@
 // text1 used to hold the string value of the text input
+// notice: text1 is a pointer
 text1 = new(string)
 
 onButton1Click = fn() {

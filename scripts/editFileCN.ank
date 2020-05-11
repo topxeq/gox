@@ -1,18 +1,20 @@
-argsG = os.Args
+// anko
+
+tk = import("tk")
 
 lenT = len(argsG)
 
 editFileNameG = ""
 editFileCleanFlagG = ""
-editSecureCodeG = new(string)
+editSecureCodeG = ""
 
 fcT = ""
 
-if lenT < 3 {
+if lenT < 2 {
 	editFileNameG = ""
 	editFileCleanFlagG = "*"
 } else {
-	editFileNameG = argsG[2]
+	editFileNameG = argsG[1]
 	fcT = tk.LoadStringFromFile(editFileNameG)
 
 	if tk.IsErrorString(fcT) {
@@ -25,16 +27,16 @@ if lenT < 3 {
 }
 
 
+var gui = import("gui")
+
 // hold the text in main edit control
-text1 = new(string)
+text1 = fcT
 
-setValue(text1, fcT)
-
-onEditChange = func() {
+func onEditChange() {
 	editFileCleanFlagG = "*"
 }
 
-onButtonLoad = func() {
+func onButtonLoad() {
 	if editFileCleanFlagG != "" {
 		rs = gui.GetConfirm("请确认", "文件已被修改，确认要打开另一个文件吗？")
 
@@ -64,19 +66,20 @@ onButtonLoad = func() {
 
 	editFileNameG = fileNameNewT
 	
-	setValue(text1, fcT)
+	text1 = fcT
 
 	editFileCleanFlagG = ""
 
 }
 
-onButtonRunClick = func() {
-	rs = runScript(*text1, "")
+func onButtonRunClick() {
+	rs = runScript(text1, "new")
+	// rs = systemCmd("gox", fileNameT)
 
 	gui.MessageBox("运行结果", tk.Spr("%v", rs))
 }
 
-editorSaveAs = func() {
+func editorSaveAs() {
 	fileNameNewT = gui.SelectSaveFile("请选择要保存的文件", "所有文件", "*")
 
 	if tk.IsErrorString(fileNameNewT) {
@@ -91,7 +94,7 @@ editorSaveAs = func() {
 
 	editFileNameG = fileNameNewT
 
-	rs1 = tk.SaveStringToFile(*text1, editFileNameG)
+	rs1 = tk.SaveStringToFile(text1, editFileNameG)
 
 	if rs1 != "" {
 		gui.MessageBox("错误提示", tk.Spr("保存文件失败：%v", rs))
@@ -104,7 +107,7 @@ editorSaveAs = func() {
 
 }
 
-editorSave = func() {
+func editorSave() {
 	if editFileNameG == "" {
 		editorSaveAs()
 
@@ -118,7 +121,7 @@ editorSave = func() {
 	}
 
 	if rs == true {
-		rs1 = tk.SaveStringToFile(*text1, editFileNameG)
+		rs1 = tk.SaveStringToFile(text1, editFileNameG)
 
 		if rs1 != "" {
 			gui.MessageBox("错误提示", tk.Spr("保存文件失败：%v", rs))
@@ -132,77 +135,77 @@ editorSave = func() {
 
 }
 
-editEncrypt = func() {
+func editEncrypt() {
 	gui.CloseCurrentPopup()
 
-	sourceT = *text1
+	sourceT = text1
 
-	encStrT = tk.EncryptStringByTXDEF(sourceT, *editSecureCodeG)
+	encStrT = tk.EncryptStringByTXDEF(sourceT, editSecureCodeG)
 
 	if tk.IsErrorString(encStrT) {
 		gui.SimpleError("错误提示", tk.Spr("加密失败：%v", tk.GetErrorString(encStrT)))
 		return
 	}
 
-	setValue(text1, "//TXDEF#" + encStrT)
+	text1 = "//TXDEF#" + encStrT
 	editFileCleanFlagG = "*"
 
-	setValue(editSecureCodeG, "")
+	editSecureCodeG = ""
 }
 
-editEncryptClick = func() {
+func editEncryptClick() {
 	gui.OpenPopup("请输入密码##EncryptInputSecureCode")
 }
 
-editDecrypt = func() {
+func editDecrypt() {
 	gui.CloseCurrentPopup()
 
-	sourceT = tk.Trim(*text1)
+	sourceT = tk.Trim(text1)
 
-	encStrT = tk.DecryptStringByTXDEF(sourceT, *editSecureCodeG)
+	encStrT = tk.DecryptStringByTXDEF(sourceT, editSecureCodeG)
 
 	if tk.IsErrorString(encStrT) {
 		gui.SimpleError("错误提示", tk.Spr("解密失败：%v", tk.GetErrorString(encStrT)))
 		return
 	}
 
-	setValue(text1, encStrT)
+	text1 = encStrT
 	editFileCleanFlagG = "*"
-	setValue(editSecureCodeG, "")
+	editSecureCodeG = ""
 
 }
 
-editDecryptClick = func() {
+func editDecryptClick() {
 	gui.OpenPopup("请输入密码##DecryptInputSecureCode")
 }
 
 
-onButtonCloseClick = func() {
+func onButtonCloseClick() {
 	exit()
 }
 
-loop = func() {
+func loop() {
 
 	layoutT = make(gui.Layout)
 
-	layoutT = append(layoutT, gui.Label(editFileNameG + editFileCleanFlagG))
-	layoutT = append(layoutT, gui.InputTextMultiline("InputTextMultiline001", text1, -1, -30, 0, nil, onEditChange))
-	layoutT = append(layoutT, gui.Line(gui.Button("打开", onButtonLoad), gui.Button("保存", editorSave), gui.Button("另存为", editorSaveAs), gui.Button("加密", editEncryptClick), gui.Button("解密", editDecryptClick), gui.Button("运行", onButtonRunClick), gui.Button("关闭", onButtonCloseClick)))
+	layoutT += gui.Label(editFileNameG + editFileCleanFlagG)
+	layoutT += gui.InputTextMultiline("InputTextMultiline001", &text1, -1, -30, 0, nil, onEditChange)
+	layoutT += gui.Line(gui.Button("打开", onButtonLoad), gui.Button("保存", editorSave), gui.Button("另存为", editorSaveAs), gui.Button("加密", editEncryptClick), gui.Button("解密", editDecryptClick), gui.Button("运行", onButtonRunClick), gui.Button("关闭", onButtonCloseClick))
 
-	layoutT = append(layoutT, gui.PopupModal("请输入密码##EncryptInputSecureCode", []gui.Widget{gui.Line(gui.Label("密码"), gui.InputTextV("", 40, editSecureCodeG, gui.InputTextFlagsPassword, nil, nil)),
+	layoutT += gui.PopupModal("请输入密码##EncryptInputSecureCode", []gui.Widget{gui.Line(gui.Label("密码"), gui.InputTextV("", 40, &editSecureCodeG, gui.InputTextFlagsPassword, nil, nil)),
 		gui.Line(gui.Button("确定", editEncrypt), gui.Button("取消", func() { gui.CloseCurrentPopup() })),
-	}))
+	})
 
-	layoutT = append(layoutT, gui.PopupModal("请输入密码##DecryptInputSecureCode", []gui.Widget{
+	layoutT += gui.PopupModal("请输入密码##DecryptInputSecureCode", []gui.Widget{
 		gui.Line(gui.Label("密码"),
-			gui.InputTextV("", 40, editSecureCodeG, gui.InputTextFlagsPassword, nil, nil)),
+			gui.InputTextV("", 40, &editSecureCodeG, gui.InputTextFlagsPassword, nil, nil)),
 		gui.Line(gui.Button("确定", editDecrypt),
 			gui.Button("取消", func() { gui.CloseCurrentPopup() })),
-	}))
+	})
 
 
 	// add this to the layout if you would use gui.MessageBox function later
-	layoutT = append(layoutT, gui.PrepareMessageBox())
+	layoutT += gui.PrepareMessageBox()
 
 	gui.SingleWindow("Gox编辑器", layoutT)
 }
