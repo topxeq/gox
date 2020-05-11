@@ -1,18 +1,18 @@
-argsG = os.Args
+tk = import("tk")
 
 lenT = len(argsG)
 
-printfln("args length: %v", lenT)
+if lenT > 1 {
+	pl("Try to convert %v", argsG[1])
 
-if lenT > 2 {
-	pl("Try to convert %v", argsG[2])
-
-	numT = tk.HexToInt(argsG[2])
-
+	numT = tk.HexToInt(argsG[1])
+	
 	pl("Result: %v", numT)
 
 	return
 }
+
+lcl = import("lcl")
 
 errT = lcl.InitLCL()
 
@@ -51,13 +51,13 @@ edit1.SetParent(mainForm)
 edit1.SetBounds(10, 48, 200, 32)
 edit1.Font().SetSize(11)
 
-onClick1 = func(objA) {
+onClick1 = func (objA) {
 	numT = tk.HexToInt(edit1.Text())
 
 	if numT < 0 {
 		edit1.SetText("invalid hex value")
 	} else {
-		edit1.SetText(tk.IntToStr(numT))
+		edit1.SetText(toString(numT))
 	}
 }
 
@@ -73,14 +73,14 @@ button1.SetParent(mainForm)
 button1.SetLeft(20)
 button1.SetTop(90)
 button1.SetCaption("Convert")
-button1.SetOnClick(lcl.NewTNotifyEvent(onClick1))
+button1.SetOnClick(&onClick1)
 
 button2 = lcl.NewButton(mainForm)
 button2.SetParent(mainForm)
 button2.SetLeft(110)
 button2.SetTop(90)
 button2.SetCaption("Close")
-button2.SetOnClick(lcl.NewTNotifyEvent(onClick2))
+button2.SetOnClick(&onClick2)
 
 application.Run()
 

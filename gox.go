@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -139,7 +140,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.982a"
+var versionG = "0.983a"
 
 var verboseG = false
 
@@ -1890,6 +1891,8 @@ func syncInitLCL() error {
 
 func initLCL() error {
 
+	runtime.LockOSThread()
+
 	// startThreadID := tk.GetCurrentThreadID()
 
 	api.CloseLib()
@@ -1934,32 +1937,13 @@ func initLCL() error {
 		}
 	}
 
-	// if verboseG {
-	// 	tk.Pl("now1 tid: %v", tk.GetCurrentThreadID())
-	// }
-
 	api.DoResInit()
-	// if verboseG {
-	// 	tk.Pl("now2 tid: %v", tk.GetCurrentThreadID())
-	// }
 
 	api.DoImportInit()
-	// if verboseG {
-	// 	tk.Pl("now3 tid: %v", tk.GetCurrentThreadID())
-	// }
 
 	api.DoDefInit()
 
-	// if verboseG {
-	// 	tk.Pl("now4 tid: %v", tk.GetCurrentThreadID())
-	// }
-
-	// api.DoStyleInit()
-
 	rtl.DoRtlInit()
-	// if verboseG {
-	// 	tk.Pl("now5 tid: %v", tk.GetCurrentThreadID())
-	// }
 
 	vcl.DoInit()
 
