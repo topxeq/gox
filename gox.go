@@ -13,7 +13,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -29,8 +28,11 @@ import (
 
 	"github.com/atotto/clipboard"
 
+	"github.com/containous/yaegi/interp"
+	"github.com/containous/yaegi/stdlib"
+
 	// full version related start
-	"github.com/d5/tengo/stdlib"
+	tgStdlib "github.com/d5/tengo/stdlib"
 	"github.com/d5/tengo/v2"
 	"github.com/dop251/goja"
 
@@ -45,10 +47,12 @@ import (
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
+	specq "github.com/topxeq/qlang/spec"
 
 	// GUI related start
+	"runtime"
+
 	execq "github.com/topxeq/qlang/exec"
-	specq "github.com/topxeq/qlang/spec"
 
 	// GUI related end
 
@@ -140,7 +144,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.983a"
+var versionG = "0.985a"
 
 var verboseG = false
 
@@ -148,8 +152,9 @@ var variableG = make(map[string]interface{})
 
 // full version related start
 var jsVMG *goja.Runtime = nil
-var tengoModulesG = stdlib.GetModuleMap(stdlib.AllModuleNames()...)
+var tengoModulesG = tgStdlib.GetModuleMap(tgStdlib.AllModuleNames()...)
 var ankVMG *env.Env = nil
+var ygVMG *interp.Interpreter = nil
 
 // full version related end
 
@@ -1195,11 +1200,11 @@ func importQLNonGUIPackages() {
 		"StartsWithBOM":                            tk.StartsWithBOM,
 		"RemoveBOM":                                tk.RemoveBOM,
 		"HexToInt":                                 tk.HexToInt,
-		// "GetCurrentThreadID":                       tk.GetCurrentThreadID,
-		"Exit":                        tk.Exit,
-		"GetInputf":                   tk.GetInputf,
-		"RunWinFileWithSystemDefault": tk.RunWinFileWithSystemDefault,
-		"TXString":                    specq.StructOf((*tk.TXString)(nil)),
+		"GetCurrentThreadID":                       tk.GetCurrentThreadID,
+		"Exit":                                     tk.Exit,
+		"GetInputf":                                tk.GetInputf,
+		"RunWinFileWithSystemDefault":              tk.RunWinFileWithSystemDefault,
+		"TXString":                                 specq.StructOf((*tk.TXString)(nil)),
 	}
 
 	qlang.Import("tk", tkExports)
@@ -1640,7 +1645,7 @@ func importAnkNonGUIPackages() {
 		"StartsWithBOM":                       reflect.ValueOf(tk.StartsWithBOM),
 		"RemoveBOM":                           reflect.ValueOf(tk.RemoveBOM),
 		"HexToInt":                            reflect.ValueOf(tk.HexToInt),
-		// "GetCurrentThreadID":                  reflect.ValueOf(tk.GetCurrentThreadID),
+		"GetCurrentThreadID":                  reflect.ValueOf(tk.GetCurrentThreadID),
 	}
 
 }
@@ -2878,6 +2883,33 @@ func runFile(argsA ...string) interface{} {
 	return runScript(fcT, "", argsA[1:]...)
 }
 
+var TKSymbols = map[string]map[string]reflect.Value{}
+
+func initYGVM() {
+	if ygVMG == nil {
+		ygVMG = interp.New(interp.Options{})
+
+		ygVMG.Use(stdlib.Symbols)
+
+		TKSymbols["github.com/topxeq/tk"] = map[string]reflect.Value{
+			"TKSymbols": reflect.ValueOf(TKSymbols),
+		}
+
+		TKSymbols["tk"] = map[string]reflect.Value{
+			// function, constant and variable definitions
+			"TimeFormat":        reflect.ValueOf(&tk.TimeFormat).Elem(),
+			"TimeFormatCompact": reflect.ValueOf(&tk.TimeFormatCompact).Elem(),
+
+			"Printfln": reflect.ValueOf(tk.Printfln),
+			"Spr":      reflect.ValueOf(tk.Spr),
+			"Pl":       reflect.ValueOf(tk.Pl),
+		}
+
+		ygVMG.Use(TKSymbols)
+
+	}
+}
+
 // full version related start
 func initTengoVM() {
 
@@ -3197,6 +3229,7 @@ func main() {
 	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
 	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
+	ifShowResultT := tk.IfSwitchExistsWhole(argsT, "-showResult")
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
 	for _, scriptT := range scriptsT {
@@ -3256,6 +3289,8 @@ func main() {
 			codeTypeT = "ql"
 		} else if tk.StartsWith(fcT, "// ank") {
 			codeTypeT = "anko"
+		} else if tk.StartsWith(fcT, "// yg") {
+			codeTypeT = "yg"
 		} else if tk.StartsWith(fcT, "// js") {
 			codeTypeT = "js"
 		} else if tk.StartsWith(fcT, "// tengo") || tk.StartsWith(fcT, "// tg") {
@@ -3266,9 +3301,25 @@ func main() {
 			codeTypeT = "tengo"
 		} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".anko") {
 			codeTypeT = "anko"
+		} else if tk.EndsWith(scriptT, ".yg") {
+			codeTypeT = "yg"
 		}
 
-		if codeTypeT == "js" {
+		if codeTypeT == "yg" {
+			initYGVM()
+			// i := interp.New(interp.Options{})
+
+			result, errT := ygVMG.Eval(fcT)
+			if errT != nil {
+				tk.Pl("failed to run script(%v): %v", scriptT, errT)
+			}
+
+			if ifShowResultT {
+				tk.Pl("%v", result)
+			}
+
+			return
+		} else if codeTypeT == "js" {
 			initJSVM()
 
 			jsVMG.Set("argsG", jsVMG.ToValue(argsT))

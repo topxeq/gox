@@ -1,3 +1,5 @@
+// anko
+
 tk = import("tk")
 gui = import("gui")
 
@@ -172,10 +174,8 @@ if errT != nil {
 	exit()
 }
 
-pln(tk.GetCurrentThreadID())
-
 application = lcl.GetApplication()
-pln(application)
+
 application.Initialize()
 
 application.SetTitle("编码检测与转换")
@@ -265,14 +265,14 @@ onButtonSaveAsClick = func(sender) {
 onButtonCloseClick = func(sender) {
 	application.Terminate()
 
-	memo1.Free()
+	// memo1.Free()
 
-	buttonOpen.Free()
-	buttonSaveAs.Free()
-	buttonClose.Free()
+	// buttonOpen.Free()
+	// buttonSaveAs.Free()
+	// buttonClose.Free()
 
-	mainForm.Free()
-	application.Free()
+	// mainForm.Free()
+	// application.Free()
 }
 
 buttonOpen = lcl.NewButton(mainForm)
@@ -290,7 +290,7 @@ buttonSaveAs.SetTop(435)
 buttonSaveAs.SetCaption("另存")
 buttonSaveAs.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
 buttonSaveAs.SetOnClick(&onButtonSaveAsClick)
-pln("here2")
+
 buttonClose = lcl.NewButton(mainForm)
 buttonClose.SetParent(mainForm)
 buttonClose.SetLeft(210)
@@ -299,4 +299,4 @@ buttonClose.SetCaption("关闭")
 buttonClose.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
 buttonClose.SetOnClick(&onButtonCloseClick)
 
-pln(application.Run())
+application.Run()

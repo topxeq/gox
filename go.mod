@@ -7,6 +7,7 @@ require (
 	github.com/atotto/clipboard v0.1.2
 	github.com/beevik/etree v1.1.0
 	github.com/chen-chao/transcribe v0.0.0-20200103103926-f1b8419241ed
+	github.com/containous/yaegi v0.8.5
 	github.com/d5/tengo v1.24.8
 	github.com/d5/tengo/v2 v2.1.2
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
