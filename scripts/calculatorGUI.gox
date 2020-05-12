@@ -14,7 +14,10 @@ func onButton1Click() {
 	println(1)
 
 	// evaluate the expression in the text input
-	rs := Eval(text1)
+	t := text1
+	println(2)
+
+	rs := Eval(t)
 
 	println(rs)
 

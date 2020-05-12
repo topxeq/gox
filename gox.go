@@ -2905,7 +2905,7 @@ func initYGVM() {
 		ygVMG.Use(stdlib.Symbols)
 
 		TKSymbols["builtin"] = map[string]reflect.Value{
-			"Eval": reflect.ValueOf(ygEval),
+			"Eval": reflect.ValueOf(qlEval),
 		}
 
 		TKSymbols["gui"] = map[string]reflect.Value{
