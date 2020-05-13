@@ -28,8 +28,10 @@ import (
 
 	"github.com/atotto/clipboard"
 
+	// full version related start
 	"github.com/containous/yaegi/interp"
 	"github.com/containous/yaegi/stdlib"
+	// full version related end
 
 	// full version related start
 	tgStdlib "github.com/d5/tengo/stdlib"
@@ -89,6 +91,7 @@ import (
 	qlstrings "github.com/topxeq/qlang/lib/strings"
 
 	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
+	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
 
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
@@ -113,10 +116,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/topxeq/sqltk"
-
 	// full version related start
 	"github.com/beevik/etree"
+	"github.com/topxeq/sqltk"
 	// full version related end
 
 	// GUI related start
@@ -221,8 +223,6 @@ func setVarTengo(nameA string, valueA interface{}) {
 	varMutexG.Unlock()
 }
 
-// full version related end
-
 func ygEval(strA string) string {
 	if ygVMG == nil {
 		return tk.GenerateErrorString("VM nil")
@@ -235,6 +235,8 @@ func ygEval(strA string) string {
 
 	return tk.Spr("%v", result)
 }
+
+// full version related end
 
 func qlEval(strA string) string {
 	vmT := qlang.New()
@@ -1261,6 +1263,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("crypto_md5", qlcryptomd5.Exports)
 
 	qlang.Import("github_beevik_etree", qlgithubbeeviketree.Exports)
+	qlang.Import("github_topxeq_sqltk", qlgithubtopxeqsqltk.Exports)
 
 }
 
@@ -2896,6 +2899,8 @@ func runFile(argsA ...string) interface{} {
 	return runScript(fcT, "", argsA[1:]...)
 }
 
+// full version related start
+
 var TKSymbols = map[string]map[string]reflect.Value{}
 
 func initYGVM() {
@@ -2906,8 +2911,10 @@ func initYGVM() {
 
 		TKSymbols["builtin"] = map[string]reflect.Value{
 			"Eval": reflect.ValueOf(qlEval),
+			"pl":   reflect.ValueOf(tk.Pl),
 		}
 
+		// GUI related start
 		TKSymbols["gui"] = map[string]reflect.Value{
 			"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
 			"SingleWindow":            reflect.ValueOf(g.SingleWindow),
@@ -2992,6 +2999,7 @@ func initYGVM() {
 			"Layout": reflect.ValueOf((*g.Layout)(nil)),
 			"Widget": reflect.ValueOf((*g.Widget)(nil)),
 		}
+		// GUI related end
 
 		TKSymbols["github.com/topxeq/tk"] = map[string]reflect.Value{
 			// function, constant and variable definitions
@@ -3338,6 +3346,8 @@ func initYGVM() {
 	}
 }
 
+// full version related end
+
 // full version related start
 func initTengoVM() {
 
@@ -3657,7 +3667,11 @@ func main() {
 	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
 	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
+
+	// full version related start
 	ifShowResultT := tk.IfSwitchExistsWhole(argsT, "-showResult")
+	// full version related end
+
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
 	for _, scriptT := range scriptsT {
@@ -3713,22 +3727,22 @@ func main() {
 		// full version related start
 		codeTypeT := "ql"
 
-		if tk.StartsWith(fcT, "// qlang") {
+		if tk.RegStartsWith(fcT, `\s*//\s*qlang`) {
 			codeTypeT = "ql"
-		} else if tk.StartsWith(fcT, "// ank") {
-			codeTypeT = "anko"
-		} else if tk.StartsWith(fcT, "// yg") {
+		} else if tk.RegStartsWith(fcT, `\s*//\s*ank`) {
+			codeTypeT = "ank"
+		} else if tk.RegStartsWith(fcT, `\s*//\s*yg`) {
 			codeTypeT = "yg"
-		} else if tk.StartsWith(fcT, "// js") {
+		} else if tk.RegStartsWith(fcT, `\s*//\s*js`) {
 			codeTypeT = "js"
-		} else if tk.StartsWith(fcT, "// tengo") || tk.StartsWith(fcT, "// tg") {
-			codeTypeT = "tengo"
+		} else if tk.RegStartsWith(fcT, `\s*//\s*tg`) {
+			codeTypeT = "tg"
 		} else if tk.EndsWith(scriptT, ".js") {
 			codeTypeT = "js"
-		} else if tk.EndsWith(scriptT, ".tg") || tk.EndsWith(scriptT, ".tengo") {
-			codeTypeT = "tengo"
-		} else if tk.EndsWith(scriptT, ".ank") || tk.EndsWith(scriptT, ".anko") {
-			codeTypeT = "anko"
+		} else if tk.EndsWith(scriptT, ".tg") {
+			codeTypeT = "tg"
+		} else if tk.EndsWith(scriptT, ".ank") {
+			codeTypeT = "ank"
 		} else if tk.EndsWith(scriptT, ".yg") {
 			codeTypeT = "yg"
 		}
@@ -3766,7 +3780,7 @@ func main() {
 			}
 
 			return
-		} else if codeTypeT == "tengo" {
+		} else if codeTypeT == "tg" {
 			initTengoVM()
 
 			scriptT := tengo.NewScript([]byte(fcT))
@@ -3809,7 +3823,7 @@ func main() {
 			tk.Pl("%#v", rs)
 			// }
 
-		} else if codeTypeT == "anko" {
+		} else if codeTypeT == "ank" {
 
 			initAnkVM()
 
