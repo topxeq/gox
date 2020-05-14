@@ -5,7 +5,7 @@ import (
 	"bytes"
 
 	// full version related start
-	"context"
+
 	// full version related end
 	"io"
 	"math/rand"
@@ -27,24 +27,6 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/atotto/clipboard"
-
-	// full version related start
-	"github.com/containous/yaegi/interp"
-	"github.com/containous/yaegi/stdlib"
-	// full version related end
-
-	// full version related start
-	tgStdlib "github.com/d5/tengo/stdlib"
-	"github.com/d5/tengo/v2"
-	"github.com/dop251/goja"
-
-	"github.com/mattn/anko/core"
-	"github.com/mattn/anko/env"
-	_ "github.com/mattn/anko/packages"
-	"github.com/mattn/anko/parser"
-	"github.com/mattn/anko/vm"
-
-	// full version related end
 
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
@@ -92,10 +74,10 @@ import (
 
 	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
 	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
+	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tk"
 
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
-	"github.com/dgraph-io/badger"
 	_ "github.com/godror/godror"
 
 	"image"
@@ -103,7 +85,6 @@ import (
 	"image/draw"
 	"image/png"
 
-	"github.com/fogleman/gg"
 	"github.com/topxeq/imagetk"
 
 	"gonum.org/v1/plot"
@@ -114,11 +95,11 @@ import (
 	// full version related end
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/mattn/anko/parser"
 	_ "github.com/mattn/go-sqlite3"
 
 	// full version related start
-	"github.com/beevik/etree"
-	"github.com/topxeq/sqltk"
+
 	// full version related end
 
 	// GUI related start
@@ -146,19 +127,11 @@ import (
 
 // Non GUI related
 
-var versionG = "0.985a"
+var versionG = "0.986a"
 
 var verboseG = false
 
 var variableG = make(map[string]interface{})
-
-// full version related start
-var jsVMG *goja.Runtime = nil
-var tengoModulesG = tgStdlib.GetModuleMap(tgStdlib.AllModuleNames()...)
-var ankVMG *env.Env = nil
-var ygVMG *interp.Interpreter = nil
-
-// full version related end
 
 var qlVMG *qlang.Qlang = nil
 
@@ -193,51 +166,6 @@ func setVar(nameA string, valueA interface{}) {
 	varMutexG.Unlock()
 }
 
-// full version related start
-
-func getVarTengo(objsA ...tengo.Object) (tengo.Object, error) {
-	if len(objsA) < 1 {
-		return tengo.FromInterface(tk.GenerateErrorString("not enough parameters"))
-	}
-
-	strT, ok := tengo.ToString(objsA[0])
-
-	if !ok {
-		return tengo.FromInterface(tk.GenerateErrorString("failed to convert value"))
-	}
-
-	varMutexG.Lock()
-	objT, ok := variableG[strT]
-	varMutexG.Unlock()
-
-	if !ok {
-		return tengo.FromInterface(tk.GenerateErrorString("no key"))
-	}
-
-	return tengo.FromInterface(objT)
-}
-
-func setVarTengo(nameA string, valueA interface{}) {
-	varMutexG.Lock()
-	variableG[nameA] = valueA
-	varMutexG.Unlock()
-}
-
-func ygEval(strA string) string {
-	if ygVMG == nil {
-		return tk.GenerateErrorString("VM nil")
-	}
-
-	result, errT := ygVMG.Eval(strA)
-	if errT != nil {
-		return tk.GenerateErrorStringF("failed to run script: %v", errT)
-	}
-
-	return tk.Spr("%v", result)
-}
-
-// full version related end
-
 func qlEval(strA string) string {
 	vmT := qlang.New()
 
@@ -262,19 +190,6 @@ func getClipText() string {
 func setClipText(textA string) {
 	clipboard.WriteAll(textA)
 }
-
-// full version related start
-
-func eval(expA string) interface{} {
-	v, errT := vm.Execute(ankVMG, nil, expA)
-	if errT != nil {
-		return errT.Error()
-	}
-
-	return v
-}
-
-// full version related end
 
 func panicIt(valueA interface{}) {
 	panic(valueA)
@@ -393,22 +308,6 @@ func remove(aryA []interface{}, startA int, endA int) []interface{} {
 
 }
 
-// func printValue(nameA string) {
-// 	if ankVMG == nil {
-// 		return
-// 	}
-
-// 	v, errT := ankVMG.Get(nameA)
-
-// 	if errT != nil {
-// 		tk.Pl("%v(%T): %v", nameA, errT, errT)
-// 		return
-// 	}
-
-// 	tk.Pl("%v(%T): %v", nameA, v, v)
-
-// }
-
 func toStringFromRuneSlice(sliceA []rune) string {
 	return string(sliceA)
 }
@@ -463,85 +362,6 @@ func getUint64Value(v reflect.Value) uint16 {
 	return *p
 }
 
-// full version related start
-
-func initAnkoVMInstance(vmA *env.Env) {
-	if vmA == nil {
-		return
-	}
-
-	vmA.Define("printfln", tk.Pl)
-	vmA.Define("fprintf", fmt.Fprintf)
-	vmA.Define("fprintln", fmt.Fprintln)
-	vmA.Define("pl", tk.Pl)
-	vmA.Define("pln", fmt.Println)
-	vmA.Define("plv", tk.Plv)
-	vmA.Define("plerr", tk.PlErr)
-	vmA.Define("checkError", checkError)
-	vmA.Define("checkErrorString", checkErrorString)
-
-	printValue := func(nameA string) {
-
-		v, errT := vmA.Get(nameA)
-
-		if errT != nil {
-			tk.Pl("%v(%T): %v", nameA, errT, errT)
-			return
-		}
-
-		tk.Pl("%v(%T): %v", nameA, v, v)
-
-	}
-
-	vmA.Define("pv", printValue)
-
-	vmA.Define("getValue", getUint64Value)
-
-	vmA.Define("getInput", tk.GetInputBufferedScan)
-
-	vmA.Define("exit", exit)
-
-	vmA.Define("toStringFromRuneSlice", toStringFromRuneSlice)
-	vmA.Define("remove", remove)
-
-	vmA.Define("eval", eval)
-	vmA.Define("runScript", runScript)
-	vmA.Define("systemCmd", systemCmd)
-	vmA.Define("typeof", typeOfValue)
-	vmA.Define("panic", panicIt)
-
-	vmA.Define("bitXor", bitXor)
-
-	vmA.Define("setValue", setValue)
-	vmA.Define("getValue", getValue)
-
-	vmA.Define("setVar", setVar)
-	vmA.Define("getVar", getVar)
-
-	vmA.Define("setClipText", setClipText)
-	vmA.Define("getClipText", getClipText)
-
-	vmA.Define("deepCopy", tk.DeepCopyFromTo)
-	vmA.Define("deepClone", tk.DeepClone)
-
-	vmA.Define("toExactInt", toInt)
-
-	vmA.Define("newSSHClient", newSSHClient)
-
-	// GUI related start
-
-	vmA.Define("edit", editFile)
-
-	// GUI related end
-
-	vmA.Define("run", runFile)
-
-	core.Import(vmA)
-
-}
-
-// full version related end
-
 func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 	if modeA == "" || modeA == "0" || modeA == "ql" {
@@ -571,112 +391,6 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 		return retG
 		// full version related start
-	} else if modeA == "1" || modeA == "new" {
-		var vmT *env.Env
-
-		vmT = env.NewEnv()
-
-		initAnkoVMInstance(vmT)
-
-		vmT.Define("argsG", argsA)
-
-		v, errT := vm.Execute(vmT, nil, codeA)
-		if errT != nil {
-			posStrT := ""
-
-			e, ok := errT.(*parser.Error)
-
-			if ok {
-				posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-			} else {
-				e, ok := errT.(*vm.Error)
-
-				if ok {
-					posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-				} else {
-					tk.Pl("%#v", errT)
-				}
-			}
-
-			return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", posStrT, errT)
-		}
-
-		return v
-	} else if modeA == "2" || modeA == "current" {
-		ankVMG.Define("argsG", argsA)
-
-		v, errT := vm.Execute(ankVMG, nil, codeA)
-		if errT != nil {
-			posStrT := ""
-
-			e, ok := errT.(*parser.Error)
-
-			if ok {
-				posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-			} else {
-				e, ok := errT.(*vm.Error)
-
-				if ok {
-					posStrT = fmt.Sprintf("line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-				} else {
-					tk.Pl("%#v", errT)
-				}
-			}
-
-			return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", posStrT, errT)
-		}
-
-		return v
-
-	} else if modeA == "3" || modeA == "js" {
-		initJSVM()
-
-		jsVMG.Set("argsG", jsVMG.ToValue(argsA))
-
-		_, errT := jsVMG.RunString(codeA)
-		if errT != nil {
-			return tk.GenerateErrorStringF("failed to run script(%v): %v", codeA, errT)
-		}
-
-		result := jsVMG.Get("resultG")
-
-		return result
-
-	} else if modeA == "5" || modeA == "tg" {
-		scriptT := tengo.NewScript([]byte(codeA))
-
-		scriptT.SetImports(tengoModulesG)
-
-		_ = scriptT.Add("setVar", setVarTengo)
-		// errT := scriptT.Add("times", times)
-		// if errT != nil {
-		// 	return tk.GenerateErrorStringF("failed to add times(%v) error: %v", "", errT)
-		// }
-
-		errT := scriptT.Add("getVar", getVarTengo)
-		if errT != nil {
-			return tk.GenerateErrorStringF("failed to add getVar(%v) error: %v", "", errT)
-		}
-
-		argsG_TG := make([]interface{}, len(argsA))
-		for i, v := range argsA {
-			argsG_TG[i] = v
-		}
-
-		errT = scriptT.Add("argsG", argsG_TG)
-		if errT != nil {
-			return tk.GenerateErrorStringF("failed to add argsA(%v) error: %v", "", errT)
-		}
-
-		compiledT, errT := scriptT.RunContext(context.Background())
-		if errT != nil {
-			return tk.GenerateErrorStringF("failed to execute script(%v) error: %v", "", errT)
-		}
-
-		result := compiledT.Get("resultG")
-		return result
-
-		// full version related end
 	} else {
 		return systemCmd("gox", append([]string{codeA}, argsA...)...)
 	}
@@ -903,326 +617,328 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("", defaultExports)
 
-	var tkExports = map[string]interface{}{
-		"CreateTXCollection":                  tk.CreateTXCollection,
-		"TXResultFromString":                  tk.TXResultFromString,
-		"SetGlobalEnv":                        tk.SetGlobalEnv,
-		"RemoveGlobalEnv":                     tk.RemoveGlobalEnv,
-		"GetGlobalEnvList":                    tk.GetGlobalEnvList,
-		"GetGlobalEnvString":                  tk.GetGlobalEnvString,
-		"HasGlobalEnv":                        tk.HasGlobalEnv,
-		"IsEmptyTrim":                         tk.IsEmptyTrim,
-		"StartsWith":                          tk.StartsWith,
-		"StartsWithIgnoreCase":                tk.StartsWithIgnoreCase,
-		"StartsWithUpper":                     tk.StartsWithUpper,
-		"StartsWithDigit":                     tk.StartsWithDigit,
-		"Contains":                            tk.Contains,
-		"ContainsIgnoreCase":                  tk.ContainsIgnoreCase,
-		"EndsWith":                            tk.EndsWith,
-		"EndsWithIgnoreCase":                  tk.EndsWithIgnoreCase,
-		"Trim":                                tk.Trim,
-		"TrimCharSet":                         tk.TrimCharSet,
-		"InStrings":                           tk.InStrings,
-		"GetSliceMaxLen":                      tk.GetSliceMaxLen,
-		"FindFirstDiffIndex":                  tk.FindFirstDiffIndex,
-		"FindSamePrefix":                      tk.FindSamePrefix,
-		"IsErrorString":                       tk.IsErrorString,
-		"GetErrorString":                      tk.GetErrorString,
-		"GetErrorStringSafely":                tk.GetErrorStringSafely,
-		"GenerateErrorString":                 tk.GenerateErrorString,
-		"GenerateErrorStringF":                tk.GenerateErrorStringF,
-		"ErrorStringToError":                  tk.ErrorStringToError,
-		"Replace":                             tk.Replace,
-		"StringReplace":                       tk.StringReplace,
-		"SplitLines":                          tk.SplitLines,
-		"SplitLinesRemoveEmpty":               tk.SplitLinesRemoveEmpty,
-		"Split":                               tk.Split,
-		"SplitN":                              tk.SplitN,
-		"JoinLines":                           tk.JoinLines,
-		"JoinLinesBySeparator":                tk.JoinLinesBySeparator,
-		"EnsureValidFileNameX":                tk.EnsureValidFileNameX,
-		"CreateString":                        tk.CreateString,
-		"CreateStringSimple":                  tk.CreateStringSimple,
-		"CreateStringWithObject":              tk.CreateStringWithObject,
-		"CreateStringEmpty":                   tk.CreateStringEmpty,
-		"CreateStringSuccess":                 tk.CreateStringSuccess,
-		"CreateStringError":                   tk.CreateStringError,
-		"CreateStringErrorF":                  tk.CreateStringErrorF,
-		"CreateStringErrorFromTXError":        tk.CreateStringErrorFromTXError,
-		"GenerateErrorStringTX":               tk.GenerateErrorStringTX,
-		"GenerateErrorStringFTX":              tk.GenerateErrorStringFTX,
-		"LoadStringTX":                        tk.LoadStringTX,
-		"RegContains":                         tk.RegContains,
-		"RegFindFirstTX":                      tk.RegFindFirstTX,
-		"LoadDualLineListFromString":          tk.LoadDualLineListFromString,
-		"RegReplace":                          tk.RegReplace,
-		"RegFindAll":                          tk.RegFindAll,
-		"RegFindFirst":                        tk.RegFindFirst,
-		"RegMatch":                            tk.RegMatch,
-		"Randomize":                           tk.Randomize,
-		"GetRandomIntLessThan":                tk.GetRandomIntLessThan,
-		"GetRandomInt64LessThan":              tk.GetRandomInt64LessThan,
-		"GetRandomIntInRange":                 tk.GetRandomIntInRange,
-		"GetRandomInt64InRange":               tk.GetRandomInt64InRange,
-		"GenerateRandomString":                tk.GenerateRandomString,
-		"NewRandomGenerator":                  tk.NewRandomGenerator,
-		"ShuffleStringArray":                  tk.ShuffleStringArray,
-		"GetRandomizeStringArrayCopy":         tk.GetRandomizeStringArrayCopy,
-		"GetRandomizeIntArrayCopy":            tk.GetRandomizeIntArrayCopy,
-		"GetRandomizeInt64ArrayCopy":          tk.GetRandomizeInt64ArrayCopy,
-		"GetRandomSubDualList":                tk.GetRandomSubDualList,
-		"JoinDualList":                        tk.JoinDualList,
-		"GetNowDateString":                    tk.GetNowDateString,
-		"GetNowTimeString":                    tk.GetNowTimeString,
-		"GetNowTimeStringFormat":              tk.GetNowTimeStringFormat,
-		"GetNowTimeStringFormal":              tk.GetNowTimeStringFormal,
-		"GetNowTimeOnlyStringBeijing":         tk.GetNowTimeOnlyStringBeijing,
-		"GetTimeFromUnixTimeStamp":            tk.GetTimeFromUnixTimeStamp,
-		"GetTimeFromUnixTimeStampMid":         tk.GetTimeFromUnixTimeStampMid,
-		"GetTimeStamp":                        tk.GetTimeStamp,
-		"GetTimeStampMid":                     tk.GetTimeStampMid,
-		"GetTimeStampNano":                    tk.GetTimeStampNano,
-		"NowToFileName":                       tk.NowToFileName,
-		"GetNowTimeStringHourMinute":          tk.GetNowTimeStringHourMinute,
-		"GetNowMinutesInDay":                  tk.GetNowMinutesInDay,
-		"NowToStrUTC":                         tk.NowToStrUTC,
-		"GetTimeStringDiffMS":                 tk.GetTimeStringDiffMS,
-		"StrToTime":                           tk.StrToTime,
-		"StrToTimeByFormat":                   tk.StrToTimeByFormat,
-		"FormatTime":                          tk.FormatTime,
-		"IsYesterday":                         tk.IsYesterday,
-		"DeleteItemInStringArray":             tk.DeleteItemInStringArray,
-		"DeleteItemInIntArray":                tk.DeleteItemInIntArray,
-		"DeleteItemInInt64Array":              tk.DeleteItemInInt64Array,
-		"ContainsIn":                          tk.ContainsIn,
-		"ContainsInStringList":                tk.ContainsInStringList,
-		"IndexInStringList":                   tk.IndexInStringList,
-		"IndexInStringListFromEnd":            tk.IndexInStringListFromEnd,
-		"GetStringSliceFilled":                tk.GetStringSliceFilled,
-		"Len64":                               tk.Len64,
-		"Int64ArrayToFloat64Array":            tk.Int64ArrayToFloat64Array,
-		"ByteSliceToStringDec":                tk.ByteSliceToStringDec,
-		"GetValueOfMSS":                       tk.GetValueOfMSS,
-		"Prf":                                 tk.Prf,
-		"Prl":                                 tk.Prl,
-		"Pln":                                 tk.Pln,
-		"Printf":                              tk.Printf,
-		"Printfln":                            tk.Printfln,
-		"Spr":                                 tk.Spr,
-		"Pr":                                  tk.Pr,
-		"Pl":                                  tk.Pl,
-		"PlVerbose":                           tk.PlVerbose,
-		"Fpl":                                 tk.Fpl,
-		"Fpr":                                 tk.Fpr,
-		"PlvWithError":                        tk.PlvWithError,
-		"PlAndExit":                           tk.PlAndExit,
-		"PlErrSimple":                         tk.PlErrSimple,
-		"PlErrSimpleAndExit":                  tk.PlErrSimpleAndExit,
-		"PlErrAndExit":                        tk.PlErrAndExit,
-		"PlTXErr":                             tk.PlTXErr,
-		"PlSimpleErrorString":                 tk.PlSimpleErrorString,
-		"PlErr":                               tk.PlErr,
-		"PlErrWithPrefix":                     tk.PlErrWithPrefix,
-		"Plv":                                 tk.Plv,
-		"Plvs":                                tk.Plvs,
-		"Plvsr":                               tk.Plvsr,
-		"Errf":                                tk.Errf,
-		"FatalErr":                            tk.FatalErr,
-		"FatalErrf":                           tk.FatalErrf,
-		"Fatalf":                              tk.Fatalf,
-		"CheckErr":                            tk.CheckErr,
-		"CheckErrf":                           tk.CheckErrf,
-		"CheckErrCompact":                     tk.CheckErrCompact,
-		"GetUserInput":                        tk.GetUserInput,
-		"GetInputBufferedScan":                tk.GetInputBufferedScan,
-		"SleepSeconds":                        tk.SleepSeconds,
-		"SleepMilliSeconds":                   tk.SleepMilliSeconds,
-		"GetRuntimeStack":                     tk.GetRuntimeStack,
-		"GetOSName":                           tk.GetOSName,
-		"GetCurrentDir":                       tk.GetCurrentDir,
-		"GetApplicationPath":                  tk.GetApplicationPath,
-		"EnsureMakeDirs":                      tk.EnsureMakeDirs,
-		"EnsureMakeDirsE":                     tk.EnsureMakeDirsE,
-		"AnalyzeCommandLineParamter":          tk.AnalyzeCommandLineParamter,
-		"GetParameterByIndexWithDefaultValue": tk.GetParameterByIndexWithDefaultValue,
-		"ParseCommandLine":                    tk.ParseCommandLine,
-		"GetSwitchWithDefaultValue":           tk.GetSwitchWithDefaultValue,
-		"GetSwitchWithDefaultIntValue":        tk.GetSwitchWithDefaultIntValue,
-		"GetSwitchWithDefaultInt64Value":      tk.GetSwitchWithDefaultInt64Value,
-		"IfSwitchExists":                      tk.IfSwitchExists,
-		"IfSwitchExistsWhole":                 tk.IfSwitchExistsWhole,
-		"StrToBool":                           tk.StrToBool,
-		"ByteToHex":                           tk.ByteToHex,
-		"IntToStr":                            tk.IntToStr,
-		"Int64ToStr":                          tk.Int64ToStr,
-		"StrToIntWithDefaultValue":            tk.StrToIntWithDefaultValue,
-		"StrToInt":                            tk.StrToInt,
-		"StrToInt64WithDefaultValue":          tk.StrToInt64WithDefaultValue,
-		"StrToIntPositive":                    tk.StrToIntPositive,
-		"StrToFloat64WithDefaultValue":        tk.StrToFloat64WithDefaultValue,
-		"StrToFloat64":                        tk.StrToFloat64,
-		"Float64ToStr":                        tk.Float64ToStr,
-		"StrToTimeCompact":                    tk.StrToTimeCompact,
-		"StrToTimeCompactNoError":             tk.StrToTimeCompactNoError,
-		"FormatStringSliceSlice":              tk.FormatStringSliceSlice,
-		"IntToKMGT":                           tk.IntToKMGT,
-		"IntToWYZ":                            tk.IntToWYZ,
-		"SetLogFile":                          tk.SetLogFile,
-		"LogWithTime":                         tk.LogWithTime,
-		"LogWithTimeCompact":                  tk.LogWithTimeCompact,
-		"IfFileExists":                        tk.IfFileExists,
-		"IsFile":                              tk.IsFile,
-		"IsDirectory":                         tk.IsDirectory,
-		"GetFilePathSeperator":                tk.GetFilePathSeperator,
-		"GetLastComponentOfFilePath":          tk.GetLastComponentOfFilePath,
-		"GetDirOfFilePath":                    tk.GetDirOfFilePath,
-		"RemoveFileExt":                       tk.RemoveFileExt,
-		"GetFileExt":                          tk.GetFileExt,
-		"RemoveLastSubString":                 tk.RemoveLastSubString,
-		"AddLastSubString":                    tk.AddLastSubString,
-		"GenerateFileListRecursively":         tk.GenerateFileListRecursively,
-		"GenerateFileListRecursivelyWithExclusive": tk.GenerateFileListRecursivelyWithExclusive,
-		"GetAvailableFileName":                     tk.GetAvailableFileName,
-		"LoadStringFromFile":                       tk.LoadStringFromFile,
-		"LoadStringFromFileWithDefault":            tk.LoadStringFromFileWithDefault,
-		"LoadStringFromFileE":                      tk.LoadStringFromFileE,
-		"LoadStringFromFileB":                      tk.LoadStringFromFileB,
-		"LoadBytes":                                tk.LoadBytes,
-		"LoadBytesFromFileE":                       tk.LoadBytesFromFileE,
-		"SaveStringToFile":                         tk.SaveStringToFile,
-		"SaveStringToFileE":                        tk.SaveStringToFileE,
-		"AppendStringToFile":                       tk.AppendStringToFile,
-		"LoadStringList":                           tk.LoadStringList,
-		"LoadStringListFromFile":                   tk.LoadStringListFromFile,
-		"LoadStringListBuffered":                   tk.LoadStringListBuffered,
-		"SaveStringList":                           tk.SaveStringList,
-		"SaveStringListWin":                        tk.SaveStringListWin,
-		"SaveStringListBufferedByRange":            tk.SaveStringListBufferedByRange,
-		"SaveStringListBuffered":                   tk.SaveStringListBuffered,
-		"ReadLineFromBufioReader":                  tk.ReadLineFromBufioReader,
-		"RestoreLineEnds":                          tk.RestoreLineEnds,
-		"LoadDualLineList":                         tk.LoadDualLineList,
-		"SaveDualLineList":                         tk.SaveDualLineList,
-		"RemoveDuplicateInDualLineList":            tk.RemoveDuplicateInDualLineList,
-		"AppendDualLineList":                       tk.AppendDualLineList,
-		"LoadSimpleMapFromFile":                    tk.LoadSimpleMapFromFile,
-		"LoadSimpleMapFromFileE":                   tk.LoadSimpleMapFromFileE,
-		"SimpleMapToString":                        tk.SimpleMapToString,
-		"LoadSimpleMapFromString":                  tk.LoadSimpleMapFromString,
-		"LoadSimpleMapFromStringE":                 tk.LoadSimpleMapFromStringE,
-		"ReplaceLineEnds":                          tk.ReplaceLineEnds,
-		"SaveSimpleMapToFile":                      tk.SaveSimpleMapToFile,
-		"AppendSimpleMapFromFile":                  tk.AppendSimpleMapFromFile,
-		"LoadSimpleMapFromDir":                     tk.LoadSimpleMapFromDir,
-		"EncodeToXMLString":                        tk.EncodeToXMLString,
-		"ObjectToJSON":                             tk.ObjectToJSON,
-		"ObjectToJSONIndent":                       tk.ObjectToJSONIndent,
-		"JSONToMapStringString":                    tk.JSONToMapStringString,
-		"JSONToObject":                             tk.JSONToObject,
-		"SafelyGetStringForKeyWithDefault":         tk.SafelyGetStringForKeyWithDefault,
-		"SafelyGetFloat64ForKeyWithDefault":        tk.SafelyGetFloat64ForKeyWithDefault,
-		"SafelyGetIntForKeyWithDefault":            tk.SafelyGetIntForKeyWithDefault,
-		"JSONToStringArray":                        tk.JSONToStringArray,
-		"EncodeStringSimple":                       tk.EncodeStringSimple,
-		"EncodeStringUnderline":                    tk.EncodeStringUnderline,
-		"EncodeStringCustom":                       tk.EncodeStringCustom,
-		"DecodeStringSimple":                       tk.DecodeStringSimple,
-		"DecodeStringUnderline":                    tk.DecodeStringUnderline,
-		"DecodeStringCustom":                       tk.DecodeStringCustom,
-		"MD5Encrypt":                               tk.MD5Encrypt,
-		"BytesToHex":                               tk.BytesToHex,
-		"HexToBytes":                               tk.HexToBytes,
-		"GetRandomByte":                            tk.GetRandomByte,
-		"EncryptDataByTXDEE":                       tk.EncryptDataByTXDEE,
-		"SumBytes":                                 tk.SumBytes,
-		"EncryptDataByTXDEF":                       tk.EncryptDataByTXDEF,
-		"EncryptStreamByTXDEF":                     tk.EncryptStreamByTXDEF,
-		"DecryptStreamByTXDEF":                     tk.DecryptStreamByTXDEF,
-		"DecryptDataByTXDEE":                       tk.DecryptDataByTXDEE,
-		"DecryptDataByTXDEF":                       tk.DecryptDataByTXDEF,
-		"EncryptStringByTXTE":                      tk.EncryptStringByTXTE,
-		"DecryptStringByTXTE":                      tk.DecryptStringByTXTE,
-		"EncryptStringByTXDEE":                     tk.EncryptStringByTXDEE,
-		"DecryptStringByTXDEE":                     tk.DecryptStringByTXDEE,
-		"EncryptStringByTXDEF":                     tk.EncryptStringByTXDEF,
-		"DecryptStringByTXDEF":                     tk.DecryptStringByTXDEF,
-		"EncryptFileByTXDEF":                       tk.EncryptFileByTXDEF,
-		"EncryptFileByTXDEFStream":                 tk.EncryptFileByTXDEFStream,
-		"DecryptFileByTXDEFStream":                 tk.DecryptFileByTXDEFStream,
-		"ErrorToString":                            tk.ErrorToString,
-		"EncryptFileByTXDEFS":                      tk.EncryptFileByTXDEFS,
-		"EncryptFileByTXDEFStreamS":                tk.EncryptFileByTXDEFStreamS,
-		"DecryptFileByTXDEF":                       tk.DecryptFileByTXDEF,
-		"DecryptFileByTXDEFS":                      tk.DecryptFileByTXDEFS,
-		"DecryptFileByTXDEFStreamS":                tk.DecryptFileByTXDEFStreamS,
-		"Pkcs7Padding":                             tk.Pkcs7Padding,
-		"AESEncrypt":                               tk.AESEncrypt,
-		"AESDecrypt":                               tk.AESDecrypt,
-		"AnalyzeURLParams":                         tk.AnalyzeURLParams,
-		"UrlEncode":                                tk.UrlEncode,
-		"UrlEncode2":                               tk.UrlEncode2,
-		"UrlDecode":                                tk.UrlDecode,
-		"JoinURL":                                  tk.JoinURL,
-		"AddDebug":                                 tk.AddDebug,
-		"AddDebugF":                                tk.AddDebugF,
-		"ClearDebug":                               tk.ClearDebug,
-		"GetDebug":                                 tk.GetDebug,
-		"DownloadPageUTF8":                         tk.DownloadPageUTF8,
-		"DownloadPage":                             tk.DownloadPage,
-		"DownloadPageByMap":                        tk.DownloadPageByMap,
-		"GetLastComponentOfUrl":                    tk.GetLastComponentOfUrl,
-		"DownloadFile":                             tk.DownloadFile,
-		"DownloadBytes":                            tk.DownloadBytes,
-		"PostRequest":                              tk.PostRequest,
-		"PostRequestX":                             tk.PostRequestX,
-		"PostRequestBytesX":                        tk.PostRequestBytesX,
-		"PostRequestBytesWithMSSHeaderX":           tk.PostRequestBytesWithMSSHeaderX,
-		"PostRequestBytesWithCookieX":              tk.PostRequestBytesWithCookieX,
-		"GetFormValueWithDefaultValue":             tk.GetFormValueWithDefaultValue,
-		"GenerateJSONPResponse":                    tk.GenerateJSONPResponse,
-		"GenerateJSONPResponseWithObject":          tk.GenerateJSONPResponseWithObject,
-		"GenerateJSONPResponseWith2Object":         tk.GenerateJSONPResponseWith2Object,
-		"GenerateJSONPResponseWith3Object":         tk.GenerateJSONPResponseWith3Object,
-		"GetSuccessValue":                          tk.GetSuccessValue,
-		"Float32ArrayToFloat64Array":               tk.Float32ArrayToFloat64Array,
-		"CalCosineSimilarityBetweenFloatsBig":      tk.CalCosineSimilarityBetweenFloatsBig,
-		"GetDBConnection":                          tk.GetDBConnection,
-		"GetDBRowCount":                            tk.GetDBRowCount,
-		"GetDBRowCountCompact":                     tk.GetDBRowCountCompact,
-		"GetDBResultString":                        tk.GetDBResultString,
-		"GetDBResultArray":                         tk.GetDBResultArray,
-		"ConvertToGB18030":                         tk.ConvertToGB18030,
-		"ConvertToGB18030Bytes":                    tk.ConvertToGB18030Bytes,
-		"ConvertToUTF8":                            tk.ConvertToUTF8,
-		"ConvertStringToUTF8":                      tk.ConvertStringToUTF8,
-		"CreateSimpleEvent":                        tk.CreateSimpleEvent,
-		"GetAllParameters":                         tk.GetAllParameters,
-		"GetAllSwitches":                           tk.GetAllSwitches,
-		"ToLower":                                  tk.ToLower,
-		"ToUpper":                                  tk.ToUpper,
-		"GetEnv":                                   tk.GetEnv,
-		"JoinPath":                                 tk.JoinPath,
-		"DeepClone":                                tk.DeepClone,
-		"DeepCopyFromTo":                           tk.DeepCopyFromTo,
-		"JSONToObjectE":                            tk.JSONToObjectE,
-		"ToJSON":                                   tk.ToJSON,
-		"ToJSONIndent":                             tk.ToJSONIndent,
-		"FromJSON":                                 tk.FromJSON,
-		"GetJSONNode":                              tk.GetJSONNode,
-		"GetJSONNodeAny":                           tk.GetJSONNodeAny,
-		"GetJSONSubNode":                           tk.GetJSONSubNode,
-		"GetJSONSubNodeAny":                        tk.GetJSONSubNodeAny,
-		"StartsWithBOM":                            tk.StartsWithBOM,
-		"RemoveBOM":                                tk.RemoveBOM,
-		"HexToInt":                                 tk.HexToInt,
-		"GetCurrentThreadID":                       tk.GetCurrentThreadID,
-		"Exit":                                     tk.Exit,
-		"GetInputf":                                tk.GetInputf,
-		"RunWinFileWithSystemDefault":              tk.RunWinFileWithSystemDefault,
-		"TXString":                                 specq.StructOf((*tk.TXString)(nil)),
-	}
+	// var tkExports = map[string]interface{}{
+	// 	"CreateTXCollection":                  tk.CreateTXCollection,
+	// 	"TXResultFromString":                  tk.TXResultFromString,
+	// 	"SetGlobalEnv":                        tk.SetGlobalEnv,
+	// 	"RemoveGlobalEnv":                     tk.RemoveGlobalEnv,
+	// 	"GetGlobalEnvList":                    tk.GetGlobalEnvList,
+	// 	"GetGlobalEnvString":                  tk.GetGlobalEnvString,
+	// 	"HasGlobalEnv":                        tk.HasGlobalEnv,
+	// 	"IsEmptyTrim":                         tk.IsEmptyTrim,
+	// 	"StartsWith":                          tk.StartsWith,
+	// 	"StartsWithIgnoreCase":                tk.StartsWithIgnoreCase,
+	// 	"StartsWithUpper":                     tk.StartsWithUpper,
+	// 	"StartsWithDigit":                     tk.StartsWithDigit,
+	// 	"Contains":                            tk.Contains,
+	// 	"ContainsIgnoreCase":                  tk.ContainsIgnoreCase,
+	// 	"EndsWith":                            tk.EndsWith,
+	// 	"EndsWithIgnoreCase":                  tk.EndsWithIgnoreCase,
+	// 	"Trim":                                tk.Trim,
+	// 	"TrimCharSet":                         tk.TrimCharSet,
+	// 	"InStrings":                           tk.InStrings,
+	// 	"GetSliceMaxLen":                      tk.GetSliceMaxLen,
+	// 	"FindFirstDiffIndex":                  tk.FindFirstDiffIndex,
+	// 	"FindSamePrefix":                      tk.FindSamePrefix,
+	// 	"IsErrorString":                       tk.IsErrorString,
+	// 	"GetErrorString":                      tk.GetErrorString,
+	// 	"GetErrorStringSafely":                tk.GetErrorStringSafely,
+	// 	"GenerateErrorString":                 tk.GenerateErrorString,
+	// 	"GenerateErrorStringF":                tk.GenerateErrorStringF,
+	// 	"ErrorStringToError":                  tk.ErrorStringToError,
+	// 	"Replace":                             tk.Replace,
+	// 	"StringReplace":                       tk.StringReplace,
+	// 	"SplitLines":                          tk.SplitLines,
+	// 	"SplitLinesRemoveEmpty":               tk.SplitLinesRemoveEmpty,
+	// 	"Split":                               tk.Split,
+	// 	"SplitN":                              tk.SplitN,
+	// 	"JoinLines":                           tk.JoinLines,
+	// 	"JoinLinesBySeparator":                tk.JoinLinesBySeparator,
+	// 	"EnsureValidFileNameX":                tk.EnsureValidFileNameX,
+	// 	"CreateString":                        tk.CreateString,
+	// 	"CreateStringSimple":                  tk.CreateStringSimple,
+	// 	"CreateStringWithObject":              tk.CreateStringWithObject,
+	// 	"CreateStringEmpty":                   tk.CreateStringEmpty,
+	// 	"CreateStringSuccess":                 tk.CreateStringSuccess,
+	// 	"CreateStringError":                   tk.CreateStringError,
+	// 	"CreateStringErrorF":                  tk.CreateStringErrorF,
+	// 	"CreateStringErrorFromTXError":        tk.CreateStringErrorFromTXError,
+	// 	"GenerateErrorStringTX":               tk.GenerateErrorStringTX,
+	// 	"GenerateErrorStringFTX":              tk.GenerateErrorStringFTX,
+	// 	"LoadStringTX":                        tk.LoadStringTX,
+	// 	"RegContains":                         tk.RegContains,
+	// 	"RegFindFirstTX":                      tk.RegFindFirstTX,
+	// 	"LoadDualLineListFromString":          tk.LoadDualLineListFromString,
+	// 	"RegReplace":                          tk.RegReplace,
+	// 	"RegFindAll":                          tk.RegFindAll,
+	// 	"RegFindFirst":                        tk.RegFindFirst,
+	// 	"RegMatch":                            tk.RegMatch,
+	// 	"Randomize":                           tk.Randomize,
+	// 	"GetRandomIntLessThan":                tk.GetRandomIntLessThan,
+	// 	"GetRandomInt64LessThan":              tk.GetRandomInt64LessThan,
+	// 	"GetRandomIntInRange":                 tk.GetRandomIntInRange,
+	// 	"GetRandomInt64InRange":               tk.GetRandomInt64InRange,
+	// 	"GenerateRandomString":                tk.GenerateRandomString,
+	// 	"NewRandomGenerator":                  tk.NewRandomGenerator,
+	// 	"ShuffleStringArray":                  tk.ShuffleStringArray,
+	// 	"GetRandomizeStringArrayCopy":         tk.GetRandomizeStringArrayCopy,
+	// 	"GetRandomizeIntArrayCopy":            tk.GetRandomizeIntArrayCopy,
+	// 	"GetRandomizeInt64ArrayCopy":          tk.GetRandomizeInt64ArrayCopy,
+	// 	"GetRandomSubDualList":                tk.GetRandomSubDualList,
+	// 	"JoinDualList":                        tk.JoinDualList,
+	// 	"GetNowDateString":                    tk.GetNowDateString,
+	// 	"GetNowTimeString":                    tk.GetNowTimeString,
+	// 	"GetNowTimeStringFormat":              tk.GetNowTimeStringFormat,
+	// 	"GetNowTimeStringFormal":              tk.GetNowTimeStringFormal,
+	// 	"GetNowTimeOnlyStringBeijing":         tk.GetNowTimeOnlyStringBeijing,
+	// 	"GetTimeFromUnixTimeStamp":            tk.GetTimeFromUnixTimeStamp,
+	// 	"GetTimeFromUnixTimeStampMid":         tk.GetTimeFromUnixTimeStampMid,
+	// 	"GetTimeStamp":                        tk.GetTimeStamp,
+	// 	"GetTimeStampMid":                     tk.GetTimeStampMid,
+	// 	"GetTimeStampNano":                    tk.GetTimeStampNano,
+	// 	"NowToFileName":                       tk.NowToFileName,
+	// 	"GetNowTimeStringHourMinute":          tk.GetNowTimeStringHourMinute,
+	// 	"GetNowMinutesInDay":                  tk.GetNowMinutesInDay,
+	// 	"NowToStrUTC":                         tk.NowToStrUTC,
+	// 	"GetTimeStringDiffMS":                 tk.GetTimeStringDiffMS,
+	// 	"StrToTime":                           tk.StrToTime,
+	// 	"StrToTimeByFormat":                   tk.StrToTimeByFormat,
+	// 	"FormatTime":                          tk.FormatTime,
+	// 	"IsYesterday":                         tk.IsYesterday,
+	// 	"DeleteItemInStringArray":             tk.DeleteItemInStringArray,
+	// 	"DeleteItemInIntArray":                tk.DeleteItemInIntArray,
+	// 	"DeleteItemInInt64Array":              tk.DeleteItemInInt64Array,
+	// 	"ContainsIn":                          tk.ContainsIn,
+	// 	"ContainsInStringList":                tk.ContainsInStringList,
+	// 	"IndexInStringList":                   tk.IndexInStringList,
+	// 	"IndexInStringListFromEnd":            tk.IndexInStringListFromEnd,
+	// 	"GetStringSliceFilled":                tk.GetStringSliceFilled,
+	// 	"Len64":                               tk.Len64,
+	// 	"Int64ArrayToFloat64Array":            tk.Int64ArrayToFloat64Array,
+	// 	"ByteSliceToStringDec":                tk.ByteSliceToStringDec,
+	// 	"GetValueOfMSS":                       tk.GetValueOfMSS,
+	// 	"Prf":                                 tk.Prf,
+	// 	"Prl":                                 tk.Prl,
+	// 	"Pln":                                 tk.Pln,
+	// 	"Printf":                              tk.Printf,
+	// 	"Printfln":                            tk.Printfln,
+	// 	"Spr":                                 tk.Spr,
+	// 	"Pr":                                  tk.Pr,
+	// 	"Pl":                                  tk.Pl,
+	// 	"PlVerbose":                           tk.PlVerbose,
+	// 	"Fpl":                                 tk.Fpl,
+	// 	"Fpr":                                 tk.Fpr,
+	// 	"PlvWithError":                        tk.PlvWithError,
+	// 	"PlAndExit":                           tk.PlAndExit,
+	// 	"PlErrSimple":                         tk.PlErrSimple,
+	// 	"PlErrSimpleAndExit":                  tk.PlErrSimpleAndExit,
+	// 	"PlErrAndExit":                        tk.PlErrAndExit,
+	// 	"PlTXErr":                             tk.PlTXErr,
+	// 	"PlSimpleErrorString":                 tk.PlSimpleErrorString,
+	// 	"PlErr":                               tk.PlErr,
+	// 	"PlErrWithPrefix":                     tk.PlErrWithPrefix,
+	// 	"Plv":                                 tk.Plv,
+	// 	"Plvs":                                tk.Plvs,
+	// 	"Plvsr":                               tk.Plvsr,
+	// 	"Errf":                                tk.Errf,
+	// 	"FatalErr":                            tk.FatalErr,
+	// 	"FatalErrf":                           tk.FatalErrf,
+	// 	"Fatalf":                              tk.Fatalf,
+	// 	"CheckErr":                            tk.CheckErr,
+	// 	"CheckErrf":                           tk.CheckErrf,
+	// 	"CheckErrCompact":                     tk.CheckErrCompact,
+	// 	"GetUserInput":                        tk.GetUserInput,
+	// 	"GetInputBufferedScan":                tk.GetInputBufferedScan,
+	// 	"SleepSeconds":                        tk.SleepSeconds,
+	// 	"SleepMilliSeconds":                   tk.SleepMilliSeconds,
+	// 	"GetRuntimeStack":                     tk.GetRuntimeStack,
+	// 	"GetOSName":                           tk.GetOSName,
+	// 	"GetCurrentDir":                       tk.GetCurrentDir,
+	// 	"GetApplicationPath":                  tk.GetApplicationPath,
+	// 	"EnsureMakeDirs":                      tk.EnsureMakeDirs,
+	// 	"EnsureMakeDirsE":                     tk.EnsureMakeDirsE,
+	// 	"AnalyzeCommandLineParamter":          tk.AnalyzeCommandLineParamter,
+	// 	"GetParameterByIndexWithDefaultValue": tk.GetParameterByIndexWithDefaultValue,
+	// 	"ParseCommandLine":                    tk.ParseCommandLine,
+	// 	"GetSwitchWithDefaultValue":           tk.GetSwitchWithDefaultValue,
+	// 	"GetSwitchWithDefaultIntValue":        tk.GetSwitchWithDefaultIntValue,
+	// 	"GetSwitchWithDefaultInt64Value":      tk.GetSwitchWithDefaultInt64Value,
+	// 	"IfSwitchExists":                      tk.IfSwitchExists,
+	// 	"IfSwitchExistsWhole":                 tk.IfSwitchExistsWhole,
+	// 	"StrToBool":                           tk.StrToBool,
+	// 	"ByteToHex":                           tk.ByteToHex,
+	// 	"IntToStr":                            tk.IntToStr,
+	// 	"Int64ToStr":                          tk.Int64ToStr,
+	// 	"StrToIntWithDefaultValue":            tk.StrToIntWithDefaultValue,
+	// 	"StrToInt":                            tk.StrToInt,
+	// 	"StrToInt64WithDefaultValue":          tk.StrToInt64WithDefaultValue,
+	// 	"StrToIntPositive":                    tk.StrToIntPositive,
+	// 	"StrToFloat64WithDefaultValue":        tk.StrToFloat64WithDefaultValue,
+	// 	"StrToFloat64":                        tk.StrToFloat64,
+	// 	"Float64ToStr":                        tk.Float64ToStr,
+	// 	"StrToTimeCompact":                    tk.StrToTimeCompact,
+	// 	"StrToTimeCompactNoError":             tk.StrToTimeCompactNoError,
+	// 	"FormatStringSliceSlice":              tk.FormatStringSliceSlice,
+	// 	"IntToKMGT":                           tk.IntToKMGT,
+	// 	"IntToWYZ":                            tk.IntToWYZ,
+	// 	"SetLogFile":                          tk.SetLogFile,
+	// 	"LogWithTime":                         tk.LogWithTime,
+	// 	"LogWithTimeCompact":                  tk.LogWithTimeCompact,
+	// 	"IfFileExists":                        tk.IfFileExists,
+	// 	"IsFile":                              tk.IsFile,
+	// 	"IsDirectory":                         tk.IsDirectory,
+	// 	"GetFilePathSeperator":                tk.GetFilePathSeperator,
+	// 	"GetLastComponentOfFilePath":          tk.GetLastComponentOfFilePath,
+	// 	"GetDirOfFilePath":                    tk.GetDirOfFilePath,
+	// 	"RemoveFileExt":                       tk.RemoveFileExt,
+	// 	"GetFileExt":                          tk.GetFileExt,
+	// 	"RemoveLastSubString":                 tk.RemoveLastSubString,
+	// 	"AddLastSubString":                    tk.AddLastSubString,
+	// 	"GenerateFileListInDir":               tk.GenerateFileListInDir,
+	// 	"GenerateFileListRecursively":         tk.GenerateFileListRecursively,
+	// 	"GenerateFileListRecursivelyWithExclusive": tk.GenerateFileListRecursivelyWithExclusive,
+	// 	"GetAvailableFileName":                     tk.GetAvailableFileName,
+	// 	"LoadStringFromFile":                       tk.LoadStringFromFile,
+	// 	"LoadStringFromFileWithDefault":            tk.LoadStringFromFileWithDefault,
+	// 	"LoadStringFromFileE":                      tk.LoadStringFromFileE,
+	// 	"LoadStringFromFileB":                      tk.LoadStringFromFileB,
+	// 	"LoadBytes":                                tk.LoadBytes,
+	// 	"LoadBytesFromFileE":                       tk.LoadBytesFromFileE,
+	// 	"SaveStringToFile":                         tk.SaveStringToFile,
+	// 	"SaveStringToFileE":                        tk.SaveStringToFileE,
+	// 	"AppendStringToFile":                       tk.AppendStringToFile,
+	// 	"LoadStringList":                           tk.LoadStringList,
+	// 	"LoadStringListFromFile":                   tk.LoadStringListFromFile,
+	// 	"LoadStringListBuffered":                   tk.LoadStringListBuffered,
+	// 	"SaveStringList":                           tk.SaveStringList,
+	// 	"SaveStringListWin":                        tk.SaveStringListWin,
+	// 	"SaveStringListBufferedByRange":            tk.SaveStringListBufferedByRange,
+	// 	"SaveStringListBuffered":                   tk.SaveStringListBuffered,
+	// 	"ReadLineFromBufioReader":                  tk.ReadLineFromBufioReader,
+	// 	"RestoreLineEnds":                          tk.RestoreLineEnds,
+	// 	"LoadDualLineList":                         tk.LoadDualLineList,
+	// 	"SaveDualLineList":                         tk.SaveDualLineList,
+	// 	"RemoveDuplicateInDualLineList":            tk.RemoveDuplicateInDualLineList,
+	// 	"AppendDualLineList":                       tk.AppendDualLineList,
+	// 	"LoadSimpleMapFromFile":                    tk.LoadSimpleMapFromFile,
+	// 	"LoadSimpleMapFromFileE":                   tk.LoadSimpleMapFromFileE,
+	// 	"SimpleMapToString":                        tk.SimpleMapToString,
+	// 	"LoadSimpleMapFromString":                  tk.LoadSimpleMapFromString,
+	// 	"LoadSimpleMapFromStringE":                 tk.LoadSimpleMapFromStringE,
+	// 	"ReplaceLineEnds":                          tk.ReplaceLineEnds,
+	// 	"SaveSimpleMapToFile":                      tk.SaveSimpleMapToFile,
+	// 	"AppendSimpleMapFromFile":                  tk.AppendSimpleMapFromFile,
+	// 	"LoadSimpleMapFromDir":                     tk.LoadSimpleMapFromDir,
+	// 	"EncodeToXMLString":                        tk.EncodeToXMLString,
+	// 	"ObjectToJSON":                             tk.ObjectToJSON,
+	// 	"ObjectToJSONIndent":                       tk.ObjectToJSONIndent,
+	// 	"JSONToMapStringString":                    tk.JSONToMapStringString,
+	// 	"JSONToObject":                             tk.JSONToObject,
+	// 	"SafelyGetStringForKeyWithDefault":         tk.SafelyGetStringForKeyWithDefault,
+	// 	"SafelyGetFloat64ForKeyWithDefault":        tk.SafelyGetFloat64ForKeyWithDefault,
+	// 	"SafelyGetIntForKeyWithDefault":            tk.SafelyGetIntForKeyWithDefault,
+	// 	"JSONToStringArray":                        tk.JSONToStringArray,
+	// 	"EncodeStringSimple":                       tk.EncodeStringSimple,
+	// 	"EncodeStringUnderline":                    tk.EncodeStringUnderline,
+	// 	"EncodeStringCustom":                       tk.EncodeStringCustom,
+	// 	"DecodeStringSimple":                       tk.DecodeStringSimple,
+	// 	"DecodeStringUnderline":                    tk.DecodeStringUnderline,
+	// 	"DecodeStringCustom":                       tk.DecodeStringCustom,
+	// 	"MD5Encrypt":                               tk.MD5Encrypt,
+	// 	"BytesToHex":                               tk.BytesToHex,
+	// 	"HexToBytes":                               tk.HexToBytes,
+	// 	"GetRandomByte":                            tk.GetRandomByte,
+	// 	"EncryptDataByTXDEE":                       tk.EncryptDataByTXDEE,
+	// 	"SumBytes":                                 tk.SumBytes,
+	// 	"EncryptDataByTXDEF":                       tk.EncryptDataByTXDEF,
+	// 	"EncryptStreamByTXDEF":                     tk.EncryptStreamByTXDEF,
+	// 	"DecryptStreamByTXDEF":                     tk.DecryptStreamByTXDEF,
+	// 	"DecryptDataByTXDEE":                       tk.DecryptDataByTXDEE,
+	// 	"DecryptDataByTXDEF":                       tk.DecryptDataByTXDEF,
+	// 	"EncryptStringByTXTE":                      tk.EncryptStringByTXTE,
+	// 	"DecryptStringByTXTE":                      tk.DecryptStringByTXTE,
+	// 	"EncryptStringByTXDEE":                     tk.EncryptStringByTXDEE,
+	// 	"DecryptStringByTXDEE":                     tk.DecryptStringByTXDEE,
+	// 	"EncryptStringByTXDEF":                     tk.EncryptStringByTXDEF,
+	// 	"DecryptStringByTXDEF":                     tk.DecryptStringByTXDEF,
+	// 	"EncryptFileByTXDEF":                       tk.EncryptFileByTXDEF,
+	// 	"EncryptFileByTXDEFStream":                 tk.EncryptFileByTXDEFStream,
+	// 	"DecryptFileByTXDEFStream":                 tk.DecryptFileByTXDEFStream,
+	// 	"ErrorToString":                            tk.ErrorToString,
+	// 	"EncryptFileByTXDEFS":                      tk.EncryptFileByTXDEFS,
+	// 	"EncryptFileByTXDEFStreamS":                tk.EncryptFileByTXDEFStreamS,
+	// 	"DecryptFileByTXDEF":                       tk.DecryptFileByTXDEF,
+	// 	"DecryptFileByTXDEFS":                      tk.DecryptFileByTXDEFS,
+	// 	"DecryptFileByTXDEFStreamS":                tk.DecryptFileByTXDEFStreamS,
+	// 	"Pkcs7Padding":                             tk.Pkcs7Padding,
+	// 	"AESEncrypt":                               tk.AESEncrypt,
+	// 	"AESDecrypt":                               tk.AESDecrypt,
+	// 	"AnalyzeURLParams":                         tk.AnalyzeURLParams,
+	// 	"UrlEncode":                                tk.UrlEncode,
+	// 	"UrlEncode2":                               tk.UrlEncode2,
+	// 	"UrlDecode":                                tk.UrlDecode,
+	// 	"JoinURL":                                  tk.JoinURL,
+	// 	"AddDebug":                                 tk.AddDebug,
+	// 	"AddDebugF":                                tk.AddDebugF,
+	// 	"ClearDebug":                               tk.ClearDebug,
+	// 	"GetDebug":                                 tk.GetDebug,
+	// 	"DownloadPageUTF8":                         tk.DownloadPageUTF8,
+	// 	"DownloadPage":                             tk.DownloadPage,
+	// 	"DownloadPageByMap":                        tk.DownloadPageByMap,
+	// 	"GetLastComponentOfUrl":                    tk.GetLastComponentOfUrl,
+	// 	"DownloadFile":                             tk.DownloadFile,
+	// 	"DownloadBytes":                            tk.DownloadBytes,
+	// 	"PostRequest":                              tk.PostRequest,
+	// 	"PostRequestX":                             tk.PostRequestX,
+	// 	"PostRequestBytesX":                        tk.PostRequestBytesX,
+	// 	"PostRequestBytesWithMSSHeaderX":           tk.PostRequestBytesWithMSSHeaderX,
+	// 	"PostRequestBytesWithCookieX":              tk.PostRequestBytesWithCookieX,
+	// 	"GetFormValueWithDefaultValue":             tk.GetFormValueWithDefaultValue,
+	// 	"GenerateJSONPResponse":                    tk.GenerateJSONPResponse,
+	// 	"GenerateJSONPResponseWithObject":          tk.GenerateJSONPResponseWithObject,
+	// 	"GenerateJSONPResponseWith2Object":         tk.GenerateJSONPResponseWith2Object,
+	// 	"GenerateJSONPResponseWith3Object":         tk.GenerateJSONPResponseWith3Object,
+	// 	"GetSuccessValue":                          tk.GetSuccessValue,
+	// 	"Float32ArrayToFloat64Array":               tk.Float32ArrayToFloat64Array,
+	// 	"CalCosineSimilarityBetweenFloatsBig":      tk.CalCosineSimilarityBetweenFloatsBig,
+	// 	"GetDBConnection":                          tk.GetDBConnection,
+	// 	"GetDBRowCount":                            tk.GetDBRowCount,
+	// 	"GetDBRowCountCompact":                     tk.GetDBRowCountCompact,
+	// 	"GetDBResultString":                        tk.GetDBResultString,
+	// 	"GetDBResultArray":                         tk.GetDBResultArray,
+	// 	"ConvertToGB18030":                         tk.ConvertToGB18030,
+	// 	"ConvertToGB18030Bytes":                    tk.ConvertToGB18030Bytes,
+	// 	"ConvertToUTF8":                            tk.ConvertToUTF8,
+	// 	"ConvertStringToUTF8":                      tk.ConvertStringToUTF8,
+	// 	"CreateSimpleEvent":                        tk.CreateSimpleEvent,
+	// 	"GetAllParameters":                         tk.GetAllParameters,
+	// 	"GetAllSwitches":                           tk.GetAllSwitches,
+	// 	"ToLower":                                  tk.ToLower,
+	// 	"ToUpper":                                  tk.ToUpper,
+	// 	"GetEnv":                                   tk.GetEnv,
+	// 	"JoinPath":                                 tk.JoinPath,
+	// 	"DeepClone":                                tk.DeepClone,
+	// 	"DeepCopyFromTo":                           tk.DeepCopyFromTo,
+	// 	"JSONToObjectE":                            tk.JSONToObjectE,
+	// 	"ToJSON":                                   tk.ToJSON,
+	// 	"ToJSONIndent":                             tk.ToJSONIndent,
+	// 	"FromJSON":                                 tk.FromJSON,
+	// 	"GetJSONNode":                              tk.GetJSONNode,
+	// 	"GetJSONNodeAny":                           tk.GetJSONNodeAny,
+	// 	"GetJSONSubNode":                           tk.GetJSONSubNode,
+	// 	"GetJSONSubNodeAny":                        tk.GetJSONSubNodeAny,
+	// 	"StartsWithBOM":                            tk.StartsWithBOM,
+	// 	"RemoveBOM":                                tk.RemoveBOM,
+	// 	"HexToInt":                                 tk.HexToInt,
+	// 	"GetCurrentThreadID":                       tk.GetCurrentThreadID,
+	// 	"Exit":                                     tk.Exit,
+	// 	"GetInputf":                                tk.GetInputf,
+	// 	"RunWinFileWithSystemDefault":              tk.RunWinFileWithSystemDefault,
+	// 	"TXString":                                 specq.StructOf((*tk.TXString)(nil)),
+	// }
 
-	qlang.Import("tk", tkExports)
+	qlang.Import("tk", qlgithubtopxeqtk.Exports)
+	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
 
 	qlang.Import("os", qlos.Exports)
 
@@ -1267,407 +983,6 @@ func importQLNonGUIPackages() {
 
 }
 
-// full version related start
-
-func importAnkNonGUIPackages() {
-
-	env.Packages["etree"] = map[string]reflect.Value{
-		"NewDocument": reflect.ValueOf(etree.NewDocument),
-	}
-
-	env.PackageTypes["badger"] = map[string]reflect.Type{
-		"IteratorOptions": reflect.TypeOf(badger.IteratorOptions{}),
-		// "IteratorOptions": reflect.TypeOf(&widget).Elem(),
-	}
-
-	// var tmpxys = []plotter.XYer{}
-
-	// var tmpxy plotter.XYs
-
-	// tk.Pl("%#v", tmpxy)
-
-	env.PackageTypes["plot"] = map[string]reflect.Type{
-		// "XYs": reflect.TypeOf(&tmpxy).Elem(),
-		"XYs": reflect.TypeOf(plotter.XYs{}),
-		"XY":  reflect.TypeOf(plotter.XY{}),
-		// "XYer":  reflect.TypeOf(tmpxy),
-		// "XYers": reflect.TypeOf(tmpxys),
-	}
-
-	env.Packages["plot"] = map[string]reflect.Value{
-		"New":           reflect.ValueOf(plot.New),
-		"NewXY":         reflect.ValueOf(newPlotXY),
-		"AddLinePoints": reflect.ValueOf(plotutil.AddLinePoints),
-		"Inch":          reflect.ValueOf(vg.Inch),
-	}
-
-	env.Packages["gg"] = map[string]reflect.Value{
-		"NewContext":         reflect.ValueOf(gg.NewContext),
-		"NewContextForImage": reflect.ValueOf(gg.NewContextForImage),
-		"NewContextForRGBA":  reflect.ValueOf(gg.NewContextForRGBA),
-		"NewRadialGradient":  reflect.ValueOf(gg.NewRadialGradient),
-		"NewLinearGradient":  reflect.ValueOf(gg.NewLinearGradient),
-	}
-
-	env.PackageTypes["image/color"] = map[string]reflect.Type{
-		"RGBA": reflect.TypeOf(color.RGBA{}),
-	}
-
-	env.Packages["image/color"] = map[string]reflect.Value{
-		"NewRGBA":         reflect.ValueOf(newRGBA),
-		"NewRGBAFromHex":  reflect.ValueOf(newRGBAFromHex),
-		"NewNRGBAFromHex": reflect.ValueOf(newNRGBAFromHex),
-		// "NewContextForImage": reflect.ValueOf(gg.NewContextForImage),
-		// "NewContextForRGBA":  reflect.ValueOf(gg.NewContextForRGBA),
-		// "NewRadialGradient":  reflect.ValueOf(gg.NewRadialGradient),
-		// "NewLinearGradient":  reflect.ValueOf(gg.NewLinearGradient),
-	}
-
-	env.Packages["image/png"] = map[string]reflect.Value{
-		"Decode": reflect.ValueOf(png.Decode),
-	}
-
-	env.Packages["image"] = map[string]reflect.Value{
-		"LoadRGBAFromImage": reflect.ValueOf(loadRGBAFromImage),
-		"LoadPlotImage":     reflect.ValueOf(LoadPlotImage),
-		"NewRGBA":           reflect.ValueOf(image.NewRGBA),
-		"Rect":              reflect.ValueOf(image.Rect),
-	}
-
-	env.Packages["imagetk"] = map[string]reflect.Value{
-		"NewImageTK": reflect.ValueOf(imagetk.NewImageTK),
-	}
-
-	env.Packages["sqltk"] = map[string]reflect.Value{
-		"ConnectDB":          reflect.ValueOf(sqltk.ConnectDB),
-		"ConnectDBNoPing":    reflect.ValueOf(sqltk.ConnectDBNoPing),
-		"ExecV":              reflect.ValueOf(sqltk.ExecV),
-		"QueryDBS":           reflect.ValueOf(sqltk.QueryDBS),
-		"QueryDBNS":          reflect.ValueOf(sqltk.QueryDBNS),
-		"QueryDBNSS":         reflect.ValueOf(sqltk.QueryDBNSS),
-		"QueryDBI":           reflect.ValueOf(sqltk.QueryDBI),
-		"QueryDBCount":       reflect.ValueOf(sqltk.QueryDBCount),
-		"QueryDBString":      reflect.ValueOf(sqltk.QueryDBString),
-		"OneLineRecordToMap": reflect.ValueOf(sqltk.OneLineRecordToMap),
-	}
-
-	env.Packages["tk"] = map[string]reflect.Value{
-		"CreateTXCollection":                  reflect.ValueOf(tk.CreateTXCollection),
-		"TXResultFromString":                  reflect.ValueOf(tk.TXResultFromString),
-		"SetGlobalEnv":                        reflect.ValueOf(tk.SetGlobalEnv),
-		"RemoveGlobalEnv":                     reflect.ValueOf(tk.RemoveGlobalEnv),
-		"GetGlobalEnvList":                    reflect.ValueOf(tk.GetGlobalEnvList),
-		"GetGlobalEnvString":                  reflect.ValueOf(tk.GetGlobalEnvString),
-		"HasGlobalEnv":                        reflect.ValueOf(tk.HasGlobalEnv),
-		"IsEmptyTrim":                         reflect.ValueOf(tk.IsEmptyTrim),
-		"StartsWith":                          reflect.ValueOf(tk.StartsWith),
-		"StartsWithIgnoreCase":                reflect.ValueOf(tk.StartsWithIgnoreCase),
-		"StartsWithUpper":                     reflect.ValueOf(tk.StartsWithUpper),
-		"StartsWithDigit":                     reflect.ValueOf(tk.StartsWithDigit),
-		"Contains":                            reflect.ValueOf(tk.Contains),
-		"ContainsIgnoreCase":                  reflect.ValueOf(tk.ContainsIgnoreCase),
-		"EndsWith":                            reflect.ValueOf(tk.EndsWith),
-		"EndsWithIgnoreCase":                  reflect.ValueOf(tk.EndsWithIgnoreCase),
-		"Trim":                                reflect.ValueOf(tk.Trim),
-		"TrimCharSet":                         reflect.ValueOf(tk.TrimCharSet),
-		"InStrings":                           reflect.ValueOf(tk.InStrings),
-		"GetSliceMaxLen":                      reflect.ValueOf(tk.GetSliceMaxLen),
-		"FindFirstDiffIndex":                  reflect.ValueOf(tk.FindFirstDiffIndex),
-		"FindSamePrefix":                      reflect.ValueOf(tk.FindSamePrefix),
-		"IsErrorString":                       reflect.ValueOf(tk.IsErrorString),
-		"GetErrorString":                      reflect.ValueOf(tk.GetErrorString),
-		"GetErrorStringSafely":                reflect.ValueOf(tk.GetErrorStringSafely),
-		"GenerateErrorString":                 reflect.ValueOf(tk.GenerateErrorString),
-		"GenerateErrorStringF":                reflect.ValueOf(tk.GenerateErrorStringF),
-		"ErrorStringToError":                  reflect.ValueOf(tk.ErrorStringToError),
-		"Replace":                             reflect.ValueOf(tk.Replace),
-		"StringReplace":                       reflect.ValueOf(tk.StringReplace),
-		"SplitLines":                          reflect.ValueOf(tk.SplitLines),
-		"SplitLinesRemoveEmpty":               reflect.ValueOf(tk.SplitLinesRemoveEmpty),
-		"Split":                               reflect.ValueOf(tk.Split),
-		"SplitN":                              reflect.ValueOf(tk.SplitN),
-		"JoinLines":                           reflect.ValueOf(tk.JoinLines),
-		"JoinLinesBySeparator":                reflect.ValueOf(tk.JoinLinesBySeparator),
-		"EnsureValidFileNameX":                reflect.ValueOf(tk.EnsureValidFileNameX),
-		"CreateString":                        reflect.ValueOf(tk.CreateString),
-		"CreateStringSimple":                  reflect.ValueOf(tk.CreateStringSimple),
-		"CreateStringWithObject":              reflect.ValueOf(tk.CreateStringWithObject),
-		"CreateStringEmpty":                   reflect.ValueOf(tk.CreateStringEmpty),
-		"CreateStringSuccess":                 reflect.ValueOf(tk.CreateStringSuccess),
-		"CreateStringError":                   reflect.ValueOf(tk.CreateStringError),
-		"CreateStringErrorF":                  reflect.ValueOf(tk.CreateStringErrorF),
-		"CreateStringErrorFromTXError":        reflect.ValueOf(tk.CreateStringErrorFromTXError),
-		"GenerateErrorStringTX":               reflect.ValueOf(tk.GenerateErrorStringTX),
-		"GenerateErrorStringFTX":              reflect.ValueOf(tk.GenerateErrorStringFTX),
-		"LoadStringTX":                        reflect.ValueOf(tk.LoadStringTX),
-		"RegContains":                         reflect.ValueOf(tk.RegContains),
-		"RegFindFirstTX":                      reflect.ValueOf(tk.RegFindFirstTX),
-		"LoadDualLineListFromString":          reflect.ValueOf(tk.LoadDualLineListFromString),
-		"RegReplace":                          reflect.ValueOf(tk.RegReplace),
-		"RegFindAll":                          reflect.ValueOf(tk.RegFindAll),
-		"RegFindFirst":                        reflect.ValueOf(tk.RegFindFirst),
-		"RegMatch":                            reflect.ValueOf(tk.RegMatch),
-		"Randomize":                           reflect.ValueOf(tk.Randomize),
-		"GetRandomIntLessThan":                reflect.ValueOf(tk.GetRandomIntLessThan),
-		"GetRandomInt64LessThan":              reflect.ValueOf(tk.GetRandomInt64LessThan),
-		"GetRandomIntInRange":                 reflect.ValueOf(tk.GetRandomIntInRange),
-		"GetRandomInt64InRange":               reflect.ValueOf(tk.GetRandomInt64InRange),
-		"GenerateRandomString":                reflect.ValueOf(tk.GenerateRandomString),
-		"NewRandomGenerator":                  reflect.ValueOf(tk.NewRandomGenerator),
-		"ShuffleStringArray":                  reflect.ValueOf(tk.ShuffleStringArray),
-		"GetRandomizeStringArrayCopy":         reflect.ValueOf(tk.GetRandomizeStringArrayCopy),
-		"GetRandomizeIntArrayCopy":            reflect.ValueOf(tk.GetRandomizeIntArrayCopy),
-		"GetRandomizeInt64ArrayCopy":          reflect.ValueOf(tk.GetRandomizeInt64ArrayCopy),
-		"GetRandomSubDualList":                reflect.ValueOf(tk.GetRandomSubDualList),
-		"JoinDualList":                        reflect.ValueOf(tk.JoinDualList),
-		"GetNowDateString":                    reflect.ValueOf(tk.GetNowDateString),
-		"GetNowTimeString":                    reflect.ValueOf(tk.GetNowTimeString),
-		"GetNowTimeStringFormat":              reflect.ValueOf(tk.GetNowTimeStringFormat),
-		"GetNowTimeStringFormal":              reflect.ValueOf(tk.GetNowTimeStringFormal),
-		"GetNowTimeOnlyStringBeijing":         reflect.ValueOf(tk.GetNowTimeOnlyStringBeijing),
-		"GetTimeFromUnixTimeStamp":            reflect.ValueOf(tk.GetTimeFromUnixTimeStamp),
-		"GetTimeFromUnixTimeStampMid":         reflect.ValueOf(tk.GetTimeFromUnixTimeStampMid),
-		"GetTimeStamp":                        reflect.ValueOf(tk.GetTimeStamp),
-		"GetTimeStampMid":                     reflect.ValueOf(tk.GetTimeStampMid),
-		"GetTimeStampNano":                    reflect.ValueOf(tk.GetTimeStampNano),
-		"NowToFileName":                       reflect.ValueOf(tk.NowToFileName),
-		"GetNowTimeStringHourMinute":          reflect.ValueOf(tk.GetNowTimeStringHourMinute),
-		"GetNowMinutesInDay":                  reflect.ValueOf(tk.GetNowMinutesInDay),
-		"NowToStrUTC":                         reflect.ValueOf(tk.NowToStrUTC),
-		"GetTimeStringDiffMS":                 reflect.ValueOf(tk.GetTimeStringDiffMS),
-		"StrToTime":                           reflect.ValueOf(tk.StrToTime),
-		"StrToTimeByFormat":                   reflect.ValueOf(tk.StrToTimeByFormat),
-		"FormatTime":                          reflect.ValueOf(tk.FormatTime),
-		"IsYesterday":                         reflect.ValueOf(tk.IsYesterday),
-		"DeleteItemInStringArray":             reflect.ValueOf(tk.DeleteItemInStringArray),
-		"DeleteItemInIntArray":                reflect.ValueOf(tk.DeleteItemInIntArray),
-		"DeleteItemInInt64Array":              reflect.ValueOf(tk.DeleteItemInInt64Array),
-		"ContainsIn":                          reflect.ValueOf(tk.ContainsIn),
-		"ContainsInStringList":                reflect.ValueOf(tk.ContainsInStringList),
-		"IndexInStringList":                   reflect.ValueOf(tk.IndexInStringList),
-		"IndexInStringListFromEnd":            reflect.ValueOf(tk.IndexInStringListFromEnd),
-		"GetStringSliceFilled":                reflect.ValueOf(tk.GetStringSliceFilled),
-		"Len64":                               reflect.ValueOf(tk.Len64),
-		"Int64ArrayToFloat64Array":            reflect.ValueOf(tk.Int64ArrayToFloat64Array),
-		"ByteSliceToStringDec":                reflect.ValueOf(tk.ByteSliceToStringDec),
-		"GetValueOfMSS":                       reflect.ValueOf(tk.GetValueOfMSS),
-		"Prf":                                 reflect.ValueOf(tk.Prf),
-		"Prl":                                 reflect.ValueOf(tk.Prl),
-		"Printf":                              reflect.ValueOf(tk.Printf),
-		"Printfln":                            reflect.ValueOf(tk.Printfln),
-		"Spr":                                 reflect.ValueOf(tk.Spr),
-		"Pr":                                  reflect.ValueOf(tk.Pr),
-		"Pl":                                  reflect.ValueOf(tk.Pl),
-		"PlVerbose":                           reflect.ValueOf(tk.PlVerbose),
-		"Fpl":                                 reflect.ValueOf(tk.Fpl),
-		"Fpr":                                 reflect.ValueOf(tk.Fpr),
-		"PlvWithError":                        reflect.ValueOf(tk.PlvWithError),
-		"PlAndExit":                           reflect.ValueOf(tk.PlAndExit),
-		"PlErrSimple":                         reflect.ValueOf(tk.PlErrSimple),
-		"PlErrSimpleAndExit":                  reflect.ValueOf(tk.PlErrSimpleAndExit),
-		"PlErrAndExit":                        reflect.ValueOf(tk.PlErrAndExit),
-		"PlTXErr":                             reflect.ValueOf(tk.PlTXErr),
-		"PlSimpleErrorString":                 reflect.ValueOf(tk.PlSimpleErrorString),
-		"PlErr":                               reflect.ValueOf(tk.PlErr),
-		"PlErrWithPrefix":                     reflect.ValueOf(tk.PlErrWithPrefix),
-		"Plv":                                 reflect.ValueOf(tk.Plv),
-		"Plvs":                                reflect.ValueOf(tk.Plvs),
-		"Plvsr":                               reflect.ValueOf(tk.Plvsr),
-		"Errf":                                reflect.ValueOf(tk.Errf),
-		"FatalErr":                            reflect.ValueOf(tk.FatalErr),
-		"FatalErrf":                           reflect.ValueOf(tk.FatalErrf),
-		"Fatalf":                              reflect.ValueOf(tk.Fatalf),
-		"CheckErr":                            reflect.ValueOf(tk.CheckErr),
-		"CheckErrf":                           reflect.ValueOf(tk.CheckErrf),
-		"CheckErrCompact":                     reflect.ValueOf(tk.CheckErrCompact),
-		"GetUserInput":                        reflect.ValueOf(tk.GetUserInput),
-		"GetInputBufferedScan":                reflect.ValueOf(tk.GetInputBufferedScan),
-		"SleepSeconds":                        reflect.ValueOf(tk.SleepSeconds),
-		"SleepMilliSeconds":                   reflect.ValueOf(tk.SleepMilliSeconds),
-		"GetRuntimeStack":                     reflect.ValueOf(tk.GetRuntimeStack),
-		"GetOSName":                           reflect.ValueOf(tk.GetOSName),
-		"GetCurrentDir":                       reflect.ValueOf(tk.GetCurrentDir),
-		"GetApplicationPath":                  reflect.ValueOf(tk.GetApplicationPath),
-		"EnsureMakeDirs":                      reflect.ValueOf(tk.EnsureMakeDirs),
-		"EnsureMakeDirsE":                     reflect.ValueOf(tk.EnsureMakeDirsE),
-		"AnalyzeCommandLineParamter":          reflect.ValueOf(tk.AnalyzeCommandLineParamter),
-		"GetParameterByIndexWithDefaultValue": reflect.ValueOf(tk.GetParameterByIndexWithDefaultValue),
-		"ParseCommandLine":                    reflect.ValueOf(tk.ParseCommandLine),
-		"GetSwitchWithDefaultValue":           reflect.ValueOf(tk.GetSwitchWithDefaultValue),
-		"GetSwitchWithDefaultIntValue":        reflect.ValueOf(tk.GetSwitchWithDefaultIntValue),
-		"GetSwitchWithDefaultInt64Value":      reflect.ValueOf(tk.GetSwitchWithDefaultInt64Value),
-		"IfSwitchExists":                      reflect.ValueOf(tk.IfSwitchExists),
-		"IfSwitchExistsWhole":                 reflect.ValueOf(tk.IfSwitchExistsWhole),
-		"StrToBool":                           reflect.ValueOf(tk.StrToBool),
-		"ByteToHex":                           reflect.ValueOf(tk.ByteToHex),
-		"IntToStr":                            reflect.ValueOf(tk.IntToStr),
-		"Int64ToStr":                          reflect.ValueOf(tk.Int64ToStr),
-		"StrToIntWithDefaultValue":            reflect.ValueOf(tk.StrToIntWithDefaultValue),
-		"StrToInt":                            reflect.ValueOf(tk.StrToInt),
-		"StrToInt64WithDefaultValue":          reflect.ValueOf(tk.StrToInt64WithDefaultValue),
-		"StrToIntPositive":                    reflect.ValueOf(tk.StrToIntPositive),
-		"StrToFloat64WithDefaultValue":        reflect.ValueOf(tk.StrToFloat64WithDefaultValue),
-		"StrToFloat64":                        reflect.ValueOf(tk.StrToFloat64),
-		"Float64ToStr":                        reflect.ValueOf(tk.Float64ToStr),
-		"StrToTimeCompact":                    reflect.ValueOf(tk.StrToTimeCompact),
-		"StrToTimeCompactNoError":             reflect.ValueOf(tk.StrToTimeCompactNoError),
-		"FormatStringSliceSlice":              reflect.ValueOf(tk.FormatStringSliceSlice),
-		"IntToKMGT":                           reflect.ValueOf(tk.IntToKMGT),
-		"IntToWYZ":                            reflect.ValueOf(tk.IntToWYZ),
-		"SetLogFile":                          reflect.ValueOf(tk.SetLogFile),
-		"LogWithTime":                         reflect.ValueOf(tk.LogWithTime),
-		"LogWithTimeCompact":                  reflect.ValueOf(tk.LogWithTimeCompact),
-		"IfFileExists":                        reflect.ValueOf(tk.IfFileExists),
-		"IsFile":                              reflect.ValueOf(tk.IsFile),
-		"IsDirectory":                         reflect.ValueOf(tk.IsDirectory),
-		"GetFilePathSeperator":                reflect.ValueOf(tk.GetFilePathSeperator),
-		"GetLastComponentOfFilePath":          reflect.ValueOf(tk.GetLastComponentOfFilePath),
-		"GetDirOfFilePath":                    reflect.ValueOf(tk.GetDirOfFilePath),
-		"RemoveFileExt":                       reflect.ValueOf(tk.RemoveFileExt),
-		"GetFileExt":                          reflect.ValueOf(tk.GetFileExt),
-		"RemoveLastSubString":                 reflect.ValueOf(tk.RemoveLastSubString),
-		"AddLastSubString":                    reflect.ValueOf(tk.AddLastSubString),
-		"GenerateFileListRecursively":         reflect.ValueOf(tk.GenerateFileListRecursively),
-		"GetAvailableFileName":                reflect.ValueOf(tk.GetAvailableFileName),
-		"LoadStringFromFile":                  reflect.ValueOf(tk.LoadStringFromFile),
-		"LoadStringFromFileWithDefault":       reflect.ValueOf(tk.LoadStringFromFileWithDefault),
-		"LoadStringFromFileE":                 reflect.ValueOf(tk.LoadStringFromFileE),
-		"LoadStringFromFileB":                 reflect.ValueOf(tk.LoadStringFromFileB),
-		"LoadBytes":                           reflect.ValueOf(tk.LoadBytes),
-		"LoadBytesFromFileE":                  reflect.ValueOf(tk.LoadBytesFromFileE),
-		"SaveStringToFile":                    reflect.ValueOf(tk.SaveStringToFile),
-		"SaveStringToFileE":                   reflect.ValueOf(tk.SaveStringToFileE),
-		"AppendStringToFile":                  reflect.ValueOf(tk.AppendStringToFile),
-		"LoadStringList":                      reflect.ValueOf(tk.LoadStringList),
-		"LoadStringListFromFile":              reflect.ValueOf(tk.LoadStringListFromFile),
-		"LoadStringListBuffered":              reflect.ValueOf(tk.LoadStringListBuffered),
-		"SaveStringList":                      reflect.ValueOf(tk.SaveStringList),
-		"SaveStringListWin":                   reflect.ValueOf(tk.SaveStringListWin),
-		"SaveStringListBufferedByRange":       reflect.ValueOf(tk.SaveStringListBufferedByRange),
-		"SaveStringListBuffered":              reflect.ValueOf(tk.SaveStringListBuffered),
-		"ReadLineFromBufioReader":             reflect.ValueOf(tk.ReadLineFromBufioReader),
-		"RestoreLineEnds":                     reflect.ValueOf(tk.RestoreLineEnds),
-		"LoadDualLineList":                    reflect.ValueOf(tk.LoadDualLineList),
-		"SaveDualLineList":                    reflect.ValueOf(tk.SaveDualLineList),
-		"RemoveDuplicateInDualLineList":       reflect.ValueOf(tk.RemoveDuplicateInDualLineList),
-		"AppendDualLineList":                  reflect.ValueOf(tk.AppendDualLineList),
-		"LoadSimpleMapFromFile":               reflect.ValueOf(tk.LoadSimpleMapFromFile),
-		"LoadSimpleMapFromFileE":              reflect.ValueOf(tk.LoadSimpleMapFromFileE),
-		"SimpleMapToString":                   reflect.ValueOf(tk.SimpleMapToString),
-		"LoadSimpleMapFromString":             reflect.ValueOf(tk.LoadSimpleMapFromString),
-		"LoadSimpleMapFromStringE":            reflect.ValueOf(tk.LoadSimpleMapFromStringE),
-		"ReplaceLineEnds":                     reflect.ValueOf(tk.ReplaceLineEnds),
-		"SaveSimpleMapToFile":                 reflect.ValueOf(tk.SaveSimpleMapToFile),
-		"AppendSimpleMapFromFile":             reflect.ValueOf(tk.AppendSimpleMapFromFile),
-		"LoadSimpleMapFromDir":                reflect.ValueOf(tk.LoadSimpleMapFromDir),
-		"EncodeToXMLString":                   reflect.ValueOf(tk.EncodeToXMLString),
-		"ObjectToJSON":                        reflect.ValueOf(tk.ObjectToJSON),
-		"ObjectToJSONIndent":                  reflect.ValueOf(tk.ObjectToJSONIndent),
-		"JSONToMapStringString":               reflect.ValueOf(tk.JSONToMapStringString),
-		"JSONToObject":                        reflect.ValueOf(tk.JSONToObject),
-		"SafelyGetStringForKeyWithDefault":    reflect.ValueOf(tk.SafelyGetStringForKeyWithDefault),
-		"SafelyGetFloat64ForKeyWithDefault":   reflect.ValueOf(tk.SafelyGetFloat64ForKeyWithDefault),
-		"SafelyGetIntForKeyWithDefault":       reflect.ValueOf(tk.SafelyGetIntForKeyWithDefault),
-		"JSONToStringArray":                   reflect.ValueOf(tk.JSONToStringArray),
-		"EncodeStringSimple":                  reflect.ValueOf(tk.EncodeStringSimple),
-		"EncodeStringUnderline":               reflect.ValueOf(tk.EncodeStringUnderline),
-		"EncodeStringCustom":                  reflect.ValueOf(tk.EncodeStringCustom),
-		"DecodeStringSimple":                  reflect.ValueOf(tk.DecodeStringSimple),
-		"DecodeStringUnderline":               reflect.ValueOf(tk.DecodeStringUnderline),
-		"DecodeStringCustom":                  reflect.ValueOf(tk.DecodeStringCustom),
-		"MD5Encrypt":                          reflect.ValueOf(tk.MD5Encrypt),
-		"BytesToHex":                          reflect.ValueOf(tk.BytesToHex),
-		"HexToBytes":                          reflect.ValueOf(tk.HexToBytes),
-		"GetRandomByte":                       reflect.ValueOf(tk.GetRandomByte),
-		"EncryptDataByTXDEE":                  reflect.ValueOf(tk.EncryptDataByTXDEE),
-		"SumBytes":                            reflect.ValueOf(tk.SumBytes),
-		"EncryptDataByTXDEF":                  reflect.ValueOf(tk.EncryptDataByTXDEF),
-		"EncryptStreamByTXDEF":                reflect.ValueOf(tk.EncryptStreamByTXDEF),
-		"DecryptStreamByTXDEF":                reflect.ValueOf(tk.DecryptStreamByTXDEF),
-		"DecryptDataByTXDEE":                  reflect.ValueOf(tk.DecryptDataByTXDEE),
-		"DecryptDataByTXDEF":                  reflect.ValueOf(tk.DecryptDataByTXDEF),
-		"EncryptStringByTXTE":                 reflect.ValueOf(tk.EncryptStringByTXTE),
-		"DecryptStringByTXTE":                 reflect.ValueOf(tk.DecryptStringByTXTE),
-		"EncryptStringByTXDEE":                reflect.ValueOf(tk.EncryptStringByTXDEE),
-		"DecryptStringByTXDEE":                reflect.ValueOf(tk.DecryptStringByTXDEE),
-		"EncryptStringByTXDEF":                reflect.ValueOf(tk.EncryptStringByTXDEF),
-		"DecryptStringByTXDEF":                reflect.ValueOf(tk.DecryptStringByTXDEF),
-		"EncryptFileByTXDEF":                  reflect.ValueOf(tk.EncryptFileByTXDEF),
-		"EncryptFileByTXDEFStream":            reflect.ValueOf(tk.EncryptFileByTXDEFStream),
-		"DecryptFileByTXDEFStream":            reflect.ValueOf(tk.DecryptFileByTXDEFStream),
-		"ErrorToString":                       reflect.ValueOf(tk.ErrorToString),
-		"EncryptFileByTXDEFS":                 reflect.ValueOf(tk.EncryptFileByTXDEFS),
-		"EncryptFileByTXDEFStreamS":           reflect.ValueOf(tk.EncryptFileByTXDEFStreamS),
-		"DecryptFileByTXDEF":                  reflect.ValueOf(tk.DecryptFileByTXDEF),
-		"DecryptFileByTXDEFS":                 reflect.ValueOf(tk.DecryptFileByTXDEFS),
-		"DecryptFileByTXDEFStreamS":           reflect.ValueOf(tk.DecryptFileByTXDEFStreamS),
-		"Pkcs7Padding":                        reflect.ValueOf(tk.Pkcs7Padding),
-		"AESEncrypt":                          reflect.ValueOf(tk.AESEncrypt),
-		"AESDecrypt":                          reflect.ValueOf(tk.AESDecrypt),
-		"AnalyzeURLParams":                    reflect.ValueOf(tk.AnalyzeURLParams),
-		"UrlEncode":                           reflect.ValueOf(tk.UrlEncode),
-		"UrlEncode2":                          reflect.ValueOf(tk.UrlEncode2),
-		"UrlDecode":                           reflect.ValueOf(tk.UrlDecode),
-		"JoinURL":                             reflect.ValueOf(tk.JoinURL),
-		"AddDebug":                            reflect.ValueOf(tk.AddDebug),
-		"AddDebugF":                           reflect.ValueOf(tk.AddDebugF),
-		"ClearDebug":                          reflect.ValueOf(tk.ClearDebug),
-		"GetDebug":                            reflect.ValueOf(tk.GetDebug),
-		"DownloadPageUTF8":                    reflect.ValueOf(tk.DownloadPageUTF8),
-		"DownloadPage":                        reflect.ValueOf(tk.DownloadPage),
-		"DownloadPageByMap":                   reflect.ValueOf(tk.DownloadPageByMap),
-		"GetLastComponentOfUrl":               reflect.ValueOf(tk.GetLastComponentOfUrl),
-		"DownloadFile":                        reflect.ValueOf(tk.DownloadFile),
-		"DownloadBytes":                       reflect.ValueOf(tk.DownloadBytes),
-		"PostRequest":                         reflect.ValueOf(tk.PostRequest),
-		"PostRequestX":                        reflect.ValueOf(tk.PostRequestX),
-		"PostRequestBytesX":                   reflect.ValueOf(tk.PostRequestBytesX),
-		"PostRequestBytesWithMSSHeaderX":      reflect.ValueOf(tk.PostRequestBytesWithMSSHeaderX),
-		"PostRequestBytesWithCookieX":         reflect.ValueOf(tk.PostRequestBytesWithCookieX),
-		"GetFormValueWithDefaultValue":        reflect.ValueOf(tk.GetFormValueWithDefaultValue),
-		"GenerateJSONPResponse":               reflect.ValueOf(tk.GenerateJSONPResponse),
-		"GenerateJSONPResponseWithObject":     reflect.ValueOf(tk.GenerateJSONPResponseWithObject),
-		"GenerateJSONPResponseWith2Object":    reflect.ValueOf(tk.GenerateJSONPResponseWith2Object),
-		"GenerateJSONPResponseWith3Object":    reflect.ValueOf(tk.GenerateJSONPResponseWith3Object),
-		"GetSuccessValue":                     reflect.ValueOf(tk.GetSuccessValue),
-		"Float32ArrayToFloat64Array":          reflect.ValueOf(tk.Float32ArrayToFloat64Array),
-		"CalCosineSimilarityBetweenFloatsBig": reflect.ValueOf(tk.CalCosineSimilarityBetweenFloatsBig),
-		"GetDBConnection":                     reflect.ValueOf(tk.GetDBConnection),
-		"GetDBRowCount":                       reflect.ValueOf(tk.GetDBRowCount),
-		"GetDBRowCountCompact":                reflect.ValueOf(tk.GetDBRowCountCompact),
-		"GetDBResultString":                   reflect.ValueOf(tk.GetDBResultString),
-		"GetDBResultArray":                    reflect.ValueOf(tk.GetDBResultArray),
-		"ConvertToGB18030":                    reflect.ValueOf(tk.ConvertToGB18030),
-		"ConvertToGB18030Bytes":               reflect.ValueOf(tk.ConvertToGB18030Bytes),
-		"ConvertToUTF8":                       reflect.ValueOf(tk.ConvertToUTF8),
-		"ConvertStringToUTF8":                 reflect.ValueOf(tk.ConvertStringToUTF8),
-		"CreateSimpleEvent":                   reflect.ValueOf(tk.CreateSimpleEvent),
-		"GetAllParameters":                    reflect.ValueOf(tk.GetAllParameters),
-		"GetAllSwitches":                      reflect.ValueOf(tk.GetAllSwitches),
-		"ToLower":                             reflect.ValueOf(tk.ToLower),
-		"ToUpper":                             reflect.ValueOf(tk.ToUpper),
-		"GetEnv":                              reflect.ValueOf(tk.GetEnv),
-		"JoinPath":                            reflect.ValueOf(tk.JoinPath),
-		"DeepClone":                           reflect.ValueOf(tk.DeepClone),
-		"DeepCopyFromTo":                      reflect.ValueOf(tk.DeepCopyFromTo),
-		"JSONToObjectE":                       reflect.ValueOf(tk.JSONToObjectE),
-		"ToJSON":                              reflect.ValueOf(tk.ToJSON),
-		"ToJSONIndent":                        reflect.ValueOf(tk.ToJSONIndent),
-		"FromJSON":                            reflect.ValueOf(tk.FromJSON),
-		"GetJSONNode":                         reflect.ValueOf(tk.GetJSONNode),
-		"GetJSONNodeAny":                      reflect.ValueOf(tk.GetJSONNodeAny),
-		"GetJSONSubNode":                      reflect.ValueOf(tk.GetJSONSubNode),
-		"GetJSONSubNodeAny":                   reflect.ValueOf(tk.GetJSONSubNodeAny),
-		"StartsWithBOM":                       reflect.ValueOf(tk.StartsWithBOM),
-		"RemoveBOM":                           reflect.ValueOf(tk.RemoveBOM),
-		"HexToInt":                            reflect.ValueOf(tk.HexToInt),
-		"GetCurrentThreadID":                  reflect.ValueOf(tk.GetCurrentThreadID),
-	}
-
-}
-
-// full version related end
-
 func showHelp() {
 	tk.Pl("Gox by TopXeQ V%v\n", versionG)
 
@@ -1675,89 +990,6 @@ func showHelp() {
 	tk.Pl("or just gox without arguments to start REPL instead.\n")
 
 }
-
-// full version related start
-
-func runInteractiveAnko() int {
-	var following bool
-	var source string
-	scanner := bufio.NewScanner(os.Stdin)
-
-	parser.EnableErrorVerbose()
-
-	for {
-		if following {
-			source += "\n"
-			fmt.Print("  ")
-		} else {
-			fmt.Print("> ")
-		}
-
-		if !scanner.Scan() {
-			break
-		}
-		source += scanner.Text()
-		if source == "" {
-			continue
-		}
-		if source == "quit()" {
-			break
-		}
-
-		stmts, err := parser.ParseSrc(source)
-
-		if e, ok := err.(*parser.Error); ok {
-			es := e.Error()
-			if strings.HasPrefix(es, "syntax error: unexpected") {
-				if strings.HasPrefix(es, "syntax error: unexpected $end,") {
-					following = true
-					continue
-				}
-			} else {
-				if e.Pos.Column == len(source) && !e.Fatal {
-					fmt.Fprintln(os.Stderr, e)
-					following = true
-					continue
-				}
-				if e.Error() == "unexpected EOF" {
-					following = true
-					continue
-				}
-			}
-		}
-
-		following = false
-		source = ""
-		var v interface{}
-
-		if err == nil {
-			v, err = vm.Run(ankVMG, nil, stmts)
-		}
-		if err != nil {
-			if ankVMG, ok := err.(*vm.Error); ok {
-				fmt.Fprintf(os.Stderr, "%d:%d %s\n", ankVMG.Pos.Line, ankVMG.Pos.Column, err)
-			} else if ankVMG, ok := err.(*parser.Error); ok {
-				fmt.Fprintf(os.Stderr, "%d:%d %s\n", ankVMG.Pos.Line, ankVMG.Pos.Column, err)
-			} else {
-				fmt.Fprintln(os.Stderr, err)
-			}
-			continue
-		}
-
-		fmt.Printf("%#v\n", v)
-	}
-
-	if err := scanner.Err(); err != nil {
-		if err != io.EOF {
-			fmt.Fprintln(os.Stderr, "ReadString error:", err)
-			return 12
-		}
-	}
-
-	return 0
-}
-
-// full version related end
 
 func runInteractiveQlang() int {
 	var following bool
@@ -1900,15 +1132,15 @@ func initLCLLib() (result error) {
 	return result
 }
 
-func syncInitLCL() error {
-	var errT error
+// func syncInitLCL() error {
+// 	var errT error
 
-	vcl.ThreadSync(func() {
-		initLCL()
-	})
+// 	vcl.ThreadSync(func() {
+// 		initLCL()
+// 	})
 
-	return errT
-}
+// 	return errT
+// }
 
 func initLCL() error {
 
@@ -2263,231 +1495,6 @@ func importQLGUIPackages() {
 
 	qlang.Import("lcl", lclExports)
 }
-
-// full version related start
-
-func importAnkGUIPackages() {
-	env.Packages["gui"] = map[string]reflect.Value{
-		"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
-		"SingleWindow":            reflect.ValueOf(g.SingleWindow),
-		"Window":                  reflect.ValueOf(g.Window),
-		"SingleWindowWithMenuBar": reflect.ValueOf(g.SingleWindowWithMenuBar),
-		"WindowV":                 reflect.ValueOf(g.WindowV),
-
-		"MasterWindowFlagsNotResizable": reflect.ValueOf(g.MasterWindowFlagsNotResizable),
-		"MasterWindowFlagsMaximized":    reflect.ValueOf(g.MasterWindowFlagsMaximized),
-		"MasterWindowFlagsFloating":     reflect.ValueOf(g.MasterWindowFlagsFloating),
-
-		// "Layout":          reflect.ValueOf(g.Layout),
-
-		"NewTextureFromRgba": reflect.ValueOf(g.NewTextureFromRgba),
-
-		"Label":                  reflect.ValueOf(g.Label),
-		"Line":                   reflect.ValueOf(g.Line),
-		"Button":                 reflect.ValueOf(g.Button),
-		"InvisibleButton":        reflect.ValueOf(g.InvisibleButton),
-		"ImageButton":            reflect.ValueOf(g.ImageButton),
-		"InputTextMultiline":     reflect.ValueOf(g.InputTextMultiline),
-		"Checkbox":               reflect.ValueOf(g.Checkbox),
-		"RadioButton":            reflect.ValueOf(g.RadioButton),
-		"Child":                  reflect.ValueOf(g.Child),
-		"ComboCustom":            reflect.ValueOf(g.ComboCustom),
-		"Combo":                  reflect.ValueOf(g.Combo),
-		"ContextMenu":            reflect.ValueOf(g.ContextMenu),
-		"Group":                  reflect.ValueOf(g.Group),
-		"Image":                  reflect.ValueOf(g.Image),
-		"ImageWithFile":          reflect.ValueOf(g.ImageWithFile),
-		"ImageWithUrl":           reflect.ValueOf(g.ImageWithUrl),
-		"InputText":              reflect.ValueOf(g.InputText),
-		"InputTextV":             reflect.ValueOf(g.InputTextV),
-		"InputTextFlagsPassword": reflect.ValueOf(g.InputTextFlagsPassword),
-		"InputInt":               reflect.ValueOf(g.InputInt),
-		"InputFloat":             reflect.ValueOf(g.InputFloat),
-		"MainMenuBar":            reflect.ValueOf(g.MainMenuBar),
-		"MenuBar":                reflect.ValueOf(g.MenuBar),
-		"MenuItem":               reflect.ValueOf(g.MenuItem),
-		"PopupModal":             reflect.ValueOf(g.PopupModal),
-		"OpenPopup":              reflect.ValueOf(g.OpenPopup),
-		"CloseCurrentPopup":      reflect.ValueOf(g.CloseCurrentPopup),
-		"ProgressBar":            reflect.ValueOf(g.ProgressBar),
-		"Separator":              reflect.ValueOf(g.Separator),
-		"SliderInt":              reflect.ValueOf(g.SliderInt),
-		"SliderFloat":            reflect.ValueOf(g.SliderFloat),
-		"HSplitter":              reflect.ValueOf(g.HSplitter),
-		"VSplitter":              reflect.ValueOf(g.VSplitter),
-		"TabItem":                reflect.ValueOf(g.TabItem),
-		"TabBar":                 reflect.ValueOf(g.TabBar),
-		"Row":                    reflect.ValueOf(g.Row),
-		"Table":                  reflect.ValueOf(g.Table),
-		"FastTable":              reflect.ValueOf(g.FastTable),
-		"Tooltip":                reflect.ValueOf(g.Tooltip),
-		"TreeNode":               reflect.ValueOf(g.TreeNode),
-		"Spacing":                reflect.ValueOf(g.Spacing),
-		"Custom":                 reflect.ValueOf(g.Custom),
-		"Condition":              reflect.ValueOf(g.Condition),
-		"ListBox":                reflect.ValueOf(g.ListBox),
-		"DatePicker":             reflect.ValueOf(g.DatePicker),
-		"Dummy":                  reflect.ValueOf(g.Dummy),
-		// "Widget":             reflect.ValueOf(g.Widget),
-
-		"PrepareMessageBox": reflect.ValueOf(g.PrepareMsgbox),
-		"MessageBox":        reflect.ValueOf(g.Msgbox),
-
-		"LoadFont": reflect.ValueOf(loadFont),
-
-		"GetConfirm": reflect.ValueOf(getConfirmGUI),
-
-		"SimpleInfo":      reflect.ValueOf(simpleInfo),
-		"SimpleError":     reflect.ValueOf(simpleError),
-		"SelectFile":      reflect.ValueOf(selectFileGUI),
-		"SelectSaveFile":  reflect.ValueOf(selectFileToSaveGUI),
-		"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
-
-		"EditFile":   reflect.ValueOf(editFile),
-		"LoopWindow": reflect.ValueOf(loopWindow),
-
-		"LayoutP": reflect.ValueOf(g.Layout{}),
-	}
-
-	env.Packages["lcl"] = map[string]reflect.Value{
-		"GetApplication": reflect.ValueOf(getVclApplication),
-		// "NewApplication":    reflect.ValueOf(vcl.NewApplication),
-		"InitVCL":           reflect.ValueOf(initLCL),
-		"InitLCL":           reflect.ValueOf(initLCL),
-		"NewCheckBox":       reflect.ValueOf(vcl.NewCheckBox),
-		"NewLabel":          reflect.ValueOf(vcl.NewLabel),
-		"NewButton":         reflect.ValueOf(vcl.NewButton),
-		"NewComboBox":       reflect.ValueOf(vcl.NewComboBox),
-		"NewEdit":           reflect.ValueOf(vcl.NewEdit),
-		"NewCanvas":         reflect.ValueOf(vcl.NewCanvas),
-		"NewImage":          reflect.ValueOf(vcl.NewImage),
-		"NewList":           reflect.ValueOf(vcl.NewList),
-		"NewListBox":        reflect.ValueOf(vcl.NewListBox),
-		"NewListView":       reflect.ValueOf(vcl.NewListView),
-		"NewListColumns":    reflect.ValueOf(vcl.NewListColumns),
-		"NewListItem":       reflect.ValueOf(vcl.NewListItem),
-		"NewListItems":      reflect.ValueOf(vcl.NewListItems),
-		"NewMainMenu":       reflect.ValueOf(vcl.NewMainMenu),
-		"NewMemo":           reflect.ValueOf(vcl.NewMemo),
-		"NewMenuItem":       reflect.ValueOf(vcl.NewMenuItem),
-		"NewMiniWebview":    reflect.ValueOf(vcl.NewMiniWebview),
-		"NewPaintBox":       reflect.ValueOf(vcl.NewPaintBox),
-		"NewPanel":          reflect.ValueOf(vcl.NewPanel),
-		"NewPicture":        reflect.ValueOf(vcl.NewPicture),
-		"NewPopupMenu":      reflect.ValueOf(vcl.NewPopupMenu),
-		"NewProgressBar":    reflect.ValueOf(vcl.NewProgressBar),
-		"NewRadioButton":    reflect.ValueOf(vcl.NewRadioButton),
-		"NewRadioGroup":     reflect.ValueOf(vcl.NewRadioGroup),
-		"NewScrollBox":      reflect.ValueOf(vcl.NewScrollBox),
-		"NewScrollBar":      reflect.ValueOf(vcl.NewScrollBar),
-		"NewSplitter":       reflect.ValueOf(vcl.NewSplitter),
-		"NewStatusBar":      reflect.ValueOf(vcl.NewStatusBar),
-		"NewStatusPanel":    reflect.ValueOf(vcl.NewStatusPanel),
-		"NewStatusPanels":   reflect.ValueOf(vcl.NewStatusPanels),
-		"NewTimer":          reflect.ValueOf(vcl.NewTimer),
-		"NewToolBar":        reflect.ValueOf(vcl.NewToolBar),
-		"NewToolButton":     reflect.ValueOf(vcl.NewToolButton),
-		"NewTrayIcon":       reflect.ValueOf(vcl.NewTrayIcon),
-		"NewStaticText":     reflect.ValueOf(vcl.NewStaticText),
-		"NewSpinEdit":       reflect.ValueOf(vcl.NewSpinEdit),
-		"NewSpeedButton":    reflect.ValueOf(vcl.NewSpeedButton),
-		"NewShape":          reflect.ValueOf(vcl.NewShape),
-		"NewScreen":         reflect.ValueOf(vcl.NewScreen),
-		"NewSaveDialog":     reflect.ValueOf(vcl.NewSaveDialog),
-		"NewReplaceDialog":  reflect.ValueOf(vcl.NewReplaceDialog),
-		"NewPngImage":       reflect.ValueOf(vcl.NewPngImage),
-		"NewPen":            reflect.ValueOf(vcl.NewPen),
-		"NewPageControl":    reflect.ValueOf(vcl.NewPageControl),
-		"NewOpenDialog":     reflect.ValueOf(vcl.NewOpenDialog),
-		"NewObject":         reflect.ValueOf(vcl.NewObject),
-		"NewMouse":          reflect.ValueOf(vcl.NewMouse),
-		"NewMaskEdit":       reflect.ValueOf(vcl.NewMaskEdit),
-		"NewLinkLabel":      reflect.ValueOf(vcl.NewLinkLabel),
-		"NewLabeledEdit":    reflect.ValueOf(vcl.NewLabeledEdit),
-		"NewJPEGImage":      reflect.ValueOf(vcl.NewJPEGImage),
-		"NewImageList":      reflect.ValueOf(vcl.NewImageList),
-		"NewImageButton":    reflect.ValueOf(vcl.NewImageButton),
-		"NewIcon":           reflect.ValueOf(vcl.NewIcon),
-		"NewGroupBox":       reflect.ValueOf(vcl.NewGroupBox),
-		"NewHeaderControl":  reflect.ValueOf(vcl.NewHeaderControl),
-		"NewHeaderSection":  reflect.ValueOf(vcl.NewHeaderSection),
-		"NewHeaderSections": reflect.ValueOf(vcl.NewHeaderSections),
-		"NewGraphic":        reflect.ValueOf(vcl.NewGraphic),
-		"NewGIFImage":       reflect.ValueOf(vcl.NewGIFImage),
-		"NewGauge":          reflect.ValueOf(vcl.NewGauge),
-		"ShowMessage":       reflect.ValueOf(vcl.ShowMessage),
-		"ShowMessageFmt":    reflect.ValueOf(vcl.ShowMessageFmt),
-		"MessageDlg":        reflect.ValueOf(vcl.MessageDlg),
-		"InputBox":          reflect.ValueOf(vcl.InputBox),
-		"InputQuery":        reflect.ValueOf(vcl.InputQuery),
-		"ThreadSync":        reflect.ValueOf(vcl.ThreadSync),
-		"NewFrame":          reflect.ValueOf(vcl.NewFrame),
-		"SelectDirectory":   reflect.ValueOf(vcl.SelectDirectory1),
-		"SelectDirectory3":  reflect.ValueOf(vcl.SelectDirectory3),
-		"NewForm":           reflect.ValueOf(vcl.NewForm),
-		"NewFontDialog":     reflect.ValueOf(vcl.NewFontDialog),
-		"NewFont":           reflect.ValueOf(vcl.NewFont),
-		"NewFlowPanel":      reflect.ValueOf(vcl.NewFlowPanel),
-		"NewFindDialog":     reflect.ValueOf(vcl.NewFindDialog),
-		"NewDrawGrid":       reflect.ValueOf(vcl.NewDrawGrid),
-		"NewDateTimePicker": reflect.ValueOf(vcl.NewDateTimePicker),
-		"NewControl":        reflect.ValueOf(vcl.NewControl),
-		"NewComboBoxEx":     reflect.ValueOf(vcl.NewComboBoxEx),
-		"NewColorListBox":   reflect.ValueOf(vcl.NewColorListBox),
-		"NewColorDialog":    reflect.ValueOf(vcl.NewColorDialog),
-		"NewColorBox":       reflect.ValueOf(vcl.NewColorBox),
-		"NewCheckListBox":   reflect.ValueOf(vcl.NewCheckListBox),
-		"NewBrush":          reflect.ValueOf(vcl.NewBrush),
-		"NewBitmap":         reflect.ValueOf(vcl.NewBitmap),
-		"NewBitBtn":         reflect.ValueOf(vcl.NewBitBtn),
-		"NewBevel":          reflect.ValueOf(vcl.NewBevel),
-		"NewApplication":    reflect.ValueOf(vcl.NewApplication),
-		"NewAction":         reflect.ValueOf(vcl.NewAction),
-		"NewActionList":     reflect.ValueOf(vcl.NewActionList),
-		"NewMemoryStream":   reflect.ValueOf(vcl.NewMemoryStream),
-
-		// "NewAnchors": reflect.ValueOf(types.TAnchors),
-		// "RTLInclude": reflect.ValueOf(rtl.Include),
-		"NewSet":           reflect.ValueOf(types.NewSet),
-		"AkTop":            reflect.ValueOf(types.AkTop),
-		"AkBottom":         reflect.ValueOf(types.AkBottom),
-		"AkLeft":           reflect.ValueOf(types.AkLeft),
-		"AkRight":          reflect.ValueOf(types.AkRight),
-		"SsNone":           reflect.ValueOf(types.SsNone),
-		"SsHorizontal":     reflect.ValueOf(types.SsHorizontal),
-		"SsVertical":       reflect.ValueOf(types.SsVertical),
-		"SsBoth":           reflect.ValueOf(types.SsBoth),
-		"SsAutoHorizontal": reflect.ValueOf(types.SsAutoHorizontal),
-		"SsAutoVertical":   reflect.ValueOf(types.SsAutoVertical),
-		"SsAutoBoth":       reflect.ValueOf(types.SsAutoBoth),
-
-		"GetLibVersion": reflect.ValueOf(vcl.GetLibVersion),
-
-		// values
-		"PoDesigned":        reflect.ValueOf(types.PoDesigned),
-		"PoDefault":         reflect.ValueOf(types.PoDefault),
-		"PoDefaultPosOnly":  reflect.ValueOf(types.PoDefaultPosOnly),
-		"PoDefaultSizeOnly": reflect.ValueOf(types.PoDefaultSizeOnly),
-		"PoScreenCenter":    reflect.ValueOf(types.PoScreenCenter),
-		"PoMainFormCenter":  reflect.ValueOf(types.PoMainFormCenter),
-		"PoOwnerFormCenter": reflect.ValueOf(types.PoOwnerFormCenter),
-		"PoWorkAreaCenter":  reflect.ValueOf(types.PoWorkAreaCenter),
-	}
-
-	// env.Packages["lcl/types"] = map[string]reflect.Value{
-	// }
-
-	var widget g.Widget
-
-	env.PackageTypes["gui"] = map[string]reflect.Type{
-		"Layout": reflect.TypeOf(g.Layout{}),
-		// "Signal": reflect.TypeOf(&signal).Elem(),
-		"Widget": reflect.TypeOf(&widget).Elem(),
-	}
-
-}
-
-// full version related end
 
 // full version related start
 func getConfirmGUI(titleA string, messageA string) bool {
@@ -2899,589 +1906,6 @@ func runFile(argsA ...string) interface{} {
 	return runScript(fcT, "", argsA[1:]...)
 }
 
-// full version related start
-
-var TKSymbols = map[string]map[string]reflect.Value{}
-
-func initYGVM() {
-	if ygVMG == nil {
-		ygVMG = interp.New(interp.Options{})
-
-		ygVMG.Use(stdlib.Symbols)
-
-		TKSymbols["builtin"] = map[string]reflect.Value{
-			"Eval": reflect.ValueOf(qlEval),
-			"pl":   reflect.ValueOf(tk.Pl),
-		}
-
-		// GUI related start
-		TKSymbols["gui"] = map[string]reflect.Value{
-			"NewMasterWindow":         reflect.ValueOf(g.NewMasterWindow),
-			"SingleWindow":            reflect.ValueOf(g.SingleWindow),
-			"Window":                  reflect.ValueOf(g.Window),
-			"SingleWindowWithMenuBar": reflect.ValueOf(g.SingleWindowWithMenuBar),
-			"WindowV":                 reflect.ValueOf(g.WindowV),
-
-			"MasterWindowFlagsNotResizable": reflect.ValueOf(g.MasterWindowFlagsNotResizable),
-			"MasterWindowFlagsMaximized":    reflect.ValueOf(g.MasterWindowFlagsMaximized),
-			"MasterWindowFlagsFloating":     reflect.ValueOf(g.MasterWindowFlagsFloating),
-
-			// "Layout":          reflect.ValueOf(g.Layout),
-
-			"NewTextureFromRgba": reflect.ValueOf(g.NewTextureFromRgba),
-
-			"Label":                  reflect.ValueOf(g.Label),
-			"Line":                   reflect.ValueOf(g.Line),
-			"Button":                 reflect.ValueOf(g.Button),
-			"InvisibleButton":        reflect.ValueOf(g.InvisibleButton),
-			"ImageButton":            reflect.ValueOf(g.ImageButton),
-			"InputTextMultiline":     reflect.ValueOf(g.InputTextMultiline),
-			"Checkbox":               reflect.ValueOf(g.Checkbox),
-			"RadioButton":            reflect.ValueOf(g.RadioButton),
-			"Child":                  reflect.ValueOf(g.Child),
-			"ComboCustom":            reflect.ValueOf(g.ComboCustom),
-			"Combo":                  reflect.ValueOf(g.Combo),
-			"ContextMenu":            reflect.ValueOf(g.ContextMenu),
-			"Group":                  reflect.ValueOf(g.Group),
-			"Image":                  reflect.ValueOf(g.Image),
-			"ImageWithFile":          reflect.ValueOf(g.ImageWithFile),
-			"ImageWithUrl":           reflect.ValueOf(g.ImageWithUrl),
-			"InputText":              reflect.ValueOf(g.InputText),
-			"InputTextV":             reflect.ValueOf(g.InputTextV),
-			"InputTextFlagsPassword": reflect.ValueOf(g.InputTextFlagsPassword),
-			"InputInt":               reflect.ValueOf(g.InputInt),
-			"InputFloat":             reflect.ValueOf(g.InputFloat),
-			"MainMenuBar":            reflect.ValueOf(g.MainMenuBar),
-			"MenuBar":                reflect.ValueOf(g.MenuBar),
-			"MenuItem":               reflect.ValueOf(g.MenuItem),
-			"PopupModal":             reflect.ValueOf(g.PopupModal),
-			"OpenPopup":              reflect.ValueOf(g.OpenPopup),
-			"CloseCurrentPopup":      reflect.ValueOf(g.CloseCurrentPopup),
-			"ProgressBar":            reflect.ValueOf(g.ProgressBar),
-			"Separator":              reflect.ValueOf(g.Separator),
-			"SliderInt":              reflect.ValueOf(g.SliderInt),
-			"SliderFloat":            reflect.ValueOf(g.SliderFloat),
-			"HSplitter":              reflect.ValueOf(g.HSplitter),
-			"VSplitter":              reflect.ValueOf(g.VSplitter),
-			"TabItem":                reflect.ValueOf(g.TabItem),
-			"TabBar":                 reflect.ValueOf(g.TabBar),
-			"Row":                    reflect.ValueOf(g.Row),
-			"Table":                  reflect.ValueOf(g.Table),
-			"FastTable":              reflect.ValueOf(g.FastTable),
-			"Tooltip":                reflect.ValueOf(g.Tooltip),
-			"TreeNode":               reflect.ValueOf(g.TreeNode),
-			"Spacing":                reflect.ValueOf(g.Spacing),
-			"Custom":                 reflect.ValueOf(g.Custom),
-			"Condition":              reflect.ValueOf(g.Condition),
-			"ListBox":                reflect.ValueOf(g.ListBox),
-			"DatePicker":             reflect.ValueOf(g.DatePicker),
-			"Dummy":                  reflect.ValueOf(g.Dummy),
-			// "Widget":             reflect.ValueOf(g.Widget),
-
-			"PrepareMessageBox": reflect.ValueOf(g.PrepareMsgbox),
-			"MessageBox":        reflect.ValueOf(g.Msgbox),
-
-			"LoadFont": reflect.ValueOf(loadFont),
-
-			"GetConfirm": reflect.ValueOf(getConfirmGUI),
-
-			"SimpleInfo":      reflect.ValueOf(simpleInfo),
-			"SimpleError":     reflect.ValueOf(simpleError),
-			"SelectFile":      reflect.ValueOf(selectFileGUI),
-			"SelectSaveFile":  reflect.ValueOf(selectFileToSaveGUI),
-			"SelectDirectory": reflect.ValueOf(selectDirectoryGUI),
-
-			"EditFile":   reflect.ValueOf(editFile),
-			"LoopWindow": reflect.ValueOf(loopWindow),
-
-			"LayoutP": reflect.ValueOf(g.Layout{}),
-
-			"Layout": reflect.ValueOf((*g.Layout)(nil)),
-			"Widget": reflect.ValueOf((*g.Widget)(nil)),
-		}
-		// GUI related end
-
-		TKSymbols["github.com/topxeq/tk"] = map[string]reflect.Value{
-			// function, constant and variable definitions
-			"AESDecrypt":                               reflect.ValueOf(tk.AESDecrypt),
-			"AESEncrypt":                               reflect.ValueOf(tk.AESEncrypt),
-			"AddDebug":                                 reflect.ValueOf(tk.AddDebug),
-			"AddDebugF":                                reflect.ValueOf(tk.AddDebugF),
-			"AddLastSubString":                         reflect.ValueOf(tk.AddLastSubString),
-			"AnalyzeCommandLineParamter":               reflect.ValueOf(tk.AnalyzeCommandLineParamter),
-			"AnalyzeURLParams":                         reflect.ValueOf(tk.AnalyzeURLParams),
-			"AppendDualLineList":                       reflect.ValueOf(tk.AppendDualLineList),
-			"AppendSimpleMapFromFile":                  reflect.ValueOf(tk.AppendSimpleMapFromFile),
-			"AppendStringToFile":                       reflect.ValueOf(tk.AppendStringToFile),
-			"ByteSliceToStringDec":                     reflect.ValueOf(tk.ByteSliceToStringDec),
-			"ByteToHex":                                reflect.ValueOf(tk.ByteToHex),
-			"BytesToHex":                               reflect.ValueOf(tk.BytesToHex),
-			"CalCosineSimilarityBetweenFloatsBig":      reflect.ValueOf(tk.CalCosineSimilarityBetweenFloatsBig),
-			"CheckErr":                                 reflect.ValueOf(tk.CheckErr),
-			"CheckErrCompact":                          reflect.ValueOf(tk.CheckErrCompact),
-			"CheckErrf":                                reflect.ValueOf(tk.CheckErrf),
-			"ClearDebug":                               reflect.ValueOf(tk.ClearDebug),
-			"Contains":                                 reflect.ValueOf(tk.Contains),
-			"ContainsIgnoreCase":                       reflect.ValueOf(tk.ContainsIgnoreCase),
-			"ContainsIn":                               reflect.ValueOf(tk.ContainsIn),
-			"ContainsInStringList":                     reflect.ValueOf(tk.ContainsInStringList),
-			"ConvertStringToUTF8":                      reflect.ValueOf(tk.ConvertStringToUTF8),
-			"ConvertToGB18030":                         reflect.ValueOf(tk.ConvertToGB18030),
-			"ConvertToGB18030Bytes":                    reflect.ValueOf(tk.ConvertToGB18030Bytes),
-			"ConvertToUTF8":                            reflect.ValueOf(tk.ConvertToUTF8),
-			"CreateSimpleEvent":                        reflect.ValueOf(tk.CreateSimpleEvent),
-			"CreateString":                             reflect.ValueOf(tk.CreateString),
-			"CreateStringEmpty":                        reflect.ValueOf(tk.CreateStringEmpty),
-			"CreateStringError":                        reflect.ValueOf(tk.CreateStringError),
-			"CreateStringErrorF":                       reflect.ValueOf(tk.CreateStringErrorF),
-			"CreateStringErrorFromTXError":             reflect.ValueOf(tk.CreateStringErrorFromTXError),
-			"CreateStringSimple":                       reflect.ValueOf(tk.CreateStringSimple),
-			"CreateStringSuccess":                      reflect.ValueOf(tk.CreateStringSuccess),
-			"CreateStringWithObject":                   reflect.ValueOf(tk.CreateStringWithObject),
-			"CreateTXCollection":                       reflect.ValueOf(tk.CreateTXCollection),
-			"DebugModeG":                               reflect.ValueOf(&tk.DebugModeG).Elem(),
-			"DecodeStringCustom":                       reflect.ValueOf(tk.DecodeStringCustom),
-			"DecodeStringSimple":                       reflect.ValueOf(tk.DecodeStringSimple),
-			"DecodeStringUnderline":                    reflect.ValueOf(tk.DecodeStringUnderline),
-			"DecryptDataByTXDEE":                       reflect.ValueOf(tk.DecryptDataByTXDEE),
-			"DecryptDataByTXDEF":                       reflect.ValueOf(tk.DecryptDataByTXDEF),
-			"DecryptFileByTXDEF":                       reflect.ValueOf(tk.DecryptFileByTXDEF),
-			"DecryptFileByTXDEFS":                      reflect.ValueOf(tk.DecryptFileByTXDEFS),
-			"DecryptFileByTXDEFStream":                 reflect.ValueOf(tk.DecryptFileByTXDEFStream),
-			"DecryptFileByTXDEFStreamS":                reflect.ValueOf(tk.DecryptFileByTXDEFStreamS),
-			"DecryptStreamByTXDEF":                     reflect.ValueOf(tk.DecryptStreamByTXDEF),
-			"DecryptStringByTXDEE":                     reflect.ValueOf(tk.DecryptStringByTXDEE),
-			"DecryptStringByTXDEF":                     reflect.ValueOf(tk.DecryptStringByTXDEF),
-			"DecryptStringByTXTE":                      reflect.ValueOf(tk.DecryptStringByTXTE),
-			"DeepClone":                                reflect.ValueOf(tk.DeepClone),
-			"DeepCopyFromTo":                           reflect.ValueOf(tk.DeepCopyFromTo),
-			"DeleteItemInInt64Array":                   reflect.ValueOf(tk.DeleteItemInInt64Array),
-			"DeleteItemInIntArray":                     reflect.ValueOf(tk.DeleteItemInIntArray),
-			"DeleteItemInStringArray":                  reflect.ValueOf(tk.DeleteItemInStringArray),
-			"DownloadBytes":                            reflect.ValueOf(tk.DownloadBytes),
-			"DownloadFile":                             reflect.ValueOf(tk.DownloadFile),
-			"DownloadPage":                             reflect.ValueOf(tk.DownloadPage),
-			"DownloadPageByMap":                        reflect.ValueOf(tk.DownloadPageByMap),
-			"DownloadPageUTF8":                         reflect.ValueOf(tk.DownloadPageUTF8),
-			"EncodeStringCustom":                       reflect.ValueOf(tk.EncodeStringCustom),
-			"EncodeStringSimple":                       reflect.ValueOf(tk.EncodeStringSimple),
-			"EncodeStringUnderline":                    reflect.ValueOf(tk.EncodeStringUnderline),
-			"EncodeToXMLString":                        reflect.ValueOf(tk.EncodeToXMLString),
-			"EncryptDataByTXDEE":                       reflect.ValueOf(tk.EncryptDataByTXDEE),
-			"EncryptDataByTXDEF":                       reflect.ValueOf(tk.EncryptDataByTXDEF),
-			"EncryptFileByTXDEF":                       reflect.ValueOf(tk.EncryptFileByTXDEF),
-			"EncryptFileByTXDEFS":                      reflect.ValueOf(tk.EncryptFileByTXDEFS),
-			"EncryptFileByTXDEFStream":                 reflect.ValueOf(tk.EncryptFileByTXDEFStream),
-			"EncryptFileByTXDEFStreamS":                reflect.ValueOf(tk.EncryptFileByTXDEFStreamS),
-			"EncryptFileByTXDEFWithHeader":             reflect.ValueOf(tk.EncryptFileByTXDEFWithHeader),
-			"EncryptStreamByTXDEF":                     reflect.ValueOf(tk.EncryptStreamByTXDEF),
-			"EncryptStringByTXDEE":                     reflect.ValueOf(tk.EncryptStringByTXDEE),
-			"EncryptStringByTXDEF":                     reflect.ValueOf(tk.EncryptStringByTXDEF),
-			"EncryptStringByTXTE":                      reflect.ValueOf(tk.EncryptStringByTXTE),
-			"EndsWith":                                 reflect.ValueOf(tk.EndsWith),
-			"EndsWithIgnoreCase":                       reflect.ValueOf(tk.EndsWithIgnoreCase),
-			"EnsureMakeDirs":                           reflect.ValueOf(tk.EnsureMakeDirs),
-			"EnsureMakeDirsE":                          reflect.ValueOf(tk.EnsureMakeDirsE),
-			"EnsureValidFileNameX":                     reflect.ValueOf(tk.EnsureValidFileNameX),
-			"Errf":                                     reflect.ValueOf(tk.Errf),
-			"ErrorStringToError":                       reflect.ValueOf(tk.ErrorStringToError),
-			"ErrorToString":                            reflect.ValueOf(tk.ErrorToString),
-			"Exit":                                     reflect.ValueOf(tk.Exit),
-			"FatalErr":                                 reflect.ValueOf(tk.FatalErr),
-			"FatalErrf":                                reflect.ValueOf(tk.FatalErrf),
-			"Fatalf":                                   reflect.ValueOf(tk.Fatalf),
-			"FindFirstDiffIndex":                       reflect.ValueOf(tk.FindFirstDiffIndex),
-			"FindSamePrefix":                           reflect.ValueOf(tk.FindSamePrefix),
-			"Float32ArrayToFloat64Array":               reflect.ValueOf(tk.Float32ArrayToFloat64Array),
-			"Float64ToStr":                             reflect.ValueOf(tk.Float64ToStr),
-			"FormatStringSliceSlice":                   reflect.ValueOf(tk.FormatStringSliceSlice),
-			"FormatTime":                               reflect.ValueOf(tk.FormatTime),
-			"Fpl":                                      reflect.ValueOf(tk.Fpl),
-			"Fpr":                                      reflect.ValueOf(tk.Fpr),
-			"FromJSON":                                 reflect.ValueOf(tk.FromJSON),
-			"GenerateErrorString":                      reflect.ValueOf(tk.GenerateErrorString),
-			"GenerateErrorStringF":                     reflect.ValueOf(tk.GenerateErrorStringF),
-			"GenerateErrorStringFTX":                   reflect.ValueOf(tk.GenerateErrorStringFTX),
-			"GenerateErrorStringTX":                    reflect.ValueOf(tk.GenerateErrorStringTX),
-			"GenerateFileListRecursively":              reflect.ValueOf(tk.GenerateFileListRecursively),
-			"GenerateFileListRecursivelyWithExclusive": reflect.ValueOf(tk.GenerateFileListRecursivelyWithExclusive),
-			"GenerateJSONPResponse":                    reflect.ValueOf(tk.GenerateJSONPResponse),
-			"GenerateJSONPResponseWith2Object":         reflect.ValueOf(tk.GenerateJSONPResponseWith2Object),
-			"GenerateJSONPResponseWith3Object":         reflect.ValueOf(tk.GenerateJSONPResponseWith3Object),
-			"GenerateJSONPResponseWithObject":          reflect.ValueOf(tk.GenerateJSONPResponseWithObject),
-			"GenerateRandomString":                     reflect.ValueOf(tk.GenerateRandomString),
-			"GetAllParameters":                         reflect.ValueOf(tk.GetAllParameters),
-			"GetAllSwitches":                           reflect.ValueOf(tk.GetAllSwitches),
-			"GetApplicationPath":                       reflect.ValueOf(tk.GetApplicationPath),
-			"GetAvailableFileName":                     reflect.ValueOf(tk.GetAvailableFileName),
-			"GetCurrentDir":                            reflect.ValueOf(tk.GetCurrentDir),
-			"GetCurrentThreadID":                       reflect.ValueOf(tk.GetCurrentThreadID),
-			"GetDBConnection":                          reflect.ValueOf(tk.GetDBConnection),
-			"GetDBResultArray":                         reflect.ValueOf(tk.GetDBResultArray),
-			"GetDBResultString":                        reflect.ValueOf(tk.GetDBResultString),
-			"GetDBRowCount":                            reflect.ValueOf(tk.GetDBRowCount),
-			"GetDBRowCountCompact":                     reflect.ValueOf(tk.GetDBRowCountCompact),
-			"GetDebug":                                 reflect.ValueOf(tk.GetDebug),
-			"GetDirOfFilePath":                         reflect.ValueOf(tk.GetDirOfFilePath),
-			"GetEnv":                                   reflect.ValueOf(tk.GetEnv),
-			"GetErrorString":                           reflect.ValueOf(tk.GetErrorString),
-			"GetErrorStringSafely":                     reflect.ValueOf(tk.GetErrorStringSafely),
-			"GetFileExt":                               reflect.ValueOf(tk.GetFileExt),
-			"GetFilePathSeperator":                     reflect.ValueOf(tk.GetFilePathSeperator),
-			"GetFormValueWithDefaultValue":             reflect.ValueOf(tk.GetFormValueWithDefaultValue),
-			"GetGlobalEnvList":                         reflect.ValueOf(tk.GetGlobalEnvList),
-			"GetGlobalEnvString":                       reflect.ValueOf(tk.GetGlobalEnvString),
-			"GetInputBufferedScan":                     reflect.ValueOf(tk.GetInputBufferedScan),
-			"GetInputf":                                reflect.ValueOf(tk.GetInputf),
-			"GetJSONNode":                              reflect.ValueOf(tk.GetJSONNode),
-			"GetJSONNodeAny":                           reflect.ValueOf(tk.GetJSONNodeAny),
-			"GetJSONSubNode":                           reflect.ValueOf(tk.GetJSONSubNode),
-			"GetJSONSubNodeAny":                        reflect.ValueOf(tk.GetJSONSubNodeAny),
-			"GetLastComponentOfFilePath":               reflect.ValueOf(tk.GetLastComponentOfFilePath),
-			"GetLastComponentOfUrl":                    reflect.ValueOf(tk.GetLastComponentOfUrl),
-			"GetNowDateString":                         reflect.ValueOf(tk.GetNowDateString),
-			"GetNowMinutesInDay":                       reflect.ValueOf(tk.GetNowMinutesInDay),
-			"GetNowTimeOnlyStringBeijing":              reflect.ValueOf(tk.GetNowTimeOnlyStringBeijing),
-			"GetNowTimeString":                         reflect.ValueOf(tk.GetNowTimeString),
-			"GetNowTimeStringFormal":                   reflect.ValueOf(tk.GetNowTimeStringFormal),
-			"GetNowTimeStringFormat":                   reflect.ValueOf(tk.GetNowTimeStringFormat),
-			"GetNowTimeStringHourMinute":               reflect.ValueOf(tk.GetNowTimeStringHourMinute),
-			"GetOSName":                                reflect.ValueOf(tk.GetOSName),
-			"GetParameterByIndexWithDefaultValue":      reflect.ValueOf(tk.GetParameterByIndexWithDefaultValue),
-			"GetRandomByte":                            reflect.ValueOf(tk.GetRandomByte),
-			"GetRandomInt64InRange":                    reflect.ValueOf(tk.GetRandomInt64InRange),
-			"GetRandomInt64LessThan":                   reflect.ValueOf(tk.GetRandomInt64LessThan),
-			"GetRandomIntInRange":                      reflect.ValueOf(tk.GetRandomIntInRange),
-			"GetRandomIntLessThan":                     reflect.ValueOf(tk.GetRandomIntLessThan),
-			"GetRandomSubDualList":                     reflect.ValueOf(tk.GetRandomSubDualList),
-			"GetRandomizeInt64ArrayCopy":               reflect.ValueOf(tk.GetRandomizeInt64ArrayCopy),
-			"GetRandomizeIntArrayCopy":                 reflect.ValueOf(tk.GetRandomizeIntArrayCopy),
-			"GetRandomizeStringArrayCopy":              reflect.ValueOf(tk.GetRandomizeStringArrayCopy),
-			"GetRuntimeStack":                          reflect.ValueOf(tk.GetRuntimeStack),
-			"GetSliceMaxLen":                           reflect.ValueOf(tk.GetSliceMaxLen),
-			"GetStringSliceFilled":                     reflect.ValueOf(tk.GetStringSliceFilled),
-			"GetSuccessValue":                          reflect.ValueOf(tk.GetSuccessValue),
-			"GetSwitchWithDefaultInt64Value":           reflect.ValueOf(tk.GetSwitchWithDefaultInt64Value),
-			"GetSwitchWithDefaultIntValue":             reflect.ValueOf(tk.GetSwitchWithDefaultIntValue),
-			"GetSwitchWithDefaultValue":                reflect.ValueOf(tk.GetSwitchWithDefaultValue),
-			"GetTimeFromUnixTimeStamp":                 reflect.ValueOf(tk.GetTimeFromUnixTimeStamp),
-			"GetTimeFromUnixTimeStampMid":              reflect.ValueOf(tk.GetTimeFromUnixTimeStampMid),
-			"GetTimeStamp":                             reflect.ValueOf(tk.GetTimeStamp),
-			"GetTimeStampMid":                          reflect.ValueOf(tk.GetTimeStampMid),
-			"GetTimeStampNano":                         reflect.ValueOf(tk.GetTimeStampNano),
-			"GetTimeStringDiffMS":                      reflect.ValueOf(tk.GetTimeStringDiffMS),
-			"GetUserInput":                             reflect.ValueOf(tk.GetUserInput),
-			"GetValueOfMSS":                            reflect.ValueOf(tk.GetValueOfMSS),
-			"GlobalEnvSetG":                            reflect.ValueOf(&tk.GlobalEnvSetG).Elem(),
-			"HasGlobalEnv":                             reflect.ValueOf(tk.HasGlobalEnv),
-			"HexToBytes":                               reflect.ValueOf(tk.HexToBytes),
-			"HexToInt":                                 reflect.ValueOf(tk.HexToInt),
-			"IfFileExists":                             reflect.ValueOf(tk.IfFileExists),
-			"IfSwitchExists":                           reflect.ValueOf(tk.IfSwitchExists),
-			"IfSwitchExistsWhole":                      reflect.ValueOf(tk.IfSwitchExistsWhole),
-			"InStrings":                                reflect.ValueOf(tk.InStrings),
-			"IndexInStringList":                        reflect.ValueOf(tk.IndexInStringList),
-			"IndexInStringListFromEnd":                 reflect.ValueOf(tk.IndexInStringListFromEnd),
-			"Int64ArrayToFloat64Array":                 reflect.ValueOf(tk.Int64ArrayToFloat64Array),
-			"Int64ToStr":                               reflect.ValueOf(tk.Int64ToStr),
-			"IntToKMGT":                                reflect.ValueOf(tk.IntToKMGT),
-			"IntToStr":                                 reflect.ValueOf(tk.IntToStr),
-			"IntToWYZ":                                 reflect.ValueOf(tk.IntToWYZ),
-			"IsDirectory":                              reflect.ValueOf(tk.IsDirectory),
-			"IsEmptyTrim":                              reflect.ValueOf(tk.IsEmptyTrim),
-			"IsErrorString":                            reflect.ValueOf(tk.IsErrorString),
-			"IsFile":                                   reflect.ValueOf(tk.IsFile),
-			"IsYesterday":                              reflect.ValueOf(tk.IsYesterday),
-			"JSONToMapStringString":                    reflect.ValueOf(tk.JSONToMapStringString),
-			"JSONToObject":                             reflect.ValueOf(tk.JSONToObject),
-			"JSONToObjectE":                            reflect.ValueOf(tk.JSONToObjectE),
-			"JSONToStringArray":                        reflect.ValueOf(tk.JSONToStringArray),
-			"JoinDualList":                             reflect.ValueOf(tk.JoinDualList),
-			"JoinLines":                                reflect.ValueOf(tk.JoinLines),
-			"JoinLinesBySeparator":                     reflect.ValueOf(tk.JoinLinesBySeparator),
-			"JoinPath":                                 reflect.ValueOf(tk.JoinPath),
-			"JoinURL":                                  reflect.ValueOf(tk.JoinURL),
-			"Len64":                                    reflect.ValueOf(tk.Len64),
-			"LoadBytes":                                reflect.ValueOf(tk.LoadBytes),
-			"LoadBytesFromFileE":                       reflect.ValueOf(tk.LoadBytesFromFileE),
-			"LoadDualLineList":                         reflect.ValueOf(tk.LoadDualLineList),
-			"LoadDualLineListFromString":               reflect.ValueOf(tk.LoadDualLineListFromString),
-			"LoadSimpleMapFromDir":                     reflect.ValueOf(tk.LoadSimpleMapFromDir),
-			"LoadSimpleMapFromFile":                    reflect.ValueOf(tk.LoadSimpleMapFromFile),
-			"LoadSimpleMapFromFileE":                   reflect.ValueOf(tk.LoadSimpleMapFromFileE),
-			"LoadSimpleMapFromString":                  reflect.ValueOf(tk.LoadSimpleMapFromString),
-			"LoadSimpleMapFromStringE":                 reflect.ValueOf(tk.LoadSimpleMapFromStringE),
-			"LoadStringFromFile":                       reflect.ValueOf(tk.LoadStringFromFile),
-			"LoadStringFromFileB":                      reflect.ValueOf(tk.LoadStringFromFileB),
-			"LoadStringFromFileE":                      reflect.ValueOf(tk.LoadStringFromFileE),
-			"LoadStringFromFileWithDefault":            reflect.ValueOf(tk.LoadStringFromFileWithDefault),
-			"LoadStringList":                           reflect.ValueOf(tk.LoadStringList),
-			"LoadStringListBuffered":                   reflect.ValueOf(tk.LoadStringListBuffered),
-			"LoadStringListFromFile":                   reflect.ValueOf(tk.LoadStringListFromFile),
-			"LoadStringTX":                             reflect.ValueOf(tk.LoadStringTX),
-			"LogWithTime":                              reflect.ValueOf(tk.LogWithTime),
-			"LogWithTimeCompact":                       reflect.ValueOf(tk.LogWithTimeCompact),
-			"MD5Encrypt":                               reflect.ValueOf(tk.MD5Encrypt),
-			"NewRandomGenerator":                       reflect.ValueOf(tk.NewRandomGenerator),
-			"NowToFileName":                            reflect.ValueOf(tk.NowToFileName),
-			"NowToStrUTC":                              reflect.ValueOf(tk.NowToStrUTC),
-			"ObjectToJSON":                             reflect.ValueOf(tk.ObjectToJSON),
-			"ObjectToJSONIndent":                       reflect.ValueOf(tk.ObjectToJSONIndent),
-			"ParseCommandLine":                         reflect.ValueOf(tk.ParseCommandLine),
-			"ParseHexColor":                            reflect.ValueOf(tk.ParseHexColor),
-			"Pkcs7Padding":                             reflect.ValueOf(tk.Pkcs7Padding),
-			"Pl":                                       reflect.ValueOf(tk.Pl),
-			"PlAndExit":                                reflect.ValueOf(tk.PlAndExit),
-			"PlErr":                                    reflect.ValueOf(tk.PlErr),
-			"PlErrAndExit":                             reflect.ValueOf(tk.PlErrAndExit),
-			"PlErrSimple":                              reflect.ValueOf(tk.PlErrSimple),
-			"PlErrSimpleAndExit":                       reflect.ValueOf(tk.PlErrSimpleAndExit),
-			"PlErrString":                              reflect.ValueOf(tk.PlErrString),
-			"PlErrWithPrefix":                          reflect.ValueOf(tk.PlErrWithPrefix),
-			"PlSimpleErrorString":                      reflect.ValueOf(tk.PlSimpleErrorString),
-			"PlTXErr":                                  reflect.ValueOf(tk.PlTXErr),
-			"PlVerbose":                                reflect.ValueOf(tk.PlVerbose),
-			"Pln":                                      reflect.ValueOf(tk.Pln),
-			"Plv":                                      reflect.ValueOf(tk.Plv),
-			"PlvWithError":                             reflect.ValueOf(tk.PlvWithError),
-			"Plvs":                                     reflect.ValueOf(tk.Plvs),
-			"Plvsr":                                    reflect.ValueOf(tk.Plvsr),
-			"PostRequest":                              reflect.ValueOf(tk.PostRequest),
-			"PostRequestBytesWithCookieX":              reflect.ValueOf(tk.PostRequestBytesWithCookieX),
-			"PostRequestBytesWithMSSHeaderX":           reflect.ValueOf(tk.PostRequestBytesWithMSSHeaderX),
-			"PostRequestBytesX":                        reflect.ValueOf(tk.PostRequestBytesX),
-			"PostRequestX":                             reflect.ValueOf(tk.PostRequestX),
-			"Pr":                                       reflect.ValueOf(tk.Pr),
-			"Prf":                                      reflect.ValueOf(tk.Prf),
-			"Printf":                                   reflect.ValueOf(tk.Printf),
-			"Printfln":                                 reflect.ValueOf(tk.Printfln),
-			"Prl":                                      reflect.ValueOf(tk.Prl),
-			"Randomize":                                reflect.ValueOf(tk.Randomize),
-			"ReadLineFromBufioReader":                  reflect.ValueOf(tk.ReadLineFromBufioReader),
-			"RegContains":                              reflect.ValueOf(tk.RegContains),
-			"RegFindAll":                               reflect.ValueOf(tk.RegFindAll),
-			"RegFindFirst":                             reflect.ValueOf(tk.RegFindFirst),
-			"RegFindFirstTX":                           reflect.ValueOf(tk.RegFindFirstTX),
-			"RegMatch":                                 reflect.ValueOf(tk.RegMatch),
-			"RegReplace":                               reflect.ValueOf(tk.RegReplace),
-			"RemoveBOM":                                reflect.ValueOf(tk.RemoveBOM),
-			"RemoveDuplicateInDualLineList":            reflect.ValueOf(tk.RemoveDuplicateInDualLineList),
-			"RemoveFileExt":                            reflect.ValueOf(tk.RemoveFileExt),
-			"RemoveGlobalEnv":                          reflect.ValueOf(tk.RemoveGlobalEnv),
-			"RemoveLastSubString":                      reflect.ValueOf(tk.RemoveLastSubString),
-			"Replace":                                  reflect.ValueOf(tk.Replace),
-			"ReplaceLineEnds":                          reflect.ValueOf(tk.ReplaceLineEnds),
-			"RestoreLineEnds":                          reflect.ValueOf(tk.RestoreLineEnds),
-			"RunWinFileWithSystemDefault":              reflect.ValueOf(tk.RunWinFileWithSystemDefault),
-			"SafelyGetFloat64ForKeyWithDefault":        reflect.ValueOf(tk.SafelyGetFloat64ForKeyWithDefault),
-			"SafelyGetIntForKeyWithDefault":            reflect.ValueOf(tk.SafelyGetIntForKeyWithDefault),
-			"SafelyGetStringForKeyWithDefault":         reflect.ValueOf(tk.SafelyGetStringForKeyWithDefault),
-			"SaveDualLineList":                         reflect.ValueOf(tk.SaveDualLineList),
-			"SaveSimpleMapToFile":                      reflect.ValueOf(tk.SaveSimpleMapToFile),
-			"SaveStringList":                           reflect.ValueOf(tk.SaveStringList),
-			"SaveStringListBuffered":                   reflect.ValueOf(tk.SaveStringListBuffered),
-			"SaveStringListBufferedByRange":            reflect.ValueOf(tk.SaveStringListBufferedByRange),
-			"SaveStringListWin":                        reflect.ValueOf(tk.SaveStringListWin),
-			"SaveStringToFile":                         reflect.ValueOf(tk.SaveStringToFile),
-			"SaveStringToFileE":                        reflect.ValueOf(tk.SaveStringToFileE),
-			"SetGlobalEnv":                             reflect.ValueOf(tk.SetGlobalEnv),
-			"SetLogFile":                               reflect.ValueOf(tk.SetLogFile),
-			"SetValue":                                 reflect.ValueOf(tk.SetValue),
-			"ShuffleStringArray":                       reflect.ValueOf(tk.ShuffleStringArray),
-			"SimpleMapToString":                        reflect.ValueOf(tk.SimpleMapToString),
-			"SleepMilliSeconds":                        reflect.ValueOf(tk.SleepMilliSeconds),
-			"SleepSeconds":                             reflect.ValueOf(tk.SleepSeconds),
-			"Split":                                    reflect.ValueOf(tk.Split),
-			"SplitLines":                               reflect.ValueOf(tk.SplitLines),
-			"SplitLinesRemoveEmpty":                    reflect.ValueOf(tk.SplitLinesRemoveEmpty),
-			"SplitN":                                   reflect.ValueOf(tk.SplitN),
-			"Spr":                                      reflect.ValueOf(tk.Spr),
-			"StartsWith":                               reflect.ValueOf(tk.StartsWith),
-			"StartsWithBOM":                            reflect.ValueOf(tk.StartsWithBOM),
-			"StartsWithDigit":                          reflect.ValueOf(tk.StartsWithDigit),
-			"StartsWithIgnoreCase":                     reflect.ValueOf(tk.StartsWithIgnoreCase),
-			"StartsWithUpper":                          reflect.ValueOf(tk.StartsWithUpper),
-			"StrToBool":                                reflect.ValueOf(tk.StrToBool),
-			"StrToFloat64":                             reflect.ValueOf(tk.StrToFloat64),
-			"StrToFloat64WithDefaultValue":             reflect.ValueOf(tk.StrToFloat64WithDefaultValue),
-			"StrToInt":                                 reflect.ValueOf(tk.StrToInt),
-			"StrToInt64WithDefaultValue":               reflect.ValueOf(tk.StrToInt64WithDefaultValue),
-			"StrToIntPositive":                         reflect.ValueOf(tk.StrToIntPositive),
-			"StrToIntWithDefaultValue":                 reflect.ValueOf(tk.StrToIntWithDefaultValue),
-			"StrToTime":                                reflect.ValueOf(tk.StrToTime),
-			"StrToTimeByFormat":                        reflect.ValueOf(tk.StrToTimeByFormat),
-			"StrToTimeCompact":                         reflect.ValueOf(tk.StrToTimeCompact),
-			"StrToTimeCompactNoError":                  reflect.ValueOf(tk.StrToTimeCompactNoError),
-			"StringReplace":                            reflect.ValueOf(tk.StringReplace),
-			"SumBytes":                                 reflect.ValueOf(tk.SumBytes),
-			"TXDEF_BUFFER_LEN":                         reflect.ValueOf(tk.TXDEF_BUFFER_LEN),
-			"TXResultFromString":                       reflect.ValueOf(tk.TXResultFromString),
-			"TimeFormat":                               reflect.ValueOf(&tk.TimeFormat).Elem(),
-			"TimeFormatCompact":                        reflect.ValueOf(&tk.TimeFormatCompact).Elem(),
-			"TimeFormatCompact2":                       reflect.ValueOf(&tk.TimeFormatCompact2).Elem(),
-			"TimeFormatMS":                             reflect.ValueOf(&tk.TimeFormatMS).Elem(),
-			"ToJSON":                                   reflect.ValueOf(tk.ToJSON),
-			"ToJSONIndent":                             reflect.ValueOf(tk.ToJSONIndent),
-			"ToLower":                                  reflect.ValueOf(tk.ToLower),
-			"ToUpper":                                  reflect.ValueOf(tk.ToUpper),
-			"Trim":                                     reflect.ValueOf(tk.Trim),
-			"TrimCharSet":                              reflect.ValueOf(tk.TrimCharSet),
-			"UrlDecode":                                reflect.ValueOf(tk.UrlDecode),
-			"UrlEncode":                                reflect.ValueOf(tk.UrlEncode),
-			"UrlEncode2":                               reflect.ValueOf(tk.UrlEncode2),
-
-			// type definitions
-			"ExitCallback":  reflect.ValueOf((*tk.ExitCallback)(nil)),
-			"RandomX":       reflect.ValueOf((*tk.RandomX)(nil)),
-			"SimpleEvent":   reflect.ValueOf((*tk.SimpleEvent)(nil)),
-			"TXCollection":  reflect.ValueOf((*tk.TXCollection)(nil)),
-			"TXResult":      reflect.ValueOf((*tk.TXResult)(nil)),
-			"TXString":      reflect.ValueOf((*tk.TXString)(nil)),
-			"TXStringArray": reflect.ValueOf((*tk.TXStringArray)(nil)),
-			"TXStringSlice": reflect.ValueOf((*tk.TXStringSlice)(nil)),
-		}
-
-		ygVMG.Use(TKSymbols)
-
-	}
-}
-
-// full version related end
-
-// full version related start
-func initTengoVM() {
-
-}
-
-func initJSVM() {
-	if jsVMG == nil {
-		jsVMG = goja.New()
-
-		jsVMG.Set("printf", func(call goja.FunctionCall) goja.Value {
-			callArgsT := call.Arguments
-
-			argsBufT := make([]interface{}, len(callArgsT)-1)
-
-			formatA := callArgsT[0].ToString().String()
-
-			for i, v := range callArgsT {
-				if i == 0 {
-					continue
-				}
-
-				argsBufT[i-1] = v.ToString().String()
-			}
-
-			tk.Prf(formatA, argsBufT...)
-
-			return nil
-		})
-
-		jsVMG.Set("printfln", func(call goja.FunctionCall) goja.Value {
-			callArgsT := call.Arguments
-
-			argsBufT := make([]interface{}, len(callArgsT)-1)
-
-			formatA := callArgsT[0].ToString().String()
-
-			for i, v := range callArgsT {
-				if i == 0 {
-					continue
-				}
-
-				argsBufT[i-1] = v.ToString().String()
-			}
-
-			tk.Prf(formatA+"\n", argsBufT...)
-
-			return nil
-		})
-
-		jsVMG.Set("println", func(call goja.FunctionCall) goja.Value {
-			callArgsT := call.Arguments
-
-			argsBufT := make([]interface{}, len(callArgsT))
-
-			for i, v := range callArgsT {
-				argsBufT[i] = v.ToString().String()
-			}
-
-			fmt.Println(argsBufT...)
-
-			return nil
-		})
-
-		// jsVMG.Set("goGetRandomInt", func(call goja.FunctionCall) goja.Value {
-		// 	maxA := call.Argument(0).ToInteger()
-
-		// 	randomNumberT := rand.Intn(int(maxA))
-
-		// 	rs := jsVMG.ToValue(randomNumberT)
-
-		// 	return rs
-		// })
-
-		jsVMG.Set("getVar", func(call goja.FunctionCall) goja.Value {
-			nameA := call.Argument(0).ToString().String()
-
-			objT, ok := variableG[nameA]
-
-			if !ok {
-				return jsVMG.ToValue(tk.GenerateErrorString("no key"))
-			}
-
-			rs := jsVMG.ToValue(objT)
-
-			return rs
-		})
-
-		jsVMG.Set("setVar", func(call goja.FunctionCall) goja.Value {
-			nameA := call.Argument(0).ToString().String()
-
-			objT := call.Argument(1).ToString().String()
-
-			variableG[nameA] = objT
-
-			return nil
-		})
-
-		consoleStrT := `console = { log: println };
-		String.prototype.startsWith = function (s) {
-			if (s == null || s == "" || this.length == 0 || s.length > this.length)
-				return false;
-			if (this.substr(0, s.length) == s)
-				return true;
-			else
-				return false;
-			return true;
-		}
-		
-		String.prototype.endsWith = function (s) {
-			if (s == null || s == "" || this.length == 0 || s.length > this.length)
-				return false;
-			if (this.substring(this.length - s.length) == s)
-				return true;
-			else
-				return false;
-			return true;
-		}
-		
-		
-		`
-
-		_, errT := jsVMG.RunString(consoleStrT)
-		if errT != nil {
-			tk.Pl("failed to initialize JS VM: %v", errT)
-
-			return
-		}
-
-	}
-
-}
-
-// full version related end
-
 // init the main VM
 
 var retG interface{}
@@ -3506,30 +1930,6 @@ func initQLVM() {
 		qlVMG = qlang.New()
 	}
 }
-
-// full version related start
-
-func initAnkVM() {
-	if ankVMG == nil {
-		importAnkNonGUIPackages()
-
-		// GUI related start
-
-		importAnkGUIPackages()
-
-		// GUI related end
-
-		ankVMG = env.NewEnv()
-
-		initAnkoVMInstance(ankVMG)
-
-		ankVMG.Define("argsG", os.Args[1:])
-
-	}
-
-}
-
-// full version related end
 
 func main() {
 	// var errT error
@@ -3668,29 +2068,25 @@ func main() {
 	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 
-	// full version related start
-	ifShowResultT := tk.IfSwitchExistsWhole(argsT, "-showResult")
-	// full version related end
-
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
 	for _, scriptT := range scriptsT {
 		var fcT string
 
 		if ifExampleT {
-			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
+			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 				scriptT += ".gox"
 			}
 			fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
 		} else if ifRemoteT {
 			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 		} else if ifCloudT {
-			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
+			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 				scriptT += ".gox"
 			}
 			fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
 		} else if ifGoPathT {
-			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".js")) && (!tk.EndsWith(scriptT, ".tg")) && (!tk.EndsWith(scriptT, ".ank")) && (!tk.EndsWith(scriptT, ".ql")) {
+			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 				scriptT += ".gox"
 			}
 
@@ -3724,181 +2120,27 @@ func main() {
 			return
 		}
 
-		// full version related start
-		codeTypeT := "ql"
+		initQLVM()
 
-		if tk.RegStartsWith(fcT, `\s*//\s*qlang`) {
-			codeTypeT = "ql"
-		} else if tk.RegStartsWith(fcT, `\s*//\s*ank`) {
-			codeTypeT = "ank"
-		} else if tk.RegStartsWith(fcT, `\s*//\s*yg`) {
-			codeTypeT = "yg"
-		} else if tk.RegStartsWith(fcT, `\s*//\s*js`) {
-			codeTypeT = "js"
-		} else if tk.RegStartsWith(fcT, `\s*//\s*tg`) {
-			codeTypeT = "tg"
-		} else if tk.EndsWith(scriptT, ".js") {
-			codeTypeT = "js"
-		} else if tk.EndsWith(scriptT, ".tg") {
-			codeTypeT = "tg"
-		} else if tk.EndsWith(scriptT, ".ank") {
-			codeTypeT = "ank"
-		} else if tk.EndsWith(scriptT, ".yg") {
-			codeTypeT = "yg"
+		script := fcT
+
+		errT := qlVMG.SafeEval(script)
+		if errT != nil {
+
+			tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
+
+			// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
+			// tk.Pl("Next line: %v, %v", f, l)
+
+			continue
 		}
 
-		if codeTypeT == "yg" {
-			initYGVM()
-			// i := interp.New(interp.Options{})
+		rs, ok := qlVMG.GetVar("outG")
 
-			result, errT := ygVMG.Eval(fcT)
-			if errT != nil {
-				tk.Pl("failed to run script(%v): %v", scriptT, errT)
-			}
-
-			if ifShowResultT {
-				tk.Pl("%v", result)
-			}
-
-			return
-		} else if codeTypeT == "js" {
-			initJSVM()
-
-			jsVMG.Set("argsG", jsVMG.ToValue(argsT))
-
-			_, errT := jsVMG.RunString(fcT)
-			if errT != nil {
-				tk.Pl("failed to run script(%v): %v", scriptT, errT)
-
-				continue
-			}
-
-			result := jsVMG.Get("resultG")
-
-			if result != nil {
-				tk.Pl("%#v", result)
-			}
-
-			return
-		} else if codeTypeT == "tg" {
-			initTengoVM()
-
-			scriptT := tengo.NewScript([]byte(fcT))
-
-			scriptT.SetImports(tengoModulesG)
-
-			_ = scriptT.Add("setVar", setVarTengo)
-			// errT := scriptT.Add("times", times)
-			// if errT != nil {
-			// 	tk.Pl("failed to add times(%v) error: %v", "", errT)
-			// 	continue
-			// }
-
-			errT := scriptT.Add("getVar", getVarTengo)
-			if errT != nil {
-				tk.Pl("failed to add getVar(%v) error: %v", "", errT)
-				continue
-			}
-
-			argsG_TG := make([]interface{}, len(argsT))
-			for i, v := range argsT {
-				argsG_TG[i] = v
-			}
-
-			errT = scriptT.Add("argsG", argsG_TG)
-			if errT != nil {
-				tk.Pl("failed to add argsA(%v) error: %v", "", errT)
-				continue
-			}
-
-			compiledT, errT := scriptT.RunContext(context.Background())
-			if errT != nil {
-				tk.Pl("failed to execute script(%v) error: %v", "", errT)
-				continue
-			}
-
-			rs := compiledT.Get("resultG")
-
-			// if errT == nil && rs != nil {
+		if ok {
 			tk.Pl("%#v", rs)
-			// }
-
-		} else if codeTypeT == "ank" {
-
-			initAnkVM()
-
-			script := fcT //`println("Hello World :)")`
-
-			rs1, errT := vm.Execute(ankVMG, nil, script)
-
-			if rs1 != nil && rs1 == "TX_RESTARTVM_XT" {
-				tk.Pl("Restart VM")
-
-				ankVMG = env.NewEnv()
-
-				initAnkoVMInstance(ankVMG)
-
-				ankVMG.Define("argsG", os.Args[1:])
-
-				rs1, errT = vm.Execute(ankVMG, nil, script)
-			}
-
-			if errT != nil {
-
-				posStrT := ""
-
-				e, ok := errT.(*parser.Error)
-
-				// tk.Pl("%#v", ankVMG)
-				if ok {
-					posStrT = fmt.Sprintf(", line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-				} else {
-					e, ok := errT.(*vm.Error)
-
-					if ok {
-						posStrT = fmt.Sprintf(", line: %v, col: %v", e.Pos.Line, e.Pos.Column)
-					} else {
-						tk.Pl("%#v", errT)
-					}
-				}
-
-				tk.Pl("failed to execute script(%v%v) error: %v\n%#v\n", scriptT, posStrT, errT, rs1)
-				continue
-			}
-
-			rs, errT := ankVMG.Get("outG")
-
-			if errT == nil && rs != nil {
-				tk.Pl("%#v", rs)
-			}
-
-		} else { // if tk.EndsWith(scriptT, ".ql") || tk.EndsWith(scriptT, ".goxq") {
-			// full version related end
-
-			initQLVM()
-
-			script := fcT
-
-			errT := qlVMG.SafeEval(script)
-			if errT != nil {
-
-				tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
-
-				// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
-				// tk.Pl("Next line: %v, %v", f, l)
-
-				continue
-			}
-
-			rs, ok := qlVMG.GetVar("outG")
-
-			if ok {
-				tk.Pl("%#v", rs)
-			}
-			// full version related start
-
 		}
-		// full version related end
+
 	}
 }
 
