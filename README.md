@@ -3,6 +3,9 @@
 _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/data/landingshare?pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9677952217244209303%22%2C%22sourceFrom%22%3A%22bjh%22%7D)开始看起，或者[这里](https://www.jianshu.com/nb/44919205)看更多的开发指南。_
 
 # gox
+
+**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept.**
+
 Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), [Anko](https://github.com/mattn/anko) [Goja](https://github.com/dop251/goja) and [Tengo](https://github.com/d5/tengo), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Qlang, Anko and Tengo. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
