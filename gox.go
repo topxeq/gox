@@ -51,6 +51,7 @@ import (
 	qlcryptosha256 "github.com/topxeq/qlang/lib/crypto/sha256"
 	qlcryptox509 "github.com/topxeq/qlang/lib/crypto/x509"
 	qlencodingbase64 "github.com/topxeq/qlang/lib/encoding/base64"
+	qlencodingcsv "github.com/topxeq/qlang/lib/encoding/csv"
 	qlencodinghex "github.com/topxeq/qlang/lib/encoding/hex"
 	qlencodingjson "github.com/topxeq/qlang/lib/encoding/json"
 	qlencodingpem "github.com/topxeq/qlang/lib/encoding/pem"
@@ -60,6 +61,7 @@ import (
 	qlnethttp "github.com/topxeq/qlang/lib/net/http"
 	qlneturl "github.com/topxeq/qlang/lib/net/url"
 
+	qlbufio "github.com/topxeq/qlang/lib/bufio"
 	qlsync "github.com/topxeq/qlang/lib/sync"
 	qltime "github.com/topxeq/qlang/lib/time"
 
@@ -949,6 +951,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("sort", qlsort.Exports)
 
 	qlang.Import("time", qltime.Exports)
+	qlang.Import("bufio", qlbufio.Exports)
 	qlang.Import("sync", qlsync.Exports)
 
 	qlang.Import("net_url", qlneturl.Exports)
@@ -964,7 +967,7 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("encoding_pem", qlencodingpem.Exports)
 	qlang.Import("encoding_base64", qlencodingbase64.Exports)
-	qlang.Import("encoding_csv", qlencodingbase64.Exports)
+	qlang.Import("encoding_csv", qlencodingcsv.Exports)
 	qlang.Import("encoding_hex", qlencodinghex.Exports)
 	qlang.Import("encoding_json", qlencodingjson.Exports)
 	qlang.Import("encoding_xml", qlencodingxml.Exports)
