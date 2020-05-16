@@ -4,39 +4,25 @@ import (
 	"bufio"
 	"bytes"
 
-	// full version related start
-
-	// full version related end
 	"io"
 	"math/rand"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"sync"
 	"time"
 
 	"errors"
 	"fmt"
 
-	"net"
-	"strconv"
-
-	"github.com/melbahja/goph"
-	"golang.org/x/crypto/ssh"
-
-	"github.com/atotto/clipboard"
-
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
-	specq "github.com/topxeq/qlang/spec"
-
 	// GUI related start
 	"runtime"
 
 	execq "github.com/topxeq/qlang/exec"
+	specq "github.com/topxeq/qlang/spec"
 
 	// GUI related end
 
@@ -87,17 +73,18 @@ import (
 	"image/draw"
 	"image/png"
 
+	// GUI related start
 	"github.com/topxeq/imagetk"
+	"gonum.org/v1/plot/plotutil"
+	// GUI related end
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
-	"gonum.org/v1/plot/plotutil"
 	"gonum.org/v1/plot/vg"
 
 	// full version related end
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/mattn/anko/parser"
 	_ "github.com/mattn/go-sqlite3"
 
 	// full version related start
@@ -129,7 +116,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.986a"
+var versionG = "0.987a"
 
 var verboseG = false
 
@@ -151,22 +138,22 @@ func exit() {
 	os.Exit(1)
 }
 
-func getVar(nameA string) interface{} {
-	varMutexG.Lock()
-	rs, ok := variableG[nameA]
-	varMutexG.Unlock()
+// func getVar(nameA string) interface{} {
+// 	varMutexG.Lock()
+// 	rs, ok := variableG[nameA]
+// 	varMutexG.Unlock()
 
-	if !ok {
-		tk.GenerateErrorString("no key")
-	}
-	return rs
-}
+// 	if !ok {
+// 		tk.GenerateErrorString("no key")
+// 	}
+// 	return rs
+// }
 
-func setVar(nameA string, valueA interface{}) {
-	varMutexG.Lock()
-	variableG[nameA] = valueA
-	varMutexG.Unlock()
-}
+// func setVar(nameA string, valueA interface{}) {
+// 	varMutexG.Lock()
+// 	variableG[nameA] = valueA
+// 	varMutexG.Unlock()
+// }
 
 func qlEval(strA string) string {
 	vmT := qlang.New()
@@ -180,179 +167,131 @@ func qlEval(strA string) string {
 	return tk.Spr("%v", vmT.Var("TXResultG"))
 }
 
-func getClipText() string {
-	textT, errT := clipboard.ReadAll()
-	if errT != nil {
-		return tk.GenerateErrorStringF("could not get text from clipboard: %v", errT.Error())
-	}
+// func getClipText() string {
+// 	textT, errT := clipboard.ReadAll()
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("could not get text from clipboard: %v", errT.Error())
+// 	}
 
-	return textT
-}
+// 	return textT
+// }
 
-func setClipText(textA string) {
-	clipboard.WriteAll(textA)
-}
+// func setClipText(textA string) {
+// 	clipboard.WriteAll(textA)
+// }
 
 func panicIt(valueA interface{}) {
 	panic(valueA)
 }
 
-func checkErrorFunc(errA error, funcA func()) {
-	if errA != nil {
-		tk.PlErr(errA)
+// func checkErrorFunc(errA error, funcA func()) {
+// 	if errA != nil {
+// 		tk.PlErr(errA)
 
-		if funcA != nil {
-			funcA()
-		}
+// 		if funcA != nil {
+// 			funcA()
+// 		}
 
-		os.Exit(1)
-	}
+// 		os.Exit(1)
+// 	}
 
-}
+// }
 
-func checkError(errA error, funcsA ...(func())) {
-	if errA != nil {
-		tk.PlErr(errA)
+// func checkError(errA error, funcsA ...(func())) {
+// 	if errA != nil {
+// 		tk.PlErr(errA)
 
-		if funcsA != nil {
-			for _, v := range funcsA {
-				v()
-			}
-		}
+// 		if funcsA != nil {
+// 			for _, v := range funcsA {
+// 				v()
+// 			}
+// 		}
 
-		os.Exit(1)
-	}
+// 		os.Exit(1)
+// 	}
 
-}
+// }
 
-func checkErrorString(strA string, funcA func()) {
-	if tk.IsErrorString(strA) {
-		tk.PlErrString(strA)
+// func checkErrorString(strA string, funcA func()) {
+// 	if tk.IsErrorString(strA) {
+// 		tk.PlErrString(strA)
 
-		if funcA != nil {
-			funcA()
-		}
+// 		if funcA != nil {
+// 			funcA()
+// 		}
 
-		os.Exit(1)
-	}
+// 		os.Exit(1)
+// 	}
 
-}
+// }
 
-func newSSHClient(hostA string, portA int, userA string, passA string) (*goph.Client, error) {
-	authT := goph.Password(passA)
+// func remove(aryA []interface{}, startA int, endA int) []interface{} {
+// 	if startA < 0 || startA >= len(aryA) {
+// 		tk.Pl("Runtime error: %v", "index out of range")
+// 		exit()
+// 	}
 
-	clientT := &goph.Client{
-		Addr: hostA,
-		Port: portA,
-		User: userA,
-		Auth: authT,
-	}
+// 	if endA < 0 || endA >= len(aryA) {
+// 		tk.Pl("Runtime error: %v", "index out of range")
+// 		exit()
+// 	}
 
-	errT := goph.Conn(clientT, &ssh.ClientConfig{
-		User:    clientT.User,
-		Auth:    clientT.Auth,
-		Timeout: 20 * time.Second,
-		HostKeyCallback: func(host string, remote net.Addr, key ssh.PublicKey) error {
-			return nil
-			// hostFound, err := goph.CheckKnownHost(host, remote, key, "")
+// 	return append(aryA[:startA], aryA[endA+1:]...)
+// 	// if idxT == 0 {
+// 	// 	return ayrA[idxT + 1:]
+// 	// }
 
-			// if hostFound && err != nil {
-			// 	return err
-			// }
+// 	// if idxT == len(aryA) - 1 {
+// 	// 	return ayrA[0:len(aryA) - 1]
+// 	// }
 
-			// if hostFound && err == nil {
-			// 	return nil
-			// }
+// 	// return append(aryA[:idxA], aryA[idxA+1:]...)
 
-			// return goph.AddKnownHost(host, remote, key, "")
-		},
-	})
+// }
 
-	// clientT, errT := goph.NewConn(userA, hostA, authT, func(host string, remote net.Addr, key ssh.PublicKey) error {
+// func toStringFromRuneSlice(sliceA []rune) string {
+// 	return string(sliceA)
+// }
 
-	// 	hostFound, err := goph.CheckKnownHost(host, remote, key, "")
+// // toInt converts all reflect.Value-s into int.
+// func toInt(vA interface{}) int {
+// 	v := reflect.ValueOf(&vA)
+// 	i, _ := tryToInt(v)
+// 	return i
+// }
 
-	// 	if hostFound && err != nil {
-	// 		return err
-	// 	}
-
-	// 	if hostFound && err == nil {
-	// 		return nil
-	// 	}
-
-	// 	return goph.AddKnownHost(host, remote, key, "")
-	// })
-
-	return clientT, errT
-}
-
-func remove(aryA []interface{}, startA int, endA int) []interface{} {
-	if startA < 0 || startA >= len(aryA) {
-		tk.Pl("Runtime error: %v", "index out of range")
-		exit()
-	}
-
-	if endA < 0 || endA >= len(aryA) {
-		tk.Pl("Runtime error: %v", "index out of range")
-		exit()
-	}
-
-	return append(aryA[:startA], aryA[endA+1:]...)
-	// if idxT == 0 {
-	// 	return ayrA[idxT + 1:]
-	// }
-
-	// if idxT == len(aryA) - 1 {
-	// 	return ayrA[0:len(aryA) - 1]
-	// }
-
-	// return append(aryA[:idxA], aryA[idxA+1:]...)
-
-}
-
-func toStringFromRuneSlice(sliceA []rune) string {
-	return string(sliceA)
-}
-
-// toInt converts all reflect.Value-s into int.
-func toInt(vA interface{}) int {
-	v := reflect.ValueOf(&vA)
-	i, _ := tryToInt(v)
-	return i
-}
-
-// tryToInt attempts to convert a value to an int.
-// If it cannot (in the case of a non-numeric string, a struct, etc.)
-// it returns 0 and an error.
-func tryToInt(v reflect.Value) (int, error) {
-	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
-		v = v.Elem()
-	}
-	switch v.Kind() {
-	case reflect.Float64, reflect.Float32:
-		return int(v.Float()), nil
-	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
-		return int(v.Int()), nil
-	case reflect.Bool:
-		if v.Bool() {
-			return 1, nil
-		}
-		return 0, nil
-	case reflect.String:
-		s := v.String()
-		var i int64
-		var err error
-		if strings.HasPrefix(s, "0x") {
-			i, err = strconv.ParseInt(s, 16, 64)
-		} else {
-			i, err = strconv.ParseInt(s, 10, 64)
-		}
-		if err == nil {
-			return int(i), nil
-		}
-	}
-	return 0, errors.New("couldn't convert to integer")
-}
+// // tryToInt attempts to convert a value to an int.
+// // If it cannot (in the case of a non-numeric string, a struct, etc.)
+// // it returns 0 and an error.
+// func tryToInt(v reflect.Value) (int, error) {
+// 	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+// 		v = v.Elem()
+// 	}
+// 	switch v.Kind() {
+// 	case reflect.Float64, reflect.Float32:
+// 		return int(v.Float()), nil
+// 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
+// 		return int(v.Int()), nil
+// 	case reflect.Bool:
+// 		if v.Bool() {
+// 			return 1, nil
+// 		}
+// 		return 0, nil
+// 	case reflect.String:
+// 		s := v.String()
+// 		var i int64
+// 		var err error
+// 		if strings.HasPrefix(s, "0x") {
+// 			i, err = strconv.ParseInt(s, 16, 64)
+// 		} else {
+// 			i, err = strconv.ParseInt(s, 10, 64)
+// 		}
+// 		if err == nil {
+// 			return int(i), nil
+// 		}
+// 	}
+// 	return 0, errors.New("couldn't convert to integer")
+// }
 
 func getUint64Value(v reflect.Value) uint16 {
 	tk.Pl("%x", v.Interface())
@@ -394,34 +333,9 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 		return retG
 		// full version related start
 	} else {
-		return systemCmd("gox", append([]string{codeA}, argsA...)...)
+		return tk.SystemCmd("gox", append([]string{codeA}, argsA...)...)
 	}
 
-}
-
-func systemCmd(cmdA string, argsA ...string) string {
-	var out bytes.Buffer
-
-	cmd := exec.Command(cmdA, argsA...)
-
-	cmd.Stdout = &out
-	errT := cmd.Run()
-	if errT != nil {
-		return tk.GenerateErrorStringF("failed: %v", errT)
-	}
-
-	rStrT := tk.Trim(out.String())
-
-	return rStrT
-}
-
-func typeOfValue(vA interface{}) string {
-	return fmt.Sprintf("%T", vA)
-}
-
-func typeOfValueReflect(vA interface{}) string {
-	rs := reflect.TypeOf(vA)
-	return rs.String()
 }
 
 // full version related start
@@ -578,9 +492,9 @@ func importQLNonGUIPackages() {
 
 	// }
 
-	setString := func(p *string, strA string) {
-		*p = strA
-	}
+	// setString := func(p *string, strA string) {
+	// 	*p = strA
+	// }
 
 	var defaultExports = map[string]interface{}{
 		"eval":             qlEval,
@@ -589,26 +503,25 @@ func importQLNonGUIPackages() {
 		"pl":               tk.Pl,
 		"pln":              fmt.Println,
 		"plv":              tk.Plv,
+		"plvsr":            tk.Plvsr,
 		"plerr":            tk.PlErr,
 		"pv":               printValue,
 		"exit":             exit,
-		"setString":        setString,
 		"setValue":         setValue,
 		"getValue":         getValue,
 		"bitXor":           bitXor,
-		"setVar":           setVar,
-		"getVar":           getVar,
-		"checkError":       checkError,
-		"checkErrorString": checkErrorString,
+		"setVar":           tk.SetVar,
+		"getVar":           tk.GetVar,
+		"checkError":       tk.CheckError,
+		"checkErrorString": tk.CheckErrorString,
 		"getInput":         tk.GetUserInput,
 		"getInputf":        tk.GetInputf,
-		"newSSHClient":     newSSHClient,
 		"run":              runFile,
-		"typeOf":           typeOfValueReflect,
-		"remove":           remove,
+		"typeOf":           tk.TypeOfValueReflect,
+		"remove":           tk.RemoveItemsInArray,
 		"runScript":        runScript,
-		"getClipText":      getClipText,
-		"setClipText":      setClipText,
+		"getClipText":      tk.GetClipText,
+		"setClipText":      tk.SetClipText,
 		// GUI related start
 
 		// full version related start
@@ -618,326 +531,6 @@ func importQLNonGUIPackages() {
 	}
 
 	qlang.Import("", defaultExports)
-
-	// var tkExports = map[string]interface{}{
-	// 	"CreateTXCollection":                  tk.CreateTXCollection,
-	// 	"TXResultFromString":                  tk.TXResultFromString,
-	// 	"SetGlobalEnv":                        tk.SetGlobalEnv,
-	// 	"RemoveGlobalEnv":                     tk.RemoveGlobalEnv,
-	// 	"GetGlobalEnvList":                    tk.GetGlobalEnvList,
-	// 	"GetGlobalEnvString":                  tk.GetGlobalEnvString,
-	// 	"HasGlobalEnv":                        tk.HasGlobalEnv,
-	// 	"IsEmptyTrim":                         tk.IsEmptyTrim,
-	// 	"StartsWith":                          tk.StartsWith,
-	// 	"StartsWithIgnoreCase":                tk.StartsWithIgnoreCase,
-	// 	"StartsWithUpper":                     tk.StartsWithUpper,
-	// 	"StartsWithDigit":                     tk.StartsWithDigit,
-	// 	"Contains":                            tk.Contains,
-	// 	"ContainsIgnoreCase":                  tk.ContainsIgnoreCase,
-	// 	"EndsWith":                            tk.EndsWith,
-	// 	"EndsWithIgnoreCase":                  tk.EndsWithIgnoreCase,
-	// 	"Trim":                                tk.Trim,
-	// 	"TrimCharSet":                         tk.TrimCharSet,
-	// 	"InStrings":                           tk.InStrings,
-	// 	"GetSliceMaxLen":                      tk.GetSliceMaxLen,
-	// 	"FindFirstDiffIndex":                  tk.FindFirstDiffIndex,
-	// 	"FindSamePrefix":                      tk.FindSamePrefix,
-	// 	"IsErrorString":                       tk.IsErrorString,
-	// 	"GetErrorString":                      tk.GetErrorString,
-	// 	"GetErrorStringSafely":                tk.GetErrorStringSafely,
-	// 	"GenerateErrorString":                 tk.GenerateErrorString,
-	// 	"GenerateErrorStringF":                tk.GenerateErrorStringF,
-	// 	"ErrorStringToError":                  tk.ErrorStringToError,
-	// 	"Replace":                             tk.Replace,
-	// 	"StringReplace":                       tk.StringReplace,
-	// 	"SplitLines":                          tk.SplitLines,
-	// 	"SplitLinesRemoveEmpty":               tk.SplitLinesRemoveEmpty,
-	// 	"Split":                               tk.Split,
-	// 	"SplitN":                              tk.SplitN,
-	// 	"JoinLines":                           tk.JoinLines,
-	// 	"JoinLinesBySeparator":                tk.JoinLinesBySeparator,
-	// 	"EnsureValidFileNameX":                tk.EnsureValidFileNameX,
-	// 	"CreateString":                        tk.CreateString,
-	// 	"CreateStringSimple":                  tk.CreateStringSimple,
-	// 	"CreateStringWithObject":              tk.CreateStringWithObject,
-	// 	"CreateStringEmpty":                   tk.CreateStringEmpty,
-	// 	"CreateStringSuccess":                 tk.CreateStringSuccess,
-	// 	"CreateStringError":                   tk.CreateStringError,
-	// 	"CreateStringErrorF":                  tk.CreateStringErrorF,
-	// 	"CreateStringErrorFromTXError":        tk.CreateStringErrorFromTXError,
-	// 	"GenerateErrorStringTX":               tk.GenerateErrorStringTX,
-	// 	"GenerateErrorStringFTX":              tk.GenerateErrorStringFTX,
-	// 	"LoadStringTX":                        tk.LoadStringTX,
-	// 	"RegContains":                         tk.RegContains,
-	// 	"RegFindFirstTX":                      tk.RegFindFirstTX,
-	// 	"LoadDualLineListFromString":          tk.LoadDualLineListFromString,
-	// 	"RegReplace":                          tk.RegReplace,
-	// 	"RegFindAll":                          tk.RegFindAll,
-	// 	"RegFindFirst":                        tk.RegFindFirst,
-	// 	"RegMatch":                            tk.RegMatch,
-	// 	"Randomize":                           tk.Randomize,
-	// 	"GetRandomIntLessThan":                tk.GetRandomIntLessThan,
-	// 	"GetRandomInt64LessThan":              tk.GetRandomInt64LessThan,
-	// 	"GetRandomIntInRange":                 tk.GetRandomIntInRange,
-	// 	"GetRandomInt64InRange":               tk.GetRandomInt64InRange,
-	// 	"GenerateRandomString":                tk.GenerateRandomString,
-	// 	"NewRandomGenerator":                  tk.NewRandomGenerator,
-	// 	"ShuffleStringArray":                  tk.ShuffleStringArray,
-	// 	"GetRandomizeStringArrayCopy":         tk.GetRandomizeStringArrayCopy,
-	// 	"GetRandomizeIntArrayCopy":            tk.GetRandomizeIntArrayCopy,
-	// 	"GetRandomizeInt64ArrayCopy":          tk.GetRandomizeInt64ArrayCopy,
-	// 	"GetRandomSubDualList":                tk.GetRandomSubDualList,
-	// 	"JoinDualList":                        tk.JoinDualList,
-	// 	"GetNowDateString":                    tk.GetNowDateString,
-	// 	"GetNowTimeString":                    tk.GetNowTimeString,
-	// 	"GetNowTimeStringFormat":              tk.GetNowTimeStringFormat,
-	// 	"GetNowTimeStringFormal":              tk.GetNowTimeStringFormal,
-	// 	"GetNowTimeOnlyStringBeijing":         tk.GetNowTimeOnlyStringBeijing,
-	// 	"GetTimeFromUnixTimeStamp":            tk.GetTimeFromUnixTimeStamp,
-	// 	"GetTimeFromUnixTimeStampMid":         tk.GetTimeFromUnixTimeStampMid,
-	// 	"GetTimeStamp":                        tk.GetTimeStamp,
-	// 	"GetTimeStampMid":                     tk.GetTimeStampMid,
-	// 	"GetTimeStampNano":                    tk.GetTimeStampNano,
-	// 	"NowToFileName":                       tk.NowToFileName,
-	// 	"GetNowTimeStringHourMinute":          tk.GetNowTimeStringHourMinute,
-	// 	"GetNowMinutesInDay":                  tk.GetNowMinutesInDay,
-	// 	"NowToStrUTC":                         tk.NowToStrUTC,
-	// 	"GetTimeStringDiffMS":                 tk.GetTimeStringDiffMS,
-	// 	"StrToTime":                           tk.StrToTime,
-	// 	"StrToTimeByFormat":                   tk.StrToTimeByFormat,
-	// 	"FormatTime":                          tk.FormatTime,
-	// 	"IsYesterday":                         tk.IsYesterday,
-	// 	"DeleteItemInStringArray":             tk.DeleteItemInStringArray,
-	// 	"DeleteItemInIntArray":                tk.DeleteItemInIntArray,
-	// 	"DeleteItemInInt64Array":              tk.DeleteItemInInt64Array,
-	// 	"ContainsIn":                          tk.ContainsIn,
-	// 	"ContainsInStringList":                tk.ContainsInStringList,
-	// 	"IndexInStringList":                   tk.IndexInStringList,
-	// 	"IndexInStringListFromEnd":            tk.IndexInStringListFromEnd,
-	// 	"GetStringSliceFilled":                tk.GetStringSliceFilled,
-	// 	"Len64":                               tk.Len64,
-	// 	"Int64ArrayToFloat64Array":            tk.Int64ArrayToFloat64Array,
-	// 	"ByteSliceToStringDec":                tk.ByteSliceToStringDec,
-	// 	"GetValueOfMSS":                       tk.GetValueOfMSS,
-	// 	"Prf":                                 tk.Prf,
-	// 	"Prl":                                 tk.Prl,
-	// 	"Pln":                                 tk.Pln,
-	// 	"Printf":                              tk.Printf,
-	// 	"Printfln":                            tk.Printfln,
-	// 	"Spr":                                 tk.Spr,
-	// 	"Pr":                                  tk.Pr,
-	// 	"Pl":                                  tk.Pl,
-	// 	"PlVerbose":                           tk.PlVerbose,
-	// 	"Fpl":                                 tk.Fpl,
-	// 	"Fpr":                                 tk.Fpr,
-	// 	"PlvWithError":                        tk.PlvWithError,
-	// 	"PlAndExit":                           tk.PlAndExit,
-	// 	"PlErrSimple":                         tk.PlErrSimple,
-	// 	"PlErrSimpleAndExit":                  tk.PlErrSimpleAndExit,
-	// 	"PlErrAndExit":                        tk.PlErrAndExit,
-	// 	"PlTXErr":                             tk.PlTXErr,
-	// 	"PlSimpleErrorString":                 tk.PlSimpleErrorString,
-	// 	"PlErr":                               tk.PlErr,
-	// 	"PlErrWithPrefix":                     tk.PlErrWithPrefix,
-	// 	"Plv":                                 tk.Plv,
-	// 	"Plvs":                                tk.Plvs,
-	// 	"Plvsr":                               tk.Plvsr,
-	// 	"Errf":                                tk.Errf,
-	// 	"FatalErr":                            tk.FatalErr,
-	// 	"FatalErrf":                           tk.FatalErrf,
-	// 	"Fatalf":                              tk.Fatalf,
-	// 	"CheckErr":                            tk.CheckErr,
-	// 	"CheckErrf":                           tk.CheckErrf,
-	// 	"CheckErrCompact":                     tk.CheckErrCompact,
-	// 	"GetUserInput":                        tk.GetUserInput,
-	// 	"GetInputBufferedScan":                tk.GetInputBufferedScan,
-	// 	"SleepSeconds":                        tk.SleepSeconds,
-	// 	"SleepMilliSeconds":                   tk.SleepMilliSeconds,
-	// 	"GetRuntimeStack":                     tk.GetRuntimeStack,
-	// 	"GetOSName":                           tk.GetOSName,
-	// 	"GetCurrentDir":                       tk.GetCurrentDir,
-	// 	"GetApplicationPath":                  tk.GetApplicationPath,
-	// 	"EnsureMakeDirs":                      tk.EnsureMakeDirs,
-	// 	"EnsureMakeDirsE":                     tk.EnsureMakeDirsE,
-	// 	"AnalyzeCommandLineParamter":          tk.AnalyzeCommandLineParamter,
-	// 	"GetParameterByIndexWithDefaultValue": tk.GetParameterByIndexWithDefaultValue,
-	// 	"ParseCommandLine":                    tk.ParseCommandLine,
-	// 	"GetSwitchWithDefaultValue":           tk.GetSwitchWithDefaultValue,
-	// 	"GetSwitchWithDefaultIntValue":        tk.GetSwitchWithDefaultIntValue,
-	// 	"GetSwitchWithDefaultInt64Value":      tk.GetSwitchWithDefaultInt64Value,
-	// 	"IfSwitchExists":                      tk.IfSwitchExists,
-	// 	"IfSwitchExistsWhole":                 tk.IfSwitchExistsWhole,
-	// 	"StrToBool":                           tk.StrToBool,
-	// 	"ByteToHex":                           tk.ByteToHex,
-	// 	"IntToStr":                            tk.IntToStr,
-	// 	"Int64ToStr":                          tk.Int64ToStr,
-	// 	"StrToIntWithDefaultValue":            tk.StrToIntWithDefaultValue,
-	// 	"StrToInt":                            tk.StrToInt,
-	// 	"StrToInt64WithDefaultValue":          tk.StrToInt64WithDefaultValue,
-	// 	"StrToIntPositive":                    tk.StrToIntPositive,
-	// 	"StrToFloat64WithDefaultValue":        tk.StrToFloat64WithDefaultValue,
-	// 	"StrToFloat64":                        tk.StrToFloat64,
-	// 	"Float64ToStr":                        tk.Float64ToStr,
-	// 	"StrToTimeCompact":                    tk.StrToTimeCompact,
-	// 	"StrToTimeCompactNoError":             tk.StrToTimeCompactNoError,
-	// 	"FormatStringSliceSlice":              tk.FormatStringSliceSlice,
-	// 	"IntToKMGT":                           tk.IntToKMGT,
-	// 	"IntToWYZ":                            tk.IntToWYZ,
-	// 	"SetLogFile":                          tk.SetLogFile,
-	// 	"LogWithTime":                         tk.LogWithTime,
-	// 	"LogWithTimeCompact":                  tk.LogWithTimeCompact,
-	// 	"IfFileExists":                        tk.IfFileExists,
-	// 	"IsFile":                              tk.IsFile,
-	// 	"IsDirectory":                         tk.IsDirectory,
-	// 	"GetFilePathSeperator":                tk.GetFilePathSeperator,
-	// 	"GetLastComponentOfFilePath":          tk.GetLastComponentOfFilePath,
-	// 	"GetDirOfFilePath":                    tk.GetDirOfFilePath,
-	// 	"RemoveFileExt":                       tk.RemoveFileExt,
-	// 	"GetFileExt":                          tk.GetFileExt,
-	// 	"RemoveLastSubString":                 tk.RemoveLastSubString,
-	// 	"AddLastSubString":                    tk.AddLastSubString,
-	// 	"GenerateFileListInDir":               tk.GenerateFileListInDir,
-	// 	"GenerateFileListRecursively":         tk.GenerateFileListRecursively,
-	// 	"GenerateFileListRecursivelyWithExclusive": tk.GenerateFileListRecursivelyWithExclusive,
-	// 	"GetAvailableFileName":                     tk.GetAvailableFileName,
-	// 	"LoadStringFromFile":                       tk.LoadStringFromFile,
-	// 	"LoadStringFromFileWithDefault":            tk.LoadStringFromFileWithDefault,
-	// 	"LoadStringFromFileE":                      tk.LoadStringFromFileE,
-	// 	"LoadStringFromFileB":                      tk.LoadStringFromFileB,
-	// 	"LoadBytes":                                tk.LoadBytes,
-	// 	"LoadBytesFromFileE":                       tk.LoadBytesFromFileE,
-	// 	"SaveStringToFile":                         tk.SaveStringToFile,
-	// 	"SaveStringToFileE":                        tk.SaveStringToFileE,
-	// 	"AppendStringToFile":                       tk.AppendStringToFile,
-	// 	"LoadStringList":                           tk.LoadStringList,
-	// 	"LoadStringListFromFile":                   tk.LoadStringListFromFile,
-	// 	"LoadStringListBuffered":                   tk.LoadStringListBuffered,
-	// 	"SaveStringList":                           tk.SaveStringList,
-	// 	"SaveStringListWin":                        tk.SaveStringListWin,
-	// 	"SaveStringListBufferedByRange":            tk.SaveStringListBufferedByRange,
-	// 	"SaveStringListBuffered":                   tk.SaveStringListBuffered,
-	// 	"ReadLineFromBufioReader":                  tk.ReadLineFromBufioReader,
-	// 	"RestoreLineEnds":                          tk.RestoreLineEnds,
-	// 	"LoadDualLineList":                         tk.LoadDualLineList,
-	// 	"SaveDualLineList":                         tk.SaveDualLineList,
-	// 	"RemoveDuplicateInDualLineList":            tk.RemoveDuplicateInDualLineList,
-	// 	"AppendDualLineList":                       tk.AppendDualLineList,
-	// 	"LoadSimpleMapFromFile":                    tk.LoadSimpleMapFromFile,
-	// 	"LoadSimpleMapFromFileE":                   tk.LoadSimpleMapFromFileE,
-	// 	"SimpleMapToString":                        tk.SimpleMapToString,
-	// 	"LoadSimpleMapFromString":                  tk.LoadSimpleMapFromString,
-	// 	"LoadSimpleMapFromStringE":                 tk.LoadSimpleMapFromStringE,
-	// 	"ReplaceLineEnds":                          tk.ReplaceLineEnds,
-	// 	"SaveSimpleMapToFile":                      tk.SaveSimpleMapToFile,
-	// 	"AppendSimpleMapFromFile":                  tk.AppendSimpleMapFromFile,
-	// 	"LoadSimpleMapFromDir":                     tk.LoadSimpleMapFromDir,
-	// 	"EncodeToXMLString":                        tk.EncodeToXMLString,
-	// 	"ObjectToJSON":                             tk.ObjectToJSON,
-	// 	"ObjectToJSONIndent":                       tk.ObjectToJSONIndent,
-	// 	"JSONToMapStringString":                    tk.JSONToMapStringString,
-	// 	"JSONToObject":                             tk.JSONToObject,
-	// 	"SafelyGetStringForKeyWithDefault":         tk.SafelyGetStringForKeyWithDefault,
-	// 	"SafelyGetFloat64ForKeyWithDefault":        tk.SafelyGetFloat64ForKeyWithDefault,
-	// 	"SafelyGetIntForKeyWithDefault":            tk.SafelyGetIntForKeyWithDefault,
-	// 	"JSONToStringArray":                        tk.JSONToStringArray,
-	// 	"EncodeStringSimple":                       tk.EncodeStringSimple,
-	// 	"EncodeStringUnderline":                    tk.EncodeStringUnderline,
-	// 	"EncodeStringCustom":                       tk.EncodeStringCustom,
-	// 	"DecodeStringSimple":                       tk.DecodeStringSimple,
-	// 	"DecodeStringUnderline":                    tk.DecodeStringUnderline,
-	// 	"DecodeStringCustom":                       tk.DecodeStringCustom,
-	// 	"MD5Encrypt":                               tk.MD5Encrypt,
-	// 	"BytesToHex":                               tk.BytesToHex,
-	// 	"HexToBytes":                               tk.HexToBytes,
-	// 	"GetRandomByte":                            tk.GetRandomByte,
-	// 	"EncryptDataByTXDEE":                       tk.EncryptDataByTXDEE,
-	// 	"SumBytes":                                 tk.SumBytes,
-	// 	"EncryptDataByTXDEF":                       tk.EncryptDataByTXDEF,
-	// 	"EncryptStreamByTXDEF":                     tk.EncryptStreamByTXDEF,
-	// 	"DecryptStreamByTXDEF":                     tk.DecryptStreamByTXDEF,
-	// 	"DecryptDataByTXDEE":                       tk.DecryptDataByTXDEE,
-	// 	"DecryptDataByTXDEF":                       tk.DecryptDataByTXDEF,
-	// 	"EncryptStringByTXTE":                      tk.EncryptStringByTXTE,
-	// 	"DecryptStringByTXTE":                      tk.DecryptStringByTXTE,
-	// 	"EncryptStringByTXDEE":                     tk.EncryptStringByTXDEE,
-	// 	"DecryptStringByTXDEE":                     tk.DecryptStringByTXDEE,
-	// 	"EncryptStringByTXDEF":                     tk.EncryptStringByTXDEF,
-	// 	"DecryptStringByTXDEF":                     tk.DecryptStringByTXDEF,
-	// 	"EncryptFileByTXDEF":                       tk.EncryptFileByTXDEF,
-	// 	"EncryptFileByTXDEFStream":                 tk.EncryptFileByTXDEFStream,
-	// 	"DecryptFileByTXDEFStream":                 tk.DecryptFileByTXDEFStream,
-	// 	"ErrorToString":                            tk.ErrorToString,
-	// 	"EncryptFileByTXDEFS":                      tk.EncryptFileByTXDEFS,
-	// 	"EncryptFileByTXDEFStreamS":                tk.EncryptFileByTXDEFStreamS,
-	// 	"DecryptFileByTXDEF":                       tk.DecryptFileByTXDEF,
-	// 	"DecryptFileByTXDEFS":                      tk.DecryptFileByTXDEFS,
-	// 	"DecryptFileByTXDEFStreamS":                tk.DecryptFileByTXDEFStreamS,
-	// 	"Pkcs7Padding":                             tk.Pkcs7Padding,
-	// 	"AESEncrypt":                               tk.AESEncrypt,
-	// 	"AESDecrypt":                               tk.AESDecrypt,
-	// 	"AnalyzeURLParams":                         tk.AnalyzeURLParams,
-	// 	"UrlEncode":                                tk.UrlEncode,
-	// 	"UrlEncode2":                               tk.UrlEncode2,
-	// 	"UrlDecode":                                tk.UrlDecode,
-	// 	"JoinURL":                                  tk.JoinURL,
-	// 	"AddDebug":                                 tk.AddDebug,
-	// 	"AddDebugF":                                tk.AddDebugF,
-	// 	"ClearDebug":                               tk.ClearDebug,
-	// 	"GetDebug":                                 tk.GetDebug,
-	// 	"DownloadPageUTF8":                         tk.DownloadPageUTF8,
-	// 	"DownloadPage":                             tk.DownloadPage,
-	// 	"DownloadPageByMap":                        tk.DownloadPageByMap,
-	// 	"GetLastComponentOfUrl":                    tk.GetLastComponentOfUrl,
-	// 	"DownloadFile":                             tk.DownloadFile,
-	// 	"DownloadBytes":                            tk.DownloadBytes,
-	// 	"PostRequest":                              tk.PostRequest,
-	// 	"PostRequestX":                             tk.PostRequestX,
-	// 	"PostRequestBytesX":                        tk.PostRequestBytesX,
-	// 	"PostRequestBytesWithMSSHeaderX":           tk.PostRequestBytesWithMSSHeaderX,
-	// 	"PostRequestBytesWithCookieX":              tk.PostRequestBytesWithCookieX,
-	// 	"GetFormValueWithDefaultValue":             tk.GetFormValueWithDefaultValue,
-	// 	"GenerateJSONPResponse":                    tk.GenerateJSONPResponse,
-	// 	"GenerateJSONPResponseWithObject":          tk.GenerateJSONPResponseWithObject,
-	// 	"GenerateJSONPResponseWith2Object":         tk.GenerateJSONPResponseWith2Object,
-	// 	"GenerateJSONPResponseWith3Object":         tk.GenerateJSONPResponseWith3Object,
-	// 	"GetSuccessValue":                          tk.GetSuccessValue,
-	// 	"Float32ArrayToFloat64Array":               tk.Float32ArrayToFloat64Array,
-	// 	"CalCosineSimilarityBetweenFloatsBig":      tk.CalCosineSimilarityBetweenFloatsBig,
-	// 	"GetDBConnection":                          tk.GetDBConnection,
-	// 	"GetDBRowCount":                            tk.GetDBRowCount,
-	// 	"GetDBRowCountCompact":                     tk.GetDBRowCountCompact,
-	// 	"GetDBResultString":                        tk.GetDBResultString,
-	// 	"GetDBResultArray":                         tk.GetDBResultArray,
-	// 	"ConvertToGB18030":                         tk.ConvertToGB18030,
-	// 	"ConvertToGB18030Bytes":                    tk.ConvertToGB18030Bytes,
-	// 	"ConvertToUTF8":                            tk.ConvertToUTF8,
-	// 	"ConvertStringToUTF8":                      tk.ConvertStringToUTF8,
-	// 	"CreateSimpleEvent":                        tk.CreateSimpleEvent,
-	// 	"GetAllParameters":                         tk.GetAllParameters,
-	// 	"GetAllSwitches":                           tk.GetAllSwitches,
-	// 	"ToLower":                                  tk.ToLower,
-	// 	"ToUpper":                                  tk.ToUpper,
-	// 	"GetEnv":                                   tk.GetEnv,
-	// 	"JoinPath":                                 tk.JoinPath,
-	// 	"DeepClone":                                tk.DeepClone,
-	// 	"DeepCopyFromTo":                           tk.DeepCopyFromTo,
-	// 	"JSONToObjectE":                            tk.JSONToObjectE,
-	// 	"ToJSON":                                   tk.ToJSON,
-	// 	"ToJSONIndent":                             tk.ToJSONIndent,
-	// 	"FromJSON":                                 tk.FromJSON,
-	// 	"GetJSONNode":                              tk.GetJSONNode,
-	// 	"GetJSONNodeAny":                           tk.GetJSONNodeAny,
-	// 	"GetJSONSubNode":                           tk.GetJSONSubNode,
-	// 	"GetJSONSubNodeAny":                        tk.GetJSONSubNodeAny,
-	// 	"StartsWithBOM":                            tk.StartsWithBOM,
-	// 	"RemoveBOM":                                tk.RemoveBOM,
-	// 	"HexToInt":                                 tk.HexToInt,
-	// 	"GetCurrentThreadID":                       tk.GetCurrentThreadID,
-	// 	"Exit":                                     tk.Exit,
-	// 	"GetInputf":                                tk.GetInputf,
-	// 	"RunWinFileWithSystemDefault":              tk.RunWinFileWithSystemDefault,
-	// 	"TXString":                                 specq.StructOf((*tk.TXString)(nil)),
-	// }
 
 	qlang.Import("tk", qlgithubtopxeqtk.Exports)
 	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
@@ -1076,7 +669,7 @@ func runInteractiveQlang() int {
 func loadFont() {
 	fonts := giu.Context.IO().Fonts()
 
-	rangeVarT := getVar("FontRange")
+	rangeVarT := tk.GetVar("FontRange")
 
 	ranges := imgui.NewGlyphRanges()
 
@@ -1104,7 +697,7 @@ func loadFont() {
 		fontPath = "/Library/Fonts/Microsoft/SimHei.ttf"
 	}
 
-	fontVarT := getVar("Font") // "c:/Windows/Fonts/simsun.ttc"
+	fontVarT := tk.GetVar("Font") // "c:/Windows/Fonts/simsun.ttc"
 
 	if fontVarT != nil {
 		fontPath = fontVarT.(string)
@@ -1112,7 +705,7 @@ func loadFont() {
 
 	fontSizeStrT := "16"
 
-	fontSizeVarT := getVar("FontSize")
+	fontSizeVarT := tk.GetVar("FontSize")
 
 	if fontSizeVarT != nil {
 		fontSizeStrT = fontSizeVarT.(string)
@@ -1252,6 +845,7 @@ func NewTKeyEvent(funcA *execq.Function) *vcl.TKeyEvent {
 	}
 
 	return &f
+	// return nil
 }
 
 // full version related start
@@ -1730,25 +1324,25 @@ func editorLoop() {
 			g.Button("Save As...", editorSaveAs),
 			g.Button("Check", func() {
 
-				sourceT := editorG.GetText()
+				// sourceT := editorG.GetText()
 
-				parser.EnableErrorVerbose()
-				_, errT := parser.ParseSrc(sourceT)
-				// tk.Plv(stmts)
+				// parser.EnableErrorVerbose()
+				// _, errT := parser.ParseSrc(sourceT)
+				// // tk.Plv(stmts)
 
-				e, ok := errT.(*parser.Error)
+				// e, ok := errT.(*parser.Error)
 
-				if ok {
-					errMarkersG.Clear()
-					errMarkersG.Insert(e.Pos.Line, tk.Spr("[col: %v, size: %v] %v", e.Pos.Column, errMarkersG.Size(), e.Error()))
+				// if ok {
+				// 	errMarkersG.Clear()
+				// 	errMarkersG.Insert(e.Pos.Line, tk.Spr("[col: %v, size: %v] %v", e.Pos.Column, errMarkersG.Size(), e.Error()))
 
-					editorG.SetErrorMarkers(errMarkersG)
+				// 	editorG.SetErrorMarkers(errMarkersG)
 
-				} else if errT != nil {
-					g.Msgbox("Error", tk.Spr("%#v", errT))
-				} else {
-					g.Msgbox("Info", "Syntax check passed.")
-				}
+				// } else if errT != nil {
+				// 	g.Msgbox("Error", tk.Spr("%#v", errT))
+				// } else {
+				// 	g.Msgbox("Info", "Syntax check passed.")
+				// }
 
 			}),
 			g.Button("Encrypt", editEncryptClick),
@@ -1858,8 +1452,8 @@ func editFile(fileNameA string) {
 	editorG.SetLanguageDefinitionC()
 
 	// setVar("Font", "c:/Windows/Fonts/simsun.ttc")
-	setVar("FontRange", "COMMON")
-	setVar("FontSize", "15")
+	tk.SetVar("FontRange", "COMMON")
+	tk.SetVar("FontSize", "15")
 
 	wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
 	// tk.Pl("%T", wnd)
@@ -1934,6 +1528,76 @@ func initQLVM() {
 	}
 }
 
+func downloadStringFromSSH(sshA string, filePathA string) string {
+	aryT := tk.Split(sshA, ":")
+
+	basePathT, errT := tk.EnsureBasePath("gox")
+
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed to find base path: %v", errT)
+	}
+
+	if len(aryT) != 5 {
+		aryT = tk.Split(tk.LoadStringFromFile(tk.JoinPath(basePathT, "ssh.cfg"))+filePathA, ":")
+
+		if len(aryT) != 5 {
+			return tk.ErrStrF("invalid ssh config: %v", "")
+		}
+
+	}
+
+	clientT, errT := tk.NewSSHClient(aryT[0], tk.StrToIntWithDefaultValue(aryT[1], 22), aryT[2], aryT[3])
+
+	if errT != nil {
+		return tk.ErrToStrF("failed to create SSH client:", errT)
+	}
+
+	tmpPathT := tk.JoinPath(basePathT, "tmp")
+
+	errT = tk.EnsureMakeDirsE(tmpPathT)
+
+	if errT != nil {
+		return tk.ErrToStrF("failed to create tmp dir:", errT)
+	}
+
+	tmpFileT, errT := tk.CreateTempFile(tmpPathT, "")
+
+	if errT != nil {
+		return tk.ErrToStrF("failed to create tmp dir:", errT)
+	}
+
+	defer os.Remove(tmpFileT)
+
+	errT = clientT.Download(aryT[4], tmpFileT)
+
+	if errT != nil {
+		return tk.ErrToStrF("failed to download file:", errT)
+	}
+
+	fcT := tk.LoadStringFromFile(tmpFileT)
+
+	return fcT
+}
+
+func getCfgString(fileNameA string) string {
+	basePathT, errT := tk.EnsureBasePath("gox")
+
+	if errT == nil {
+		cfgPathT := tk.JoinPath(basePathT, fileNameA)
+
+		cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
+
+		if !tk.IsErrorString(cfgStrT) {
+			return cfgStrT
+		}
+
+		return tk.ErrStrF("failed to get config string: %v", tk.GetErrorString(cfgStrT))
+
+	}
+
+	return tk.ErrStrF("failed to get config string")
+}
+
 func main() {
 	// var errT error
 	defer func() {
@@ -1959,19 +1623,13 @@ func main() {
 		return
 	}
 
-	scriptsT := tk.GetAllParameters(argsT)[1:]
-
-	lenT := len(scriptsT)
+	scriptT := tk.GetParameterByIndexWithDefaultValue(argsT, 1, "")
 
 	// GUI related start
 
 	// full version related start
 	if tk.IfSwitchExistsWhole(argsT, "-edit") {
-		if lenT < 1 {
-			editFile("")
-		} else {
-			editFile(scriptsT[0])
-		}
+		editFile(scriptT)
 
 		return
 	}
@@ -1979,12 +1637,12 @@ func main() {
 
 	// GUI related end
 
-	if lenT < 1 {
+	if scriptT == "" {
 
 		autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
 
 		if tk.IfFileExists(autoPathT) {
-			scriptsT = []string{autoPathT}
+			scriptT = autoPathT
 		} else {
 			initQLVM()
 
@@ -2000,27 +1658,25 @@ func main() {
 	encryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-encrypt=", "")
 
 	if encryptCodeT != "" {
-		for i, v := range scriptsT {
-			fcT := tk.LoadStringFromFile(v)
+		fcT := tk.LoadStringFromFile(scriptT)
 
-			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load file [%v] %v: %v", i, v, tk.GetErrorString(fcT))
-				continue
-			}
+		if tk.IsErrorString(fcT) {
+			tk.Pl("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
+			return
+		}
 
-			encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
+		encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
 
-			if tk.IsErrorString(encStrT) {
-				tk.Pl("failed to encrypt content [%v] %v: %v", i, v, tk.GetErrorString(encStrT))
-				continue
-			}
+		if tk.IsErrorString(encStrT) {
+			tk.Pl("failed to encrypt content [%v]: %v", scriptT, tk.GetErrorString(encStrT))
+			return
+		}
 
-			rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, v+"e")
+		rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, scriptT+"e")
 
-			if tk.IsErrorString(rsT) {
-				tk.Pl("failed to encrypt file [%v] %v: %v", i, v, tk.GetErrorString(rsT))
-				continue
-			}
+		if tk.IsErrorString(rsT) {
+			tk.Pl("failed to encrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
+			return
 		}
 
 		return
@@ -2029,27 +1685,25 @@ func main() {
 	decryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrypt=", "")
 
 	if decryptCodeT != "" {
-		for i, v := range scriptsT {
-			fcT := tk.LoadStringFromFile(v)
+		fcT := tk.LoadStringFromFile(scriptT)
 
-			if tk.IsErrorString(fcT) {
-				tk.Pl("failed to load file [%v] %v: %v", i, v, tk.GetErrorString(fcT))
-				continue
-			}
+		if tk.IsErrorString(fcT) {
+			tk.Pl("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
+			return
+		}
 
-			decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
+		decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
 
-			if tk.IsErrorString(decStrT) {
-				tk.Pl("failed to decrypt content [%v] %v: %v", i, v, tk.GetErrorString(decStrT))
-				continue
-			}
+		if tk.IsErrorString(decStrT) {
+			tk.Pl("failed to decrypt content [%v]: %v", scriptT, tk.GetErrorString(decStrT))
+			return
+		}
 
-			rsT := tk.SaveStringToFile(decStrT, v+"d")
+		rsT := tk.SaveStringToFile(decStrT, scriptT+"d")
 
-			if tk.IsErrorString(rsT) {
-				tk.Pl("failed to decrypt file [%v] %v: %v", i, v, tk.GetErrorString(rsT))
-				continue
-			}
+		if tk.IsErrorString(rsT) {
+			tk.Pl("failed to decrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
+			return
 		}
 
 		return
@@ -2057,118 +1711,147 @@ func main() {
 
 	decryptRunCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrun=", "")
 
-	if !tk.IfSwitchExistsWhole(argsT, "-m") {
-		scriptsT = scriptsT[0:1]
-	}
-
-	// if verboseG {
-	// 	tk.Pl("currenttid: %v", tk.GetCurrentThreadID())
-	// }
-
 	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
 	ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
+	ifLocalT := tk.IfSwitchExistsWhole(argsT, "-local")
 	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
 	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
+	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
-	for _, scriptT := range scriptsT {
-		var fcT string
+	var fcT string
 
-		if ifExampleT {
-			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-				scriptT += ".gox"
-			}
-			fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
-		} else if ifRemoteT {
-			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-		} else if ifCloudT {
-			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-				scriptT += ".gox"
-			}
-			fcT = tk.DownloadPageUTF8("http://scripts.frenchfriend.net/xaf/scripts/"+scriptT, nil, "", 30)
-		} else if ifGoPathT {
-			if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-				scriptT += ".gox"
-			}
-
-			fcT = tk.LoadStringFromFile(filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT))
-		} else {
-			fcT = tk.LoadStringFromFile(scriptT)
+	if ifExampleT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
 		}
+		fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
+	} else if ifRemoteT {
+		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+	} else if ifCloudT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		basePathT, errT := tk.EnsureBasePath("gox")
+
+		gotT := false
+
+		if errT == nil {
+			cfgPathT := tk.JoinPath(basePathT, "cloud.cfg")
+
+			cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
+
+			if !tk.IsErrorString(cfgStrT) {
+				fcT = tk.DownloadPageUTF8(cfgStrT+scriptT, nil, "", 30)
+
+				gotT = true
+			}
+
+		}
+
+		if !gotT {
+			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+		}
+	} else if sshT != "" {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		fcT = downloadStringFromSSH(sshT, scriptT)
 
 		if tk.IsErrorString(fcT) {
-			tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+			tk.Pl("failed to get script from SSH: %v", tk.GetErrorString(fcT))
+			return
 
-			continue
+		}
+	} else if ifGoPathT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
 		}
 
-		if tk.StartsWith(fcT, "//TXDEF#") {
-			if decryptRunCodeT == "" {
-				tk.Prf("Password: ")
-				decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
-
-				// fcT = fcT[8:]
-			}
+		fcT = tk.LoadStringFromFile(filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT))
+	} else if ifLocalT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
 		}
 
-		if decryptRunCodeT != "" {
-			fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-		}
+		localPathT := getCfgString("localScriptPath.cfg")
 
-		if ifViewT {
-			tk.Pl("%v", fcT)
+		if tk.IsErrorString(localPathT) {
+			tk.Pl("failed to get local path: %v", tk.GetErrorString(localPathT))
 
 			return
 		}
 
-		initQLVM()
-
-		script := fcT
-
-		errT := qlVMG.SafeEval(script)
-		if errT != nil {
-
-			tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
-
-			// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
-			// tk.Pl("Next line: %v, %v", f, l)
-
-			continue
-		}
-
-		rs, ok := qlVMG.GetVar("outG")
-
-		if ok {
-			tk.Pl("%#v", rs)
-		}
-
+		fcT = tk.LoadStringFromFile(filepath.Join(localPathT, scriptT))
+	} else {
+		fcT = tk.LoadStringFromFile(scriptT)
 	}
+
+	if tk.IsErrorString(fcT) {
+		tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+
+		return
+	}
+
+	if tk.StartsWith(fcT, "//TXDEF#") {
+		if decryptRunCodeT == "" {
+			tk.Prf("Password: ")
+			decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+			// fcT = fcT[8:]
+		}
+	}
+
+	if decryptRunCodeT != "" {
+		fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+	}
+
+	if ifViewT {
+		tk.Pl("%v", fcT)
+
+		return
+	}
+
+	initQLVM()
+
+	script := fcT
+
+	errT := qlVMG.SafeEval(script)
+	if errT != nil {
+
+		tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
+
+		// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
+		// tk.Pl("Next line: %v, %v", f, l)
+
+		return
+	}
+
+	rs, ok := qlVMG.GetVar("outG")
+
+	if ok {
+		tk.Pl("%#v", rs)
+	}
+
 }
 
 func test() {
-	// return
+	// var v *vcl.TKeyEvent
 
-	// p, _ := plot.New()
+	// tk.Pl("%#v, %T", v, v)
 
-	// p.Title.Text = "a"
-
-	// tk.Pl("p: %#v", p)
-
-	// typeT := reflect.TypeOf(p)
-
-	// m := 1
-	// kind := 2
-	// name := "aa"
-
-	// fmt.Printf("1m: %#v, obj: %#v, kind: %v, %v, Name: %v\n", m, typeT, kind, m, name)
-	// lenT := typeT.NumMethod()
-
-	// fmt.Printf("typeT: %#v, methodNum: %#v\n", typeT, lenT)
-	// for i := 0; i < lenT; i++ {
-	// 	fmt.Printf("m %v: %#v, method: %#v\n", i, typeT.Method(i), typeT.Method(i).Name)
-
+	// f := func(sender vcl.IObject, key *types.Char, shift types.TShiftState) {
+	// 	// funcA.Call(execq.NewStack(), sender, key, shift)
 	// }
+
+	// v = &f
+
+	// tk.Pl("%#v, %T", v, v)
+
+	// return &f
 
 }
