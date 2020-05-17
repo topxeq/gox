@@ -6,11 +6,11 @@ _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/
 
 **Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept.**
 
-Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), [Anko](https://github.com/mattn/anko) [Goja](https://github.com/dop251/goja) and [Tengo](https://github.com/d5/tengo), with some improvement. As a script runner(or interpreter), Gox supports various script languages such as txScript, Javascript, Qlang, Anko and Tengo. The syntax of Gox language is very similar to Golang.
+Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), with some improvement. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
-And thanks to [Giu](https://github.com/AllenDang/giu), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code. Note: this GUI library requires OPENGL.
+And thanks to [Giu](https://github.com/AllenDang/giu), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code. Note: this GUI library requires OPENGL/GLFW.
 
 And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. Since this library doesn't require OPENGL, it's more compatible in some server-side operating systems. It only requires a single library file(dll in Windows or so in Linux and dylib in Mac OS).
 
@@ -26,8 +26,6 @@ Since the more features added makes the Gox executable became very large, the Ti
 
 Goxg version is used to run GUI only programs, it will not open a CMD console.
 
-From version 0.97a, Qlang became the default script-engine for Gox, and is prefered to use.
-
 ## 2.usage
 
 ### Check the version.
@@ -42,34 +40,6 @@ From version 0.97a, Qlang became the default script-engine for Gox, and is prefe
 
 > gox test.gox
 
-or
-
-> gox test.js
-
-Currently Only ECMAScript 5.1(+) is supported for Javascript.
-
-### Run several script files in consequence, use "-m" switch to enable multi-scripts mode.
-
-> gox -m test.gox script1.js start.ank last.txs
-
-the result should be like below,
-
-```
-> gox -m basic.gox test.js a.tg
-3.4000000000000004
-this is 5 + 12.5 = 17.5
-5 12.5 17.5
-19 33 627
-The random number is：1
-```
-
-Attention: in multi-scripts mode, all the command-line parameters will be recognizd as script file names, so inside each script, it can only retrieve its command-line arguments through switches. For example:
-
-```
-gox -m basic.gox test.js -para=abcd
-```
-
-And all the switches in Gox should be like "-type=code", not "-type code". The globle variables across VMs could be shared to other scripts in this mode.
 
 ### Start the interpreter in REPL mode.
 
@@ -176,8 +146,6 @@ An example for command-line handling is as below([source code](https://gitee.com
 // test command-line functions
 // for example: gox scripts\commandLine.ank abc -file=a.txt
 
-os = import("os")
-
 println("The whole command-line: ", os.Args)
 println("The whole command-line without executable: ", argsG)
 
@@ -190,8 +158,6 @@ if lenT > 0 {
 if lenT > 1 {
     printfln("The sencod command-line element is: %v", argsG[1])
 }
-
-var tk = import("tk")
 
 para1 = tk.GetParameterByIndexWithDefaultValue(argsG, 1, "")
 pfl("para1=%v", para1)
@@ -234,14 +200,10 @@ true
 
 ### Import packages
 
-In Gox with Anko engine, the packages can be imported any time, but remember to assign it to a variable, such as,
+In Gox with Qlang engine, most of the standard Golang packages are supported and will be imported by default, just use them directly.
 
 ```
-var fmt = import("fmt")
-
 fmt.Println("abc")
-
-os = import("os")
 
 fmt.Printf("%v\n", os.Args)
 
@@ -251,73 +213,8 @@ Along with most of the core Golang libraries, the "tk" package([here](https://gi
 
 Refer to the documents of these Golang packages for the detailed usage.
 
-### Data type conversion
-
-If using Anko engine, some "to" functions could be used as below,
-
-```
-a = 1
-b = 2
-
-println("type of a is:", typeof(a))
-
-println("a + b =", a+b)
-printfln("a + b = %#v", a+b)
-
-a1 = toString(a)
-b1 = toString(b)
-
-printfln("type of a1 is: %T", a1)
-printfln("value of a1 is: %v", a1)
-printfln("internal value of a1 is: %#v", a1)
-
-println("a1 + b1 =", a1+b1)
-printfln("a1 + b1 = %#v", a1+b1)
-
-a2 = toFloat(a1)
-b2 = toFloat(b1)
-
-printfln("a2 + b2 = %#v", a2+b2)
-printfln("type of a2 + b2 is: %T", a2+b2)
-
-```
-
-the running result is,
-
-```
-λ gox scripts\dataTypeConversion.ank
-type of a is: int64
-a + b = 3
-a + b = 3
-type of a1 is: string
-value of a1 is: 1
-internal value of a1 is: "1"
-a1 + b1 = 12
-a1 + b1 = "12"
-a2 + b2 = 3
-type of a2 + b2 is: float64
-```
-
-These "to" function include:
-
-> toString/toStringSlice, toStringFromRuneSlice, toBool(and tryToBool which returns the result like (bool, error))/toBoolSlice, toFloat64/tryToFloat64/toFloat/toFloatSlice, toInt64/tryToInt64, toInt/toExactInt/tryToInt/toIntSlice, toRune/toRuneSlice, toByteSlice, toChar, toDuration
 
 ## 4. More Topics and Sample Scripts
-
-### Sample Javascript file:
-
-```
-var a = 5 + 12.5;
-
-goPrintf("this is %v + %v = %v\n", 5, 12.5, a);
-
-console.log(5, 12.5, a);
-
-goPrintln(19, 33, 19 * 33);
-
-goPrintfln("The random number：%v", goGetRandomInt(20));
-
-```
 
 ### Basic Gox script:
 
@@ -333,37 +230,50 @@ println(x+y)
 
 ### Basic script with GUI
 
-A simple calculator with GUI(OPENGL is required) in Anko engine.
+A simple calculator with GUI(OPENGL is required).
 
 ```
-var gui = import("gui")
+text1 = new(string)
 
-text1 = ""
+onButton1Click = func() {
+	// evaluate the expression in the text input
+	rs = eval(*text1)
 
+	println(rs)
 
-func onButton1Click() {
-	rs = eval(text1)
-	text1 = toString(rs)
+	// set the result back into the text input
+	setValue(text1, rs)
 }
 
-func onButton2Click() {
-	exit()
+// close the window, also terminate the application
+onButton2Click = func() {
+	os.Exit(1)
 }
 
-func loop() {
+// main window loop
+loop = func() {
 
-	layoutT = []gui.Widget{
-		gui.Label("Enter an expression."), 
-		gui.InputText("", 0, &text1), 
-		gui.Line(gui.Button("Calculate", onButton1Click), gui.Button("Close", onButton2Click)),
+	// set the layout of GUI
+	layoutT := []gui.Widget{
+		gui.Label("Enter an expression."),
+		gui.InputText("", 0, text1),
+
+		// widgets in line layout is aligned left to right
+		gui.Line(gui.Button("Calculate", onButton1Click),
+			gui.Button("Close", onButton2Click)),
 	}
 
 	gui.SingleWindow("Calculator", layoutT)
 }
 
-mainWindow = gui.NewMasterWindow("Calculator", 400, 200, gui.MasterWindowFlagsNotResizable, nil)
+// text1 used to hold the string value of the text input
+// notice: text1 is a pointer
+// setup the title, size (width and height, 400*200), style and font-loading function of main window,
+mainWindow := gui.NewMasterWindow("Calculator", 400, 200, gui.MasterWindowFlagsNotResizable, nil)
 
-mainWindow.Main(loop)
+// show the window and start the message loop
+gui.LoopWindow(mainWindow, loop)
+
 ```
 
 The screen shot while running the script is like,
@@ -372,17 +282,14 @@ The screen shot while running the script is like,
 
 ### Basic script with GUI by LCL library
 
-The script below(use Anko engine) acts almost the same as the script above, but written with LCL library support, and OPENGL is not required, so it's more compatible in the server-side environment.
+The script below acts almost the same as the script above, but written with LCL library support, and OPENGL is not required, so it's more compatible in the server-side environment.
 
 ```
-lcl = import("lcl")
-os = import("os")
-
 errT = lcl.InitLCL()
 
 if errT != nil {
-	plerr(errT)
-	exit()
+	tk.Plerr(errT)
+	return
 }
 
 application = lcl.GetApplication()
@@ -401,9 +308,11 @@ mainForm.SetPosition(lcl.PoScreenCenter)
 
 mainForm.Font().SetSize(11)
 
-mainForm.SetOnDestroy(&func(sender) {
+onFromDestory = fn(sender) {
 	println("Form Destroyed.")
-})
+}
+
+mainForm.SetOnDestroy(lcl.NewTNotifyEvent(onFromDestory))
 
 label1 = lcl.NewLabel(mainForm)
 label1.SetParent(mainForm)
@@ -414,35 +323,44 @@ label1.Font().SetSize(18)
 
 label1.SetCaption("Enter an expression")
 
+onEdit1KeyUp = fn(sender, key, shift) {
+	println("onEdit1KeyUp:", sender, *key, shift)
+}
+
 edit1 = lcl.NewEdit(mainForm)
 edit1.SetParent(mainForm)
 edit1.SetBounds(10, 48, 200, 32)
 edit1.Font().SetSize(11)
+edit1.SetOnKeyUp(lcl.NewTKeyEvent(onEdit1KeyUp))
 
-onClick1 = func (objA) {
-	rs = eval(edit1.Text())
-	edit1.SetText(toString(rs))
+onClick1 = fn(objA) {
+	rs = edit1.Text()
+	edit1.SetText(eval(rs))
 }
 
-onClick2 = func(sender) {
-	application.Terminate()
-}
+f1 = lcl.NewTNotifyEvent(onClick1)
 
 button1 = lcl.NewButton(mainForm)
 button1.SetParent(mainForm)
 button1.SetLeft(20)
 button1.SetTop(90)
 button1.SetCaption("Go")
-button1.SetOnClick(&onClick1)
+button1.SetOnClick(f1)
+
+onClick2 = fn(sender) {
+	application.Terminate()
+}
 
 button2 = lcl.NewButton(mainForm)
 button2.SetParent(mainForm)
 button2.SetLeft(110)
 button2.SetTop(90)
 button2.SetCaption("Close")
-button2.SetOnClick(&onClick2)
+button2.SetOnClick(lcl.NewTNotifyEvent(onClick2))
+
 
 application.Run()
+
 
 
 ```
@@ -477,9 +395,9 @@ It's very similar for function parameters and return values.
 
 ## 7. Library Reference
 
-First, since Gox is based on Qlang/Anko and written by Golang, most of the core libraries of Golang will be available. So try to import the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Qlang's, Anko's, Goja's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and Giu's documents.
+First, since Gox is based on Qlang and written by Golang, most of the core libraries of Golang will be available. So try to use the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Qlang's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and Giu's documents.
 
-The default Golang packages available(could imported in Gox code while using Anko engine) include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
+Most of the standard Golang packages are available include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
 
 Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk) or [here](https://pkg.go.dev/github.com/topxeq/tk).
 
@@ -825,16 +743,6 @@ modeA == "2" || modeA == "current"
 run Anko script in a current VM
 
 ```
-modeA == "3" || modeA == "js"
-```
-
-run JavaScript
-
-```
-modeA == "5" || modeA == "tg"
-```
-
-run Tengo script
 
 ---
 
@@ -941,30 +849,17 @@ the same as edit function, or command-line switch "-edit"
 
 - Feel free to modify the source code to make a custom version of Gox. You can remove some packages not necessary for you, or add some Golang or third-party packages into it.
 
-- The script [here](https://github.com/topxeq/gox/blob/master/scripts/generateImport.gox) is used for developers to add imported libraries to Gox.
+- The command [here](https://github.com/topxeq/qlang/cmd/qexport) is used for developers to add imported libraries to Gox.
 
 The usage is as below:
 
 ``` 
-gox generateImport.gox -file=c:\goprjs\src\package1\package1.go -package=package1 > a.txt
-```
-
-and you will got something like:
-
-```
-		"StartsWith":                          reflect.ValueOf(tk.StartsWith),
-		"StartsWithIgnoreCase":                reflect.ValueOf(tk.StartsWithIgnoreCase),
+qexport github.com/topxeq/sqltk
 
 ```
 
-then add it to the Gox source file in the code block to import variables/functions from the package,
+and add them to the qlang/lib directory(look at the files inside for reference):
 
-```
-	env.Packages["package1"] = map[string]reflect.Value{
-		"StartsWith":                  reflect.ValueOf(package1.StartsWith),
-		"StartsWithIgnoreCase":                  reflect.ValueOf(package1.StartsWithIgnoreCase),
-    }
-```
 
 - The script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxc.gox) is used to generate command-line version and the script [here](https://github.com/topxeq/gox/blob/master/scripts/generategoxt.gox) is used to generate Gox tiny version.
 
