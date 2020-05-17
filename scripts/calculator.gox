@@ -1,6 +1,4 @@
-printf("Please enter the expression: ")
-
-expression = getInput()
+expression = getInput("Please enter the expression: ")
 
 result = eval(expression)
 

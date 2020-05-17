@@ -18,6 +18,7 @@ import (
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
+
 	// GUI related start
 	"runtime"
 
@@ -76,6 +77,7 @@ import (
 	// GUI related start
 	"github.com/topxeq/imagetk"
 	"gonum.org/v1/plot/plotutil"
+
 	// GUI related end
 
 	"gonum.org/v1/plot"
@@ -158,13 +160,25 @@ func exit() {
 func qlEval(strA string) string {
 	vmT := qlang.New()
 
-	errT := vmT.SafeEval(`TXResultG=` + strA)
+	retG = notFoundG
+
+	errT := vmT.SafeEval(strA)
 
 	if errT != nil {
 		return errT.Error()
 	}
 
-	return tk.Spr("%v", vmT.Var("TXResultG"))
+	if retG != notFoundG {
+		return tk.Spr("%v", retG)
+	}
+
+	rs, ok := vmT.GetVar("outG")
+
+	if !ok {
+		return ""
+	}
+
+	return tk.Spr("%v", rs)
 }
 
 // func getClipText() string {
@@ -1818,9 +1832,7 @@ func main() {
 
 	initQLVM()
 
-	script := fcT
-
-	errT := qlVMG.SafeEval(script)
+	errT := qlVMG.SafeEval(fcT)
 	if errT != nil {
 
 		tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)

@@ -1,22 +1,23 @@
 argsG = os.Args
 
-lenT = len(argsG)
-
 editFileNameG = ""
 editFileCleanFlagG = ""
 editSecureCodeG = new(string)
 
 fcT = ""
 
+aryT = tk.GetAllParameters(argsG)
+lenT = len(aryT)
+
 if lenT < 3 {
 	editFileNameG = ""
 	editFileCleanFlagG = "*"
 } else {
-	editFileNameG = argsG[2]
+	editFileNameG = aryT[2]
 	fcT = tk.LoadStringFromFile(editFileNameG)
 
 	if tk.IsErrorString(fcT) {
-		gui.SimpleError("错误提示", "载入文件时发生错误：%v", tk.GetErrorString(fcT))
+		gui.SimpleError("错误提示", tk.Spr("载入文件时发生错误：%v", tk.GetErrorString(fcT)))
 		return
 	}
 
