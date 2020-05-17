@@ -118,7 +118,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.987a"
+var versionG = "0.988a"
 
 var verboseG = false
 
@@ -734,6 +734,14 @@ func loadFont() {
 // full version related end
 
 func initLCLLib() (result error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			// fmt.Printf("initLCLLib: %v\n", r)
+
+			result = tk.Errf("initLCLLib: %v\n", r)
+		}
+	}()
 
 	api.DoLibInit()
 
