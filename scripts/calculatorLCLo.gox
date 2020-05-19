@@ -1,0 +1,78 @@
+errT = lcl.InitLCL()
+
+if errT != nil {
+	tk.Plerr(errT)
+	return
+}
+
+// vcl = github_topxeq_govcl_vcl
+
+application = lcl.GetApplication()
+
+application.Initialize()
+
+application.SetTitle("Calculator with LCL")
+application.SetMainFormOnTaskBar(true)
+
+mainForm = application.CreateForm()
+
+mainForm.SetWidth(400)
+mainForm.SetHeight(200)
+mainForm.SetCaption("Calculator with LCL")
+mainForm.SetPosition(lcl.PoScreenCenter)
+
+mainForm.Font().SetSize(11)
+
+onFromDestory = fn(sender) {
+	println("Form Destroyed.")
+}
+
+mainForm.SetOnDestroy(lcl.NewTNotifyEvent(onFromDestory))
+
+label1 = vcl.NewLabel(mainForm)
+label1.SetParent(mainForm)
+label1.SetLeft(10)
+label1.SetTop(10)
+label1.Font().SetName("Arial")
+label1.Font().SetSize(18)
+
+label1.SetCaption("Enter an expression")
+
+onEdit1KeyUp = fn(sender, key, shift) {
+	println("onEdit1KeyUp:", sender, *key, shift)
+}
+
+edit1 = vcl.NewEdit(mainForm)
+edit1.SetParent(mainForm)
+edit1.SetBounds(10, 48, 200, 32)
+edit1.Font().SetSize(11)
+edit1.SetOnKeyUp(lcl.NewTKeyEvent(onEdit1KeyUp))
+
+onClick1 = fn(objA) {
+	rs = edit1.Text()
+	edit1.SetText(eval(rs))
+}
+
+f1 = lcl.NewTNotifyEvent(onClick1)
+
+button1 = vcl.NewButton(mainForm)
+button1.SetParent(mainForm)
+button1.SetLeft(20)
+button1.SetTop(90)
+button1.SetCaption("Go")
+button1.SetOnClick(f1)
+
+onClick2 = fn(sender) {
+	application.Terminate()
+}
+
+button2 = vcl.NewButton(mainForm)
+button2.SetParent(mainForm)
+button2.SetLeft(110)
+button2.SetTop(90)
+button2.SetCaption("Close")
+button2.SetOnClick(lcl.NewTNotifyEvent(onClick2))
+
+
+application.Run()
+

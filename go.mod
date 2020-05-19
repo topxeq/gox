@@ -11,7 +11,7 @@ require (
 	github.com/sqweek/dialog v0.0.0-20200304031853-0dcd55bfe06a
 	github.com/topxeq/govcl v0.0.0-20200518005931-906e71e9cf1c
 	github.com/topxeq/imagetk v0.0.0-20200429123347-cfc2b754475d
-	github.com/topxeq/qlang v0.0.0-20200518012757-9d6e9982041a
+	github.com/topxeq/qlang v0.0.0-20200519085047-fe910b83876f
 	github.com/topxeq/tk v0.0.0-20200516133943-970c9980506b
 	gonum.org/v1/plot v0.7.0
 )

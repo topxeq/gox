@@ -116,6 +116,14 @@ import (
 	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
 	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tk"
 
+	qlgithub_topxeq_govcl_vcl "github.com/topxeq/qlang/lib/github.com/topxeq/govcl/vcl"
+	qlgithub_topxeq_govcl_vcl_api "github.com/topxeq/qlang/lib/github.com/topxeq/govcl/vcl/api"
+	qlgithub_topxeq_govcl_vcl_rtl "github.com/topxeq/qlang/lib/github.com/topxeq/govcl/vcl/rtl"
+	qlgithub_topxeq_govcl_vcl_types "github.com/topxeq/qlang/lib/github.com/topxeq/govcl/vcl/types"
+
+	qlgithub_AllenDang_giu "github.com/topxeq/qlang/lib/github.com/AllenDang/giu"
+	qlgithub_AllenDang_giu_imgui "github.com/topxeq/qlang/lib/github.com/AllenDang/giu/imgui"
+
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/godror/godror"
@@ -155,7 +163,6 @@ import (
 	// GUI related start
 	// full version related start
 	"github.com/AllenDang/giu"
-	g "github.com/AllenDang/giu"
 	"github.com/AllenDang/giu/imgui"
 
 	// full version related end
@@ -169,7 +176,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.989a"
+var versionG = "0.990a"
 
 var verboseG = false
 
@@ -684,11 +691,27 @@ func importQLNonGUIPackages() {
 
 	// 3rd party
 
-	qlang.Import("tk", qlgithubtopxeqtk.Exports)
 	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
+	qlang.Import("tk", qlgithubtopxeqtk.Exports)
 
 	qlang.Import("github_beevik_etree", qlgithubbeeviketree.Exports)
+	qlang.Import("etree", qlgithubbeeviketree.Exports)
 	qlang.Import("github_topxeq_sqltk", qlgithubtopxeqsqltk.Exports)
+	qlang.Import("sqltk", qlgithubtopxeqsqltk.Exports)
+
+	qlang.Import("github_topxeq_govcl_vcl", qlgithub_topxeq_govcl_vcl.Exports)
+	qlang.Import("vcl", qlgithub_topxeq_govcl_vcl.Exports)
+	qlang.Import("github_topxeq_govcl_vcl_types", qlgithub_topxeq_govcl_vcl_types.Exports)
+	qlang.Import("vcl_types", qlgithub_topxeq_govcl_vcl_types.Exports)
+	qlang.Import("github_topxeq_govcl_vcl_api", qlgithub_topxeq_govcl_vcl_api.Exports)
+	qlang.Import("vcl_api", qlgithub_topxeq_govcl_vcl_api.Exports)
+	qlang.Import("github_topxeq_govcl_vcl_rtl", qlgithub_topxeq_govcl_vcl_rtl.Exports)
+	qlang.Import("vcl_rtl", qlgithub_topxeq_govcl_vcl_rtl.Exports)
+
+	qlang.Import("github_AllenDang_giu", qlgithub_AllenDang_giu.Exports)
+	qlang.Import("giu", qlgithub_AllenDang_giu.Exports)
+	qlang.Import("github_AllenDang_giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
+	qlang.Import("giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
 
 }
 
@@ -752,6 +775,8 @@ func runInteractiveQlang() int {
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
+			following = false
+			source = ""
 			continue
 		}
 
@@ -1560,70 +1585,70 @@ func importQLGUIPackages() {
 	qlang.Import("imagetk", imagetkExports)
 
 	var guiExports = map[string]interface{}{
-		"NewMasterWindow":         g.NewMasterWindow,
-		"SingleWindow":            g.SingleWindow,
-		"Window":                  g.Window,
-		"SingleWindowWithMenuBar": g.SingleWindowWithMenuBar,
-		"WindowV":                 g.WindowV,
+		"NewMasterWindow":         giu.NewMasterWindow,
+		"SingleWindow":            giu.SingleWindow,
+		"Window":                  giu.Window,
+		"SingleWindowWithMenuBar": giu.SingleWindowWithMenuBar,
+		"WindowV":                 giu.WindowV,
 
-		"MasterWindowFlagsNotResizable": g.MasterWindowFlagsNotResizable,
-		"MasterWindowFlagsMaximized":    g.MasterWindowFlagsMaximized,
-		"MasterWindowFlagsFloating":     g.MasterWindowFlagsFloating,
+		"MasterWindowFlagsNotResizable": giu.MasterWindowFlagsNotResizable,
+		"MasterWindowFlagsMaximized":    giu.MasterWindowFlagsMaximized,
+		"MasterWindowFlagsFloating":     giu.MasterWindowFlagsFloating,
 
-		// "Layout":          g.Layout,
+		// "Layout":          giu.Layout,
 
-		"NewTextureFromRgba": g.NewTextureFromRgba,
+		"NewTextureFromRgba": giu.NewTextureFromRgba,
 
-		"Label":                  g.Label,
-		"Line":                   g.Line,
-		"Button":                 g.Button,
-		"InvisibleButton":        g.InvisibleButton,
-		"ImageButton":            g.ImageButton,
-		"InputTextMultiline":     g.InputTextMultiline,
-		"Checkbox":               g.Checkbox,
-		"RadioButton":            g.RadioButton,
-		"Child":                  g.Child,
-		"ComboCustom":            g.ComboCustom,
-		"Combo":                  g.Combo,
-		"ContextMenu":            g.ContextMenu,
-		"Group":                  g.Group,
-		"Image":                  g.Image,
-		"ImageWithFile":          g.ImageWithFile,
-		"ImageWithUrl":           g.ImageWithUrl,
-		"InputText":              g.InputText,
-		"InputTextV":             g.InputTextV,
-		"InputTextFlagsPassword": g.InputTextFlagsPassword,
-		"InputInt":               g.InputInt,
-		"InputFloat":             g.InputFloat,
-		"MainMenuBar":            g.MainMenuBar,
-		"MenuBar":                g.MenuBar,
-		"MenuItem":               g.MenuItem,
-		"PopupModal":             g.PopupModal,
-		"OpenPopup":              g.OpenPopup,
-		"CloseCurrentPopup":      g.CloseCurrentPopup,
-		"ProgressBar":            g.ProgressBar,
-		"Separator":              g.Separator,
-		"SliderInt":              g.SliderInt,
-		"SliderFloat":            g.SliderFloat,
-		"HSplitter":              g.HSplitter,
-		"VSplitter":              g.VSplitter,
-		"TabItem":                g.TabItem,
-		"TabBar":                 g.TabBar,
-		"Row":                    g.Row,
-		"Table":                  g.Table,
-		"FastTable":              g.FastTable,
-		"Tooltip":                g.Tooltip,
-		"TreeNode":               g.TreeNode,
-		"Spacing":                g.Spacing,
-		"Custom":                 g.Custom,
-		"Condition":              g.Condition,
-		"ListBox":                g.ListBox,
-		"DatePicker":             g.DatePicker,
-		"Dummy":                  g.Dummy,
-		// "Widget":             g.Widget,
+		"Label":                  giu.Label,
+		"Line":                   giu.Line,
+		"Button":                 giu.Button,
+		"InvisibleButton":        giu.InvisibleButton,
+		"ImageButton":            giu.ImageButton,
+		"InputTextMultiline":     giu.InputTextMultiline,
+		"Checkbox":               giu.Checkbox,
+		"RadioButton":            giu.RadioButton,
+		"Child":                  giu.Child,
+		"ComboCustom":            giu.ComboCustom,
+		"Combo":                  giu.Combo,
+		"ContextMenu":            giu.ContextMenu,
+		"Group":                  giu.Group,
+		"Image":                  giu.Image,
+		"ImageWithFile":          giu.ImageWithFile,
+		"ImageWithUrl":           giu.ImageWithUrl,
+		"InputText":              giu.InputText,
+		"InputTextV":             giu.InputTextV,
+		"InputTextFlagsPassword": giu.InputTextFlagsPassword,
+		"InputInt":               giu.InputInt,
+		"InputFloat":             giu.InputFloat,
+		"MainMenuBar":            giu.MainMenuBar,
+		"MenuBar":                giu.MenuBar,
+		"MenuItem":               giu.MenuItem,
+		"PopupModal":             giu.PopupModal,
+		"OpenPopup":              giu.OpenPopup,
+		"CloseCurrentPopup":      giu.CloseCurrentPopup,
+		"ProgressBar":            giu.ProgressBar,
+		"Separator":              giu.Separator,
+		"SliderInt":              giu.SliderInt,
+		"SliderFloat":            giu.SliderFloat,
+		"HSplitter":              giu.HSplitter,
+		"VSplitter":              giu.VSplitter,
+		"TabItem":                giu.TabItem,
+		"TabBar":                 giu.TabBar,
+		"Row":                    giu.Row,
+		"Table":                  giu.Table,
+		"FastTable":              giu.FastTable,
+		"Tooltip":                giu.Tooltip,
+		"TreeNode":               giu.TreeNode,
+		"Spacing":                giu.Spacing,
+		"Custom":                 giu.Custom,
+		"Condition":              giu.Condition,
+		"ListBox":                giu.ListBox,
+		"DatePicker":             giu.DatePicker,
+		"Dummy":                  giu.Dummy,
+		// "Widget":             giu.Widget,
 
-		"PrepareMessageBox": g.PrepareMsgbox,
-		"MessageBox":        g.Msgbox,
+		"PrepareMessageBox": giu.PrepareMsgbox,
+		"MessageBox":        giu.Msgbox,
 
 		"LoadFont": loadFont,
 
@@ -1638,19 +1663,92 @@ func importQLGUIPackages() {
 		"EditFile":   editFile,
 		"LoopWindow": loopWindow,
 
-		"LayoutP": g.Layout{},
+		"LayoutP": giu.Layout{},
 
-		"Layout": specq.StructOf((*g.Layout)(nil)),
-		"Widget": specq.StructOf((*g.Widget)(nil)),
+		"Layout": specq.StructOf((*giu.Layout)(nil)),
+		"Widget": specq.StructOf((*giu.Widget)(nil)),
 	}
 
 	qlang.Import("gui", guiExports)
 	// full version related end
 
 	var lclExports = map[string]interface{}{
-		"NewTNotifyEvent": NewTNotifyEvent,
-		"NewTKeyEvent":    NewTKeyEvent,
-		"GetApplication":  getVclApplication,
+		// "NewTNotifyEvent":                      NewTNotifyEvent,
+		// "NewTKeyEvent":                         NewTKeyEvent,
+		"NewTNotifyEvent":                      NewTNotifyEvent,
+		"NewTKeyEvent":                         NewTKeyEvent,
+		"NewTKeyPressEvent":                    NewTKeyPressEvent,
+		"NewTMouseEvent":                       NewTMouseEvent,
+		"NewTMouseMoveEvent":                   NewTMouseMoveEvent,
+		"NewTExceptionEvent":                   NewTExceptionEvent,
+		"NewTCloseEvent":                       NewTCloseEvent,
+		"NewTCloseQueryEvent":                  NewTCloseQueryEvent,
+		"NewTContextPopupEvent":                NewTContextPopupEvent,
+		"NewTDragDropEvent":                    NewTDragDropEvent,
+		"NewTDragOverEvent":                    NewTDragOverEvent,
+		"NewTStartDragEvent":                   NewTStartDragEvent,
+		"NewTEndDragEvent":                     NewTEndDragEvent,
+		"NewTAlignPositionEvent":               NewTAlignPositionEvent,
+		"NewTDockDropEvent":                    NewTDockDropEvent,
+		"NewTDockOverEvent":                    NewTDockOverEvent,
+		"NewTStartDockEvent":                   NewTStartDockEvent,
+		"NewTUnDockEvent":                      NewTUnDockEvent,
+		"NewTGetSiteInfoEvent":                 NewTGetSiteInfoEvent,
+		"NewTMouseWheelEvent":                  NewTMouseWheelEvent,
+		"NewTMouseWheelUpDownEvent":            NewTMouseWheelUpDownEvent,
+		"NewTMessageEvent":                     NewTMessageEvent,
+		"NewTHelpEvent":                        NewTHelpEvent,
+		"NewTWebTitleChangeEvent":              NewTWebTitleChangeEvent,
+		"NewTWebJSExternalEvent":               NewTWebJSExternalEvent,
+		"NewTMeasureItemEvent":                 NewTMeasureItemEvent,
+		"NewTMovedEvent":                       NewTMovedEvent,
+		"NewTDrawCellEvent":                    NewTDrawCellEvent,
+		"NewTSelectCellEvent":                  NewTSelectCellEvent,
+		"NewTGetEditEvent":                     NewTGetEditEvent,
+		"NewTSetEditEvent":                     NewTSetEditEvent,
+		"NewTDropFilesEvent":                   NewTDropFilesEvent,
+		"NewTConstrainedResizeEvent":           NewTConstrainedResizeEvent,
+		"NewTWndProcEvent":                     NewTWndProcEvent,
+		"NewTSectionNotifyEvent":               NewTSectionNotifyEvent,
+		"NewTSectionTrackEvent":                NewTSectionTrackEvent,
+		"NewTSectionDragEvent":                 NewTSectionDragEvent,
+		"NewTSysLinkEvent":                     NewTSysLinkEvent,
+		"NewTDrawItemEvent":                    NewTDrawItemEvent,
+		"NewTLVSelectItemEvent":                NewTLVSelectItemEvent,
+		"NewTLVCheckedItemEvent":               NewTLVCheckedItemEvent,
+		"NewTLVAdvancedCustomDrawEvent":        NewTLVAdvancedCustomDrawEvent,
+		"NewTLVAdvancedCustomDrawItemEvent":    NewTLVAdvancedCustomDrawItemEvent,
+		"NewTLVAdvancedCustomDrawSubItemEvent": NewTLVAdvancedCustomDrawSubItemEvent,
+		"NewTLVChangeEvent":                    NewTLVChangeEvent,
+		"NewTLVColumnClickEvent":               NewTLVColumnClickEvent,
+		"NewTLVCompareEvent":                   NewTLVCompareEvent,
+		"NewTLVOwnerDataEvent":                 NewTLVOwnerDataEvent,
+		"NewTLVOwnerDataFindEvent":             NewTLVOwnerDataFindEvent,
+		"NewTLVOwnerDataHintEvent":             NewTLVOwnerDataHintEvent,
+		"NewTLVDataHintEvent":                  NewTLVDataHintEvent,
+		"NewTLVDeletedEvent":                   NewTLVDeletedEvent,
+		"NewTLVEditedEvent":                    NewTLVEditedEvent,
+		"NewTLVEditingEvent":                   NewTLVEditingEvent,
+		"NewTMenuChangeEvent":                  NewTMenuChangeEvent,
+		"NewTMenuMeasureItemEvent":             NewTMenuMeasureItemEvent,
+		"NewTTabChangingEvent":                 NewTTabChangingEvent,
+		"NewTUDChangingEvent":                  NewTUDChangingEvent,
+		"NewTUDClickEvent":                     NewTUDClickEvent,
+		"NewTTaskDlgClickEvent":                NewTTaskDlgClickEvent,
+		"NewTTVExpandedEvent":                  NewTTVExpandedEvent,
+		"NewTTVAdvancedCustomDrawEvent":        NewTTVAdvancedCustomDrawEvent,
+		"NewTTVAdvancedCustomDrawItemEvent":    NewTTVAdvancedCustomDrawItemEvent,
+		"NewTTVChangedEvent":                   NewTTVChangedEvent,
+		"NewTTVChangingEvent":                  NewTTVChangingEvent,
+		"NewTTVCollapsingEvent":                NewTTVCollapsingEvent,
+		"NewTTVCompareEvent":                   NewTTVCompareEvent,
+		"NewTTVCustomDrawEvent":                NewTTVCustomDrawEvent,
+		"NewTTVCustomDrawItemEvent":            NewTTVCustomDrawItemEvent,
+		"NewTTVEditedEvent":                    NewTTVEditedEvent,
+		"NewTTVEditingEvent":                   NewTTVEditingEvent,
+		"NewTTVExpandingEvent":                 NewTTVExpandingEvent,
+
+		"GetApplication": getVclApplication,
 		// "NewApplication":    vcl.NewApplication,
 		"InitVCL":           initLCL,
 		"InitLCL":           initLCL,
@@ -1849,18 +1947,18 @@ func editorLoad() {
 
 	if tk.IsErrorString(fileNameNewT) {
 		if tk.EndsWith(fileNameNewT, "Cancelled") {
-			g.Msgbox("Info", tk.Spr("Action cancelled by user"))
+			giu.Msgbox("Info", tk.Spr("Action cancelled by user"))
 			return
 		}
 
-		g.Msgbox("Error", tk.Spr("Failed to select file: %v", tk.GetErrorString(fileNameNewT)))
+		giu.Msgbox("Error", tk.Spr("Failed to select file: %v", tk.GetErrorString(fileNameNewT)))
 		return
 	}
 
 	fcT := tk.LoadStringFromFile(fileNameNewT)
 
 	if tk.IsErrorString(fcT) {
-		g.Msgbox("Error", tk.Spr("Failed to load file content: %v", tk.GetErrorString(fileNameNewT)))
+		giu.Msgbox("Error", tk.Spr("Failed to load file content: %v", tk.GetErrorString(fileNameNewT)))
 		return
 	}
 
@@ -1875,11 +1973,11 @@ func editorSaveAs() {
 
 	if tk.IsErrorString(fileNameNewT) {
 		if tk.EndsWith(fileNameNewT, "Cancelled") {
-			g.Msgbox("Info", tk.Spr("Action cancelled by user"))
+			giu.Msgbox("Info", tk.Spr("Action cancelled by user"))
 			return
 		}
 
-		g.Msgbox("Error", tk.Spr("Failed to select file: %v", tk.GetErrorString(fileNameNewT)))
+		giu.Msgbox("Error", tk.Spr("Failed to select file: %v", tk.GetErrorString(fileNameNewT)))
 		return
 	}
 
@@ -1894,11 +1992,11 @@ func editorSaveAs() {
 		rs1 := tk.SaveStringToFile(editorG.GetText(), editFileNameG)
 
 		if rs1 != "" {
-			g.Msgbox("Error", tk.Spr("Failed to save: %v", rs))
+			giu.Msgbox("Error", tk.Spr("Failed to save: %v", rs))
 			return
 		}
 
-		g.Msgbox("Info", tk.Spr("File saved to: %v", editFileNameG))
+		giu.Msgbox("Info", tk.Spr("File saved to: %v", editFileNameG))
 
 		editFileCleanFlagG = ""
 	}
@@ -1922,11 +2020,11 @@ func editorSave() {
 		rs1 := tk.SaveStringToFile(editorG.GetText(), editFileNameG)
 
 		if rs1 != "" {
-			g.Msgbox("Error", tk.Spr("Failed to save: %v", rs))
+			giu.Msgbox("Error", tk.Spr("Failed to save: %v", rs))
 			return
 		}
 
-		g.Msgbox("Info", tk.Spr("File saved to file: %v", editFileNameG))
+		giu.Msgbox("Info", tk.Spr("File saved to file: %v", editFileNameG))
 
 		editFileCleanFlagG = ""
 	}
@@ -1952,7 +2050,7 @@ func editEncrypt() {
 }
 
 func editEncryptClick() {
-	g.OpenPopup("Please enter:##EncryptInputSecureCode")
+	giu.OpenPopup("Please enter:##EncryptInputSecureCode")
 }
 
 func editDecrypt() {
@@ -1974,7 +2072,7 @@ func editDecrypt() {
 }
 
 func editDecryptClick() {
-	g.OpenPopup("Please enter:##DecryptInputSecureCode")
+	giu.OpenPopup("Please enter:##DecryptInputSecureCode")
 }
 
 func editRun() {
@@ -1984,29 +2082,29 @@ func editRun() {
 }
 
 func editRunClick() {
-	g.OpenPopup("Please enter:##RunInputArgs")
+	giu.OpenPopup("Please enter:##RunInputArgs")
 }
 
 func onButtonCloseClick() {
 	exit()
 }
 
-func loopWindow(windowA *g.MasterWindow, loopA func()) {
-	// wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
+func loopWindow(windowA *giu.MasterWindow, loopA func()) {
+	// wnd := giu.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
 
 	windowA.Main(loopA)
 
 }
 
 func editorLoop() {
-	g.SingleWindow("Gox Editor", g.Layout{
-		g.Label(editFileNameG + editFileCleanFlagG),
-		g.Dummy(30, 0),
-		g.Line(
-			g.Button("Load", editorLoad),
-			g.Button("Save", editorSave),
-			g.Button("Save As...", editorSaveAs),
-			g.Button("Check", func() {
+	giu.SingleWindow("Gox Editor", giu.Layout{
+		giu.Label(editFileNameG + editFileCleanFlagG),
+		giu.Dummy(30, 0),
+		giu.Line(
+			giu.Button("Load", editorLoad),
+			giu.Button("Save", editorSave),
+			giu.Button("Save As...", editorSaveAs),
+			giu.Button("Check", func() {
 
 				// sourceT := editorG.GetText()
 
@@ -2023,17 +2121,17 @@ func editorLoop() {
 				// 	editorG.SetErrorMarkers(errMarkersG)
 
 				// } else if errT != nil {
-				// 	g.Msgbox("Error", tk.Spr("%#v", errT))
+				// 	giu.Msgbox("Error", tk.Spr("%#v", errT))
 				// } else {
-				// 	g.Msgbox("Info", "Syntax check passed.")
+				// 	giu.Msgbox("Info", "Syntax check passed.")
 				// }
 
 			}),
-			g.Button("Encrypt", editEncryptClick),
-			g.Button("Decrypt", editDecryptClick),
-			g.Button("Run", editRunClick),
-			g.Button("Close", onButtonCloseClick),
-			// g.Button("Get Text", func() {
+			giu.Button("Encrypt", editEncryptClick),
+			giu.Button("Decrypt", editDecryptClick),
+			giu.Button("Run", editRunClick),
+			giu.Button("Close", onButtonCloseClick),
+			// giu.Button("Get Text", func() {
 			// 	if editorG.HasSelection() {
 			// 		fmt.Println(editorG.GetSelectedText())
 			// 	} else {
@@ -2048,11 +2146,11 @@ func editorLoop() {
 
 			// 	fmt.Println("Current line is", editorG.GetCurrentLineText())
 			// }),
-			// g.Button("Set Text", func() {
+			// giu.Button("Set Text", func() {
 			// 	editorG.SetText("Set text")
 			// 	editFileNameG = "Set text"
 			// }),
-			// g.Button("Set Error Marker", func() {
+			// giu.Button("Set Error Marker", func() {
 			// 	errMarkersG.Clear()
 			// 	errMarkersG.Insert(1, "Error message")
 			// 	fmt.Println("ErrMarkers Size:", errMarkersG.Size())
@@ -2060,37 +2158,37 @@ func editorLoop() {
 			// 	editorG.SetErrorMarkers(errMarkersG)
 			// }),
 		),
-		g.PopupModal("Please enter:##EncryptInputSecureCode", g.Layout{
-			g.Line(
-				g.Label("Secure code"),
-				g.InputTextV("", 40, &editSecureCodeG, g.InputTextFlagsPassword, nil, nil),
+		giu.PopupModal("Please enter:##EncryptInputSecureCode", giu.Layout{
+			giu.Line(
+				giu.Label("Secure code"),
+				giu.InputTextV("", 40, &editSecureCodeG, giu.InputTextFlagsPassword, nil, nil),
 			),
-			g.Line(
-				g.Button("Ok", editEncrypt),
-				g.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
-			),
-		}),
-		g.PopupModal("Please enter:##DecryptInputSecureCode", g.Layout{
-			g.Line(
-				g.Label("Secure code"),
-				g.InputTextV("", 40, &editSecureCodeG, g.InputTextFlagsPassword, nil, nil),
-			),
-			g.Line(
-				g.Button("Ok", editDecrypt),
-				g.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
+			giu.Line(
+				giu.Button("Ok", editEncrypt),
+				giu.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
 			),
 		}),
-		g.PopupModal("Please enter:##RunInputArgs", g.Layout{
-			g.Line(
-				g.Label("Arguments to pass to VM"),
-				g.InputText("", 80, &editArgsG),
+		giu.PopupModal("Please enter:##DecryptInputSecureCode", giu.Layout{
+			giu.Line(
+				giu.Label("Secure code"),
+				giu.InputTextV("", 40, &editSecureCodeG, giu.InputTextFlagsPassword, nil, nil),
 			),
-			g.Line(
-				g.Button("Ok", editRun),
-				g.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
+			giu.Line(
+				giu.Button("Ok", editDecrypt),
+				giu.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
 			),
 		}),
-		g.Custom(func() {
+		giu.PopupModal("Please enter:##RunInputArgs", giu.Layout{
+			giu.Line(
+				giu.Label("Arguments to pass to VM"),
+				giu.InputText("", 80, &editArgsG),
+			),
+			giu.Line(
+				giu.Button("Ok", editRun),
+				giu.Button("Cancel", func() { imgui.CloseCurrentPopup() }),
+			),
+		}),
+		giu.Custom(func() {
 			editorG.Render("Hello", imgui.Vec2{X: 0, Y: 0}, true)
 			if giu.IsItemHovered() {
 				if editorG.IsTextChanged() {
@@ -2098,7 +2196,7 @@ func editorLoop() {
 				}
 			}
 		}),
-		g.PrepareMsgbox(),
+		giu.PrepareMsgbox(),
 	})
 }
 
@@ -2139,7 +2237,7 @@ func editFile(fileNameA string) {
 	tk.SetVar("FontRange", "COMMON")
 	tk.SetVar("FontSize", "15")
 
-	wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
+	wnd := giu.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
 	// tk.Pl("%T", wnd)
 	wnd.Main(editorLoop)
 

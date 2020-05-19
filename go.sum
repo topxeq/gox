@@ -343,6 +343,8 @@ github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a h1:AbaDA3cbBe+3qpve
 github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a/go.mod h1:Y07Sl+FLd164UCoNlvVFUb0NJWtcehctV6kaNWPjLgM=
 github.com/topxeq/qlang v0.0.0-20200518012757-9d6e9982041a h1:QuYxRg/0/FB1ukbTEdeUsifVcf5WWyw0raYILAEhkvs=
 github.com/topxeq/qlang v0.0.0-20200518012757-9d6e9982041a/go.mod h1:Kd16bi6PfZaKg9sOcKXbyUrs6DKvSlmjjyK9XUm5xR0=
+github.com/topxeq/qlang v0.0.0-20200519085047-fe910b83876f h1:MTIvRKkmofRcYUJFHdT7TnUx/SQSYlGbLQKLFQLJIGw=
+github.com/topxeq/qlang v0.0.0-20200519085047-fe910b83876f/go.mod h1:Kd16bi6PfZaKg9sOcKXbyUrs6DKvSlmjjyK9XUm5xR0=
 github.com/topxeq/sqltk v0.0.0-20191024030855-9900c8f99437 h1:7vBIkcLy5/GaqyCqJzNvAPhwGmRLI3cYYvPvFKpAJIs=
 github.com/topxeq/sqltk v0.0.0-20191024030855-9900c8f99437/go.mod h1:KOl6vGec44tFypvXpWi2d/V1bvnOljyiIizuwIeBWu4=
 github.com/topxeq/text v0.0.0-20200518012001-b0cd431d910d h1:WSkmg+eQ3QcaSrKIJ2BPMSGfSxpJlJl019rt6yrOqOg=
