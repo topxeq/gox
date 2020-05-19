@@ -28,8 +28,12 @@ import (
 	// GUI related end
 
 	qlarchivezip "github.com/topxeq/qlang/lib/archive/zip"
+	qlbufio "github.com/topxeq/qlang/lib/bufio"
 	qlbytes "github.com/topxeq/qlang/lib/bytes"
+
 	qlcrypto "github.com/topxeq/qlang/lib/crypto"
+	qlcryptoaes "github.com/topxeq/qlang/lib/crypto/aes"
+	qlcryptocipher "github.com/topxeq/qlang/lib/crypto/cipher"
 	qlcryptohmac "github.com/topxeq/qlang/lib/crypto/hmac"
 	qlcryptomd5 "github.com/topxeq/qlang/lib/crypto/md5"
 	qlcryptorand "github.com/topxeq/qlang/lib/crypto/rand"
@@ -37,30 +41,77 @@ import (
 	qlcryptosha1 "github.com/topxeq/qlang/lib/crypto/sha1"
 	qlcryptosha256 "github.com/topxeq/qlang/lib/crypto/sha256"
 	qlcryptox509 "github.com/topxeq/qlang/lib/crypto/x509"
+
+	qldatabasesql "github.com/topxeq/qlang/lib/database/sql"
+
 	qlencodingbase64 "github.com/topxeq/qlang/lib/encoding/base64"
 	qlencodingcsv "github.com/topxeq/qlang/lib/encoding/csv"
+	qlencodinggob "github.com/topxeq/qlang/lib/encoding/gob"
 	qlencodinghex "github.com/topxeq/qlang/lib/encoding/hex"
 	qlencodingjson "github.com/topxeq/qlang/lib/encoding/json"
 	qlencodingpem "github.com/topxeq/qlang/lib/encoding/pem"
 	qlencodingxml "github.com/topxeq/qlang/lib/encoding/xml"
+
+	qlerrors "github.com/topxeq/qlang/lib/errors"
+	qlflag "github.com/topxeq/qlang/lib/flag"
+	qlfmt "github.com/topxeq/qlang/lib/fmt"
+
+	qlhashfnv "github.com/topxeq/qlang/lib/hash/fnv"
+
+	qlhtml "github.com/topxeq/qlang/lib/html"
+	qlhtmltemplate "github.com/topxeq/qlang/lib/html/template"
+
+	qlimage "github.com/topxeq/qlang/lib/image"
+	qlimage_color "github.com/topxeq/qlang/lib/image/color"
+	qlimage_color_palette "github.com/topxeq/qlang/lib/image/color/palette"
+	qlimage_draw "github.com/topxeq/qlang/lib/image/draw"
+	qlimage_gif "github.com/topxeq/qlang/lib/image/gif"
+	qlimage_jpeg "github.com/topxeq/qlang/lib/image/jpeg"
+	qlimage_png "github.com/topxeq/qlang/lib/image/png"
+
+	qlio "github.com/topxeq/qlang/lib/io"
 	qlioioutil "github.com/topxeq/qlang/lib/io/ioutil"
 
+	qllog "github.com/topxeq/qlang/lib/log"
+
+	qlmath "github.com/topxeq/qlang/lib/math"
+	qlmathbig "github.com/topxeq/qlang/lib/math/big"
+	qlmathbits "github.com/topxeq/qlang/lib/math/bits"
+
 	qlnethttp "github.com/topxeq/qlang/lib/net/http"
+	qlnet_http_cookiejar "github.com/topxeq/qlang/lib/net/http/cookiejar"
+	qlnet_http_httputil "github.com/topxeq/qlang/lib/net/http/httputil"
+	qlnet_mail "github.com/topxeq/qlang/lib/net/mail"
+	qlnet_rpc "github.com/topxeq/qlang/lib/net/rpc"
+	qlnet_rpc_jsonrpc "github.com/topxeq/qlang/lib/net/rpc/jsonrpc"
+	qlnet_smtp "github.com/topxeq/qlang/lib/net/smtp"
 	qlneturl "github.com/topxeq/qlang/lib/net/url"
 
-	qlbufio "github.com/topxeq/qlang/lib/bufio"
-	qlsync "github.com/topxeq/qlang/lib/sync"
-	qltime "github.com/topxeq/qlang/lib/time"
+	qlos "github.com/topxeq/qlang/lib/os"
+	qlos_exec "github.com/topxeq/qlang/lib/os/exec"
+	qlos_signal "github.com/topxeq/qlang/lib/os/signal"
+	qlos_user "github.com/topxeq/qlang/lib/os/user"
 
+	qlpath "github.com/topxeq/qlang/lib/path"
+	qlpathfilepath "github.com/topxeq/qlang/lib/path/filepath"
+
+	qlreflect "github.com/topxeq/qlang/lib/reflect"
+	qlregexp "github.com/topxeq/qlang/lib/regexp"
 	qlruntime "github.com/topxeq/qlang/lib/runtime"
 	qlruntimedebug "github.com/topxeq/qlang/lib/runtime/debug"
 
-	qlos "github.com/topxeq/qlang/lib/os"
-	qlpath "github.com/topxeq/qlang/lib/path"
-	qlpathfilepath "github.com/topxeq/qlang/lib/path/filepath"
 	qlsort "github.com/topxeq/qlang/lib/sort"
+	qlstrconv "github.com/topxeq/qlang/lib/strconv"
 	qlstrings "github.com/topxeq/qlang/lib/strings"
+	qlsync "github.com/topxeq/qlang/lib/sync"
 
+	qltext_template "github.com/topxeq/qlang/lib/text/template"
+	qltime "github.com/topxeq/qlang/lib/time"
+
+	qlunicode "github.com/topxeq/qlang/lib/unicode"
+	qlunicode_utf8 "github.com/topxeq/qlang/lib/unicode/utf8"
+
+	// 3rd party
 	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
 	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
 	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tk"
@@ -118,7 +169,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.988a"
+var versionG = "0.989a"
 
 var verboseG = false
 
@@ -546,47 +597,95 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("", defaultExports)
 
-	qlang.Import("tk", qlgithubtopxeqtk.Exports)
-	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
-
-	qlang.Import("os", qlos.Exports)
-
-	qlang.Import("strings", qlstrings.Exports)
-	qlang.Import("bytes", qlbytes.Exports)
-	qlang.Import("io_ioutil", qlioioutil.Exports)
-
-	qlang.Import("sort", qlsort.Exports)
-
-	qlang.Import("time", qltime.Exports)
-	qlang.Import("bufio", qlbufio.Exports)
-	qlang.Import("sync", qlsync.Exports)
-
-	qlang.Import("net_url", qlneturl.Exports)
-	qlang.Import("net_http", qlnethttp.Exports)
-
-	qlang.Import("runtime", qlruntime.Exports)
-	qlang.Import("runtime_debug", qlruntimedebug.Exports)
-
-	qlang.Import("path_filepath", qlpathfilepath.Exports)
-	qlang.Import("path", qlpath.Exports)
-
 	qlang.Import("archive_zip", qlarchivezip.Exports)
-
-	qlang.Import("encoding_pem", qlencodingpem.Exports)
-	qlang.Import("encoding_base64", qlencodingbase64.Exports)
-	qlang.Import("encoding_csv", qlencodingcsv.Exports)
-	qlang.Import("encoding_hex", qlencodinghex.Exports)
-	qlang.Import("encoding_json", qlencodingjson.Exports)
-	qlang.Import("encoding_xml", qlencodingxml.Exports)
+	qlang.Import("bufio", qlbufio.Exports)
+	qlang.Import("bytes", qlbytes.Exports)
 
 	qlang.Import("crypto", qlcrypto.Exports)
-	qlang.Import("crypto_rand", qlcryptorand.Exports)
+	qlang.Import("crypto_aes", qlcryptoaes.Exports)
+	qlang.Import("crypto_cipher", qlcryptocipher.Exports)
 	qlang.Import("crypto_hmac", qlcryptohmac.Exports)
+	qlang.Import("crypto_md5", qlcryptomd5.Exports)
+	qlang.Import("crypto_rand", qlcryptorand.Exports)
 	qlang.Import("crypto_rsa", qlcryptorsa.Exports)
 	qlang.Import("crypto_sha256", qlcryptosha256.Exports)
 	qlang.Import("crypto_sha1", qlcryptosha1.Exports)
 	qlang.Import("crypto_x509", qlcryptox509.Exports)
-	qlang.Import("crypto_md5", qlcryptomd5.Exports)
+
+	qlang.Import("database_sql", qldatabasesql.Exports)
+
+	qlang.Import("encoding_pem", qlencodingpem.Exports)
+	qlang.Import("encoding_base64", qlencodingbase64.Exports)
+	qlang.Import("encoding_csv", qlencodingcsv.Exports)
+	qlang.Import("encoding_gob", qlencodinggob.Exports)
+	qlang.Import("encoding_hex", qlencodinghex.Exports)
+	qlang.Import("encoding_json", qlencodingjson.Exports)
+	qlang.Import("encoding_xml", qlencodingxml.Exports)
+
+	qlang.Import("errors", qlerrors.Exports)
+
+	qlang.Import("flag", qlflag.Exports)
+	qlang.Import("fmt", qlfmt.Exports)
+
+	qlang.Import("hash_fnv", qlhashfnv.Exports)
+
+	qlang.Import("html", qlhtml.Exports)
+	qlang.Import("html_template", qlhtmltemplate.Exports)
+
+	qlang.Import("image", qlimage.Exports)
+	qlang.Import("image_color", qlimage_color.Exports)
+	qlang.Import("image_color_palette", qlimage_color_palette.Exports)
+	qlang.Import("image_draw", qlimage_draw.Exports)
+	qlang.Import("image_gif", qlimage_gif.Exports)
+	qlang.Import("image_jpeg", qlimage_jpeg.Exports)
+	qlang.Import("image_png", qlimage_png.Exports)
+
+	qlang.Import("io", qlio.Exports)
+	qlang.Import("io_ioutil", qlioioutil.Exports)
+
+	qlang.Import("log", qllog.Exports)
+
+	qlang.Import("math", qlmath.Exports)
+	qlang.Import("math_big", qlmathbig.Exports)
+	qlang.Import("math_bits", qlmathbits.Exports)
+
+	qlang.Import("net_http", qlnethttp.Exports)
+	qlang.Import("net_http_cookiejar", qlnet_http_cookiejar.Exports)
+	qlang.Import("net_http_httputil", qlnet_http_httputil.Exports)
+	qlang.Import("net_mail", qlnet_mail.Exports)
+	qlang.Import("net_rpc", qlnet_rpc.Exports)
+	qlang.Import("net_rpc_jsonrpc", qlnet_rpc_jsonrpc.Exports)
+	qlang.Import("net_smtp", qlnet_smtp.Exports)
+	qlang.Import("net_url", qlneturl.Exports)
+
+	qlang.Import("os", qlos.Exports)
+	qlang.Import("os_exec", qlos_exec.Exports)
+	qlang.Import("os_signal", qlos_signal.Exports)
+	qlang.Import("os_user", qlos_user.Exports)
+	qlang.Import("path", qlpath.Exports)
+	qlang.Import("path_filepath", qlpathfilepath.Exports)
+
+	qlang.Import("reflect", qlreflect.Exports)
+	qlang.Import("regexp", qlregexp.Exports)
+
+	qlang.Import("runtime", qlruntime.Exports)
+	qlang.Import("runtime_debug", qlruntimedebug.Exports)
+
+	qlang.Import("sort", qlsort.Exports)
+	qlang.Import("strconv", qlstrconv.Exports)
+	qlang.Import("strings", qlstrings.Exports)
+	qlang.Import("sync", qlsync.Exports)
+
+	qlang.Import("text_template", qltext_template.Exports)
+	qlang.Import("time", qltime.Exports)
+
+	qlang.Import("unicode", qlunicode.Exports)
+	qlang.Import("unicode_utf8", qlunicode_utf8.Exports)
+
+	// 3rd party
+
+	qlang.Import("tk", qlgithubtopxeqtk.Exports)
+	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
 
 	qlang.Import("github_beevik_etree", qlgithubbeeviketree.Exports)
 	qlang.Import("github_topxeq_sqltk", qlgithubtopxeqsqltk.Exports)
@@ -868,6 +967,569 @@ func NewTKeyEvent(funcA *execq.Function) *vcl.TKeyEvent {
 
 	return &f
 	// return nil
+}
+
+func NewTKeyPressEvent(funcA *execq.Function) *vcl.TKeyPressEvent {
+	var f vcl.TKeyPressEvent = func(sender vcl.IObject, key *types.Char) {
+		funcA.Call(execq.NewStack(), sender, key)
+	}
+
+	return &f
+	// return nil
+}
+
+func NewTMouseEvent(funcA *execq.Function) *vcl.TMouseEvent {
+	var f vcl.TMouseEvent = func(sender vcl.IObject, button types.TMouseButton, shift types.TShiftState, x, y int32) {
+		funcA.Call(execq.NewStack(), sender, button, shift, x, y)
+	}
+
+	return &f
+	// return nil
+}
+
+func NewTMouseMoveEvent(funcA *execq.Function) *vcl.TMouseMoveEvent {
+	var f vcl.TMouseMoveEvent = func(sender vcl.IObject, shift types.TShiftState, x, y int32) {
+		funcA.Call(execq.NewStack(), sender, shift, x, y)
+	}
+
+	return &f
+	// return nil
+}
+
+func NewTExceptionEvent(funcA *execq.Function) *vcl.TExceptionEvent {
+	var f vcl.TExceptionEvent = func(sender vcl.IObject, e *vcl.Exception) {
+		funcA.Call(execq.NewStack(), sender, e)
+	}
+
+	return &f
+}
+
+func NewTCloseEvent(funcA *execq.Function) *vcl.TCloseEvent {
+	var f vcl.TCloseEvent = func(sender vcl.IObject, action *types.TCloseAction) { // TCloseAction int32
+		funcA.Call(execq.NewStack(), sender, action)
+	}
+
+	return &f
+}
+
+func NewTCloseQueryEvent(funcA *execq.Function) *vcl.TCloseQueryEvent {
+	var f vcl.TCloseQueryEvent = func(sender vcl.IObject, canClose *bool) {
+		funcA.Call(execq.NewStack(), sender, canClose)
+	}
+
+	return &f
+}
+
+func NewTContextPopupEvent(funcA *execq.Function) *vcl.TContextPopupEvent {
+	var f vcl.TContextPopupEvent = func(sender vcl.IObject, mousePos types.TPoint, handled *bool) {
+		funcA.Call(execq.NewStack(), sender, mousePos, handled)
+	}
+
+	return &f
+}
+
+func NewTDragDropEvent(funcA *execq.Function) *vcl.TDragDropEvent {
+	var f vcl.TDragDropEvent = func(sender vcl.IObject, source vcl.IObject, x, y int32) {
+		funcA.Call(execq.NewStack(), sender, source, x, y)
+	}
+
+	return &f
+}
+
+func NewTDragOverEvent(funcA *execq.Function) *vcl.TDragOverEvent {
+	var f vcl.TDragOverEvent = func(sender vcl.IObject, source vcl.IObject, x, y int32, state types.TDragState, accept *bool) {
+		funcA.Call(execq.NewStack(), sender, source, x, y, state, accept)
+	}
+
+	return &f
+}
+
+func NewTStartDragEvent(funcA *execq.Function) *vcl.TStartDragEvent {
+	var f vcl.TStartDragEvent = func(sender vcl.IObject, dragObject *vcl.TDragObject) {
+		funcA.Call(execq.NewStack(), sender, dragObject)
+	}
+
+	return &f
+}
+
+func NewTEndDragEvent(funcA *execq.Function) *vcl.TEndDragEvent {
+	var f vcl.TEndDragEvent = func(sender vcl.IObject, target vcl.IObject, x, y int32) {
+		funcA.Call(execq.NewStack(), sender, target, x, y)
+	}
+
+	return &f
+}
+
+func NewTAlignPositionEvent(funcA *execq.Function) *vcl.TAlignPositionEvent {
+	var f vcl.TAlignPositionEvent = func(sender *vcl.TWinControl, control *vcl.TControl, newLeft, newTop, newWidth, newHeight *int32, alignRect *types.TRect, alignInfo types.TAlignInfo) {
+		funcA.Call(execq.NewStack(), sender, control, newLeft, newTop, newWidth, newHeight, alignRect, alignInfo)
+	}
+
+	return &f
+}
+
+func NewTDockDropEvent(funcA *execq.Function) *vcl.TDockDropEvent {
+	var f vcl.TDockDropEvent = func(sender vcl.IObject, source *vcl.TDragDockObject, x, y int32) {
+		funcA.Call(execq.NewStack(), sender, source, x, y)
+	}
+
+	return &f
+}
+
+func NewTDockOverEvent(funcA *execq.Function) *vcl.TDockOverEvent {
+	var f vcl.TDockOverEvent = func(sender vcl.IObject, source *vcl.TDragDockObject, x, y int32, state types.TDragState, accept *bool) {
+		funcA.Call(execq.NewStack(), sender, source, x, y, state, accept)
+	}
+
+	return &f
+}
+
+func NewTStartDockEvent(funcA *execq.Function) *vcl.TStartDockEvent {
+	var f vcl.TStartDockEvent = func(sender vcl.IObject, dragObject *vcl.TDragDockObject) {
+		funcA.Call(execq.NewStack(), sender, dragObject)
+	}
+
+	return &f
+}
+
+func NewTUnDockEvent(funcA *execq.Function) *vcl.TUnDockEvent {
+	var f vcl.TUnDockEvent = func(sender vcl.IObject, client *vcl.TControl, newTarget *vcl.TControl, allow *bool) {
+		funcA.Call(execq.NewStack(), sender, client, newTarget, allow)
+	}
+
+	return &f
+}
+
+func NewTGetSiteInfoEvent(funcA *execq.Function) *vcl.TGetSiteInfoEvent {
+	var f vcl.TGetSiteInfoEvent = func(sender vcl.IObject, dockClient *vcl.TControl, influenceRect *types.TRect, mousePos types.TPoint, canDock *bool) {
+		funcA.Call(execq.NewStack(), sender, dockClient, influenceRect, mousePos, canDock)
+	}
+
+	return &f
+}
+
+func NewTMouseWheelEvent(funcA *execq.Function) *vcl.TMouseWheelEvent {
+	var f vcl.TMouseWheelEvent = func(sender vcl.IObject, shift types.TShiftState, wheelDelta, x, y int32, handled *bool) {
+		funcA.Call(execq.NewStack(), sender, shift, wheelDelta, x, y, handled)
+	}
+
+	return &f
+}
+
+func NewTMouseWheelUpDownEvent(funcA *execq.Function) *vcl.TMouseWheelUpDownEvent {
+	var f vcl.TMouseWheelUpDownEvent = func(sender vcl.IObject, shift types.TShiftState, mousePos types.TPoint, handled *bool) {
+		funcA.Call(execq.NewStack(), sender, shift, mousePos, handled)
+	}
+
+	return &f
+}
+
+func NewTMessageEvent(funcA *execq.Function) *vcl.TMessageEvent {
+	var f vcl.TMessageEvent = func(msg *types.TMsg, handled *bool) {
+		funcA.Call(execq.NewStack(), msg, handled)
+	}
+
+	return &f
+}
+
+func NewTHelpEvent(funcA *execq.Function) *vcl.THelpEvent {
+	var f vcl.THelpEvent = func(command uint16, data types.THelpEventData, callhelp, result *bool) {
+		funcA.Call(execq.NewStack(), command, data, callhelp, result)
+	}
+
+	return &f
+}
+
+func NewTWebTitleChangeEvent(funcA *execq.Function) *vcl.TWebTitleChangeEvent {
+	var f vcl.TWebTitleChangeEvent = func(sender vcl.IObject, text string) {
+		funcA.Call(execq.NewStack(), sender, text)
+	}
+
+	return &f
+}
+
+func NewTWebJSExternalEvent(funcA *execq.Function) *vcl.TWebJSExternalEvent {
+	var f vcl.TWebJSExternalEvent = func(sender vcl.IObject, funcName, args string, retVal *string) {
+		funcA.Call(execq.NewStack(), sender, funcName, args, retVal)
+	}
+
+	return &f
+}
+
+func NewTMeasureItemEvent(funcA *execq.Function) *vcl.TMeasureItemEvent {
+	var f vcl.TMeasureItemEvent = func(control *vcl.TWinControl, index int32, height *int32) {
+		funcA.Call(execq.NewStack(), control, index, height)
+	}
+
+	return &f
+}
+
+func NewTMovedEvent(funcA *execq.Function) *vcl.TMovedEvent {
+	var f vcl.TMovedEvent = func(sender vcl.IObject, fromIndex, toIndex int32) {
+		funcA.Call(execq.NewStack(), sender, fromIndex, toIndex)
+	}
+
+	return &f
+}
+
+func NewTDrawCellEvent(funcA *execq.Function) *vcl.TDrawCellEvent {
+	var f vcl.TDrawCellEvent = func(sender vcl.IObject, aCol, aRow int32, aRect types.TRect, state types.TGridDrawState) {
+		funcA.Call(execq.NewStack(), sender, aCol, aRow, aRect, state)
+	}
+
+	return &f
+}
+
+func NewTSelectCellEvent(funcA *execq.Function) *vcl.TSelectCellEvent {
+	var f vcl.TSelectCellEvent = func(sender vcl.IObject, aCol, aRow int32, canSelect *bool) {
+		funcA.Call(execq.NewStack(), sender, aCol, aRow, canSelect)
+	}
+
+	return &f
+}
+
+func NewTGetEditEvent(funcA *execq.Function) *vcl.TGetEditEvent {
+	var f vcl.TGetEditEvent = func(sender vcl.IObject, aCol, aRow int32, value *string) {
+		funcA.Call(execq.NewStack(), sender, aCol, aRow, value)
+	}
+
+	return &f
+}
+
+func NewTSetEditEvent(funcA *execq.Function) *vcl.TSetEditEvent {
+	var f vcl.TSetEditEvent = func(sender vcl.IObject, aCol, aRow int32, value string) {
+		funcA.Call(execq.NewStack(), sender, aCol, aRow, value)
+	}
+
+	return &f
+}
+
+func NewTDropFilesEvent(funcA *execq.Function) *vcl.TDropFilesEvent {
+	var f vcl.TDropFilesEvent = func(sender vcl.IObject, aFileNames []string) {
+		funcA.Call(execq.NewStack(), sender, aFileNames)
+	}
+
+	return &f
+}
+
+func NewTConstrainedResizeEvent(funcA *execq.Function) *vcl.TConstrainedResizeEvent {
+	var f vcl.TConstrainedResizeEvent = func(sender vcl.IObject, minWidth, minHeight, maxWidth, maxHeight *int32) {
+		funcA.Call(execq.NewStack(), sender, minWidth, minHeight, maxWidth, maxHeight)
+	}
+
+	return &f
+}
+
+func NewTWndProcEvent(funcA *execq.Function) *vcl.TWndProcEvent {
+	var f vcl.TWndProcEvent = func(msg *types.TMessage) {
+		funcA.Call(execq.NewStack(), msg)
+	}
+
+	return &f
+}
+
+func NewTSectionNotifyEvent(funcA *execq.Function) *vcl.TSectionNotifyEvent {
+	var f vcl.TSectionNotifyEvent = func(headerControl *vcl.THeaderControl, section *vcl.THeaderSection) {
+		funcA.Call(execq.NewStack(), headerControl, section)
+	}
+
+	return &f
+}
+
+func NewTSectionTrackEvent(funcA *execq.Function) *vcl.TSectionTrackEvent {
+	var f vcl.TSectionTrackEvent = func(headerControl *vcl.THeaderControl, section *vcl.THeaderSection, width int32, state types.TSectionTrackState) {
+		funcA.Call(execq.NewStack(), headerControl, section, width, state)
+	}
+
+	return &f
+}
+
+func NewTSectionDragEvent(funcA *execq.Function) *vcl.TSectionDragEvent {
+	var f vcl.TSectionDragEvent = func(sender vcl.IObject, fromSection, toSection *vcl.THeaderSection, allowDrag *bool) {
+		funcA.Call(execq.NewStack(), sender, fromSection, toSection, allowDrag)
+	}
+
+	return &f
+}
+
+func NewTSysLinkEvent(funcA *execq.Function) *vcl.TSysLinkEvent {
+	var f vcl.TSysLinkEvent = func(sender vcl.IObject, link string, linkType types.TSysLinkType) {
+		funcA.Call(execq.NewStack(), sender, link, linkType)
+	}
+
+	return &f
+}
+
+func NewTDrawItemEvent(funcA *execq.Function) *vcl.TDrawItemEvent {
+	var f vcl.TDrawItemEvent = func(control vcl.IWinControl, index int32, aRect types.TRect, state types.TOwnerDrawState) {
+		funcA.Call(execq.NewStack(), control, index, aRect, state)
+	}
+
+	return &f
+}
+
+func NewTLVSelectItemEvent(funcA *execq.Function) *vcl.TLVSelectItemEvent {
+	var f vcl.TLVSelectItemEvent = func(sender vcl.IObject, item *vcl.TListItem, selected bool) {
+		funcA.Call(execq.NewStack(), sender, item, selected)
+	}
+
+	return &f
+}
+
+func NewTLVCheckedItemEvent(funcA *execq.Function) *vcl.TLVCheckedItemEvent {
+	var f vcl.TLVCheckedItemEvent = func(sender vcl.IObject, item *vcl.TListItem) {
+		funcA.Call(execq.NewStack(), sender, item)
+	}
+
+	return &f
+}
+
+func NewTLVAdvancedCustomDrawEvent(funcA *execq.Function) *vcl.TLVAdvancedCustomDrawEvent {
+	var f vcl.TLVAdvancedCustomDrawEvent = func(sender *vcl.TListView, aRect types.TRect, stage types.TCustomDrawStage, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, aRect, stage, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTLVAdvancedCustomDrawItemEvent(funcA *execq.Function) *vcl.TLVAdvancedCustomDrawItemEvent {
+	var f vcl.TLVAdvancedCustomDrawItemEvent = func(sender *vcl.TListView, item *vcl.TListItem, state types.TCustomDrawState, Stage types.TCustomDrawStage, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, item, state, Stage, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTLVAdvancedCustomDrawSubItemEvent(funcA *execq.Function) *vcl.TLVAdvancedCustomDrawSubItemEvent {
+	var f vcl.TLVAdvancedCustomDrawSubItemEvent = func(sender *vcl.TListView, item *vcl.TListItem, subItem int32, state types.TCustomDrawState, stage types.TCustomDrawStage, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, item, subItem, state, stage, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTLVChangeEvent(funcA *execq.Function) *vcl.TLVChangeEvent {
+	var f vcl.TLVChangeEvent = func(sender vcl.IObject, item *vcl.TListItem, change types.TItemChange) {
+		funcA.Call(execq.NewStack(), sender, item, change)
+	}
+
+	return &f
+}
+
+func NewTLVColumnClickEvent(funcA *execq.Function) *vcl.TLVColumnClickEvent {
+	var f vcl.TLVColumnClickEvent = func(sender vcl.IObject, column *vcl.TListColumn) {
+		funcA.Call(execq.NewStack(), sender, column)
+	}
+
+	return &f
+}
+
+func NewTLVCompareEvent(funcA *execq.Function) *vcl.TLVCompareEvent {
+	var f vcl.TLVCompareEvent = func(sender vcl.IObject, item1, item2 *vcl.TListItem, data int32, compare *int32) {
+		funcA.Call(execq.NewStack(), sender, item1, item2, data, compare)
+	}
+
+	return &f
+}
+
+func NewTLVOwnerDataEvent(funcA *execq.Function) *vcl.TLVOwnerDataEvent {
+	var f vcl.TLVOwnerDataEvent = func(sender vcl.IObject, item *vcl.TListItem) {
+		funcA.Call(execq.NewStack(), sender, item)
+	}
+
+	return &f
+}
+
+func NewTLVOwnerDataFindEvent(funcA *execq.Function) *vcl.TLVOwnerDataFindEvent {
+	var f vcl.TLVOwnerDataFindEvent = func(sender vcl.IObject, find types.TItemFind, findString string, findPosition types.TPoint, findData types.TCustomData, startIndex int32, direction types.TSearchDirection, warp bool, index *int32) {
+		funcA.Call(execq.NewStack(), sender, find, findString, findPosition, findData, startIndex, direction, warp, index)
+	}
+
+	return &f
+}
+
+func NewTLVOwnerDataHintEvent(funcA *execq.Function) *vcl.TLVOwnerDataHintEvent {
+	var f vcl.TLVOwnerDataHintEvent = func(sender vcl.IObject, startIndex, endIndex int32) {
+		funcA.Call(execq.NewStack(), sender, startIndex, endIndex)
+	}
+
+	return &f
+}
+
+func NewTLVDataHintEvent(funcA *execq.Function) *vcl.TLVDataHintEvent {
+	var f vcl.TLVDataHintEvent = func(sender vcl.IObject, startIndex, endIndex int32) {
+		funcA.Call(execq.NewStack(), sender, startIndex, endIndex)
+	}
+
+	return &f
+}
+
+func NewTLVDeletedEvent(funcA *execq.Function) *vcl.TLVDeletedEvent {
+	var f vcl.TLVDeletedEvent = func(sender vcl.IObject, item *vcl.TListItem) {
+		funcA.Call(execq.NewStack(), sender, item)
+	}
+
+	return &f
+}
+
+func NewTLVEditedEvent(funcA *execq.Function) *vcl.TLVEditedEvent {
+	var f vcl.TLVEditedEvent = func(sender vcl.IObject, item *vcl.TListItem, s *string) {
+		funcA.Call(execq.NewStack(), sender, item, s)
+	}
+
+	return &f
+}
+
+func NewTLVEditingEvent(funcA *execq.Function) *vcl.TLVEditingEvent {
+	var f vcl.TLVEditingEvent = func(sender vcl.IObject, item *vcl.TListItem, allowEdit *bool) {
+		funcA.Call(execq.NewStack(), sender, item, allowEdit)
+	}
+
+	return &f
+}
+
+func NewTMenuChangeEvent(funcA *execq.Function) *vcl.TMenuChangeEvent {
+	var f vcl.TMenuChangeEvent = func(sender vcl.IObject, source *vcl.TMenuItem, rebuild bool) {
+		funcA.Call(execq.NewStack(), sender, source, rebuild)
+	}
+
+	return &f
+}
+
+func NewTMenuMeasureItemEvent(funcA *execq.Function) *vcl.TMenuMeasureItemEvent {
+	var f vcl.TMenuMeasureItemEvent = func(sender vcl.IObject, aCanvas *vcl.TCanvas, width, height *int32) {
+		funcA.Call(execq.NewStack(), sender, aCanvas, width, height)
+	}
+
+	return &f
+}
+
+func NewTTabChangingEvent(funcA *execq.Function) *vcl.TTabChangingEvent {
+	var f vcl.TTabChangingEvent = func(sender vcl.IObject, allowChange *bool) {
+		funcA.Call(execq.NewStack(), sender, allowChange)
+	}
+
+	return &f
+}
+
+func NewTUDChangingEvent(funcA *execq.Function) *vcl.TUDChangingEvent {
+	var f vcl.TUDChangingEvent = func(sender vcl.IObject, allowChange *bool) {
+		funcA.Call(execq.NewStack(), sender, allowChange)
+	}
+
+	return &f
+}
+
+func NewTUDClickEvent(funcA *execq.Function) *vcl.TUDClickEvent {
+	var f vcl.TUDClickEvent = func(sender vcl.IObject, button types.TUDBtnType) {
+		funcA.Call(execq.NewStack(), sender, button)
+	}
+
+	return &f
+}
+
+func NewTTaskDlgClickEvent(funcA *execq.Function) *vcl.TTaskDlgClickEvent {
+	var f vcl.TTaskDlgClickEvent = func(sender vcl.IObject, modalResult types.TModalResult, canClose *bool) {
+		funcA.Call(execq.NewStack(), sender, modalResult, canClose)
+	}
+
+	return &f
+}
+
+func NewTTVExpandedEvent(funcA *execq.Function) *vcl.TTVExpandedEvent {
+	var f vcl.TTVExpandedEvent = func(sender vcl.IObject, node *vcl.TTreeNode) {
+		funcA.Call(execq.NewStack(), sender, node)
+	}
+
+	return &f
+}
+
+func NewTTVAdvancedCustomDrawEvent(funcA *execq.Function) *vcl.TTVAdvancedCustomDrawEvent {
+	var f vcl.TTVAdvancedCustomDrawEvent = func(sender *vcl.TTreeView, aRect types.TRect, stage types.TCustomDrawStage, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, aRect, stage, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTTVAdvancedCustomDrawItemEvent(funcA *execq.Function) *vcl.TTVAdvancedCustomDrawItemEvent {
+	var f vcl.TTVAdvancedCustomDrawItemEvent = func(sender *vcl.TTreeView, node *vcl.TTreeNode, state types.TCustomDrawState, stage types.TCustomDrawStage, paintImages, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, node, state, stage, paintImages, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTTVChangedEvent(funcA *execq.Function) *vcl.TTVChangedEvent {
+	var f vcl.TTVChangedEvent = func(sender vcl.IObject, node *vcl.TTreeNode) {
+		funcA.Call(execq.NewStack(), sender, node)
+	}
+
+	return &f
+}
+
+func NewTTVChangingEvent(funcA *execq.Function) *vcl.TTVChangingEvent {
+	var f vcl.TTVChangingEvent = func(sender vcl.IObject, node *vcl.TTreeNode, allowChange *bool) {
+		funcA.Call(execq.NewStack(), sender, node, allowChange)
+	}
+
+	return &f
+}
+
+func NewTTVCollapsingEvent(funcA *execq.Function) *vcl.TTVCollapsingEvent {
+	var f vcl.TTVCollapsingEvent = func(sender vcl.IObject, node *vcl.TTreeNode, allowCollapse *bool) {
+		funcA.Call(execq.NewStack(), sender, node, allowCollapse)
+	}
+
+	return &f
+}
+
+func NewTTVCompareEvent(funcA *execq.Function) *vcl.TTVCompareEvent {
+	var f vcl.TTVCompareEvent = func(sender vcl.IObject, node1, node2 *vcl.TTreeNode, data int32, compare *int32) {
+		funcA.Call(execq.NewStack(), sender, node1, node2, data, compare)
+	}
+
+	return &f
+}
+
+func NewTTVCustomDrawEvent(funcA *execq.Function) *vcl.TTVCustomDrawEvent {
+	var f vcl.TTVCustomDrawEvent = func(sender *vcl.TTreeView, aRect types.TRect, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, aRect, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTTVCustomDrawItemEvent(funcA *execq.Function) *vcl.TTVCustomDrawItemEvent {
+	var f vcl.TTVCustomDrawItemEvent = func(sender *vcl.TTreeView, node *vcl.TTreeNode, state types.TCustomDrawStage, defaultDraw *bool) {
+		funcA.Call(execq.NewStack(), sender, node, state, defaultDraw)
+	}
+
+	return &f
+}
+
+func NewTTVEditedEvent(funcA *execq.Function) *vcl.TTVEditedEvent {
+	var f vcl.TTVEditedEvent = func(sender vcl.IObject, node *vcl.TTreeNode, s *string) {
+		funcA.Call(execq.NewStack(), sender, node, s)
+	}
+
+	return &f
+}
+
+func NewTTVEditingEvent(funcA *execq.Function) *vcl.TTVEditingEvent {
+	var f vcl.TTVEditingEvent = func(sender vcl.IObject, node *vcl.TTreeNode, allowEdit *bool) {
+		funcA.Call(execq.NewStack(), sender, node, allowEdit)
+	}
+
+	return &f
+}
+
+func NewTTVExpandingEvent(funcA *execq.Function) *vcl.TTVExpandingEvent {
+	var f vcl.TTVExpandingEvent = func(sender vcl.IObject, node *vcl.TTreeNode, allowExpansion *bool) {
+		funcA.Call(execq.NewStack(), sender, node, allowExpansion)
+	}
+
+	return &f
 }
 
 // full version related start
