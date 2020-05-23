@@ -1,0 +1,31 @@
+// sqltk库提供访问数据库的一些简单方法
+
+// 连接数据库，Oralce数据库要使用godror驱动
+// 用户名、密码、数据库服务器地址和端口、数据库名等均需要替换成自己的
+dbT, errT = sqltk.ConnectDB("godror", `username/password@db.example.com:1521/dbname`)
+
+if errT != nil {
+	printfln("数据库连接错误: %v", errT)
+	exit()
+}
+
+// 注意一定要关闭数据库连接，释放资源，即使是异常退出
+defer dbT.Close()
+
+// 拼装SQL语句，建议一般都用拼装的方式，避免传参数的SQL调用方式
+// 注意将数据库名、表名和字段名换成自己的
+sqlT = `select * from dbname.MY_TABLE_NAME where RECIPE_NO='0200006619210053289'`
+
+// QueryDBNSS函数将查询结果返回为一个二维数组，第一行为列名，第二行开始是数据，所有数据都被转换为字符串表示形式
+
+sqlResultT, errT = sqltk.QueryDBNSS(dbT, sqlT)
+
+if errT != nil {
+	printfln("获取数据记录失败：%v", errT)
+
+	exit()
+}
+
+// 查看结果
+plv(sqlResultT)
+

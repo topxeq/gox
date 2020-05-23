@@ -27,6 +27,7 @@ import (
 
 	// GUI related end
 
+	// import standard packages
 	qlarchivezip "github.com/topxeq/qlang/lib/archive/zip"
 	qlbufio "github.com/topxeq/qlang/lib/bufio"
 	qlbytes "github.com/topxeq/qlang/lib/bytes"
@@ -111,7 +112,7 @@ import (
 	qlunicode "github.com/topxeq/qlang/lib/unicode"
 	qlunicode_utf8 "github.com/topxeq/qlang/lib/unicode/utf8"
 
-	// 3rd party
+	// import 3rd party packages
 	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
 	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
 	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tk"
@@ -176,7 +177,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.990a"
+var versionG = "0.991a"
 
 var verboseG = false
 

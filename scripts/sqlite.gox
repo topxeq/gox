@@ -1,6 +1,3 @@
-tk = import("tk")
-sqltk = import("sqltk")
-os = import("os")
 
 // 如果存在该库（SQLite库是放在单一的文件中的）则删除该文件
 if tk.IfFileExists(`e:\tmpx\test.db`) {
@@ -15,6 +12,9 @@ if errT != nil {
 	return
 }
 
+// 确保关闭数据库
+defer dbT.Close()
+
 //创建表
 sqlStmtT = `
 create table TEST (ID integer not null primary key, CODE text);
@@ -22,7 +22,6 @@ create table TEST (ID integer not null primary key, CODE text);
 _, errT = dbT.Exec(sqlStmtT)
 if errT != nil {
 	printfln("创建表时发生错误：%v", errT.Error())
-	dbT.Close()
 	return
 }
 
@@ -30,7 +29,6 @@ if errT != nil {
 txT, errT = dbT.Begin()
 if errT != nil {
 	printfln("新建事务时发生错误：%v", errT.Error())
-	dbT.Close()
 	return
 }
 
@@ -38,9 +36,11 @@ if errT != nil {
 stmtT, errT = txT.Prepare("insert into TEST(ID, CODE) values(?, ?)")
 if errT != nil {
 	printfln("准备SQL语句插入记录时发生错误：%v", errT.Error())
-	dbT.Close()
 	return
 }
+
+// 确保关闭SQL语句对象
+defer stmtT.Close()
 
 // 向表中插入10条记录
 // 每条记录的ID字段用循环变量的值赋值
@@ -49,8 +49,6 @@ for i = 0; i < 10; i++ {
 	_, errT = stmtT.Exec(i, tk.GenerateRandomString(5, 8, true, true, true, false, false, false))
 	if errT != nil {
 		printfln("执行SQL插入记录语句时发生错误：%v", errT.Error())
-		stmtT.Close()
-		dbT.Close()
 		return
 	}
 }
@@ -61,11 +59,12 @@ txT.Commit()
 // 进行SQL查询
 rowsT, errT = dbT.Query("select ID, CODE from TEST")
 if errT != nil {
-	stmtT.Close()
-	dbT.Close()
 	printfln("执行SQL查询语句时发生错误：%v", errT.Error())
 	return
 }
+
+// 确保关闭数据库查询结果集对象
+defer rowsT.Close()
 
 // 遍历查询结果
 for {
@@ -74,15 +73,13 @@ for {
 		break
 	}
 
-	var idT = ""
-	var codeT = ""
+	idT = ""
+	codeT = ""
 
-	errT = rowsT.Scan(&idT, &codeT)
+	// 注意Gox语言中取指针要用符号^
+	errT = rowsT.Scan(^idT, ^codeT)
 	if errT != nil {
 		printfln("遍历查询结果时发生错误：%v", errT.Error())
-		rowsT.Close()
-		stmtT.Close()
-		dbT.Close()
 		return
 	}
 
@@ -94,7 +91,3 @@ errT = rowsT.Err()
 if errT != nil {
 	printfln("查询结果有错误：%v", errT.Error())
 }
-
-rowsT.Close()
-stmtT.Close()
-dbT.Close()
