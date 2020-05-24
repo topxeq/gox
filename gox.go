@@ -180,7 +180,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.991a"
+var versionG = "0.992a"
 
 var verboseG = false
 
