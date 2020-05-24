@@ -1,0 +1,49 @@
+// test command-line functions
+// for example: gox scripts\commandLine.gox abc -file=a.txt
+
+// 获取所有命令行参数
+println("The whole command-line: ", os.Args)
+
+// 获取除第一个命令行参数（一般是gox主程序名）之外的其他命令行参数
+argsG = os.Args[1:]
+println("The whole command-line without executable: ", argsG)
+
+// 获取命令行参数个数（下面均指去掉了第一个参数后的命令行参数）
+lenT = len(argsG)
+
+// 输出第一个命令行参数
+if lenT > 0 {
+	printfln("The first command-line element is: %v", argsG[0])
+}
+
+// 输出第二个命令行参数
+if lenT > 1 {
+	printfln("The sencod command-line element is: %v", argsG[1])
+}
+
+// 安全获取第二个（序号为1）命令行参数，如果没有则返回默认值空字符串
+para1 = tk.GetParameterByIndexWithDefaultValue(argsG, 1, "")
+pl("para1=%v", para1)
+
+// 安全获取第三个（序号为2）命令行参数，如果没有则返回默认值空字符串
+para2 = tk.GetParameterByIndexWithDefaultValue(argsG, 2, "")
+pl("para2=%v", para2)
+
+// 安全获取开关参数-file=的值（形如-file=a.txt），如果不存在则返回默认值空字符串
+switch1 = tk.GetSwitchWithDefaultValue(argsG, "-file=", "")
+
+pln("switch1:", switch1)
+
+// 获取所有非开关参数的命令行参数并输出
+paras = tk.GetAllParameters(argsG)
+pln("All parameters:", paras)
+
+// 获取所有开关参数的命令行参数并输出
+switches = tk.GetAllSwitches(argsG)
+pln("All switches:", switches)
+
+// 判断是否存在开关参数-file，-files这样的不算
+pln(tk.IfSwitchExistsWhole(argsG, "-file"))
+
+// 判断是否存在以-file开始的开关参数，因此-files也算存在
+pln(tk.IfSwitchExists(argsG, "-file"))

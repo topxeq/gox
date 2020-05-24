@@ -1,45 +1,54 @@
-plot = import("plot")
+// 导入imagetk包
+itk = imagetk.NewImageTK()
 
+// 创建一个绘制上下文环境
 p, _ = plot.New()
 
+// 设置图表的抬头标题
 p.Title.Text = "Gonum Plot Example"
+
+// 设置图标X、Y坐标的文字
 p.X.Label.Text = "X"
 p.Y.Label.Text = "Y"
 
-points = make(plot.XYs)
+// 创建一组准备绘制的坐标点（4个点）
+points = make(plot_plotter.XYs, 4)
 
-points[0] = make(plot.XY)
-points[0].X = 0.0
-points[0].Y = 0.0
+// 创建并为第一个点赋值X、Y坐标
+tmpXY = new(plot_plotter.XY)
+tmpXY.X = 0.0
+tmpXY.Y = 0.0
 
-points[1] = plot.NewXY(1.0, 1.0)
+points[0] = *tmpXY
 
-points[2] = plot.NewXY(2.0, 4.0)
+// 采用简便的方法创建第2、3、4个点
+points[1] = itk.NewPlotXY(1.0, 1.0)
+points[2] = itk.NewPlotXY(2.0, 4.0)
+points[3] = itk.NewPlotXY(3.0, 9.0)
 
-points[3] = plot.NewXY(3.0, 9.0)
+// 在图表中加入这些点，并给相应的曲线设定图例的名字
+plot_plotutil.AddLinePoints(p, "y = x * x", points)
 
-plot.AddLinePoints(p, "y = x * x", points)
+// 将折线图保存为4英寸见方大小的图片points.png，
+// 需要确保c:\test目录已经存在
+p.Save(4*plot_vg.Inch.Points(), 4*plot_vg.Inch.Points(), `c:\test\points.png`)
 
-p.Save(4*plot.Inch, 4*plot.Inch, `c:\test\points.png`)
-
-var gui = import("gui")
-
-func onButtonClick() {
-	exit()
+onButtonClick = func() {
+	os.Exit(0)
 }
 
-func loop() {
+loop = func() {
 
-	layoutT = []gui.Widget{
-		gui.ImageWithFile(`c:\test\points.png`, 300, 300),
-		gui.Button("Close", onButtonClick),
+	layoutT = []giu.Widget{
+		giu.ImageWithFile(`c:\test\points.png`, 300, 300),
+		giu.Button("Close", onButtonClick),
 	}
 
-	gui.SingleWindow("Plot Diagram", layoutT)
+	giu.SingleWindow("Plot Diagram", layoutT)
 }
 
-mainWindow = gui.NewMasterWindow("Plot Diagram", 700, 400, gui.MasterWindowFlagsNotResizable, nil)
+mainWindow = giu.NewMasterWindow("Plot Diagram", 700, 400, giu.MasterWindowFlagsNotResizable, nil)
 
-gui.LoopWindow(mainWindow, loop)
-
+// giu.LoopWindow(mainWindow, loop)
+mainWindow.Main(loop)
 

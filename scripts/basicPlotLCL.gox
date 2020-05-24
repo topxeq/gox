@@ -1,3 +1,5 @@
+itk = imagetk.NewImageTK()
+
 p, _ = plot.New()
 
 p.Title.Text = "Gonum Plot Example"
@@ -7,21 +9,21 @@ p.Title.Text = "Gonum Plot Example"
 p.X.Label.Text = "X"
 p.Y.Label.Text = "Y"
 
-points = make(plot.XYs, 4)
+points = make(plot_plotter.XYs, 4)
 
-a = &plot.XY{X: 0.0, Y: 0.0}
+a = &plot_plotter.XY{X: 0.0, Y: 0.0}
 
 points[0] = *a
 
-points[1] = *(&plot.XY{X: 1.0, Y: 1.0})
+points[1] = *(&plot_plotter.XY{X: 1.0, Y: 1.0})
 
-points[2] = plot.NewXY(2.0, 4.0)
+points[2] = itk.NewPlotXY(2.0, 4.0)
 
-points[3] = plot.NewXY(3.0, 9.0)
+points[3] = itk.NewPlotXY(3.0, 9.0)
 
-plot.AddLinePoints(p, "y = x * x", points)
+plot_plotutil.AddLinePoints(p, "y = x * x", points)
 
-p.Save(4*plot.Inch, 4.0*plot.Inch, `c:\test\points.png`)
+p.Save(4*plot_vg.Inch.Points(), 4.0*plot_vg.Inch.Points(), `c:\test\points.png`)
 
 errT = lcl.InitLCL()
 
@@ -53,9 +55,7 @@ img1.Picture().LoadFromFile(`c:\test\points.png`)
 img1.SetStretch(true)
 img1.SetProportional(true)
 
-itk = imagetk.NewImageTK()
-
-bufT, errT = itk.LoadPlotImageInMemory(p, 4*plot.Inch, 4*plot.Inch, "png")
+bufT, errT = itk.LoadPlotImageInMemory(p, 4*plot_vg.Inch.Points(), 4*plot_vg.Inch.Points(), "png")
 
 checkError(errT, nil)
 

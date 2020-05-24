@@ -347,6 +347,7 @@ github.com/topxeq/qlang v0.0.0-20200519085047-fe910b83876f h1:MTIvRKkmofRcYUJFHd
 github.com/topxeq/qlang v0.0.0-20200519085047-fe910b83876f/go.mod h1:Kd16bi6PfZaKg9sOcKXbyUrs6DKvSlmjjyK9XUm5xR0=
 github.com/topxeq/qlang v0.0.0-20200520125932-4e3d7d839427 h1:J5TDAydQvLZV1ZXYK2FQRhOSgTrRn9VpXAVgWyG3eak=
 github.com/topxeq/qlang v0.0.0-20200520125932-4e3d7d839427/go.mod h1:W9G8MrF5vahQjk98hecsI3e/T6zOC1eT15ntmZK3EY0=
+github.com/topxeq/qlang v0.0.0-20200523103730-dc3e298a30b0 h1:isGWyCWP2Y/NQruZtZqIQIWXNHlZ27BvWEl8g5UWCsg=
 github.com/topxeq/sqltk v0.0.0-20191024030855-9900c8f99437 h1:7vBIkcLy5/GaqyCqJzNvAPhwGmRLI3cYYvPvFKpAJIs=
 github.com/topxeq/sqltk v0.0.0-20191024030855-9900c8f99437/go.mod h1:KOl6vGec44tFypvXpWi2d/V1bvnOljyiIizuwIeBWu4=
 github.com/topxeq/text v0.0.0-20200518012001-b0cd431d910d h1:WSkmg+eQ3QcaSrKIJ2BPMSGfSxpJlJl019rt6yrOqOg=
@@ -447,6 +448,7 @@ golang.org/x/sys v0.0.0-20190502145724-3ef323f4f1fd/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190726091711-fc99dfbffb4e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190826190057-c7b8b68b1456/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20191220142924-d4481acd189f h1:68K/z8GLUxV76xGSqwTWw2gyk/jwn79LUL43rES2g8o=
 golang.org/x/sys v0.0.0-20191220142924-d4481acd189f/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=

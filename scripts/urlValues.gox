@@ -1,0 +1,8 @@
+t = tk
+u = net_url
+
+v = make(u.Values)
+
+v.Set("a", "123")
+
+t.Pl("%#v", v)

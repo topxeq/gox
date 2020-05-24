@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 
 	"io"
 	"math/rand"
@@ -114,8 +113,11 @@ import (
 
 	// import 3rd party packages
 	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
+	qlgithubtopxeqimagetk "github.com/topxeq/qlang/lib/github.com/topxeq/imagetk"
 	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
 	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tk"
+
+	// GUI related start
 
 	qlgithub_topxeq_govcl_vcl "github.com/topxeq/qlang/lib/github.com/topxeq/govcl/vcl"
 	qlgithub_topxeq_govcl_vcl_api "github.com/topxeq/qlang/lib/github.com/topxeq/govcl/vcl/api"
@@ -124,34 +126,34 @@ import (
 
 	qlgithub_AllenDang_giu "github.com/topxeq/qlang/lib/github.com/AllenDang/giu"
 	qlgithub_AllenDang_giu_imgui "github.com/topxeq/qlang/lib/github.com/AllenDang/giu/imgui"
+	// GUI related end
+
+	qlgithub_dgraphio_badger "github.com/topxeq/qlang/lib/github.com/dgraph-io/badger"
+
+	qlgithub_fogleman_gg "github.com/topxeq/qlang/lib/github.com/fogleman/gg"
+
+	qlgonumorg_v1_plot "github.com/topxeq/qlang/lib/gonum.org/v1/plot"
+	qlgonumorg_v1_plot_plotter "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotter"
+	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
+	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
 
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/godror/godror"
 
-	"image"
-	"image/color"
-	"image/draw"
-	"image/png"
+	// "image"
+	// "image/color"
+	// "image/draw"
+	// "image/png"
 
-	// GUI related start
-	"github.com/topxeq/imagetk"
-	"gonum.org/v1/plot/plotutil"
-
-	// GUI related end
-
-	"gonum.org/v1/plot"
-	"gonum.org/v1/plot/plotter"
-	"gonum.org/v1/plot/vg"
+	// "gonum.org/v1/plot"
+	// "gonum.org/v1/plot/plotter"
+	// "gonum.org/v1/plot/vg"
 
 	// full version related end
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
-
-	// full version related start
-
-	// full version related end
 
 	// GUI related start
 	// full version related start
@@ -199,23 +201,6 @@ func exit() {
 	os.Exit(1)
 }
 
-// func getVar(nameA string) interface{} {
-// 	varMutexG.Lock()
-// 	rs, ok := variableG[nameA]
-// 	varMutexG.Unlock()
-
-// 	if !ok {
-// 		tk.GenerateErrorString("no key")
-// 	}
-// 	return rs
-// }
-
-// func setVar(nameA string, valueA interface{}) {
-// 	varMutexG.Lock()
-// 	variableG[nameA] = valueA
-// 	varMutexG.Unlock()
-// }
-
 func qlEval(strA string) string {
 	vmT := qlang.New()
 
@@ -240,131 +225,9 @@ func qlEval(strA string) string {
 	return tk.Spr("%v", rs)
 }
 
-// func getClipText() string {
-// 	textT, errT := clipboard.ReadAll()
-// 	if errT != nil {
-// 		return tk.GenerateErrorStringF("could not get text from clipboard: %v", errT.Error())
-// 	}
-
-// 	return textT
-// }
-
-// func setClipText(textA string) {
-// 	clipboard.WriteAll(textA)
-// }
-
 func panicIt(valueA interface{}) {
 	panic(valueA)
 }
-
-// func checkErrorFunc(errA error, funcA func()) {
-// 	if errA != nil {
-// 		tk.PlErr(errA)
-
-// 		if funcA != nil {
-// 			funcA()
-// 		}
-
-// 		os.Exit(1)
-// 	}
-
-// }
-
-// func checkError(errA error, funcsA ...(func())) {
-// 	if errA != nil {
-// 		tk.PlErr(errA)
-
-// 		if funcsA != nil {
-// 			for _, v := range funcsA {
-// 				v()
-// 			}
-// 		}
-
-// 		os.Exit(1)
-// 	}
-
-// }
-
-// func checkErrorString(strA string, funcA func()) {
-// 	if tk.IsErrorString(strA) {
-// 		tk.PlErrString(strA)
-
-// 		if funcA != nil {
-// 			funcA()
-// 		}
-
-// 		os.Exit(1)
-// 	}
-
-// }
-
-// func remove(aryA []interface{}, startA int, endA int) []interface{} {
-// 	if startA < 0 || startA >= len(aryA) {
-// 		tk.Pl("Runtime error: %v", "index out of range")
-// 		exit()
-// 	}
-
-// 	if endA < 0 || endA >= len(aryA) {
-// 		tk.Pl("Runtime error: %v", "index out of range")
-// 		exit()
-// 	}
-
-// 	return append(aryA[:startA], aryA[endA+1:]...)
-// 	// if idxT == 0 {
-// 	// 	return ayrA[idxT + 1:]
-// 	// }
-
-// 	// if idxT == len(aryA) - 1 {
-// 	// 	return ayrA[0:len(aryA) - 1]
-// 	// }
-
-// 	// return append(aryA[:idxA], aryA[idxA+1:]...)
-
-// }
-
-// func toStringFromRuneSlice(sliceA []rune) string {
-// 	return string(sliceA)
-// }
-
-// // toInt converts all reflect.Value-s into int.
-// func toInt(vA interface{}) int {
-// 	v := reflect.ValueOf(&vA)
-// 	i, _ := tryToInt(v)
-// 	return i
-// }
-
-// // tryToInt attempts to convert a value to an int.
-// // If it cannot (in the case of a non-numeric string, a struct, etc.)
-// // it returns 0 and an error.
-// func tryToInt(v reflect.Value) (int, error) {
-// 	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
-// 		v = v.Elem()
-// 	}
-// 	switch v.Kind() {
-// 	case reflect.Float64, reflect.Float32:
-// 		return int(v.Float()), nil
-// 	case reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8, reflect.Int:
-// 		return int(v.Int()), nil
-// 	case reflect.Bool:
-// 		if v.Bool() {
-// 			return 1, nil
-// 		}
-// 		return 0, nil
-// 	case reflect.String:
-// 		s := v.String()
-// 		var i int64
-// 		var err error
-// 		if strings.HasPrefix(s, "0x") {
-// 			i, err = strconv.ParseInt(s, 16, 64)
-// 		} else {
-// 			i, err = strconv.ParseInt(s, 10, 64)
-// 		}
-// 		if err == nil {
-// 			return int(i), nil
-// 		}
-// 	}
-// 	return 0, errors.New("couldn't convert to integer")
-// }
 
 func getUint64Value(v reflect.Value) uint16 {
 	tk.Pl("%x", v.Interface())
@@ -393,18 +256,7 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 			return errT.Error()
 		}
 
-		// if retG != notFoundG {
-		// 	fmt.Println(retG)
-		// }
-
-		// rs, _ := vmT.GetVar("outG")
-
-		// if !ok {
-		// 	return ""
-		// }
-
 		return retG
-		// full version related start
 	} else {
 		return tk.SystemCmd("gox", append([]string{codeA}, argsA...)...)
 	}
@@ -412,78 +264,78 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 }
 
 // full version related start
-func newRGBA(r, g, b, a uint8) color.RGBA {
-	return color.RGBA{r, g, b, a}
-}
+// func newRGBA(r, g, b, a uint8) color.RGBA {
+// 	return color.RGBA{r, g, b, a}
+// }
 
-func newNRGBAFromHex(strA string) color.NRGBA {
-	r, g, b, a := tk.ParseHexColor(strA)
+// func newNRGBAFromHex(strA string) color.NRGBA {
+// 	r, g, b, a := tk.ParseHexColor(strA)
 
-	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-}
+// 	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+// }
 
-func newRGBAFromHex(strA string) color.RGBA {
-	r, g, b, a := tk.ParseHexColor(strA)
+// func newRGBAFromHex(strA string) color.RGBA {
+// 	r, g, b, a := tk.ParseHexColor(strA)
 
-	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-}
+// 	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+// }
 
-func newPlotXY(xA, yA float64) plotter.XY {
-	return plotter.XY{X: xA, Y: yA}
-}
+// func newPlotXY(xA, yA float64) plotter.XY {
+// 	return plotter.XY{X: xA, Y: yA}
+// }
 
-func loadRGBAFromImage(imageA image.Image) (*image.RGBA, error) {
-	switch imageT := imageA.(type) {
-	case *image.RGBA:
-		return imageT, nil
-	default:
-		rgba := image.NewRGBA(imageT.Bounds())
-		draw.Draw(rgba, imageT.Bounds(), imageT, image.Pt(0, 0), draw.Src)
-		return rgba, nil
-	}
+// func loadRGBAFromImage(imageA image.Image) (*image.RGBA, error) {
+// 	switch imageT := imageA.(type) {
+// 	case *image.RGBA:
+// 		return imageT, nil
+// 	default:
+// 		rgba := image.NewRGBA(imageT.Bounds())
+// 		draw.Draw(rgba, imageT.Bounds(), imageT, image.Pt(0, 0), draw.Src)
+// 		return rgba, nil
+// 	}
 
-}
+// }
 
-func LoadPlotImage(p *plot.Plot, w vg.Length, h vg.Length) (*image.RGBA, error) {
+// func LoadPlotImage(p *plot.Plot, w vg.Length, h vg.Length) (*image.RGBA, error) {
 
-	var bufT bytes.Buffer
+// 	var bufT bytes.Buffer
 
-	writerT, errT := p.WriterTo(w, h, "png")
+// 	writerT, errT := p.WriterTo(w, h, "png")
 
-	if errT != nil {
-		return nil, errT
-	}
+// 	if errT != nil {
+// 		return nil, errT
+// 	}
 
-	_, errT = writerT.WriteTo(&bufT)
+// 	_, errT = writerT.WriteTo(&bufT)
 
-	if errT != nil {
-		return nil, errT
-	}
+// 	if errT != nil {
+// 		return nil, errT
+// 	}
 
-	readerT := bytes.NewReader(bufT.Bytes())
+// 	readerT := bytes.NewReader(bufT.Bytes())
 
-	// defer readerT.Close()
+// 	// defer readerT.Close()
 
-	// imgFile, err := os.Open(imgPath)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// defer imgFile.Close()
+// 	// imgFile, err := os.Open(imgPath)
+// 	// if err != nil {
+// 	// 	return nil, err
+// 	// }
+// 	// defer imgFile.Close()
 
-	img, err := png.Decode(readerT)
-	if err != nil {
-		return nil, err
-	}
+// 	img, err := png.Decode(readerT)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	switch trueImg := img.(type) {
-	case *image.RGBA:
-		return trueImg, nil
-	default:
-		rgba := image.NewRGBA(trueImg.Bounds())
-		draw.Draw(rgba, trueImg.Bounds(), trueImg, image.Pt(0, 0), draw.Src)
-		return rgba, nil
-	}
-}
+// 	switch trueImg := img.(type) {
+// 	case *image.RGBA:
+// 		return trueImg, nil
+// 	default:
+// 		rgba := image.NewRGBA(trueImg.Bounds())
+// 		draw.Draw(rgba, trueImg.Bounds(), trueImg, image.Pt(0, 0), draw.Src)
+// 		return rgba, nil
+// 	}
+// }
 
 // type MyXYer plotter.XY
 
@@ -497,46 +349,46 @@ func LoadPlotImage(p *plot.Plot, w vg.Length, h vg.Length) (*image.RGBA, error) 
 
 // full version related end
 
-func setValue(p interface{}, v interface{}) {
-	// tk.Pl("%#v", reflect.TypeOf(p).Kind())
-	// p = v
+// func setValue(p interface{}, v interface{}) {
+// 	// tk.Pl("%#v", reflect.TypeOf(p).Kind())
+// 	// p = v
 
-	srcRef := reflect.ValueOf(v)
-	vp := reflect.ValueOf(p)
-	vp.Elem().Set(srcRef)
-}
+// 	srcRef := reflect.ValueOf(v)
+// 	vp := reflect.ValueOf(p)
+// 	vp.Elem().Set(srcRef)
+// }
 
-func getValue(p interface{}) interface{} {
-	vp := reflect.Indirect(reflect.ValueOf(p))
-	return vp.Interface()
-}
+// func getValue(p interface{}) interface{} {
+// 	vp := reflect.Indirect(reflect.ValueOf(p))
+// 	return vp.Interface()
+// }
 
-func bitXor(p interface{}, v interface{}) interface{} {
-	switch p.(type) {
-	case int:
-		return p.(int) ^ v.(int)
-	case int64:
-		return p.(int64) ^ v.(int64)
-	case int32:
-		return p.(int32) ^ v.(int32)
-	case int16:
-		return p.(int16) ^ v.(int16)
-	case int8:
-		return p.(int8) ^ v.(int8)
-	case uint64:
-		return p.(uint64) ^ v.(uint64)
-	case uint32:
-		return p.(uint32) ^ v.(uint32)
-	case uint16:
-		return p.(uint16) ^ v.(uint16)
-	case uint8:
-		return p.(uint8) ^ v.(uint8)
-	case uint:
-		return p.(uint) ^ v.(uint)
-	}
+// func bitXor(p interface{}, v interface{}) interface{} {
+// 	switch p.(type) {
+// 	case int:
+// 		return p.(int) ^ v.(int)
+// 	case int64:
+// 		return p.(int64) ^ v.(int64)
+// 	case int32:
+// 		return p.(int32) ^ v.(int32)
+// 	case int16:
+// 		return p.(int16) ^ v.(int16)
+// 	case int8:
+// 		return p.(int8) ^ v.(int8)
+// 	case uint64:
+// 		return p.(uint64) ^ v.(uint64)
+// 	case uint32:
+// 		return p.(uint32) ^ v.(uint32)
+// 	case uint16:
+// 		return p.(uint16) ^ v.(uint16)
+// 	case uint8:
+// 		return p.(uint8) ^ v.(uint8)
+// 	case uint:
+// 		return p.(uint) ^ v.(uint)
+// 	}
 
-	return 0
-}
+// 	return 0
+// }
 
 func importQLNonGUIPackages() {
 	printValue := func(nameA string) {
@@ -580,9 +432,9 @@ func importQLNonGUIPackages() {
 		"plerr":            tk.PlErr,
 		"pv":               printValue,
 		"exit":             exit,
-		"setValue":         setValue,
-		"getValue":         getValue,
-		"bitXor":           bitXor,
+		"setValue":         tk.SetValue,
+		"getValue":         tk.GetValue,
+		"bitXor":           tk.BitXor,
 		"setVar":           tk.SetVar,
 		"getVar":           tk.GetVar,
 		"checkError":       tk.CheckError,
@@ -694,12 +546,15 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
 	qlang.Import("tk", qlgithubtopxeqtk.Exports)
+	qlang.Import("github_topxeq_imagetk", qlgithubtopxeqimagetk.Exports)
+	qlang.Import("imagetk", qlgithubtopxeqimagetk.Exports)
 
 	qlang.Import("github_beevik_etree", qlgithubbeeviketree.Exports)
 	qlang.Import("etree", qlgithubbeeviketree.Exports)
 	qlang.Import("github_topxeq_sqltk", qlgithubtopxeqsqltk.Exports)
 	qlang.Import("sqltk", qlgithubtopxeqsqltk.Exports)
 
+	// GUI related start
 	qlang.Import("github_topxeq_govcl_vcl", qlgithub_topxeq_govcl_vcl.Exports)
 	qlang.Import("vcl", qlgithub_topxeq_govcl_vcl.Exports)
 	qlang.Import("github_topxeq_govcl_vcl_types", qlgithub_topxeq_govcl_vcl_types.Exports)
@@ -713,6 +568,22 @@ func importQLNonGUIPackages() {
 	qlang.Import("giu", qlgithub_AllenDang_giu.Exports)
 	qlang.Import("github_AllenDang_giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
 	qlang.Import("giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
+	// GUI related end
+
+	qlang.Import("github_dgraphio_badger", qlgithub_dgraphio_badger.Exports)
+	qlang.Import("badger", qlgithub_dgraphio_badger.Exports)
+
+	qlang.Import("github_fogleman_gg", qlgithub_fogleman_gg.Exports)
+	qlang.Import("gg", qlgithub_fogleman_gg.Exports)
+
+	qlang.Import("gonumorg_v1_plot", qlgonumorg_v1_plot.Exports)
+	qlang.Import("plot", qlgonumorg_v1_plot.Exports)
+	qlang.Import("gonumorg_v1_plot_plotter", qlgonumorg_v1_plot_plotter.Exports)
+	qlang.Import("plot_plotter", qlgonumorg_v1_plot_plotter.Exports)
+	qlang.Import("gonumorg_v1_plot_plotutil", qlgonumorg_v1_plot_plotutil.Exports)
+	qlang.Import("plot_plotutil", qlgonumorg_v1_plot_plotutil.Exports)
+	qlang.Import("gonumorg_v1_plot_vg", qlgonumorg_v1_plot_vg.Exports)
+	qlang.Import("plot_vg", qlgonumorg_v1_plot_vg.Exports)
 
 }
 
@@ -1560,30 +1431,30 @@ func NewTTVExpandingEvent(funcA *execq.Function) *vcl.TTVExpandingEvent {
 
 // full version related start
 
-var vgInch = float64(vg.Inch)
+// var vgInch = float64(vg.Inch)
 
 // full version related end
 
 func importQLGUIPackages() {
 	// full version related start
-	var plotExports = map[string]interface{}{
-		"New": plot.New,
-		// "SetTitleText":  plot.SetTitleText,
-		"NewXY":         newPlotXY,
-		"AddLinePoints": plotutil.AddLinePoints,
-		"Inch":          vgInch,
+	// var plotExports = map[string]interface{}{
+	// 	"New": plot.New,
+	// 	// "SetTitleText":  plot.SetTitleText,
+	// 	"NewXY":         newPlotXY,
+	// 	"AddLinePoints": plotutil.AddLinePoints,
+	// 	"Inch":          vgInch,
 
-		"XYs": specq.StructOf((*plotter.XYs)(nil)),
-		"XY":  specq.StructOf((*plotter.XY)(nil)),
-	}
+	// 	"XYs": specq.StructOf((*plotter.XYs)(nil)),
+	// 	"XY":  specq.StructOf((*plotter.XY)(nil)),
+	// }
 
-	qlang.Import("plot", plotExports)
+	// qlang.Import("plot", plotExports)
 
-	var imagetkExports = map[string]interface{}{
-		"NewImageTK": imagetk.NewImageTK,
-	}
+	// var imagetkExports = map[string]interface{}{
+	// 	"NewImageTK": imagetk.NewImageTK,
+	// }
 
-	qlang.Import("imagetk", imagetkExports)
+	// qlang.Import("imagetk", imagetkExports)
 
 	var guiExports = map[string]interface{}{
 		"NewMasterWindow":         giu.NewMasterWindow,

@@ -1,3 +1,8 @@
+// quickCheck函数用于根据文件头快速判断文件的类型
+// 输入参数是一个字节数组
+// 注意无论是GB18030还是UTF-8编码的文件，均可以没有对应的文件头，
+// 因此判断文件头并不总能判断出文件类型
+// 但一般来说存在对应文件头，就可以确定是该编码的文件
 quickCheck = fn(bytesA) {
 	lenT = len(bytesA)
 
@@ -5,6 +10,7 @@ quickCheck = fn(bytesA) {
 		return ""
 	}
 
+	// 判断一开始是否是UTF-8的BOM头，如果是的话，直接可断定是
 	if bytesA[0] == 0xef && bytesA[1] == 0xbb && bytesA[2] == 0xbf {
 		return "UTF8-BOM"
 	}
@@ -13,6 +19,7 @@ quickCheck = fn(bytesA) {
 		return ""
 	}
 
+	// 判断是否是GB18030文件的文件头
 	if bytesA[0] == 0x84 && bytesA[1] == 0x31 && bytesA[2] == 0x95 && bytesA[3] == 0x33 {
 		return "GB18030"
 	}
@@ -20,6 +27,9 @@ quickCheck = fn(bytesA) {
 	return ""
 }
 
+// 详细检查是否是UTF-8编码的文件
+// 方法是注意检查每个字符，看是否存在UTF-8编码规则之外的字符
+// 如果全是规则之内的字符，则可以判定是UTF-8编码
 checkUTF8 = fn(bytesA) {
 	utf8ByteT = 0
 
@@ -59,6 +69,9 @@ checkUTF8 = fn(bytesA) {
 	return true
 }
 
+// 详细检查是否是GB18030编码的文件
+// 方法是注意检查每个字符，看是否存在GB18030编码规则之外的字符
+// 如果全是规则之内的字符，则可以判定是GB18030编码
 checkGB18030 = fn(bytesA) {
 	gbByteT = 0
 
@@ -103,6 +116,12 @@ checkGB18030 = fn(bytesA) {
 	return true
 }
 
+// 详细检查文件编码的入口函数
+// 可以调节其中的判断顺序来选择优先判断何种编码
+// 本例中优先先判定是否是UTF-8编码
+// 如果没有任何字符不属于UTF8编码的规则，则认定为UTF-8编码
+// 接下来才判断GB18030
+// 如果都不符合，则返回空字符串
 detailCheck = fn(bytesA) {
 
 	if checkUTF8(bytesA) {
@@ -118,6 +137,9 @@ detailCheck = fn(bytesA) {
 }
 
 
+// 检查编码的入口函数
+// 先用快速检测方法（检测文件头）来试图检测文件编码
+// 快速法无法检测出的情况下，才进行详细检测
 checkText = fn(bytesA) {
 	rs = quickCheck(bytesA)
 	
@@ -128,6 +150,9 @@ checkText = fn(bytesA) {
 	return rs
 }
 
+// 下面才是主程序部分的开始
+
+// 初始化LCL图形界面库
 errT = lcl.InitLCL()
 
 if errT != nil {
@@ -135,12 +160,15 @@ if errT != nil {
 	exit()
 }
 
+// 创建LCL图形界面应用并初始化
 application = lcl.GetApplication()
 application.Initialize()
 
+// 设置应用标题
 application.SetTitle("编码检测与转换")
 application.SetMainFormOnTaskBar(true)
 
+// 创建主窗口并设置宽高、标题、位置等
 mainForm = application.CreateForm()
 
 mainForm.SetWidth(620)
@@ -150,6 +178,7 @@ mainForm.SetPosition(lcl.PoScreenCenter)
 
 mainForm.Font().SetSize(11)
 
+// 创建一个多行文本框，用于放转换后的文本
 memo1 = lcl.NewMemo(mainForm)
 memo1.SetParent(mainForm)
 memo1.SetBounds(10, 20, 600, 400)
@@ -159,7 +188,9 @@ memo1.SetScrollBars(lcl.SsAutoVertical)
 memo1.SetWordWrap(true)
 
 
+// 设置按“打开文件”按钮后的回调函数
 onButtonOpenClick = fn(sender) {
+	// 打开图形化的文件选择框让用户选择文件
 	fileNameT = gui.SelectFile("选择文件……", "所有类型", "*")
 	
 	if tk.IsErrorString(fileNameT) {
@@ -167,6 +198,7 @@ onButtonOpenClick = fn(sender) {
 		return
 	}
 
+	// 以二进制方式载入文件中的所有字节
 	bytesT, errT = tk.LoadBytesFromFileE(fileNameT, -1)
 	
 	if errT != nil {
@@ -174,6 +206,7 @@ onButtonOpenClick = fn(sender) {
 		return
 	}
 
+	// 检测文本编码
 	rs = checkText(bytesT)
 
 	if rs == "" {
@@ -183,6 +216,7 @@ onButtonOpenClick = fn(sender) {
 
 	outStrT = ""
 
+	// 如果是GB18030编码，则提示用户确认是否转换为UTF-8编码；否则直接显示该文件
 	if rs == "GB18030" {
 		confirmT = gui.GetConfirm("请选择", "文件编码是"+rs+"，是否转换为UTF-8？")
 
@@ -206,13 +240,16 @@ onButtonOpenClick = fn(sender) {
 	memo1.SetText(outStrT)
 }
 
+// 点按“另存为”按钮的回调函数
 onButtonSaveAsClick = fn(sender) {
+	// 提示用户确认
 	confirmT = gui.GetConfirm("请选择", "如果文件没有转换为UTF-8，保存时可能会造成字符错乱并无法恢复，是否要继续？")
 
 	if !confirmT {
 		return
 	}
 
+	// 弹出另存文件的对话框让用户选择另存为的文件路径和文件名
 	fileNameT = gui.SelectSaveFile("选择文件……", "所有类型", "*")
 	
 	if tk.IsErrorString(fileNameT) {
@@ -229,13 +266,16 @@ onButtonSaveAsClick = fn(sender) {
 		return
 	}
 
+	// 提示已经保存成功
 	gui.SimpleInfo("信息提示", "文件已保存至：" + fileNameT)
 }
 
+// 点按“关闭”的回到函数，结束图形界面程序的运行
 onButtonCloseClick = fn(sender) {
 	application.Terminate()
 }
 
+// 在主窗口增加“打开文件”的按钮
 buttonOpen = lcl.NewButton(mainForm)
 buttonOpen.SetParent(mainForm)
 buttonOpen.SetLeft(10)
@@ -244,6 +284,7 @@ buttonOpen.SetCaption("打开文件")
 buttonOpen.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
 buttonOpen.SetOnClick(lcl.NewTNotifyEvent(onButtonOpenClick))
 
+// 在主窗口增加“另存”的按钮
 buttonSaveAs = lcl.NewButton(mainForm)
 buttonSaveAs.SetParent(mainForm)
 buttonSaveAs.SetLeft(110)
@@ -252,6 +293,7 @@ buttonSaveAs.SetCaption("另存")
 buttonSaveAs.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
 buttonSaveAs.SetOnClick(lcl.NewTNotifyEvent(onButtonSaveAsClick))
 
+// 在主窗口增加“关闭”的按钮
 buttonClose = lcl.NewButton(mainForm)
 buttonClose.SetParent(mainForm)
 buttonClose.SetLeft(210)
@@ -260,4 +302,5 @@ buttonClose.SetCaption("关闭")
 buttonClose.SetAnchors(lcl.NewSet(lcl.AkBottom, lcl.AkLeft))
 buttonClose.SetOnClick(lcl.NewTNotifyEvent(onButtonCloseClick))
 
+// 启动图形界面运行
 application.Run()

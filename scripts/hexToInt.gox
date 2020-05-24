@@ -1,4 +1,4 @@
-argsG = os.Args
+argsG = tk.GetAllParameters(os.Args)
 
 lenT = len(argsG)
 

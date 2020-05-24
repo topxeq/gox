@@ -1,10 +1,10 @@
 // work out the cosine similarity of two vectors
 // the result is in [0..1], which 1 indicates almost the same, 0 indicates not same at all
 
-math = import("math")
-big = import("math/big")
+// set the short name for math/big package
+big = math_big
 
-func calCosineSimilarityBig(f1, f2) {
+calCosineSimilarityBig = func(f1, f2) {
 
 	l1 = len(f1)
 	l2 = len(f2)

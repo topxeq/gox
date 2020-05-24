@@ -1,6 +1,5 @@
-badger = import("badger")
-log = import("log")
-fmt = import("fmt")
+// 设置github/dgraph-io/badger包的简称，注意该报中因为有连字符，因此会被省略
+badger = github_dgraphio_badger
 
 // 创建或打开数据库
 dbT, errT = badger.Open(badger.DefaultOptions(`c:\test\db`))
@@ -9,7 +8,7 @@ if errT != nil {
 }
 
 // 确保退出前关闭数据库
-// defer dbT.Close()
+defer dbT.Close()
 
 // 准备用于测试的数据，是映射类型的数据
 dataT = make(map[string]string)
@@ -21,10 +20,10 @@ dataT["名字"] = "张三"
 transT = dbT.NewTransaction(true)
 
 // 遍历测试数据并存入数据库
-for k, v in dataT {
+for k, v = range dataT {
 
 	// 将对应的键值对存入
-	errT = transT.Set(toByteSlice(k), toByteSlice(v))
+	errT = transT.Set([]byte(k), []byte(v))
 
 	if errT != nil {
 		fmt.Printf("设置KV对时发生错误：%v", errT.Error())
@@ -42,7 +41,7 @@ fmt.Printf("\n-----\n")
 transT = dbT.NewTransaction(true)
 
 // 查询键名为ok对应的键值
-itemT, errT = transT.Get(toByteSlice("ok"))
+itemT, errT = transT.Get([]byte("ok"))
 
 if errT != nil {
 	log.Fatalf("获取KV对时发生错误：%v", errT)
@@ -55,13 +54,13 @@ if errT != nil {
 	log.Fatalf("获取KV对值时发生错误：%v", errT)
 }
 
-fmt.Printf("获取到的键名为%v的键值：%v\n", "ok", toString(valueT))
+fmt.Printf("获取到的键名为%v的键值：%v\n", "ok", string(valueT))
 
 // 用只读模式打开数据库后遍历其中所有的键值对
 errT = dbT.View(func(txn) {
 
 	// 准备遍历数据库中键值对的设置参数，这里用的是默认设置
-	optionsT = make(badger.IteratorOptions)
+	optionsT = new(badger.IteratorOptions)
 
 	optionsT.PrefetchValues = true
 	optionsT.PrefetchSize = 100
@@ -72,15 +71,15 @@ errT = dbT.View(func(txn) {
 	optionsT.PrefetchSize = 10
 
 	// 创建遍历用的枚举对象
-	iteratorT = txn.NewIterator(optionsT)
+	iteratorT = txn.NewIterator(*optionsT)
 
 	// 确保枚举对象被关闭
-	// defer iteratorT.Close()
+	defer iteratorT.Close()
 
 	// 进行遍历
 	iteratorT.Rewind()
 
-	for iteratorT.Valid()  {
+	for iteratorT.Valid() {
 
 		// 获取一个枚举值
 		itemT = iteratorT.Item()
@@ -102,8 +101,6 @@ errT = dbT.View(func(txn) {
 
 	}
 
-	iteratorT.Close()
-
 	return nil
 })
 
@@ -113,4 +110,3 @@ if errT != nil {
 
 fmt.Printf("\n-----\n")
 
-dbT.Close()
