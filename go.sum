@@ -348,6 +348,8 @@ github.com/topxeq/qlang v0.0.0-20200519085047-fe910b83876f/go.mod h1:Kd16bi6PfZa
 github.com/topxeq/qlang v0.0.0-20200520125932-4e3d7d839427 h1:J5TDAydQvLZV1ZXYK2FQRhOSgTrRn9VpXAVgWyG3eak=
 github.com/topxeq/qlang v0.0.0-20200520125932-4e3d7d839427/go.mod h1:W9G8MrF5vahQjk98hecsI3e/T6zOC1eT15ntmZK3EY0=
 github.com/topxeq/qlang v0.0.0-20200523103730-dc3e298a30b0 h1:isGWyCWP2Y/NQruZtZqIQIWXNHlZ27BvWEl8g5UWCsg=
+github.com/topxeq/qlang v0.0.0-20200524024237-e94c1731eb63 h1:TTaMJGiYmkhGPAg6AEIunZB+saEruQ4ng5uAx2y1kPc=
+github.com/topxeq/qlang v0.0.0-20200524024237-e94c1731eb63/go.mod h1:RNctyo0NhLeZ5HCRgq6nzOFcPVWesoAajmyRcRcqZUo=
 github.com/topxeq/sqltk v0.0.0-20191024030855-9900c8f99437 h1:7vBIkcLy5/GaqyCqJzNvAPhwGmRLI3cYYvPvFKpAJIs=
 github.com/topxeq/sqltk v0.0.0-20191024030855-9900c8f99437/go.mod h1:KOl6vGec44tFypvXpWi2d/V1bvnOljyiIizuwIeBWu4=
 github.com/topxeq/text v0.0.0-20200518012001-b0cd431d910d h1:WSkmg+eQ3QcaSrKIJ2BPMSGfSxpJlJl019rt6yrOqOg=
@@ -359,6 +361,7 @@ github.com/topxeq/tk v0.0.0-20200516133943-970c9980506b/go.mod h1:JxOz/UPMGGicny
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
+github.com/visualfc/pkgwalk v1.0.0/go.mod h1:1FBUxT6vBvYFqrUQVNrrmn1Nu30snrj2pTKlQMku3Tg=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
 github.com/ying32/dylib v0.0.0-20200305075302-6eba4f831b29 h1:t0u0K+Yn3GqpkPQqnZ63h1hynNv93cmshn7S02PM8Ks=
