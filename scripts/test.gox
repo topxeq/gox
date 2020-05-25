@@ -1,11 +1,23 @@
-f1 = func(a) {
-	return 1
+// f1 = func(a) {
+// 	return 1
+// }
+
+// prin tln(f1(1))
+
+// f2 = func(a) {
+// 	return 2
+// }
+
+// println(f2(1 / 0))
+// b = 1
+// a = 1
+// f1 = fn() {
+// 	println(1)
+// }
+
+func f2() {
+	// println(1)
+	println(1.4)
 }
 
-prin tln(f1(1))
-
-f2 = func(a) {
-	return 2
-}
-
-println(f2(1 / 0))
+f2()
