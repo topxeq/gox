@@ -12,8 +12,18 @@
 // b = 1
 // a = 1
 // f1 = fn() {
-// 	println(1)
+// 	println(1.3)
 // }
+
+// f1()
+
+a = "1"
+
+b = ^a
+
+pl("%T", *b)
+
+// return
 
 func f2() {
 	// println(1)
@@ -21,3 +31,32 @@ func f2() {
 }
 
 f2()
+
+Person = class {
+	func f2(s) {
+		this.name = s
+		println(1.9)
+	}
+
+}
+
+person1 = new Person
+
+person1.f2("a")
+
+pl("%#v", person1)
+
+person2 = new Person
+
+person2.f2("b")
+
+pl("%#v", person2)
+
+// f1()
+
+// f3 = fn() {
+// 	println(1.5)
+// }
+
+// f3()
+
