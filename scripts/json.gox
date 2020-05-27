@@ -66,6 +66,7 @@ if errT != nil {
 }
 
 pl("JSON: %v", newJSONT)
+pl("JSON: %v", tk.ToJSONWithDefault(appleT, ""))
 
 // get indented JSON string
 newJSONIndentT, errT = tk.ToJSONIndent(appleT)
@@ -78,6 +79,7 @@ if errT != nil {
 println("\n---\n")
 
 pl("Indented JSON: %v", newJSONIndentT)
+pl("Indented JSON: %v", tk.ToJSONIndentWithDefault(appleT, ""))
 
 println("\n---\n")
 

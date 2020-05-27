@@ -1,0 +1,33 @@
+packageNameT = tk.Trim(tk.GetParameterByIndexWithDefaultValue(os.Args, 2, ""))
+
+if packageNameT == "" {
+	tk.Pl("not enough parameters")
+	return
+}
+
+basePathT, errT = tk.EnsureBasePath("gox")
+
+if errT != nil {
+	checkError(errT)
+}
+
+tmpPathT = tk.JoinPath(basePathT, "tmp")
+
+tk.EnsureMakeDirsE(tmpPathT)
+
+pl("tmp path: %v", tmpPathT)
+
+rs = tk.SystemCmd("cmd", "/c", `qexport -outpath `+tmpPathT+` ` + packageNameT)
+
+pl(rs)
+
+if !tk.IfFileExists(tk.JoinPath(tmpPathT, packageNameT)) {
+	pl("file not created")
+}
+
+goPathT = os.Getenv("GOPATH")
+
+tk.Pl("CMD: %v", `xcopy /E /I /Y `+tk.JoinPath(tmpPathT, packageNameT)+` ` + tk.JoinPath(goPathT, `src/github.com/topxeq/qlang/lib`, packageNameT))
+rs = tk.SystemCmd("cmd", "/c", `xcopy /E /I /Y `+tk.JoinPath(tmpPathT, packageNameT)+` ` + tk.JoinPath(goPathT, `src/github.com/topxeq/qlang/lib`, packageNameT))
+
+pl(tk.ConvertStringToUTF8(rs, ""))

@@ -133,6 +133,8 @@ import (
 
 	qlgithub_fogleman_gg "github.com/topxeq/qlang/lib/github.com/fogleman/gg"
 
+	qlgithub_360EntSecGroupSkylar_excelize "github.com/topxeq/qlang/lib/github.com/360EntSecGroup-Skylar/excelize"
+
 	qlgonumorg_v1_plot "github.com/topxeq/qlang/lib/gonum.org/v1/plot"
 	qlgonumorg_v1_plot_plotter "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotter"
 	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
@@ -180,7 +182,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.993a"
+var versionG = "0.995a"
 
 var verboseG = false
 
@@ -585,6 +587,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("plot_plotutil", qlgonumorg_v1_plot_plotutil.Exports)
 	qlang.Import("gonumorg_v1_plot_vg", qlgonumorg_v1_plot_vg.Exports)
 	qlang.Import("plot_vg", qlgonumorg_v1_plot_vg.Exports)
+
+	qlang.Import("github_360EntSecGroupSkylar_excelize", qlgithub_360EntSecGroupSkylar_excelize.Exports)
 
 }
 
