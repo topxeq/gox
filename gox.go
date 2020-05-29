@@ -140,6 +140,8 @@ import (
 	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
 	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
 
+	qlgithub_domodwyer_mailyak "github.com/topxeq/qlang/lib/github.com/domodwyer/mailyak"
+
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/godror/godror"
@@ -182,7 +184,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.995a"
+var versionG = "0.996a"
 
 var verboseG = false
 
@@ -590,12 +592,14 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_360EntSecGroupSkylar_excelize", qlgithub_360EntSecGroupSkylar_excelize.Exports)
 
+	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
+
 }
 
 func showHelp() {
 	tk.Pl("Gox by TopXeQ V%v\n", versionG)
 
-	tk.Pl("Usage: gox [-v|-h] test.gox next.js, ...\n")
+	tk.Pl("Usage: gox [-v|-h] test.gox, ...\n")
 	tk.Pl("or just gox without arguments to start REPL instead.\n")
 
 }
