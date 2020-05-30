@@ -395,11 +395,13 @@ It's very similar for function parameters and return values.
 
 ## 7. Library Reference
 
-First, since Gox is based on Qlang and written by Golang, most of the core libraries of Golang will be available. So try to use the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Qlang's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and Giu's documents.
+First, since Gox is based on Qlang and written by Golang, most of the core libraries of Golang will be available. So try to use the modules from Golang(but Golang installation is not required), and refer to the Golang documents([here](https://golang.org/doc/), [here](https://pkg.go.dev/) or [here](http://docscn.studygolang.com/)). In addition, you can browse Qlang's, [Govcl](https://gitee.com/ying32/govcl/wikis/pages)'s and [Giu](https://github.com/AllenDang/giu)'s documents.
 
 Most of the standard Golang packages are available include: bytes, encoding/json, errors, flag, fmt, image, image/color, image/draw, image/jpg, image/png, io, io.ioutil, log, math, math/big, math/rand, net, net/http, net/http/cookiejar, net/url, os, os/exec, os/signal, path, path/filepath, regexp, runtime, sort, strconv, strings, sync, time.
 
 Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk) or [here](https://pkg.go.dev/github.com/topxeq/tk).
+
+Other libraries embedded in Gox include: gonum.org/v1/plot(scientific drawing and charts), github.com/domodwyer/mailyak(send mail via SMTP), github.com/360EntSecGroup-Skylar/excelize(Excel file processing), github.com/fogleman/gg(basic drawing), github.com/dgraph-io/badger(NoSQL DB), github.com/topxeq/govcl/vcl(derived from ying32's Govcl), github.com/AllenDang/giu(OpenGL GUI), github.com/topxeq/sqltk(general SQL operations, enable access to Oracle, MySQL, MSSQLServer, SQLite databases), github.com/topxeq/imagetk, github.com/beevik/etree(XML processing). Browse their Github pages for usage and documents.
 
 However, Gox provides some convenient global variables and functions decribed as below.
 

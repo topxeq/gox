@@ -1,0 +1,62 @@
+// set the short name for the package
+mailyak = github_domodwyer_mailyak
+
+// 3 ways to new a SMTP client to send mail, the first one supports TLS/Secure connection to mail servers
+mail = mailyak.New("mail.example.com:25", net_smtp.PlainAuth("", "user@example.com", "mypassword", "mail.example.com"))
+// mail := mailyak.New("mail.example.com:25", tk.GetPlainAuth("", "user@example.com", "mypassword", "mail.example.com"))
+// mail := mailyak.New("mail.example.com:25", tk.GetLoginAuth("user@example.com", "mypassword"))
+
+mail.To("test@example.com")
+
+mail.From("abc@other.com")
+mail.FromName("ABC")
+
+mail.Subject("[Important!] The Submission Result")
+
+mailBodyHtml = `
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+
+<body style="font-family: Helvetica">
+    <div>&nbsp;
+        <br />
+        <br /><br />
+        Dear Mr. Tom,<br />
+
+I am pleased to inform you that the submission has been accepted for publication.<br />
+<br />
+Yours sincerely<br />
+Jerry<br />
+
+        <br />
+        <br />
+
+    </div>
+</body>
+
+</html>
+`
+
+// Write your HTML context in mail.HTML()
+_, errT = io.WriteString(mail.HTML(), mailBodyHtml)
+
+if errT != nil {
+	tk.Pl("failed to write mail: %v", errT)
+	return
+}
+
+mail.Plain().Set("Please use a standard mail or web-mail client")
+
+// Send the mail
+errT = mail.Send()
+if errT != nil {
+	tk.Pl("failed to send mail: %v", errT)
+	return
+}
+
+tk.Pl("Sent!")

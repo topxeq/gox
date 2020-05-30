@@ -77,6 +77,7 @@ import (
 	qlmath "github.com/topxeq/qlang/lib/math"
 	qlmathbig "github.com/topxeq/qlang/lib/math/big"
 	qlmathbits "github.com/topxeq/qlang/lib/math/bits"
+	qlmathrand "github.com/topxeq/qlang/lib/math/rand"
 
 	qlnethttp "github.com/topxeq/qlang/lib/net/http"
 	qlnet_http_cookiejar "github.com/topxeq/qlang/lib/net/http/cookiejar"
@@ -513,6 +514,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("math", qlmath.Exports)
 	qlang.Import("math_big", qlmathbig.Exports)
 	qlang.Import("math_bits", qlmathbits.Exports)
+	qlang.Import("math_rand", qlmathrand.Exports)
 
 	qlang.Import("net_http", qlnethttp.Exports)
 	qlang.Import("net_http_cookiejar", qlnet_http_cookiejar.Exports)
