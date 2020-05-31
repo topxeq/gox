@@ -1,5 +1,3 @@
-tk = import("tk")
-
 appleT = {
 	"Type": "apple",
 	"Color": "Red",
@@ -13,8 +11,8 @@ appleT = {
 		{
 			"Name": "Sugar",
 			"Amount": 10.4,
-		}
-	]
+		},
+	],
 }
 
 pv("appleT")

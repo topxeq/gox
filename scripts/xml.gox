@@ -83,7 +83,7 @@ getMSSFromXML = fn(xmlA, nodeA) {
 
 	mapT = make(map[string]string, len(nodesT))
 	for _, jv = range nodesT {
-		mapT[*jv.Tag] = jv.Text()
+		mapT[jv.Tag] = jv.Text()
 	}
 
 	return mapT, nil
@@ -117,7 +117,7 @@ getMSSArrayFromXML = fn(xmlA, nodeA) {
 
 		mapT = make(map[string]string, len(internalNodesT))
 		for _, jv = range internalNodesT {
-			mapT[*jv.Tag] = jv.Text()
+			mapT[jv.Tag] = jv.Text()
 		}
 
 		aryT = append(aryT, mapT)
@@ -151,9 +151,9 @@ println(resultT)
 
 println("\n-----\n")
 
-resultT = getMSSFromXML(xmlT, "ZvendorNameFuzquery")
+resultT, errT = getMSSFromXML(xmlT, "ZvendorNameFuzquery")
 
-println(resultT)
+println(resultT, errT)
 
 println("\n-----\n")
 

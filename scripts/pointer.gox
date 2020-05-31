@@ -54,3 +54,5 @@ b2 = 0x21 // 00100001
 
 // 01111010 XOR 00100001 = 01011011
 printfln("b1 XOR b2 = %b", bitXor(b1, b2))
+
+printfln("b1 XOR b2 = %b", tk.BitXor(b1, b2))

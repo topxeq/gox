@@ -1,4 +1,5 @@
 i = 0
+
 for {
 	println(i)
 	i++
@@ -9,13 +10,13 @@ for {
 
 println("")
 
-for i in [0, 1] {
-	println(i)
+for i, v = range [0, 1] {
+	println(i, v)
 }
 
 println("")
 
-for key, value in {"a": "b"} {
+for key, value = range {"a": "b"} {
 	println(key, value)
 }
 
@@ -23,8 +24,8 @@ println("")
 
 m = {"a": "b", "c": 3}
 
-for k in keys(m) {
-	println(k, m[k])
+for k, v = range m {
+	println(k, v)
 }
 
 println("")
@@ -55,27 +56,17 @@ for i = 0; i < 10; i++ {
 
 println("")
 
-for i in range(7) {
-
-	if i > 2 && i < 5 {
-		println(i)
-	} else {
-		printfln("not in range: %v", i)
-	}
-}
-
-println("")
-
 aryT = [3, "abc", true, 2.8]
 
-for v in aryT {
+for i, v = range aryT {
 	printf("v: %v ", v)
 	switch v {
 	case typeOf(v) == "bool":
 		println("is bool:", v)
 	case typeOf(v) == "string":
 		println("is string")
-	case 2.8, 3:
+	case 2.8: // fallthrough is not supported now
+	case 3:
 		println("is number")
 	default:
 		println("unknown:", v)

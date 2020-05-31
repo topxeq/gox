@@ -9,3 +9,7 @@ pl("%#v", client2T)
 client2T.Timeout = time.Duration(30)
 
 pl("%#v", client2T)
+
+pl("%#v", client2T.Timeout)
+
+pl("%#v", client2T@Timeout)

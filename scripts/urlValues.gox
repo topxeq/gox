@@ -1,8 +1,17 @@
 t = tk
 u = net_url
 
-v = make(u.Values)
+v1 = make(u.Values)
 
-v.Set("a", "123")
+v1.Set("a", "123")
 
-t.Pl("%#v", v)
+t.Pl("%#v", v1)
+
+v2 = new(u.Values)
+
+t.Pl("%#v", v2)
+
+v2.Set("a", "123")
+
+t.Pl("%#v", v2)
+

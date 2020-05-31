@@ -5,11 +5,11 @@ itk = imagetk.NewImageTK()
 p, _ = plot.New()
 
 // 设置图表的抬头标题
-p.Title.Text = "Gonum Plot Example"
+p@Title.Text = "Gonum Plot Example"
 
 // 设置图标X、Y坐标的文字
-p.X.Label.Text = "X"
-p.Y.Label.Text = "Y"
+p@X@Label.Text = "X"
+p@Y@Label.Text = "Y"
 
 // 创建一组准备绘制的坐标点（4个点）
 points = make(plot_plotter.XYs, 4)

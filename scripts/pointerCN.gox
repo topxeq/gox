@@ -51,3 +51,12 @@ pa = ^a
 
 printfln("pa: %#v", pa)
 
+// 如果要做二进制按位异或不能用“^”符号了，需要用内置函数bitXor或者tk包中的BitXor
+b1 = 0x7A // 01111010
+
+b2 = 0x21 // 00100001
+
+// 01111010 XOR 00100001 = 01011011
+printfln("b1 XOR b2 = %b", bitXor(b1, b2))
+
+printfln("b1 XOR b2 = %b", tk.BitXor(b1, b2))
