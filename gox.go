@@ -598,6 +598,9 @@ func importQLNonGUIPackages() {
 	qlang.Import("giu", qlgithub_AllenDang_giu.Exports)
 	qlang.Import("github_AllenDang_giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
 	qlang.Import("giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
+
+	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
+	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 	// GUI related end
 
 	qlang.Import("github_dgraphio_badger", qlgithub_dgraphio_badger.Exports)
@@ -618,9 +621,6 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_360EntSecGroupSkylar_excelize", qlgithub_360EntSecGroupSkylar_excelize.Exports)
 
 	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
-
-	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
-	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 
 }
 
