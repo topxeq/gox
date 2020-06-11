@@ -1,0 +1,20 @@
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
+
+w, err := window.New(sciter.SW_TITLEBAR|
+	sciter.SW_RESIZEABLE|
+	sciter.SW_CONTROLS|
+	sciter.SW_MAIN|
+	sciter.SW_ENABLE_DEBUG,
+	nil)
+if err != nil {
+	checkError(err)
+}
+//load file;加载文件
+w.LoadFile(`d:\tmpx\demo1.html`)
+//set title; 设置标题
+w.SetTitle("Hello, world")
+//show;显示窗口
+w.Show()
+//run, loop message;运行窗口，进入消息循环
+w.Run()

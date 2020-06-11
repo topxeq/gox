@@ -144,6 +144,14 @@ import (
 
 	qlgithub_domodwyer_mailyak "github.com/topxeq/qlang/lib/github.com/domodwyer/mailyak"
 
+	// GUI related start
+	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
+	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
+
+	"github.com/sciter-sdk/go-sciter"
+
+	// GUI related end
+
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/godror/godror"
@@ -186,7 +194,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.996a"
+var versionG = "0.997a"
 
 var verboseG = false
 
@@ -464,6 +472,19 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("", defaultExports)
 
+	var imiscExports = map[string]interface{}{
+		// "eval":             qlEval,
+		// GUI related start
+		"NewScnLoadDataFunc": NewScnLoadDataFunc,
+		"NewScnDataLoaded":   NewScnDataLoaded,
+		// full version related start
+		// "edit": editFile,
+		// full version related end
+		// GUI related end
+	}
+
+	qlang.Import("imisc", imiscExports)
+
 	qlang.Import("archive_zip", qlarchivezip.Exports)
 	qlang.Import("bufio", qlbufio.Exports)
 	qlang.Import("bytes", qlbytes.Exports)
@@ -598,6 +619,9 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
 
+	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
+	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
+
 }
 
 func showHelp() {
@@ -686,6 +710,24 @@ func runInteractiveQlang() int {
 // Non GUI related end
 
 // GUI related start
+
+func NewScnLoadDataFunc(funcA *interface{}) *(func(*sciter.ScnLoadData) int) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(dataA *sciter.ScnLoadData) int {
+		return funcT.Call(execq.NewStack(), dataA).(int)
+	}
+
+	return &f
+}
+
+func NewScnDataLoaded(funcA *interface{}) *(func(*sciter.ScnDataLoaded) int) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(dataA *sciter.ScnDataLoaded) int {
+		return funcT.Call(execq.NewStack(), dataA).(int)
+	}
+
+	return &f
+}
 
 // full version related start
 
