@@ -1,0 +1,59 @@
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
+
+htmlT = `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>事件处理</title>
+</head>
+<body>
+    <button id="btn1">点我</button>
+    <button id="btn2">点我2</button>
+    <button id="btn3">点我3</button>
+    <button id="btn4">点我4</button>
+    <script type="text/tiscript">
+        // var root = view.root;
+ 
+    </script>
+</body>
+</html>
+`
+
+w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
+if err != nil {
+	log.Fatal(err)
+}
+
+w.LoadHtml(htmlT, "")
+
+w.SetTitle("事件处理")
+
+root, _ := w.GetRootElement()
+
+btn1, _ := root.SelectById("btn1")
+
+btn1.OnClick(func() {
+	fmt.Println("btn1被点击了")
+
+	btn1.SetStyle("color", "#FF0000")
+
+	fmt.Println(btn1.Html(true))
+
+	// li.SetHtml("<a href='http://www.baidu.com'>baidu.com</a>", sciter.SIH_REPLACE_CONTENT)
+	// //在最后面追加内容
+	// li.SetHtml("哈哈", sciter.SIH_APPEND_AFTER_LAST)
+	//设置元素属性
+	// li.SetAttr("test", "test")
+	// li2, _ := root.SelectFirst("ul#list>li:nth-child(2)")
+	//设置文本
+	btn1.SetHtml("我改我改", sciter.SIH_REPLACE_CONTENT)
+	// btn1.SetAttr("value", "abcdefg")
+
+})
+
+w.Show()
+
+w.Run()

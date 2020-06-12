@@ -194,7 +194,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.997a"
+var versionG = "0.998a"
 
 var verboseG = false
 
@@ -598,6 +598,12 @@ func importQLNonGUIPackages() {
 	qlang.Import("giu", qlgithub_AllenDang_giu.Exports)
 	qlang.Import("github_AllenDang_giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
 	qlang.Import("giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)
+
+	qlgithub_scitersdk_gosciter.Exports["NewValue"] = sciter.NewValue
+	qlgithub_scitersdk_gosciter.Exports["NullValue"] = sciter.NullValue
+
+	qlgithub_scitersdk_gosciter.Exports["NewScnLoadDataFunc"] = NewScnLoadDataFunc
+	qlgithub_scitersdk_gosciter.Exports["NewScnDataLoaded"] = NewScnDataLoaded
 
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
