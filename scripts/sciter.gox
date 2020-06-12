@@ -22,6 +22,8 @@ htmlT = `
 </html>
 `
 
+runtime.LockOSThread()
+
 w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
 if err != nil {
 	log.Fatal(err)
