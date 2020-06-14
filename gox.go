@@ -18,9 +18,10 @@ import (
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
 
+	execq "github.com/topxeq/qlang/exec"
+
 	// GUI related start
 
-	execq "github.com/topxeq/qlang/exec"
 	specq "github.com/topxeq/qlang/spec"
 
 	// GUI related end
@@ -267,144 +268,6 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 
 }
 
-// full version related start
-// func newRGBA(r, g, b, a uint8) color.RGBA {
-// 	return color.RGBA{r, g, b, a}
-// }
-
-// func newNRGBAFromHex(strA string) color.NRGBA {
-// 	r, g, b, a := tk.ParseHexColor(strA)
-
-// 	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-// }
-
-// func newRGBAFromHex(strA string) color.RGBA {
-// 	r, g, b, a := tk.ParseHexColor(strA)
-
-// 	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-// }
-
-// func newPlotXY(xA, yA float64) plotter.XY {
-// 	return plotter.XY{X: xA, Y: yA}
-// }
-
-// func loadRGBAFromImage(imageA image.Image) (*image.RGBA, error) {
-// 	switch imageT := imageA.(type) {
-// 	case *image.RGBA:
-// 		return imageT, nil
-// 	default:
-// 		rgba := image.NewRGBA(imageT.Bounds())
-// 		draw.Draw(rgba, imageT.Bounds(), imageT, image.Pt(0, 0), draw.Src)
-// 		return rgba, nil
-// 	}
-
-// }
-
-// func LoadPlotImage(p *plot.Plot, w vg.Length, h vg.Length) (*image.RGBA, error) {
-
-// 	var bufT bytes.Buffer
-
-// 	writerT, errT := p.WriterTo(w, h, "png")
-
-// 	if errT != nil {
-// 		return nil, errT
-// 	}
-
-// 	_, errT = writerT.WriteTo(&bufT)
-
-// 	if errT != nil {
-// 		return nil, errT
-// 	}
-
-// 	readerT := bytes.NewReader(bufT.Bytes())
-
-// 	// defer readerT.Close()
-
-// 	// imgFile, err := os.Open(imgPath)
-// 	// if err != nil {
-// 	// 	return nil, err
-// 	// }
-// 	// defer imgFile.Close()
-
-// 	img, err := png.Decode(readerT)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	switch trueImg := img.(type) {
-// 	case *image.RGBA:
-// 		return trueImg, nil
-// 	default:
-// 		rgba := image.NewRGBA(trueImg.Bounds())
-// 		draw.Draw(rgba, trueImg.Bounds(), trueImg, image.Pt(0, 0), draw.Src)
-// 		return rgba, nil
-// 	}
-// }
-
-// type MyXYer plotter.XY
-
-// func (v MyXYer) Len() int {
-// 	return 1
-// }
-
-// func (v MyXYer) XY(int) (x, y float64) {
-// 	return 1
-// }
-
-// full version related end
-
-// func setValue(p interface{}, v interface{}) {
-// 	// tk.Pl("%#v", reflect.TypeOf(p).Kind())
-// 	// p = v
-
-// 	srcRef := reflect.ValueOf(v)
-// 	vp := reflect.ValueOf(p)
-// 	vp.Elem().Set(srcRef)
-// }
-
-// func getValue(p interface{}) interface{} {
-// 	vp := reflect.Indirect(reflect.ValueOf(p))
-// 	return vp.Interface()
-// }
-
-// func bitXor(p interface{}, v interface{}) interface{} {
-// 	switch p.(type) {
-// 	case int:
-// 		return p.(int) ^ v.(int)
-// 	case int64:
-// 		return p.(int64) ^ v.(int64)
-// 	case int32:
-// 		return p.(int32) ^ v.(int32)
-// 	case int16:
-// 		return p.(int16) ^ v.(int16)
-// 	case int8:
-// 		return p.(int8) ^ v.(int8)
-// 	case uint64:
-// 		return p.(uint64) ^ v.(uint64)
-// 	case uint32:
-// 		return p.(uint32) ^ v.(uint32)
-// 	case uint16:
-// 		return p.(uint16) ^ v.(uint16)
-// 	case uint8:
-// 		return p.(uint8) ^ v.(uint8)
-// 	case uint:
-// 		return p.(uint) ^ v.(uint)
-// 	}
-
-// 	return 0
-// }
-
-// GUI related start
-
-// func NewFuncIntStringError(funcA *interface{}) *(func(int) (string, error)) {
-// 	funcT := (*funcA).(*execq.Function)
-// 	f := func(n int) (string, error) {
-// 		return funcT.Call(execq.NewStack(), n).(...interface{})
-// 	}
-
-// 	return &f
-// }
-
 func NewFuncIntString(funcA *interface{}) *(func(int) string) {
 	funcT := (*funcA).(*execq.Function)
 	f := func(n int) string {
@@ -588,8 +451,6 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 
 	return &f
 }
-
-// GUI related end
 
 func importQLNonGUIPackages() {
 	printValue := func(nameA string) {
