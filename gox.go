@@ -145,6 +145,7 @@ import (
 	qlgithub_domodwyer_mailyak "github.com/topxeq/qlang/lib/github.com/domodwyer/mailyak"
 
 	// GUI related start
+
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
 	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
@@ -405,6 +406,203 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 // 	return 0
 // }
 
+// GUI related start
+
+// func NewFuncIntStringError(funcA *interface{}) *(func(int) (string, error)) {
+// 	funcT := (*funcA).(*execq.Function)
+// 	f := func(n int) (string, error) {
+// 		return funcT.Call(execq.NewStack(), n).(...interface{})
+// 	}
+
+// 	return &f
+// }
+
+func NewFuncIntString(funcA *interface{}) *(func(int) string) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(n int) string {
+		return funcT.Call(execq.NewStack(), n).(string)
+	}
+
+	return &f
+}
+
+func NewFuncFloatString(funcA *interface{}) *(func(float64) string) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(n float64) string {
+		return funcT.Call(execq.NewStack(), n).(string)
+	}
+
+	return &f
+}
+
+func NewFuncStringString(funcA *interface{}) *(func(string) string) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(s string) string {
+		return funcT.Call(execq.NewStack(), s).(string)
+	}
+
+	return &f
+}
+
+func NewFuncIntError(funcA *interface{}) *(func(int) error) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(n int) error {
+		return funcT.Call(execq.NewStack(), n).(error)
+	}
+
+	return &f
+}
+
+func NewFunInterfaceError(funcA *interface{}) *(func(interface{}) error) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(n interface{}) error {
+		return funcT.Call(execq.NewStack(), n).(error)
+	}
+
+	return &f
+}
+
+func NewFuncStringError(funcA *interface{}) *(func(string) error) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(s string) error {
+		return funcT.Call(execq.NewStack(), s).(error)
+	}
+
+	return &f
+}
+
+func NewFuncStringStringError(funcA *interface{}) *(func(string) (string, error)) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(s string) (string, error) {
+		r := funcT.Call(execq.NewStack(), s).([]interface{})
+
+		if r == nil {
+			return "", tk.Errf("nil result")
+		}
+
+		if len(r) < 2 {
+			return "", tk.Errf("incorrect return argument count")
+		}
+
+		if r[1] == nil {
+			return r[0].(string), nil
+		}
+
+		return r[0].(string), r[1].(error)
+	}
+
+	return &f
+}
+
+func NewFuncInterfaceInterfaceError(funcA *interface{}) *(func(interface{}) (interface{}, error)) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(s interface{}) (interface{}, error) {
+		r := funcT.Call(execq.NewStack(), s).([]interface{})
+
+		// if r == nil {
+		// 	return "", tk.Errf("nil result")
+		// }
+
+		// if len(r) < 2 {
+		// 	return "", tk.Errf("incorrect return argument count")
+		// }
+
+		if r[1] == nil {
+			return r[0].(interface{}), nil
+		}
+
+		return r[0].(interface{}), r[1].(error)
+	}
+
+	return &f
+}
+
+func NewFuncInterfaceError(funcA *interface{}) *(func(interface{}) error) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(s interface{}) error {
+		return funcT.Call(execq.NewStack(), s).(error)
+	}
+
+	return &f
+}
+
+func NewFunc(funcA *interface{}) *(func()) {
+	funcT := (*funcA).(*execq.Function)
+	f := func() {
+		funcT.Call(execq.NewStack())
+
+		return
+	}
+
+	return &f
+}
+
+func NewFuncError(funcA *interface{}) *(func() error) {
+	funcT := (*funcA).(*execq.Function)
+	f := func() error {
+		return funcT.Call(execq.NewStack()).(error)
+	}
+
+	return &f
+}
+
+func NewFuncInterface(funcA *interface{}) *(func() interface{}) {
+	funcT := (*funcA).(*execq.Function)
+	f := func() interface{} {
+		return funcT.Call(execq.NewStack()).(interface{})
+	}
+
+	return &f
+}
+
+func NewFuncIntStringError(funcA *interface{}) *(func(int) (string, error)) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(n int) (string, error) {
+		r := funcT.Call(execq.NewStack(), n).([]interface{})
+
+		if r == nil {
+			return "", tk.Errf("nil result")
+		}
+
+		if len(r) < 2 {
+			return "", tk.Errf("incorrect return argument count")
+		}
+
+		if r[1] == nil {
+			return r[0].(string), nil
+		}
+
+		return r[0].(string), r[1].(error)
+	}
+
+	return &f
+}
+
+func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)) {
+	funcT := (*funcA).(*execq.Function)
+	f := func(n float64) (string, error) {
+		r := funcT.Call(execq.NewStack(), n).([]interface{})
+
+		if r == nil {
+			return "", tk.Errf("nil result")
+		}
+
+		if len(r) < 2 {
+			return "", tk.Errf("incorrect return argument count")
+		}
+
+		if r[1] == nil {
+			return r[0].(string), nil
+		}
+
+		return r[0].(string), r[1].(error)
+	}
+
+	return &f
+}
+
+// GUI related end
+
 func importQLNonGUIPackages() {
 	printValue := func(nameA string) {
 
@@ -473,14 +671,19 @@ func importQLNonGUIPackages() {
 	qlang.Import("", defaultExports)
 
 	var imiscExports = map[string]interface{}{
-		// "eval":             qlEval,
-		// GUI related start
-		"NewScnLoadDataFunc": NewScnLoadDataFunc,
-		"NewScnDataLoaded":   NewScnDataLoaded,
-		// full version related start
-		// "edit": editFile,
-		// full version related end
-		// GUI related end
+		"NewFunc":                        NewFunc,
+		"NewFuncError":                   NewFuncError,
+		"NewFuncInterface":               NewFuncInterface,
+		"NewFuncInterfaceError":          NewFuncInterfaceError,
+		"NewFuncInterfaceInterfaceError": NewFuncInterfaceInterfaceError,
+		"NewFuncIntString":               NewFuncIntString,
+		"NewFuncIntError":                NewFuncIntError,
+		"NewFuncFloatString":             NewFuncFloatString,
+		"NewFuncFloatStringError":        NewFuncFloatStringError,
+		"NewFuncStringString":            NewFuncStringString,
+		"NewFuncStringError":             NewFuncStringError,
+		"NewFuncStringStringError":       NewFuncStringStringError,
+		"NewFuncIntStringError":          NewFuncIntStringError,
 	}
 
 	qlang.Import("imisc", imiscExports)
@@ -607,6 +810,8 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
+
+	InitBlink()
 	// GUI related end
 
 	qlang.Import("github_dgraphio_badger", qlgithub_dgraphio_badger.Exports)

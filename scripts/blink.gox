@@ -1,0 +1,97 @@
+if runtime.GOOS != "windows" {
+	pln("This program only runs on Windows platform.")
+	exit()
+}
+
+blink =	github_topxeq_blink
+filepath = path_filepath
+
+err := blink.InitBlink()
+if err != nil {
+	log.Fatal(err)
+}
+
+view := blink.NewWebView(false, 800, 600)
+
+scriptPathT := filepath.Dir(os.Args[1])
+
+absT, _ := filepath.Abs(filepath.join(scriptPathT, "blink.html"))
+
+absT = "file:///"+filepath.ToSlash(absT)
+
+println(absT)
+
+// return
+
+func selectFile(n) {
+	if n > 10 {
+		return errors.New("num不能大于10")
+	} else {
+		return errors.New("0")
+	}
+}
+
+f := imisc.NewFuncIntError(^selectFile)
+
+view.Inject("SelectFile", *f)
+
+func selectFileS(n) {
+	if n > 10 {
+		return "num不能大于10"
+	} else {
+		return "0"
+	}
+}
+
+f2 := imisc.NewFuncIntString(^selectFileS)
+
+view.Inject("SelectFileS", *f2)
+
+func selectFile2(n) {
+	if n > 10 {
+		return "", errors.New("num不能大于10")
+	} else {
+		return tk.IntToStr(n + 100), nil
+	}
+}
+
+f3 := imisc.NewFuncIntStringError(^selectFile2)
+
+view.Inject("SelectFile2", *f3)
+
+func selectFile5(n1) {
+	n = int(n1)
+	if n > 10 {
+		return "", errors.New("num不能大于10")
+	} else {
+		return tk.IntToStr(n + 100), nil
+	}
+}
+
+f5 := imisc.NewFuncInterfaceInterfaceError(^selectFile5)
+
+view.Inject("SelectFile5", *f5)
+
+view.LoadURL(absT)
+
+view.SetWindowTitle("Golang GUI Application")
+view.MoveToCenter()
+view.ShowWindow()
+view.ShowDevTools()
+
+value, err := view.Invoke("location.href")
+tk.Plvsr(value, err)
+
+i = 0
+for true {
+	if view.IsDestroy {
+		break
+	}
+
+	// value, err := view.Invoke("printIt", i)
+	// tk.Plvsr(value, err)
+
+	i ++
+
+	tk.SleepSeconds(1)
+}
