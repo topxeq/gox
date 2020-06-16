@@ -94,9 +94,9 @@ func setCallbackHandlers(w) {
 	//你可以通过实现这些方法，自定义自已的回调
 	cb := &sciter.CallbackHandler{
 		//加载数据开始
-		OnLoadData: *imisc.NewScnLoadDataFunc(^callback1),
+		OnLoadData: *sciter.NewScnLoadDataFunc(^callback1),
 		//加载数据过程中
-		OnDataLoaded: *imisc.NewScnDataLoaded(^callback2),
+		OnDataLoaded: *sciter.NewScnDataLoaded(^callback2),
 	}
 	w.SetCallback(cb)
 }

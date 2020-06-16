@@ -653,6 +653,9 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 
 	InitBlink()
+
+	InitSysspec()
+
 	// GUI related end
 
 	qlang.Import("github_dgraphio_badger", qlgithub_dgraphio_badger.Exports)
