@@ -330,7 +330,11 @@ screenW, screenH := sysspec.GetScreenResolution()
 
 runtime.LockOSThread()
 
+println(1)
+
 w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.NewRect((screenH-600)/2, (screenW-800)/2, 800, 600))
+println(2)
+
 if err != nil {
 	log.Fatal(err)
 }
