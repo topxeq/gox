@@ -7,7 +7,7 @@ htmlT := `
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>事件处理</title>
+	<title>Gox Editor</title>
 	<script type="text/tiscript">
 		function colorize() 
 		{
@@ -270,9 +270,9 @@ htmlT := `
 
 	</style>
 	<script type="text/tiscript">
-		if( view.connectToInspector ) {
-			view.connectToInspector(rootElement, inspectorIpAddress);
-		}
+		// if (view.connectToInspector) {
+		// 	view.connectToInspector(rootElement, inspectorIpAddress);
+		// }
 
 		//stdout.println("__FOLDER__:", __FOLDER__);
 		//stdout.println("__FILE__:", __FILE__);
@@ -280,13 +280,14 @@ htmlT := `
 		function selectFileJS() {
 			//var fn = view.selectFile(#open, "Gotx Files (*.gt,*.go)|*.gt;*.go|All Files (*.*)|*.*" , "gotx" );
 			var fn = view.selectFile(#open);
-			stdout.println("fn", fn);
-			stdout.println("loadStringFromFile", view.loadFileFromFile);
+			view.prints(String.printf("fn: %v", fn));
+
+			// stdout.println("loadStringFromFile", view.loadFileFromFile);
             // view.msgbox(#alert, view.loadFileFromString("56"));
 
-			var rs = view.loadFileFromFile(URL.toPath(fn));
+			// view.prints(String.printf("fn: %v", fn));
 
-			stdout.println("rs", rs);
+			var rs = view.loadFileFromFile(URL.toPath(fn));
 
 			$(plaintext).attributes["type"] = "text/script";
 
@@ -372,6 +373,11 @@ w.DefineFunction("loadFileFromFile", func(args) {
 	tk.Pl("file: %#v", args[0].String())
 	rs := tk.LoadStringFromFile(args[0].String())
 	return sciter.NewValue(rs)
+})
+
+w.DefineFunction("prints", func(args) {
+	tk.Pl("%v", args[0].String())
+	return sciter.NewValue("")
 })
 
 
