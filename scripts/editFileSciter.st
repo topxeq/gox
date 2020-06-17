@@ -1,18 +1,51 @@
-sciter = github_scitersdk_gosciter
-window = github_scitersdk_gosciter_window
-
-htmlT := `
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Gox Editor</title>
+    <style>
+    
+    plaintext {
+      padding:0;
+      flow:vertical;
+      behavior:plaintext;
+      background:#333; border:1px solid #333;
+      color:white;
+	  overflow:scroll-indicator;
+      font-rendering-mode:snap-pixel;
+      size:*; 
+      tab-size: 4;
+    }
+    plaintext > text {
+      font-family:monospace;
+      white-space: pre-wrap;
+      background:white;
+      color:black;
+      margin-left: 3em;
+      padding-left: 4dip;
+      cursor:text;
+      display:list-item;
+      list-style-type: index;
+      list-marker-color:#aaa;
+    }
+    plaintext > text:last-child {
+      padding-bottom:*;
+    }    
+    
+    plaintext > text:nth-child(10n) {
+      list-marker-color:#fff;
+    }
+    
+    
+    </style>
+
+
 	<script type="text/tiscript">
 		function colorize() 
 		{
 			const apply = Selection.applyMark; // shortcut
-				const isEditor = this.tag == "plaintext";
+			const isEditor = this.tag == "plaintext";
 			
 			// forward declarations:
 			var doStyle;
@@ -168,8 +201,6 @@ htmlT := `
 			
 				var typ = me.attributes["type"];
 
-				stdout.println("typ:", typ);
-				
 				var syntaxKind = typ like "*html" || typ like "*xml" ? #markup : #source;
 				var syntax = typ like "*css"? #style : #script;
 				
@@ -218,7 +249,7 @@ htmlT := `
 		{
 			:root { aspect: colorize; }
 			
-			text { white-space:pre; }
+			text { white-space:pre;  display:list-item; list-style-type: index; list-marker-color:#aaa; }
 			/*markup*/  
 			text::mark(tag) { color: olive; } /*background-color: #f0f0fa;*/
 			text::mark(tag-id) { color: red; } /*background-color: #f0f0fa;*/
@@ -286,6 +317,13 @@ htmlT := `
 			return String.printf("%v|%v", w, h);
 		}
 
+		var editFileNameG = "";
+		var editFileCleanFlagG = "";
+
+		function updateFileName() {
+			$(#fileNameLabelID).html = (editFileNameG + editFileCleanFlagG);
+		}
+
 		function selectFileJS() {
 			//var fn = view.selectFile(#open, "Gotx Files (*.gt,*.go)|*.gt;*.go|All Files (*.*)|*.*" , "gotx" );
 			var fn = view.selectFile(#open);
@@ -306,133 +344,73 @@ htmlT := `
 			// return fn;
 		}
 
+		function editFile(fileNameA) {
+			var fcT string;
+
+			//view.prints("fileNameA: "+fileNameA);
+
+			if (fileNameA == "") {
+				editFileNameG = "";
+
+				fcT = "";
+
+				editFileCleanFlagG = "*";
+			} else {
+				editFileNameG = fileNameA;
+
+				fcT = view.loadFileFromFile(fileNameA);
+
+//		if tk.IsErrorString(fcT) {
+//			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
+//			return
+
+//		}
+
+				editFileCleanFlagG = "";
+			}
+
+			//view.prints(fcT);
+
+			$(plaintext).attributes["type"] = "text/script";
+
+			$(plaintext).value = fcT;
+
+			updateFileName();
+
+		}
+
 		function self.ready() {
-			// view.logHandler( function(subsystem, severity, message, mode, location, asStringizer) {
-			// 	view.prints(String.printf("%v, %v, %v, %v, %v, %v", subsystem, severity, message, mode, location, asStringizer);  
-			//   });
-			// var r = 12.6;
-			// stdout.printf( "%f" , r );
-			// var x=123;
-			// debug log(x={x}, x:{x}, x({x}), x[{x}]);
-			//var a = self.url("colorizer.tis");
-			//debug log(a={a});
 
-			// $(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
+			//$(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
 
-			$(#btnLoad).onClick = loadFileJS;
+			//$(#btnLoad).onClick = loadFileJS;
+
+//			$(#mainEditID).on("click", function(evt) {
+//				view.prints("value changed!");
+//			});
+
+			$(plaintext#source).onControlEvent = function(evt) {
+				switch (evt.type) {
+					case Event.EDIT_VALUE_CHANGED:      
+//						view.prints(String.printf("evt: EDIT_VALUE_CHANGED %v", evt)); 
+						editFileCleanFlagG = "*";
+						updateFileName();
+						return true;
+				}
+			};
 
 		}
 	</script>
 </head>
 <body>
-	<div><span id="fileNameLabelID"></span></div>
-	<button id="btn1" style="display: none">Load...</button>
-	<button id="btnLoad">Load</button>
-	<button id="btn3">点我3</button>
-	<button id="btn4">点我4</button>
-	<script type="text/tiscript">
-		// var root = view.root;
- 
-	</script>
+	<div style="margin-top: 10px; margin-bottom: 10px;"><span id="fileNameLabelID"></span></div>
+	<div>
+		<button id="btn1" style="display: none">Load...</button>
+		<button id="btnLoad">Load</button>
+		<button id="btn3">点我3</button>
+		<button id="btn4">点我4</button>
+	</div>
+	<plaintext#source type="text/html" style="font-size: 1.2em;"></plaintext>
 
-	<plaintext#source type="text/html"></plaintext>
-	<pre type />
 </body>
 </html>
-`
-
-htmlT = tk.LoadStringFromFile(tk.JoinPath(path_filepath.Dir(scriptPathG), "editFileSciter.st"))
-
-tk.CheckErrorString(htmlT)
-
-// screenW, screenH := sysspec.GetScreenResolution()
-
-runtime.LockOSThread()
-
-
-// w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.NewRect((screenH-600)/2, (screenW-800)/2, 800, 600))
-
-w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
-
-if err != nil {
-	log.Fatal(err)
-}
-
-w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sciter.ALLOW_SOCKET_IO | sciter.ALLOW_EVAL | sciter.ALLOW_SYSINFO)
-
-w.LoadHtml(htmlT, "")
-
-data, _ := w.Call("getScreenWH") //, sciter.NewValue(10), sciter.NewValue(20))
-fmt.Println(data.String())
-
-
-// w.Show()
-
-// w.Run()
-
-// return
-
-// w.LoadHtml(htmlT, "")
-
-w.SetTitle("Gox Editor")
-
-// root, _ := w.GetRootElement()
-
-// btn1, _ := root.SelectById("btn1")
-
-// btn1.OnClick(func() {
-// 	fmt.Println("btn1被点击了")
-
-// 	btn1.SetStyle("color", "#FF0000")
-
-// 	fmt.Println(btn1.Html(true))
-
-// 	// li.SetHtml("<a href='http://www.baidu.com'>baidu.com</a>", sciter.SIH_REPLACE_CONTENT)
-// 	// //在最后面追加内容
-// 	// li.SetHtml("哈哈", sciter.SIH_APPEND_AFTER_LAST)
-// 	//设置元素属性
-// 	// li.SetAttr("test", "test")
-// 	// li2, _ := root.SelectFirst("ul#list>li:nth-child(2)")
-// 	//设置文本
-// 	btn1.SetHtml("我改我改", sciter.SIH_REPLACE_CONTENT)
-// 	// btn1.SetAttr("value", "abcdefg")
-
-// })
-
-w.DefineFunction("loadFileFromFile", func(args) {
-	tk.Pl("file: %#v", args[0].String())
-	rs := tk.LoadStringFromFile(args[0].String())
-	return sciter.NewValue(rs)
-})
-
-w.DefineFunction("prints", func(args) {
-	tk.Pl("%v", args[0].String())
-	return sciter.NewValue("")
-})
-
-fileNameT := tk.GetParameterByIndexWithDefaultValue(os.Args, 2, "")
-
-w.Call("editFile", sciter.NewValue(fileNameT))
-
-w.Show()
-
-screenshot = github_kbinani_screenshot
-
-tk.Plvsr(screenshot.NumActiveDisplays(), screenshot.GetDisplayBounds(0))
-
-bounds := screenshot.GetDisplayBounds(0)
-
-img, err := screenshot.CaptureRect(bounds)
-if err != nil {
-	panic(err)
-}
-fileName := fmt.Sprintf("%d_%dx%d.png", i, bounds.Dx(), bounds.Dy())
-file, _ := os.Create(fileName)
-
-image_png.Encode(file, img)
-
-file.Close()
-
-fmt.Printf("#%d : %v \"%s\"\n", i, bounds, fileName)
-
-w.Run()

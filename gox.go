@@ -139,6 +139,8 @@ import (
 
 	qlgithub_domodwyer_mailyak "github.com/topxeq/qlang/lib/github.com/domodwyer/mailyak"
 
+	qlgithub_kbinani_screenshot "github.com/topxeq/qlang/lib/github.com/kbinani/screenshot"
+
 	// GUI related start
 
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
@@ -184,7 +186,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.998a"
+var versionG = "0.999a"
 
 var verboseG = false
 
@@ -452,6 +454,8 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 	return &f
 }
 
+var scriptPathG string
+
 func importQLNonGUIPackages() {
 	printValue := func(nameA string) {
 
@@ -509,6 +513,8 @@ func importQLNonGUIPackages() {
 		"runScript":        runScript,
 		"getClipText":      tk.GetClipText,
 		"setClipText":      tk.SetClipText,
+
+		"scriptPathG": scriptPathG,
 		// GUI related start
 
 		// full version related start
@@ -676,6 +682,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_360EntSecGroupSkylar_excelize", qlgithub_360EntSecGroupSkylar_excelize.Exports)
 
 	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
+
+	qlang.Import("github_kbinani_screenshot", qlgithub_kbinani_screenshot.Exports)
 
 }
 
@@ -1614,6 +1622,7 @@ func main() {
 	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
 	ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
 	ifLocalT := tk.IfSwitchExistsWhole(argsT, "-local")
+	ifAppPathT := tk.IfSwitchExistsWhole(argsT, "-apppath")
 	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
 	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
 	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
@@ -1628,8 +1637,12 @@ func main() {
 			scriptT += ".gox"
 		}
 		fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
+
+		scriptPathG = ""
 	} else if ifRemoteT {
 		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+
+		scriptPathG = ""
 	} else if ifCloudT {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
@@ -1655,6 +1668,8 @@ func main() {
 		if !gotT {
 			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 		}
+
+		scriptPathG = ""
 	} else if sshT != "" {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
@@ -1665,14 +1680,25 @@ func main() {
 		if tk.IsErrorString(fcT) {
 			tk.Pl("failed to get script from SSH: %v", tk.GetErrorString(fcT))
 			return
-
 		}
+
+		scriptPathG = ""
 	} else if ifGoPathT {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
 		}
 
-		fcT = tk.LoadStringFromFile(filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT))
+		scriptPathG = filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT)
+
+		fcT = tk.LoadStringFromFile(scriptPathG)
+	} else if ifAppPathT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		scriptPathG = filepath.Join(tk.GetApplicationPath(), scriptT)
+
+		fcT = tk.LoadStringFromFile(scriptPathG)
 	} else if ifLocalT {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
@@ -1690,8 +1716,11 @@ func main() {
 		// 	tk.Pl("Try to load script from %v", filepath.Join(localPathT, scriptT))
 		// }
 
-		fcT = tk.LoadStringFromFile(filepath.Join(localPathT, scriptT))
+		scriptPathG = filepath.Join(localPathT, scriptT)
+
+		fcT = tk.LoadStringFromFile(scriptPathG)
 	} else {
+		scriptPathG = scriptT
 		fcT = tk.LoadStringFromFile(scriptT)
 	}
 
