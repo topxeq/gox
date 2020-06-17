@@ -362,8 +362,19 @@ w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sc
 
 w.LoadHtml(htmlT, "")
 
+w.DefineFunction("prints", func(args) {
+	tk.Pl("%v", args[0].String())
+	return sciter.NewValue("")
+})
+
+w.DefineFunction("loadFileFromFile", func(args) {
+	tk.Pl("file: %#v", args[0].String())
+	rs := tk.LoadStringFromFile(args[0].String())
+	return sciter.NewValue(rs)
+})
+
 data, _ := w.Call("getScreenWH") //, sciter.NewValue(10), sciter.NewValue(20))
-fmt.Println(data.String())
+fmt.Println("data:", data.String())
 
 
 // w.Show()
@@ -398,17 +409,6 @@ w.SetTitle("Gox Editor")
 // 	// btn1.SetAttr("value", "abcdefg")
 
 // })
-
-w.DefineFunction("loadFileFromFile", func(args) {
-	tk.Pl("file: %#v", args[0].String())
-	rs := tk.LoadStringFromFile(args[0].String())
-	return sciter.NewValue(rs)
-})
-
-w.DefineFunction("prints", func(args) {
-	tk.Pl("%v", args[0].String())
-	return sciter.NewValue("")
-})
 
 fileNameT := tk.GetParameterByIndexWithDefaultValue(os.Args, 2, "")
 

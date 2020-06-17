@@ -302,15 +302,16 @@
 	</style>
 	<script type="text/tiscript">
 		// if (view.connectToInspector) {
-		 	view.connectToInspector(rootElement, inspectorIpAddress);
+		// 	view.connectToInspector(rootElement, inspectorIpAddress);
 		// }
 
 		//stdout.println("__FOLDER__:", __FOLDER__);
 		//stdout.println("__FILE__:", __FILE__);
 
 		function getScreenWH() {
+//			view.prints(String.printf("screenBoxO: %v, %v", 1, 2));
 			var (w, h) = view.screenBox(#frame, #dimension)
-			// view.prints("screenBox", w, h);
+//			view.prints(String.printf("screenBox: %v, %v", w, h));
 
 			view.move((w-800)/2, (h-600)/2, 800, 600);
 
@@ -385,14 +386,9 @@
 
 			//$(#btnLoad).onClick = loadFileJS;
 
-//			$(#mainEditID).on("click", function(evt) {
-//				view.prints("value changed!");
-//			});
-
 			$(plaintext#source).onControlEvent = function(evt) {
 				switch (evt.type) {
 					case Event.EDIT_VALUE_CHANGED:      
-//						view.prints(String.printf("evt: EDIT_VALUE_CHANGED %v", evt)); 
 						editFileCleanFlagG = "*";
 						updateFileName();
 						return true;
