@@ -416,23 +416,23 @@ w.Call("editFile", sciter.NewValue(fileNameT))
 
 w.Show()
 
-screenshot = github_kbinani_screenshot
+// screenshot = github_kbinani_screenshot
 
-tk.Plvsr(screenshot.NumActiveDisplays(), screenshot.GetDisplayBounds(0))
+// tk.Plvsr(screenshot.NumActiveDisplays(), screenshot.GetDisplayBounds(0))
 
-bounds := screenshot.GetDisplayBounds(0)
+// bounds := screenshot.GetDisplayBounds(0)
 
-img, err := screenshot.CaptureRect(bounds)
-if err != nil {
-	panic(err)
-}
-fileName := fmt.Sprintf("%d_%dx%d.png", i, bounds.Dx(), bounds.Dy())
-file, _ := os.Create(fileName)
+// img, err := screenshot.CaptureRect(bounds)
+// if err != nil {
+// 	panic(err)
+// }
+// fileName := fmt.Sprintf("%d_%dx%d.png", i, bounds.Dx(), bounds.Dy())
+// file, _ := os.Create(fileName)
 
-image_png.Encode(file, img)
+// image_png.Encode(file, img)
 
-file.Close()
+// file.Close()
 
-fmt.Printf("#%d : %v \"%s\"\n", i, bounds, fileName)
+// fmt.Printf("#%d : %v \"%s\"\n", i, bounds, fileName)
 
 w.Run()
