@@ -362,6 +362,8 @@ w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sc
 
 w.LoadHtml(htmlT, "")
 
+w.SetTitle("Gox Editor")
+
 w.DefineFunction("prints", func(args) {
 	tk.Pl("%v", args[0].String())
 	return sciter.NewValue("")
@@ -375,17 +377,6 @@ w.DefineFunction("loadFileFromFile", func(args) {
 
 data, _ := w.Call("getScreenWH") //, sciter.NewValue(10), sciter.NewValue(20))
 fmt.Println("data:", data.String())
-
-
-// w.Show()
-
-// w.Run()
-
-// return
-
-// w.LoadHtml(htmlT, "")
-
-w.SetTitle("Gox Editor")
 
 // root, _ := w.GetRootElement()
 

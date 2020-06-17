@@ -308,6 +308,62 @@
 		//stdout.println("__FOLDER__:", __FOLDER__);
 		//stdout.println("__FILE__:", __FILE__);
 
+		function isErrStr(strA) {
+			if (strA.substr(0, 6) == "TXERROR:") {
+				return true;
+			}
+
+			return false;
+		}
+
+		function getErrStr(strA) {
+			if (strA.substr(0, 6) == "TXERROR:") {
+				return strA.substr(6);
+			}
+
+			return strA;
+		}
+
+		function getConfirm(titelA, msgA) {
+			var result = view.msgbox { 
+				type:#question,
+				title: titelA,
+				content: msgA, 
+				//buttons:[#yes,#no]
+				buttons: [
+					{id:#yes,text:"Ok",role:"default-button"},
+					{id:#cancel,text:"Cancel",role:"cancel-button"}]                               
+				};
+
+			return result;
+		}
+
+		function showInfo(titelA, msgA) {
+			var result = view.msgbox { 
+				type:#information,
+				title: titelA,
+				content: msgA, 
+				//buttons:[#yes,#no]
+				buttons: [
+					{id:#cancel,text:"Close",role:"cancel-button"}]                               
+				};
+
+			return result;
+		}
+
+		function showError(titelA, msgA) {
+			var result = view.msgbox { 
+				type:#alert,
+				title: titelA,
+				content: msgA, 
+				//buttons:[#yes,#no]
+				buttons: [
+					{id:#cancel,text:"Close",role:"cancel-button"}]                               
+				};
+
+			return result;
+		}
+
 		function getScreenWH() {
 //			view.prints(String.printf("screenBoxO: %v, %v", 1, 2));
 			var (w, h) = view.screenBox(#frame, #dimension)
@@ -336,13 +392,40 @@
 
 			// view.prints(String.printf("fn: %v", fn));
 
-			var rs = view.loadFileFromFile(URL.toPath(fn));
+			var fileNameT = URL.toPath(fn);
+
+			var rs = view.loadFileFromFile(fileNameT);
+
+			if (isErrStr(rs)) {
+				showError("Error", String.printf("Failed to load file content: %v", getErrStr(rs)));
+				return;
+			}
 
 			$(plaintext).attributes["type"] = "text/script";
 
 			$(plaintext).value = rs;
 
+			editFileNameG = fileNameT;
+
+			editFileCleanFlagG = "";
+
+			updateFileName();
+
 			// return fn;
+		}
+
+		function editFileLoadClick() {
+			if (editFileCleanFlagG != "") {
+			
+				var rs = getConfirm("Please confirm", "File modified, load another file anyway?");
+
+				if (rs != #yes) {
+					return;
+				}
+
+			}
+
+			selectFileJS();
 		}
 
 		function editFile(fileNameA) {
@@ -384,7 +467,7 @@
 
 			//$(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
 
-			//$(#btnLoad).onClick = loadFileJS;
+			$(#btnLoad).onClick = editFileLoadClick;
 
 			$(plaintext#source).onControlEvent = function(evt) {
 				switch (evt.type) {
