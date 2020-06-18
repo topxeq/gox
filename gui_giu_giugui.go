@@ -1,4 +1,4 @@
-// +build giugui
+// +build !nogiugui
 
 package main
 
@@ -75,6 +75,13 @@ func loadFont() {
 
 	// fonts.AddFontFromFileTTF(fontPath, 14)
 	fonts.AddFontFromFileTTFV(fontPath, float32(fontSizeT), imgui.DefaultFontConfig, ranges.Data())
+}
+
+func loopWindow(windowA *giu.MasterWindow, loopA func()) {
+	// wnd := g.NewMasterWindow("Gox Editor", 800, 600, 0, loadFont)
+
+	windowA.Main(loopA)
+
 }
 
 // full version related end

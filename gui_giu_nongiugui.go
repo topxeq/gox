@@ -1,4 +1,4 @@
-// +build !giugui
+// +build nogiugui
 
 package main
 
