@@ -20,10 +20,6 @@ import (
 
 	execq "github.com/topxeq/qlang/exec"
 
-	// GUI related start
-
-	// GUI related end
-
 	// import standard packages
 	qlarchivezip "github.com/topxeq/qlang/lib/archive/zip"
 	qlbufio "github.com/topxeq/qlang/lib/bufio"
