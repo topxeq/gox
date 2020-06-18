@@ -8,11 +8,48 @@ htmlT := `
 	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>Gox Editor</title>
+    <style>
+    
+    plaintext {
+      padding:0;
+      flow:vertical;
+      behavior:plaintext;
+      background:#333; border:1px solid #333;
+      color:white;
+	  overflow:scroll-indicator;
+      font-rendering-mode:snap-pixel;
+      size:*; 
+      tab-size: 4;
+    }
+    plaintext > text {
+      font-family:monospace;
+      white-space: pre-wrap;
+      background:white;
+      color:black;
+      margin-left: 3em;
+      padding-left: 4dip;
+      cursor:text;
+      display:list-item;
+      list-style-type: index;
+      list-marker-color:#aaa;
+    }
+    plaintext > text:last-child {
+      padding-bottom:*;
+    }    
+    
+    plaintext > text:nth-child(10n) {
+      list-marker-color:#fff;
+    }
+    
+    
+    </style>
+
+
 	<script type="text/tiscript">
 		function colorize() 
 		{
 			const apply = Selection.applyMark; // shortcut
-				const isEditor = this.tag == "plaintext";
+			const isEditor = this.tag == "plaintext";
 			
 			// forward declarations:
 			var doStyle;
@@ -168,8 +205,6 @@ htmlT := `
 			
 				var typ = me.attributes["type"];
 
-				stdout.println("typ:", typ);
-				
 				var syntaxKind = typ like "*html" || typ like "*xml" ? #markup : #source;
 				var syntax = typ like "*css"? #style : #script;
 				
@@ -218,7 +253,7 @@ htmlT := `
 		{
 			:root { aspect: colorize; }
 			
-			text { white-space:pre; }
+			text { white-space:pre;  display:list-item; list-style-type: index; list-marker-color:#aaa; }
 			/*markup*/  
 			text::mark(tag) { color: olive; } /*background-color: #f0f0fa;*/
 			text::mark(tag-id) { color: red; } /*background-color: #f0f0fa;*/
@@ -277,86 +312,363 @@ htmlT := `
 		//stdout.println("__FOLDER__:", __FOLDER__);
 		//stdout.println("__FILE__:", __FILE__);
 
+		function isErrStr(strA) {
+			if (strA.substr(0, 6) == "TXERROR:") {
+				return true;
+			}
+
+			return false;
+		}
+
+		function getErrStr(strA) {
+			if (strA.substr(0, 6) == "TXERROR:") {
+				return strA.substr(6);
+			}
+
+			return strA;
+		}
+
+		function getConfirm(titelA, msgA) {
+			var result = view.msgbox { 
+				type:#question,
+				title: titelA,
+				content: msgA, 
+				//buttons:[#yes,#no]
+				buttons: [
+					{id:#yes,text:"Ok",role:"default-button"},
+					{id:#cancel,text:"Cancel",role:"cancel-button"}]                               
+				};
+
+			return result;
+		}
+
+		function showInfo(titelA, msgA) {
+			var result = view.msgbox { 
+				type:#information,
+				title: titelA,
+				content: msgA, 
+				//buttons:[#yes,#no]
+				buttons: [
+					{id:#cancel,text:"Close",role:"cancel-button"}]                               
+				};
+
+			return result;
+		}
+
+		function showError(titelA, msgA) {
+			var result = view.msgbox { 
+				type:#alert,
+				title: titelA,
+				content: msgA, 
+				//buttons:[#yes,#no]
+				buttons: [
+					{id:#cancel,text:"Close",role:"cancel-button"}]                               
+				};
+
+			return result;
+		}
+
 		function getScreenWH() {
+//			view.prints(String.printf("screenBoxO: %v, %v", 1, 2));
 			var (w, h) = view.screenBox(#frame, #dimension)
-			// view.prints("screenBox", w, h);
+//			view.prints(String.printf("screenBox: %v, %v", w, h));
 
 			view.move((w-800)/2, (h-600)/2, 800, 600);
 
 			return String.printf("%v|%v", w, h);
 		}
 
+		var editFileNameG = "";
+		var editFileCleanFlagG = "";
+
+		function updateFileName() {
+			$(#fileNameLabelID).html = (editFileNameG + editFileCleanFlagG);
+		}
+
 		function selectFileJS() {
 			//var fn = view.selectFile(#open, "Gotx Files (*.gt,*.go)|*.gt;*.go|All Files (*.*)|*.*" , "gotx" );
 			var fn = view.selectFile(#open);
 			view.prints(String.printf("fn: %v", fn));
-			view.prints(String.printf("screenBox: %v", view.screenBox(#frame, #dimension)));
+			//view.prints(String.printf("screenBox: %v", view.screenBox(#frame, #dimension)));
 
-			// stdout.println("loadStringFromFile", view.loadFileFromFile);
-            // view.msgbox(#alert, view.loadFileFromString("56"));
+			if (fn == undefined) {
+				return;
+			}
 
-			// view.prints(String.printf("fn: %v", fn));
+			var fileNameT = URL.toPath(fn);
 
-			var rs = view.loadFileFromFile(URL.toPath(fn));
+			var rs = view.loadStringFromFile(fileNameT);
+
+			if (isErrStr(rs)) {
+				showError("Error", String.printf("Failed to load file content: %v", getErrStr(rs)));
+				return;
+			}
 
 			$(plaintext).attributes["type"] = "text/script";
 
 			$(plaintext).value = rs;
 
+			editFileNameG = fileNameT;
+
+			editFileCleanFlagG = "";
+
+			updateFileName();
+
 			// return fn;
 		}
 
+		function editFileLoadClick() {
+			if (editFileCleanFlagG != "") {
+			
+				var rs = getConfirm("Please confirm", "File modified, load another file anyway?");
+
+				if (rs != #yes) {
+					return;
+				}
+
+			}
+
+			selectFileJS();
+		}
+
+		function editFileSaveAsClick() {
+			var fn = view.selectFile(#save);
+			view.prints(String.printf("fn: %v", fn));
+
+			if (fn == undefined) {
+				return;
+			}
+
+			var fileNameT = URL.toPath(fn);
+
+			var textT = $(plaintext).value;
+
+			var rs = view.saveStringToFile(textT, fileNameT);
+
+			if (isErrStr(rs)) {
+				showError("Error", String.printf("Failed to save file content: %v", getErrStr(rs)));
+				return;
+			}
+
+			editFileNameG = fileNameT;
+			editFileCleanFlagG = "";
+			updateFileName();
+
+			showInfo("Info", "Saved.");
+
+		}
+
+		function editFileSaveClick() {
+			if (editFileNameG == "") {
+				editFileSaveAsClick();
+
+				return;
+			}
+
+			var textT = $(plaintext).value;
+
+			var rs = view.saveStringToFile(textT, editFileNameG);
+
+			if (isErrStr(rs)) {
+				showError("Error", String.printf("Failed to save file content: %v", getErrStr(rs)));
+				return;
+			}
+
+			editFileCleanFlagG = "";
+			updateFileName();
+
+			showInfo("Info", "Saved.");
+		}
+
+		function editRunClick() {
+			view.close();
+			// view.exit();
+		}
+
+		function getInput(msgA) {
+			var res = view.dialog({ 
+				html: `
+				<html>
+				<body>
+				  <center>
+					  <div style="margin-top: 10px; margin-bottom: 10px;">
+						  <span>`+msgA+`</span>
+					  </div>
+					  <div style="margin-top: 10px; margin-bottom: 10px;">
+						  <input id="mainTextID" type="text" />
+					  </div>
+					  <div style="margin-top: 10px; margin-bottom: 10px;">
+						  <input id="submitButtonID" type="button" value="Ok" />
+						  <input id="cancelButtonID" type="button" value="Cancel" />
+					  </div>
+				  </center>
+				  <script type="text/tiscript">
+					  $(#submitButtonID).onClick = function() {
+						  view.close($(#mainTextID).value);
+					  };
+  
+					  $(#cancelButtonID).onClick = function() {
+						  view.close();
+					  };
+				  </scr`+`ipt>
+				</body>
+				</html>
+				`
+			  });
+  
+			  return res;
+		  }
+
+		event click $(#btnEncrypt)
+		{
+		  	var res = getInput("Secure Code");
+
+			if (res == undefined) {
+				return;
+			}
+
+			var sourceT = $(plaintext).value;
+
+			var encStrT = view.encryptText(sourceT, res);
+		
+			if (isErrStr(encStrT)) {
+				showError("Error", String.printf("failed to encrypt content: %v",getErrStr(encStrT)));
+				return;
+			}
+		
+			$(plaintext).value = "\/\/TXDEF#" + encStrT;
+			editFileCleanFlagG = "*";
+		}
+	
+		event click $(#btnDecrypt)
+		{
+		  	var res = getInput("Secure Code");
+
+			if (res == undefined) {
+				return;
+			}
+
+			var sourceT = $(plaintext).value;
+
+			var encStrT = view.decryptText(sourceT, res);
+		
+			if (isErrStr(encStrT)) {
+				showError("Error", String.printf("failed to decrypt content: %v",getErrStr(encStrT)));
+				return;
+			}
+		
+			$(plaintext).value = encStrT;
+			editFileCleanFlagG = "*";
+		}
+	
+		event click $(#btnRun)
+		{
+			var res = getInput("Arguments to pass to script")
+
+			if (res == undefined) {
+				return;
+			}
+
+			var rs = view.runScript($(plaintext).value, res);
+
+			showInfo("Result", rs)
+		 
+		  	// view.prints(String.printf("result = %v", rs));
+		}
+	
+
+		function editCloseClick() {
+			view.close();
+			// view.exit();
+		}
+
+		function editFile(fileNameA) {
+			var fcT string;
+
+			//view.prints("fileNameA: "+fileNameA);
+
+			if (fileNameA == "") {
+				editFileNameG = "";
+
+				fcT = "";
+
+				editFileCleanFlagG = "*";
+			} else {
+				editFileNameG = fileNameA;
+
+				fcT = view.loadStringFromFile(fileNameA);
+
+//		if tk.IsErrorString(fcT) {
+//			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
+//			return
+
+//		}
+
+				editFileCleanFlagG = "";
+			}
+
+			//view.prints(fcT);
+
+			$(plaintext).attributes["type"] = "text/script";
+
+			$(plaintext).value = fcT;
+
+			updateFileName();
+
+		}
+
 		function self.ready() {
-			// view.logHandler( function(subsystem, severity, message, mode, location, asStringizer) {
-			// 	view.prints(String.printf("%v, %v, %v, %v, %v, %v", subsystem, severity, message, mode, location, asStringizer);  
-			//   });
-			// var r = 12.6;
-			// stdout.printf( "%f" , r );
-			// var x=123;
-			// debug log(x={x}, x:{x}, x({x}), x[{x}]);
-			//var a = self.url("colorizer.tis");
-			//debug log(a={a});
 
-			// $(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
+			//$(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
 
-			$(#btnLoad).onClick = loadFileJS;
+			$(#btnLoad).onClick = editFileLoadClick;
+			$(#btnSave).onClick = editFileSaveClick;
+			$(#btnSaveAs).onClick = editFileSaveAsClick;
+			// $(#btnEncrypt).onClick = editFEncryptClick;
+			// $(#btnDecrypt).onClick = editDecryptClick;
+			// $(#btnRun).onClick = editRunClick;
+			$(#btnClose).onClick = editCloseClick;
+
+			$(plaintext#source).onControlEvent = function(evt) {
+				switch (evt.type) {
+					case Event.EDIT_VALUE_CHANGED:      
+						editFileCleanFlagG = "*";
+						updateFileName();
+						return true;
+				}
+			};
 
 		}
 	</script>
+
 </head>
 <body>
-	<div><span id="fileNameLabelID"></span></div>
-	<button id="btn1" style="display: none">Load...</button>
-	<button id="btnLoad">Load</button>
-	<button id="btn3">点我3</button>
-	<button id="btn4">点我4</button>
-	<script type="text/tiscript">
-		// var root = view.root;
- 
-	</script>
+	<div style="margin-top: 10px; margin-bottom: 10px;"><span id="fileNameLabelID"></span></div>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+		<button id="btn1" style="display: none">Load...</button>
+		<button id="btnLoad">Load</button>
+		<button id="btnSave">Save</button>
+		<button id="btnSaveAs">SaveAs</button>
+		<button id="btnEncrypt">Encrypt</button>
+		<button id="btnDecrypt">Decrypt</button>
+		<button id="btnRun">Run</button>
+		<button id="btnClose">Close</button>
+	</div>
+	<plaintext#source type="text/html" style="font-size: 1.2em;"></plaintext>
 
-	<plaintext#source type="text/html"></plaintext>
-	<pre type />
 </body>
 </html>
 `
 
-htmlT = tk.LoadStringFromFile(tk.JoinPath(path_filepath.Dir(scriptPathG), "editFileSciter.st"))
+// htmlT = tk.LoadStringFromFile(tk.JoinPath(path_filepath.Dir(scriptPathG), "editFileSciter.st"))
 
-tk.CheckErrorString(htmlT)
-
-// screenW, screenH := sysspec.GetScreenResolution()
+// tk.CheckErrorString(htmlT)
 
 runtime.LockOSThread()
 
-
-// w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.NewRect((screenH-600)/2, (screenW-800)/2, 800, 600))
-
 w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
 
-if err != nil {
-	log.Fatal(err)
-}
+checkError(err)
 
 w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sciter.ALLOW_SOCKET_IO | sciter.ALLOW_EVAL | sciter.ALLOW_SYSINFO)
 
@@ -369,37 +681,37 @@ w.DefineFunction("prints", func(args) {
 	return sciter.NewValue("")
 })
 
-w.DefineFunction("loadFileFromFile", func(args) {
-	tk.Pl("file: %#v", args[0].String())
+w.DefineFunction("loadStringFromFile", func(args) {
 	rs := tk.LoadStringFromFile(args[0].String())
 	return sciter.NewValue(rs)
 })
 
+w.DefineFunction("saveStringToFile", func(args) {
+	rs := tk.SaveStringToFile(args[0].String(), args[1].String())
+	return sciter.NewValue(rs)
+})
+
+w.DefineFunction("encryptText", func(args) {
+	rs := tk.EncryptStringByTXDEF(args[0].String(), args[1].String())
+	return sciter.NewValue(rs)
+})
+
+w.DefineFunction("decryptText", func(args) {
+	rs := tk.DecryptStringByTXDEF(args[0].String(), args[1].String())
+	return sciter.NewValue(rs)
+})
+
+w.DefineFunction("runScript", func(args) {
+	rs := runScript(args[0].String(), "", args[1].String())
+	return sciter.NewValue(tk.Spr("%v", rs))
+})
+
+w.DefineFunction("exit", func(args) {
+	os.Exit(1);
+})
+
 data, _ := w.Call("getScreenWH") //, sciter.NewValue(10), sciter.NewValue(20))
-fmt.Println("data:", data.String())
-
-// root, _ := w.GetRootElement()
-
-// btn1, _ := root.SelectById("btn1")
-
-// btn1.OnClick(func() {
-// 	fmt.Println("btn1被点击了")
-
-// 	btn1.SetStyle("color", "#FF0000")
-
-// 	fmt.Println(btn1.Html(true))
-
-// 	// li.SetHtml("<a href='http://www.baidu.com'>baidu.com</a>", sciter.SIH_REPLACE_CONTENT)
-// 	// //在最后面追加内容
-// 	// li.SetHtml("哈哈", sciter.SIH_APPEND_AFTER_LAST)
-// 	//设置元素属性
-// 	// li.SetAttr("test", "test")
-// 	// li2, _ := root.SelectFirst("ul#list>li:nth-child(2)")
-// 	//设置文本
-// 	btn1.SetHtml("我改我改", sciter.SIH_REPLACE_CONTENT)
-// 	// btn1.SetAttr("value", "abcdefg")
-
-// })
+// fmt.Println("data:", data.String())
 
 fileNameT := tk.GetParameterByIndexWithDefaultValue(os.Args, 2, "")
 

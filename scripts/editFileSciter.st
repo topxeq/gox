@@ -385,16 +385,15 @@
 			//var fn = view.selectFile(#open, "Gotx Files (*.gt,*.go)|*.gt;*.go|All Files (*.*)|*.*" , "gotx" );
 			var fn = view.selectFile(#open);
 			view.prints(String.printf("fn: %v", fn));
-			view.prints(String.printf("screenBox: %v", view.screenBox(#frame, #dimension)));
+			//view.prints(String.printf("screenBox: %v", view.screenBox(#frame, #dimension)));
 
-			// stdout.println("loadStringFromFile", view.loadFileFromFile);
-            // view.msgbox(#alert, view.loadFileFromString("56"));
-
-			// view.prints(String.printf("fn: %v", fn));
+			if (fn == undefined) {
+				return;
+			}
 
 			var fileNameT = URL.toPath(fn);
 
-			var rs = view.loadFileFromFile(fileNameT);
+			var rs = view.loadStringFromFile(fileNameT);
 
 			if (isErrStr(rs)) {
 				showError("Error", String.printf("Failed to load file content: %v", getErrStr(rs)));
@@ -428,6 +427,159 @@
 			selectFileJS();
 		}
 
+		function editFileSaveAsClick() {
+			var fn = view.selectFile(#save);
+			view.prints(String.printf("fn: %v", fn));
+
+			if (fn == undefined) {
+				return;
+			}
+
+			var fileNameT = URL.toPath(fn);
+
+			var textT = $(plaintext).value;
+
+			var rs = view.saveStringToFile(textT, fileNameT);
+
+			if (isErrStr(rs)) {
+				showError("Error", String.printf("Failed to save file content: %v", getErrStr(rs)));
+				return;
+			}
+
+			editFileNameG = fileNameT;
+			editFileCleanFlagG = "";
+			updateFileName();
+
+			showInfo("Info", "Saved.");
+
+		}
+
+		function editFileSaveClick() {
+			if (editFileNameG == "") {
+				editFileSaveAsClick();
+
+				return;
+			}
+
+			var textT = $(plaintext).value;
+
+			var rs = view.saveStringToFile(textT, editFileNameG);
+
+			if (isErrStr(rs)) {
+				showError("Error", String.printf("Failed to save file content: %v", getErrStr(rs)));
+				return;
+			}
+
+			editFileCleanFlagG = "";
+			updateFileName();
+
+			showInfo("Info", "Saved.");
+		}
+
+		function editRunClick() {
+			view.close();
+			// view.exit();
+		}
+
+		function getInput(msgA) {
+			var res = view.dialog({ 
+				html: `
+				<html>
+				<body>
+				  <center>
+					  <div style="margin-top: 10px; margin-bottom: 10px;">
+						  <span>`+msgA+`</span>
+					  </div>
+					  <div style="margin-top: 10px; margin-bottom: 10px;">
+						  <input id="mainTextID" type="text" />
+					  </div>
+					  <div style="margin-top: 10px; margin-bottom: 10px;">
+						  <input id="submitButtonID" type="button" value="Ok" />
+						  <input id="cancelButtonID" type="button" value="Cancel" />
+					  </div>
+				  </center>
+				  <script type="text/tiscript">
+					  $(#submitButtonID).onClick = function() {
+						  view.close($(#mainTextID).value);
+					  };
+  
+					  $(#cancelButtonID).onClick = function() {
+						  view.close();
+					  };
+				  </scr`+`ipt>
+				</body>
+				</html>
+				`
+			  });
+  
+			  return res;
+		  }
+
+		event click $(#btnEncrypt)
+		{
+		  	var res = getInput("Secure Code");
+
+			if (res == undefined) {
+				return;
+			}
+
+			var sourceT = $(plaintext).value;
+
+			var encStrT = view.encryptText(sourceT, res);
+		
+			if (isErrStr(encStrT)) {
+				showError("Error", String.printf("failed to encrypt content: %v",getErrStr(encStrT)));
+				return;
+			}
+		
+			$(plaintext).value = "\/\/TXDEF#" + encStrT;
+			editFileCleanFlagG = "*";
+			updateFileName();
+		}
+	
+		event click $(#btnDecrypt)
+		{
+		  	var res = getInput("Secure Code");
+
+			if (res == undefined) {
+				return;
+			}
+
+			var sourceT = $(plaintext).value;
+
+			var encStrT = view.decryptText(sourceT, res);
+		
+			if (isErrStr(encStrT)) {
+				showError("Error", String.printf("failed to decrypt content: %v",getErrStr(encStrT)));
+				return;
+			}
+		
+			$(plaintext).value = encStrT;
+			editFileCleanFlagG = "*";
+			updateFileName();
+		}
+	
+		event click $(#btnRun)
+		{
+			var res = getInput("Arguments to pass to script")
+
+			if (res == undefined) {
+				return;
+			}
+
+			var rs = view.runScript($(plaintext).value, res);
+
+			showInfo("Result", rs)
+		 
+		  	// view.prints(String.printf("result = %v", rs));
+		}
+	
+
+		function editCloseClick() {
+			view.close();
+			// view.exit();
+		}
+
 		function editFile(fileNameA) {
 			var fcT string;
 
@@ -442,7 +594,7 @@
 			} else {
 				editFileNameG = fileNameA;
 
-				fcT = view.loadFileFromFile(fileNameA);
+				fcT = view.loadStringFromFile(fileNameA);
 
 //		if tk.IsErrorString(fcT) {
 //			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
@@ -468,6 +620,12 @@
 			//$(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
 
 			$(#btnLoad).onClick = editFileLoadClick;
+			$(#btnSave).onClick = editFileSaveClick;
+			$(#btnSaveAs).onClick = editFileSaveAsClick;
+			// $(#btnEncrypt).onClick = editFEncryptClick;
+			// $(#btnDecrypt).onClick = editDecryptClick;
+			// $(#btnRun).onClick = editRunClick;
+			$(#btnClose).onClick = editCloseClick;
 
 			$(plaintext#source).onControlEvent = function(evt) {
 				switch (evt.type) {
@@ -480,14 +638,19 @@
 
 		}
 	</script>
+
 </head>
 <body>
 	<div style="margin-top: 10px; margin-bottom: 10px;"><span id="fileNameLabelID"></span></div>
-	<div>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
 		<button id="btn1" style="display: none">Load...</button>
 		<button id="btnLoad">Load</button>
-		<button id="btn3">点我3</button>
-		<button id="btn4">点我4</button>
+		<button id="btnSave">Save</button>
+		<button id="btnSaveAs">SaveAs</button>
+		<button id="btnEncrypt">Encrypt</button>
+		<button id="btnDecrypt">Decrypt</button>
+		<button id="btnRun">Run</button>
+		<button id="btnClose">Close</button>
 	</div>
 	<plaintext#source type="text/html" style="font-size: 1.2em;"></plaintext>
 
