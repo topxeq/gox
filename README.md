@@ -112,6 +112,12 @@ or
 
 > gox -decrun=mycode -example basic.goxe
 
+### Init GUI programming environment
+
+> gox -initgui
+
+Download Sciter and LCL dll files in the same folder with Gox application path, now only in Windows platform.
+
 ### Open a simple editor to edit Gox code
 
 > gox -edit
