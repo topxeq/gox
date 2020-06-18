@@ -4,15 +4,17 @@ _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/
 
 # gox
 
-**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept.**
+**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, Giu is removed by default and [Sciter](https://sciter.com) is used for cross-platform GUI programming. Although it requires a dynamic library file, but it's worthy.**
 
 Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), with some improvement. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
-And thanks to [Giu](https://github.com/AllenDang/giu), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code. Note: this GUI library requires OPENGL/GLFW.
+And thanks to [Sciter](https://sciter.com) and [Go-Sciter](https://github.com/sciter-sdk/go-sciter), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient, only an additional library will needed. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code. Note: this GUI library file is packed within the zip file in Windows release, for Linux/Mac, please see the instructions in Sciter website.
 
 And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. Since this library doesn't require OPENGL, it's more compatible in some server-side operating systems. It only requires a single library file(dll in Windows or so in Linux and dylib in Mac OS).
+
+If you want to use Giu GUI programming, try compiling from the source code and add "-tags giugui" command-line parameters in "go build" step.
 
 Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
 
@@ -22,7 +24,7 @@ Download the latest Gox executable file from the [official website](http://gox.t
 
 A command-line only version of gox (named goxc, no GUI features) is also available. This version will be more fast, and of course smaller in file size.
 
-Since the more features added makes the Gox executable became very large, the Tiny Gox Version is now available to download. Some features are removed from Gox tiny version, such as OpenGL GUI, drawing, NoSQL, some database drivers(Oracle, MS-SQL), etc.
+Since the more features added makes the Gox executable became very large, the Tiny Gox Version is now available to download(not updated frequently). Some features are removed from Gox tiny version, such as OpenGL GUI, drawing, NoSQL, some database drivers(Oracle, MS-SQL), etc.
 
 Goxg version is used to run GUI only programs, it will not open a CMD console.
 
