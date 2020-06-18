@@ -692,6 +692,23 @@ func showHelp() {
 
 }
 
+func compileSource(srcA string) string {
+	vmT := qlang.New()
+
+	tk.Pl("vmT: %v", vmT)
+
+	errT := vmT.TXCompile(srcA)
+
+	if errT != nil {
+		return errT.Error()
+	}
+
+	tk.Pl("vmT after: %v", vmT)
+
+	return ""
+
+}
+
 func runInteractiveQlang() int {
 	var following bool
 	var source string
@@ -2068,18 +2085,14 @@ func main() {
 }
 
 func test() {
-	// var v *vcl.TKeyEvent
+	// srcT := `
+	// 	a = 1
+	// 	println(a+3)
+	// `
 
-	// tk.Pl("%#v, %T", v, v)
+	// errT := compileSource(srcT)
 
-	// f := func(sender vcl.IObject, key *types.Char, shift types.TShiftState) {
-	// 	// funcA.Call(execq.NewStack(), sender, key, shift)
-	// }
+	// tk.Pl("%v", errT)
 
-	// v = &f
-
-	// tk.Pl("%#v, %T", v, v)
-
-	// return &f
-
+	// os.Exit(0)
 }
