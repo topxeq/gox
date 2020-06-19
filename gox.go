@@ -1813,7 +1813,7 @@ func main() {
 		// tk.Pl("script:\n%v", editFileScriptT)
 		rs := runScriptX(editFileScriptT, os.Args[1:]...)
 
-		if rs != notFoundG {
+		if rs != notFoundG && rs != nil {
 			tk.Pl("%v", rs)
 		}
 
