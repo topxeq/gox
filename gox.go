@@ -141,15 +141,6 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/godror/godror"
 
-	// "image"
-	// "image/color"
-	// "image/draw"
-	// "image/png"
-
-	// "gonum.org/v1/plot"
-	// "gonum.org/v1/plot/plotter"
-	// "gonum.org/v1/plot/vg"
-
 	// full version related end
 
 	_ "github.com/go-sql-driver/mysql"
@@ -166,7 +157,7 @@ import (
 
 // Non GUI related
 
-var versionG = "0.999a"
+var versionG = "1.000a"
 
 var verboseG = false
 
