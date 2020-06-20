@@ -4,7 +4,7 @@ _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/
 
 # gox
 
-**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, Giu is removed by default and [Sciter](https://sciter.com) is used for cross-platform GUI programming. Although it requires a dynamic library file, but it's worthy.**
+**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, [Sciter](https://sciter.com) is recommended for cross-platform GUI programming in Gox. Although it requires a dynamic library file, but it's worthy.**
 
 Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), with some improvement. The syntax of Gox language is very similar to Golang.
 
@@ -14,13 +14,13 @@ And thanks to [Sciter](https://sciter.com) and [Go-Sciter](https://github.com/sc
 
 And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. Since this library doesn't require OPENGL, it's more compatible in some server-side operating systems. It only requires a single library file(dll in Windows or so in Linux and dylib in Mac OS).
 
-If you want to use Giu GUI programming, try compiling from the source code and add "-tags giugui" command-line parameters in "go build" step.
+If you do not want to use Giu GUI programming, try compiling from the source code and add "-tags nogiugui" command-line parameters in "go build" step.
 
 Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
 
 ## 1. Installation
 
-Download the latest Gox executable file from the [official website](http://gox.topget.org/) or [Github](https://github.com/topxeq/gox/releases) or [Gitee](https://gitee.com/topxeq/gox/releases) (due to the speed issue, official website and Gitee are recommended). Then put it into a directory in the system path. If you download the zip file, extract it first.
+Download the latest Gox executable file from the [official website](http://topget.org/gox.html) or [Github](https://github.com/topxeq/gox/releases) or [Gitee](https://gitee.com/topxeq/gox/releases) (due to the speed issue, official website and Gitee are recommended). Then put it into a directory in the system path. If you download the zip file, extract it first.
 
 A command-line only version of gox (named goxc, no GUI features) is also available. This version will be more fast, and of course smaller in file size.
 
