@@ -1,0 +1,20 @@
+// 设置github.com/kbinani/screenshot包的简称
+screenshot = github_kbinani_screenshot
+
+// 显示有几个显示器以及
+pl("Total screen count: %v", screenshot.NumActiveDisplays())
+
+// 获取第一个显示器的屏幕尺寸区域
+bounds := screenshot.GetDisplayBounds(0)
+
+// 截取该屏幕截图
+img, _ := screenshot.CaptureRect(bounds)
+
+
+// 保存截图到png格式的图片文件
+fileName := fmt.Sprintf("screenshot1_%vx%v.png", bounds.Dx(), bounds.Dy())
+file, _ := os.Create(fileName)
+defer file.Close()
+
+image_png.Encode(file, img)
+

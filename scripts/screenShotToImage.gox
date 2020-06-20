@@ -1,0 +1,76 @@
+// 设置github.com/kbinani/screenshot包的简称
+screenshot = github_kbinani_screenshot
+
+// 获取第一个显示器的屏幕尺寸区域
+bounds := screenshot.GetDisplayBounds(0)
+
+// 截取该屏幕截图
+// 注意 := 和 = 作为赋值用，在Gox语言中是等价的
+img, _ := screenshot.CaptureRect(bounds)
+
+
+bufT  = new(bytes.Buffer)
+
+image_png.Encode(bufT, img)
+
+dataT =  bufT.Bytes()
+
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
+
+base64StrT := tk.EncodeToBase64(dataT)
+
+
+htmlT := `
+<html>
+<head>
+    <script type="text/tiscript">
+        function getImageData(imageDataStrA) {
+            var bytesT = Bytes.fromString(imageDataStrA)
+
+            var img = Image.fromBytes(bytesT);
+
+            $(picture).value = img;
+            $(#img1ID).value = img;
+            $(img#img2ID).attributes["src"] = "data:image/png;base64,"+imageDataStrA;
+        }
+
+        // 如果要连接Sciter的Inspector调试则取消下面的注释
+   		// function self.ready() {
+        //    view.connectToInspector(rootElement, inspectorIpAddress);
+        // }
+
+    </script>
+</head>
+<body>
+    <div style="margin-bottom: 10px;">Screenshots 1-3</div>
+    <picture style="width: 480px;"></picture>
+    <img id="img1ID" style="width: 480px;"></img>
+    <img#img2ID style="width: 480px;"></img>
+    <img #img3ID style="width: 480px;"></img>
+</body>
+</html>
+
+`
+
+runtime.LockOSThread()
+
+w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
+
+checkError(err)
+
+w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sciter.ALLOW_SOCKET_IO | sciter.ALLOW_EVAL | sciter.ALLOW_SYSINFO)
+
+w.LoadHtml(htmlT, "")
+
+w.SetTitle("Screenshots")
+
+w.Call("getImageData", sciter.NewValue(base64StrT))
+
+root, _ := w.GetRootElement()
+img, _ := root.SelectById("img3ID")
+img.SetAttr("src", `data:image/png;base64,`+b)
+
+w.Show()
+
+w.Run()
