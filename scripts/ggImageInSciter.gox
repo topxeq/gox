@@ -1,0 +1,209 @@
+// 设置image/color包的简称
+// github.com/fogleman/gg包已经默认简称gg
+color = image_color
+
+// 建立imagetk包的引用，注意该包的用法比较特殊
+itk = imagetk.NewImageTK()
+
+// 建立一个绘图环境，图片大小为 600×400 像素
+contextT = gg.NewContext(600, 400)
+
+// 用十六进制方式设置当前颜色
+contextT.SetHexColor("FFFFFF")
+
+// 用当前颜色来清空整个图片
+contextT.Clear()
+
+// 设置线宽为 2 个像素
+contextT.SetLineWidth(2)
+
+// 设置RGB颜色，每种颜色的数值范围是 0.0 - 1.0
+contextT.SetRGB(0.0, 0.0, 1.0)
+
+// 画一个圆，以坐标为 (200, 200) 的点为圆心，半径为 50像素
+contextT.DrawCircle(250, 250, 60)
+
+// 真正进行线条绘制，并且保留绘图路径以便后面填充颜色
+contextT.StrokePreserve()
+
+// 创建一个渐变色填充方案 gradientT
+// 是两点之间的圆环式渐变色
+gradientT = gg.NewRadialGradient(250, 250, 0, 250, 250, 80)
+
+// 创建一个颜色的基本方法
+colorT = new(color.RGBA)
+colorT.R = uint8(0)
+colorT.G = uint8(0)
+colorT.B = uint8(0)
+colorT.A = uint8(255)
+
+gradientT.AddColorStop(0, colorT)
+
+// 注意创建颜色的快捷方法
+gradientT.AddColorStop(1, itk.NewRGBA(0, 0, 255, 255))
+
+// 设置用渐变色 gradientT 填充
+contextT.SetFillStyle(gradientT)
+
+// 真正进行填充，并清除绘画路径，因为后面已经不需要了
+contextT.Fill()
+
+// 开始用填充的方式绘制一个矩形
+
+// 用RGBA色彩体系设置当前颜色
+// 用 0 - 255 的数值范围表示颜色和透明度
+// 设置一定的透明度以便显示出被覆盖住的图形（圆形）
+contextT.SetRGBA255(0, 255, 0, 180)
+
+// 绘制一个左上角点坐标为 (300, 200)，宽 100，高 100的矩形
+contextT.DrawRectangle(300, 200, 100, 100)
+
+// 仅填充颜色不绘制边线
+contextT.Fill()
+
+// 开始用路径法画一个三角形
+
+// 用十六进制字符串设置颜色
+// 可以加上前面的“#”号，也可以后面加上一个字节表示透明度
+contextT.SetHexColor("#FF000099")
+
+// 将虚拟的画笔移动到坐标为 (300, 120) 的点
+contextT.MoveTo(300, 120)
+
+// 从当前点绘制一条线到坐标为 (240, 230)的点为止
+// 当前点将随之移动到 (240, 230)
+contextT.LineTo(240, 230)
+
+// 继续绘制一条直线到 (360, 230)
+contextT.LineTo(360, 230)
+
+// 继续绘制一条直线到 (300, 120)
+contextT.LineTo(300, 120)
+
+// 创建一个新的线性渐变色
+gradientT = gg.NewLinearGradient(240, 120, 360, 230)
+
+// 注意从16进制数字创建颜色的方法
+gradientT.AddColorStop(0, itk.NewRGBAFromHex("#00FF00FF"))
+gradientT.AddColorStop(1, itk.NewRGBAFromHex("0000FFFF"))
+gradientT.AddColorStop(0.5, itk.NewRGBAFromHex("FF0000"))
+
+// 渐变色也可以用于线条颜色的渐变
+contextT.SetStrokeStyle(gradientT)
+
+// 设置粗一点的线宽以体现渐变色
+contextT.SetLineWidth(10)
+
+// 真正绘制三角形
+contextT.Stroke()
+
+// 注意 := 和 = 作为赋值用，在Gox语言中是等价的
+img := contextT.Image()
+
+
+// 创建一个字节缓冲区，用于存放图片的二进制数据
+bufT  = new(bytes.Buffer)
+
+// 将屏幕截图以PNG格式编码到缓冲区中
+image_png.Encode(bufT, img)
+
+// 获取字节缓冲区的字节数组（[]byte）类型引用
+dataT =  bufT.Bytes()
+
+// 设置github.com/sciter-sdk/go-sciter及其子包window的简称
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
+
+// 将图片的字节数组数据转换为BASE64编码的字符串
+// 以便传递给Sciter
+// 由于从Gox到Sciter传递数据在传递数组等复杂类型时不太方便，
+// 因此最好转换成基本类型，如字符串和数字等
+// 复杂对象可以转换成JSON字符串传递
+base64StrT := tk.EncodeToBase64(dataT)
+
+// 设置Sciter格式的HTML网页字符串
+// 除了DOM元素id属性的设置等微小差异外，与一般的HTML网页完全相同
+// Sciter完整地支持HTML/HTML5，并有一定改进
+// 网页中的脚本部分，则不太一样，只支持Sciter自己的TiScript，不支持JavaScript
+// TiScript可以看作JavaScript的加强版，增加了类似JQuery的一些功能
+htmlT := `
+<html>
+<head>
+    <script type="text/tiscript">
+        
+        // getImageData函数用于在Gox代码中调用传入图片数据并显示在网页上
+        function getImageData(imageDataStrA) {
+            // 调用Bytes对象的fromString方法，默认按BASE64方式解码到二进制数据
+            var bytesT = Bytes.fromString(imageDataStrA)
+
+            // 根据二进制图片数据生成Sciter中的图片对象
+            var imgT = Image.fromBytes(bytesT);
+
+            // 设置第一个picture元素的值为该图片
+            $(picture).value = imgT;
+
+            // 设置id为img1ID的<img>标签值为该图片
+            $(#img1ID).value = imgT;
+
+            // 设置id为img2ID的<img>标签的src属性为BASE64字符串格式的图片
+            $(img#img2ID).attributes["src"] = "data:image/png;base64,"+imageDataStrA;
+        }
+
+        // 如果要连接Sciter的Inspector调试则取消下面的注释
+   		// function self.ready() {
+        //    view.connectToInspector(rootElement, inspectorIpAddress);
+        // }
+
+    </script>
+</head>
+<body>
+    <div style="margin-bottom: 10px;">Screenshots 1-3</div>
+
+    <!-- picture标签相当于加强的<img>标签 -->
+    <picture style="width: 480px;"></picture>
+
+    <img id="img1ID" style="width: 480px;"></img>
+
+    <!-- 注意：第二个<img>标签使用了Sciter中便捷的id设定方法，即使用#号 -->
+    <img#img2ID style="width: 480px;"></img>
+
+    <!-- #号也可以和标签名之间有空格 -->
+    <img #img3ID style="width: 480px;"></img>
+</body>
+</html>
+
+`
+
+// 锁定GUI线程，理论上GUI编程都要求在同一线程中更新界面元素
+runtime.LockOSThread()
+
+// 创建Sciter窗口，并指定窗口区域位置及大小
+w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.NewRect(0, 0, 800, 600))
+
+checkError(err)
+
+// 设置该窗口的一些属性
+w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sciter.ALLOW_SOCKET_IO | sciter.ALLOW_EVAL | sciter.ALLOW_SYSINFO)
+
+// 载入设计好的HTML页面
+w.LoadHtml(htmlT, "")
+
+// 设置窗口标题
+w.SetTitle("Screenshots")
+
+// 调用getImageData并传入图片数据显示
+// 此时只显示前三幅图片，第四幅图片将在后面用Gox代码来载入
+w.Call("getImageData", sciter.NewValue(base64StrT))
+
+// 获取Sciter页面的根元素
+root, _ := w.GetRootElement()
+
+// 获取根元素下的id为img3ID的元素
+img, _ := root.SelectById("img3ID")
+
+// 设置该元素的src属性为BASE64格式的图片
+img.SetAttr("src", `data:image/png;base64,`+base64StrT)
+
+// 显示窗口并运行GUI图形界面
+w.Show()
+w.Run()
