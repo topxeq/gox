@@ -129,46 +129,10 @@ base64StrT := tk.EncodeToBase64(dataT)
 htmlT := `
 <html>
 <head>
-    <script type="text/tiscript">
-        
-        // getImageData函数用于在Gox代码中调用传入图片数据并显示在网页上
-        function getImageData(imageDataStrA) {
-            // 调用Bytes对象的fromString方法，默认按BASE64方式解码到二进制数据
-            var bytesT = Bytes.fromString(imageDataStrA)
-
-            // 根据二进制图片数据生成Sciter中的图片对象
-            var imgT = Image.fromBytes(bytesT);
-
-            // 设置第一个picture元素的值为该图片
-            $(picture).value = imgT;
-
-            // 设置id为img1ID的<img>标签值为该图片
-            $(#img1ID).value = imgT;
-
-            // 设置id为img2ID的<img>标签的src属性为BASE64字符串格式的图片
-            $(img#img2ID).attributes["src"] = "data:image/png;base64,"+imageDataStrA;
-        }
-
-        // 如果要连接Sciter的Inspector调试则取消下面的注释
-   		// function self.ready() {
-        //    view.connectToInspector(rootElement, inspectorIpAddress);
-        // }
-
-    </script>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 </head>
 <body>
-    <div style="margin-bottom: 10px;">Screenshots 1-3</div>
-
-    <!-- picture标签相当于加强的<img>标签 -->
-    <picture style="width: 480px;"></picture>
-
-    <img id="img1ID" style="width: 480px;"></img>
-
-    <!-- 注意：第二个<img>标签使用了Sciter中便捷的id设定方法，即使用#号 -->
-    <img#img2ID style="width: 480px;"></img>
-
-    <!-- #号也可以和标签名之间有空格 -->
-    <img #img3ID style="width: 480px;"></img>
 </body>
 </html>
 
@@ -189,20 +153,40 @@ w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sc
 w.LoadHtml(htmlT, "")
 
 // 设置窗口标题
-w.SetTitle("Screenshots")
-
-// 调用getImageData并传入图片数据显示
-// 此时只显示前三幅图片，第四幅图片将在后面用Gox代码来载入
-w.Call("getImageData", sciter.NewValue(base64StrT))
+w.SetTitle("图片转向")
 
 // 获取Sciter页面的根元素
-root, _ := w.GetRootElement()
+rootT, _ := w.GetRootElement()
+
+bodyT, _ := rootT.SelectFirst("body")
+
+divT, _ := sciter.CreateElement("div", "")
+
+_ := bodyT.Insert(divT, 0)
+
+divT.SetHtml(`<span id="titleTextID">演示图片</span>`, sciter.SIH_REPLACE_CONTENT)
+
+divT.SetAttr("id", "mainDivID")
+divT.SetStyle("margin-bottom", "10px")
+
+spanT, _ := bodyT.SelectFirst("span#titleTextID")
+
+spanT.SetStyle("color", "#ff0000")
+
+
 
 // 获取根元素下的id为img3ID的元素
-img, _ := root.SelectById("img3ID")
+imgT, _ := sciter.CreateElement("img", "")
+
+_ := bodyT.Insert(imgT, 1)
 
 // 设置该元素的src属性为BASE64格式的图片
-img.SetAttr("src", `data:image/png;base64,`+base64StrT)
+imgT.SetAttr("src", `data:image/png;base64,`+base64StrT)
+
+imgT.SetStyle("transform", "rotate(45deg)")
+imgT.SetStyle("transform-origin", "50% 50%")
+
+plv(rootT.Html(true))
 
 // 显示窗口并运行GUI图形界面
 w.Show()
