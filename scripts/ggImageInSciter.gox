@@ -97,6 +97,7 @@ contextT.SetLineWidth(10)
 // 真正绘制三角形
 contextT.Stroke()
 
+// 从gg的画布获取Go语言中的image.Image对象
 // 注意 := 和 = 作为赋值用，在Gox语言中是等价的
 img := contextT.Image()
 
@@ -104,7 +105,7 @@ img := contextT.Image()
 // 创建一个字节缓冲区，用于存放图片的二进制数据
 bufT  = new(bytes.Buffer)
 
-// 将屏幕截图以PNG格式编码到缓冲区中
+// 将生成的图片以PNG格式编码到缓冲区中
 image_png.Encode(bufT, img)
 
 // 获取字节缓冲区的字节数组（[]byte）类型引用
@@ -115,17 +116,12 @@ sciter = github_scitersdk_gosciter
 window = github_scitersdk_gosciter_window
 
 // 将图片的字节数组数据转换为BASE64编码的字符串
-// 以便传递给Sciter
-// 由于从Gox到Sciter传递数据在传递数组等复杂类型时不太方便，
-// 因此最好转换成基本类型，如字符串和数字等
-// 复杂对象可以转换成JSON字符串传递
 base64StrT := tk.EncodeToBase64(dataT)
 
 // 设置Sciter格式的HTML网页字符串
-// 除了DOM元素id属性的设置等微小差异外，与一般的HTML网页完全相同
-// Sciter完整地支持HTML/HTML5，并有一定改进
-// 网页中的脚本部分，则不太一样，只支持Sciter自己的TiScript，不支持JavaScript
-// TiScript可以看作JavaScript的加强版，增加了类似JQuery的一些功能
+// 此处非常简单，就是一个网页框架
+// 后续DOM操作将由Gox代码来进行
+// 注意，为了正确在Sciter中显示中文，最好加上两种meta定义utf-8编码
 htmlT := `
 <html>
 <head>
@@ -149,44 +145,82 @@ checkError(err)
 // 设置该窗口的一些属性
 w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sciter.ALLOW_SOCKET_IO | sciter.ALLOW_EVAL | sciter.ALLOW_SYSINFO)
 
-// 载入设计好的HTML页面
+// 载入HTML页面框架
+// 第二个参数是基URL（base url），我们一般不用
 w.LoadHtml(htmlT, "")
 
-// 设置窗口标题
+// 设置窗口标题，注意是中文的
 w.SetTitle("图片转向")
 
 // 获取Sciter页面的根元素
 rootT, _ := w.GetRootElement()
 
+// 获取body元素
 bodyT, _ := rootT.SelectFirst("body")
 
+// 创建一个div，其中文本为空（第二个参数）
 divT, _ := sciter.CreateElement("div", "")
 
+// 在body元素中插入div，第二个参数是插入的位置
 _ := bodyT.Insert(divT, 0)
 
+// 设置div的innerHTML
+// 第二个标志SIH_REPLACE_CONTENT表示替换innerHTML的全部
+// 还有可用的标志位有SIH_INSERT_AT_START、SIH_APPEND_AFTER_LAST
+// SOH_REPLACE、SOH_INSERT_BEFORE、SOH_INSERT_AFTER，看名字即可知道大意
 divT.SetHtml(`<span id="titleTextID">演示图片</span>`, sciter.SIH_REPLACE_CONTENT)
 
+// 设置div的id属性
 divT.SetAttr("id", "mainDivID")
+
+// 设置div的style属性（即CSS）
 divT.SetStyle("margin-bottom", "10px")
 
+// 获取我们之前定义的span标签
+// 这是在设置div的HTML中用文本定义的
+// 注意选择器的快捷写法
 spanT, _ := bodyT.SelectFirst("span#titleTextID")
 
+// 设置文字颜色为红色
 spanT.SetStyle("color", "#ff0000")
 
 
-
-// 获取根元素下的id为img3ID的元素
+// 再创建一个img元素准备装载图片
 imgT, _ := sciter.CreateElement("img", "")
 
+// 在body中插入元素，序号为1，也就是第二个元素，即在前面的div之后
 _ := bodyT.Insert(imgT, 1)
 
 // 设置该元素的src属性为BASE64格式的图片
 imgT.SetAttr("src", `data:image/png;base64,`+base64StrT)
 
-imgT.SetStyle("transform", "rotate(45deg)")
+// 设置图片初始的旋转角度为0，即不旋转
+imgT.SetStyle("transform", "rotate(0deg)")
+
+// 设置旋转的旋转轴为图片中心点
 imgT.SetStyle("transform-origin", "50% 50%")
 
+// 输出目前的根节点的HTML文本以供参考
+// 第二个参数为true表示是outerHTML，否则是innerHTML
 plv(rootT.Html(true))
+
+// 启动一个goroutine协程，负责图片旋转
+// 由于后面的w.Run是阻塞的，所以必须要用线程来处理旋转
+// 旋转的方法是不断修改img元素的transform样式的角度值
+// 每次顺时针旋转45度
+go func() {
+    angleT := 0
+
+    for i= 0; i< 20; i ++ {
+        // 旋转20次，每次间隔1秒
+        tk.SleepSeconds(1)
+
+        angleT += 45
+
+        imgT.SetStyle("transform", fmt.Sprintf("rotate(%ddeg)", angleT))
+    }
+}()
+
 
 // 显示窗口并运行GUI图形界面
 w.Show()
