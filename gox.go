@@ -128,6 +128,10 @@ import (
 
 	qlgithub_kbinani_screenshot "github.com/topxeq/qlang/lib/github.com/kbinani/screenshot"
 
+	qlgithub_stretchr_objx "github.com/topxeq/qlang/lib/github.com/stretchr/objx"
+
+	qlgithub_topxeq_doc2vec_doc2vec "github.com/topxeq/qlang/lib/github.com/topxeq/doc2vec/doc2vec"
+
 	// GUI related start
 
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
@@ -672,6 +676,10 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
 
 	qlang.Import("github_kbinani_screenshot", qlgithub_kbinani_screenshot.Exports)
+
+	qlang.Import("github_stretchr_objx", qlgithub_stretchr_objx.Exports)
+
+	qlang.Import("github_topxeq_doc2vec_doc2vec", qlgithub_topxeq_doc2vec_doc2vec.Exports)
 
 }
 
