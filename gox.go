@@ -161,7 +161,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.000a"
+var versionG = "1.001a"
 
 var verboseG = false
 
@@ -194,17 +194,17 @@ func qlEval(strA string) string {
 		return errT.Error()
 	}
 
+	rs, ok := vmT.GetVar("outG")
+
+	if ok {
+		return tk.Spr("%v", rs)
+	}
+
 	if retG != notFoundG {
 		return tk.Spr("%v", retG)
 	}
 
-	rs, ok := vmT.GetVar("outG")
-
-	if !ok {
-		return ""
-	}
-
-	return tk.Spr("%v", rs)
+	return tk.ErrStrF("no result")
 }
 
 func panicIt(valueA interface{}) {
@@ -262,6 +262,71 @@ func runScriptX(codeA string, argsA ...string) interface{} {
 	}
 
 	return retG
+
+}
+
+func runCode(codeA string, argsA ...string) interface{} {
+	initQLVM()
+
+	vmT := qlang.New()
+
+	if argsA != nil && len(argsA) > 0 {
+		vmT.SetVar("argsG", argsA)
+	} else {
+		vmT.SetVar("argsG", os.Args)
+	}
+
+	retG = notFoundG
+
+	errT := vmT.SafeEval(codeA)
+
+	if errT != nil {
+		return errT
+	}
+
+	rs, ok := qlVMG.GetVar("outG")
+
+	if ok {
+		return rs
+	}
+
+	if retG != notFoundG {
+		return retG
+	}
+
+	return retG
+}
+
+func getMagic(numberA int) string {
+	if numberA < 0 {
+		return tk.GenerateErrorString("invalid magic number")
+	}
+
+	typeT := numberA % 10
+
+	var fcT string
+
+	if typeT == 8 {
+		fcT = tk.DownloadPageUTF8(tk.Spr("https://gitee.com/topxeq/gox/raw/master/magic/%v.gox", numberA), nil, "", 30)
+
+	} else if typeT == 7 {
+		fcT = tk.DownloadPageUTF8(tk.Spr("https: //raw.githubusercontent.com/topxeq/gox/master/magic/%v.gox", numberA), nil, "", 30)
+	} else {
+		return tk.GenerateErrorString("invalid magic number")
+	}
+
+	return fcT
+
+}
+
+func magic(numberA int, argsA ...string) interface{} {
+	fcT := getMagic(numberA)
+
+	if tk.IsErrorString(fcT) {
+		return tk.ErrorStringToError(fcT)
+	}
+
+	return runCode(fcT, argsA...)
 
 }
 
@@ -503,13 +568,18 @@ func importQLNonGUIPackages() {
 		"getInput":         tk.GetUserInput,
 		"getInputf":        tk.GetInputf,
 		"run":              runFile,
+		"runScript":        runScript,
+		"runCode":          runCode,
 		"typeOf":           tk.TypeOfValueReflect,
 		"remove":           tk.RemoveItemsInArray,
-		"runScript":        runScript,
+		"magic":            magic,
 		"getClipText":      tk.GetClipText,
 		"setClipText":      tk.SetClipText,
+		"getParameter":     tk.GetParameterByIndexWithDefaultValue,
+		"getSwitch":        tk.GetSwitchWithDefaultValue,
 
 		"scriptPathG": scriptPathG,
+
 		// GUI related start
 
 		// full version related start
@@ -1778,7 +1848,8 @@ func editFile(fileNameA string, argsA ...string) {
 }
 
 func main() {
-	// var errT error
+	var errT error
+
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -1943,9 +2014,20 @@ func main() {
 
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
+	ifMagicT := false
+	magicNumberT, errT := tk.StrToInt(scriptT)
+
+	if errT == nil {
+		ifMagicT = true
+	}
+
 	var fcT string
 
-	if ifExampleT {
+	if ifMagicT {
+		fcT = getMagic(magicNumberT)
+
+		scriptPathG = ""
+	} else if ifExampleT {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
 		}
@@ -2064,7 +2146,9 @@ func main() {
 
 	initQLVM()
 
-	errT := qlVMG.SafeEval(fcT)
+	retG = notFoundG
+
+	errT = qlVMG.SafeEval(fcT)
 	if errT != nil {
 
 		tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
@@ -2078,7 +2162,11 @@ func main() {
 	rs, ok := qlVMG.GetVar("outG")
 
 	if ok {
-		tk.Pl("%#v", rs)
+		tk.Pl("%v", rs)
+	}
+
+	if retG != notFoundG {
+		tk.Pl("%v", retG)
 	}
 
 }

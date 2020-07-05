@@ -23,9 +23,9 @@ if tk.IsErrorString(foundT) {
 
 fcNewT = tk.RegReplace(fcT, `(?m)// GUI related start[\s\S]*?// GUI related end`, "")
 
-tk.EnsureMakeDirs(tk.JoinPath(gopathT, "/src/goxc"))
+tk.EnsureMakeDirs(tk.JoinPath(gopathT, "/src/github.com/topxeq/goxc"))
 
-newFilePathT = tk.JoinPath(gopathT, "/src/goxc/goxc.go")
+newFilePathT = tk.JoinPath(gopathT, "/src/github.com/topxeq/goxc/goxc.go")
 
 rsT = tk.SaveStringToFile(fcNewT, newFilePathT)
 
