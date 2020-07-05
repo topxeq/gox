@@ -1,11 +1,11 @@
 pln("Calculator by TopXeQ V0.9a")
 
-paraT = tk.Trim(getParameter(os.Args, 2, ""))
-pv("paraT")
+paraT = trim(getParameter(os.Args, 2, ""))
+
 if paraT != "" {
 	expression = paraT
 } else {
-	expression = getInput("Please enter the expression: ")
+	expression = getInputf("Please enter the expression: ")
 }
 
 result = eval(expression)

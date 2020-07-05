@@ -20,7 +20,7 @@ Gox supports password-protect your source code file, it's also a major differenc
 
 ## 1. Installation
 
-Download the latest Gox executable file from the [official website](http://topget.org/gox.html) or [Github](https://github.com/topxeq/gox/releases) or [Gitee](https://gitee.com/topxeq/gox/releases) (due to the speed issue, official website and Gitee are recommended). Then put it into a directory in the system path. If you download the zip file, extract it first.
+Download the latest Gox executable file from the [official website](http://topget.org/gox.html)(recommended) or [Github](https://github.com/topxeq/gox/releases) or [Gitee](https://gitee.com/topxeq/gox/releases) (due to the speed issue, official website and Gitee are recommended). Then put it into a directory in the system path. If you download the zip file, extract it first.
 
 A command-line only version of gox (named goxc, no GUI features) is also available. This version will be more fast, and of course smaller in file size.
 
@@ -91,6 +91,17 @@ the basic.gox (the suffix could be omitted) script will be printed to standard o
 > gox -remote https://raw.githubusercontent.com/topxeq/gox/master/scripts/basica.gox
 
 Gox will try to download the script first and then run it.
+
+### Run with a magic number(acquired from somewhere)
+
+> gox 18
+
+Gox will try to download the script associated with the magic number and then run it.
+
+MNS(Magic-Number-Script) can also be executed in the shell mode, i.e.
+
+> gox
+> \>magic(18) 
 
 ### Encrypt source code file
 

@@ -161,7 +161,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.001a"
+var versionG = "1.01a"
 
 var verboseG = false
 
@@ -549,10 +549,13 @@ func importQLNonGUIPackages() {
 
 	var defaultExports = map[string]interface{}{
 		"eval":             qlEval,
-		"printfln":         tk.Pl,
-		"fprintf":          fmt.Fprintf,
-		"pl":               tk.Pl,
+		"pr":               fmt.Print,
 		"pln":              fmt.Println,
+		"prf":              fmt.Printf,
+		"printfln":         tk.Pl,
+		"pl":               tk.Pl,
+		"sprintf":          fmt.Sprintf,
+		"fprintf":          fmt.Fprintf,
 		"plv":              tk.Plv,
 		"plvsr":            tk.Plvsr,
 		"plerr":            tk.PlErr,
@@ -577,6 +580,7 @@ func importQLNonGUIPackages() {
 		"setClipText":      tk.SetClipText,
 		"getParameter":     tk.GetParameterByIndexWithDefaultValue,
 		"getSwitch":        tk.GetSwitchWithDefaultValue,
+		"trim":             tk.Trim,
 
 		"scriptPathG": scriptPathG,
 
