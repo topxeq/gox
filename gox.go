@@ -2169,7 +2169,7 @@ func main() {
 		tk.Pl("%v", rs)
 	}
 
-	if retG != notFoundG {
+	if retG != notFoundG && retG != nil {
 		tk.Pl("%v", retG)
 	}
 
