@@ -226,16 +226,24 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 	if modeA == "" || modeA == "0" || modeA == "ql" {
 		vmT := qlang.New()
 
-		if argsA != nil && len(argsA) > 0 {
-			vmT.SetVar("argsG", argsA)
-		}
+		// if argsA != nil && len(argsA) > 0 {
+		vmT.SetVar("argsG", argsA)
+		// }
 
 		retG = notFoundG
 
 		errT := vmT.SafeEval(codeA)
 
 		if errT != nil {
-			return errT.Error()
+			return errT
+		}
+
+		rs, ok := qlVMG.GetVar("outG")
+
+		if ok {
+			if rs != nil {
+				return rs
+			}
 		}
 
 		return retG
@@ -249,16 +257,24 @@ func runScriptX(codeA string, argsA ...string) interface{} {
 
 	initQLVM()
 
-	if argsA != nil && len(argsA) > 0 {
-		qlVMG.SetVar("argsG", argsA)
-	}
+	// if argsA != nil && len(argsA) > 0 {
+	qlVMG.SetVar("argsG", argsA)
+	// }
 
 	retG = notFoundG
 
 	errT := qlVMG.SafeEval(codeA)
 
 	if errT != nil {
-		return errT.Error()
+		return errT
+	}
+
+	rs, ok := qlVMG.GetVar("outG")
+
+	if ok {
+		if rs != nil {
+			return rs
+		}
 	}
 
 	return retG
@@ -270,11 +286,11 @@ func runCode(codeA string, argsA ...string) interface{} {
 
 	vmT := qlang.New()
 
-	if argsA != nil && len(argsA) > 0 {
-		vmT.SetVar("argsG", argsA)
-	} else {
-		vmT.SetVar("argsG", os.Args)
-	}
+	// if argsA != nil && len(argsA) > 0 {
+	vmT.SetVar("argsG", argsA)
+	// } else {
+	// 	vmT.SetVar("argsG", os.Args)
+	// }
 
 	retG = notFoundG
 
@@ -287,7 +303,9 @@ func runCode(codeA string, argsA ...string) interface{} {
 	rs, ok := qlVMG.GetVar("outG")
 
 	if ok {
-		return rs
+		if rs != nil {
+			return rs
+		}
 	}
 
 	if retG != notFoundG {
@@ -548,6 +566,7 @@ func importQLNonGUIPackages() {
 	// }
 
 	var defaultExports = map[string]interface{}{
+		"pass":             tk.Pass,
 		"eval":             qlEval,
 		"pr":               fmt.Print,
 		"pln":              fmt.Println,
@@ -568,6 +587,10 @@ func importQLNonGUIPackages() {
 		"getVar":           tk.GetVar,
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
+		"isErrStr":         tk.IsErrStr,
+		"errStr":           tk.ErrStr,
+		"errStrf":          tk.ErrStrF,
+		"getErrStr":        tk.GetErrStr,
 		"getInput":         tk.GetUserInput,
 		"getInputf":        tk.GetInputf,
 		"run":              runFile,
@@ -580,6 +603,7 @@ func importQLNonGUIPackages() {
 		"setClipText":      tk.SetClipText,
 		"getParameter":     tk.GetParameterByIndexWithDefaultValue,
 		"getSwitch":        tk.GetSwitchWithDefaultValue,
+		"switchExists":     tk.IfSwitchExistsWhole,
 		"trim":             tk.Trim,
 
 		"scriptPathG": scriptPathG,
@@ -1000,6 +1024,369 @@ func runFile(argsA ...string) interface{} {
 	return runScript(fcT, "", argsA[1:]...)
 }
 
+func runLine(strA string) interface{} {
+	argsT, errT := tk.ParseCommandLine(strA)
+
+	if errT != nil {
+		return errT
+	}
+
+	return runArgs(argsT...)
+}
+
+func runArgs(argsA ...string) interface{} {
+	argsT := argsA
+
+	if tk.IfSwitchExistsWhole(argsT, "-version") {
+		tk.Pl("Gox by TopXeQ V%v", versionG)
+		return nil
+	}
+
+	if tk.IfSwitchExistsWhole(argsT, "-h") {
+		showHelp()
+		return nil
+	}
+
+	scriptT := tk.GetParameterByIndexWithDefaultValue(argsT, 0, "")
+
+	// GUI related start
+
+	// full version related start
+	if tk.IfSwitchExistsWhole(argsT, "-edit") {
+		// editFile(scriptT)
+		rs := runScriptX(editFileScriptG, argsT...)
+
+		if rs != notFoundG && rs != nil {
+			tk.Pl("%v", rs)
+		}
+
+		return nil
+	}
+	// full version related end
+
+	// GUI related end
+
+	if tk.IfSwitchExistsWhole(argsT, "-initgui") {
+		applicationPathT := tk.GetApplicationPath()
+
+		osT := tk.GetOSName()
+
+		if tk.Contains(osT, "inux") {
+			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
+
+			return nil
+		} else if tk.Contains(osT, "arwin") {
+			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
+
+			return nil
+		} else {
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll", false)
+
+			if tk.IsErrorString(rs) {
+
+				return tk.Errf("failed to download Sciter DLL file.")
+			}
+
+			tk.Pl("Sciter DLL downloaded to application path.")
+
+			rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dll", applicationPathT, "liblcl.dll", false)
+
+			if tk.IsErrorString(rs) {
+
+				return tk.Errf("failed to download LCL file.")
+			}
+
+			tk.Pl("LCL DLL downloaded to application path.")
+
+			return nil
+		}
+	}
+
+	if scriptT == "" {
+
+		// autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
+		// autoGxbPathT := filepath.Join(tk.GetApplicationPath(), "auto.gxb")
+		autoPathT := "auto.gox"
+		autoGxbPathT := "auto.gxb"
+
+		if tk.IfFileExists(autoPathT) {
+			scriptT = autoPathT
+		} else if tk.IfFileExists(autoGxbPathT) {
+			scriptT = autoGxbPathT
+		} else {
+			initQLVM()
+
+			runInteractiveQlang()
+
+			// tk.Pl("not enough parameters")
+
+			return nil
+		}
+
+	}
+
+	encryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-encrypt=", "")
+
+	if encryptCodeT != "" {
+		fcT := tk.LoadStringFromFile(scriptT)
+
+		if tk.IsErrorString(fcT) {
+
+			return tk.Errf("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
+		}
+
+		encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
+
+		if tk.IsErrorString(encStrT) {
+
+			return tk.Errf("failed to encrypt content [%v]: %v", scriptT, tk.GetErrorString(encStrT))
+		}
+
+		rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, scriptT+"e")
+
+		if tk.IsErrorString(rsT) {
+
+			return tk.Errf("failed to encrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
+		}
+
+		return nil
+	}
+
+	decryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrypt=", "")
+
+	if decryptCodeT != "" {
+		fcT := tk.LoadStringFromFile(scriptT)
+
+		if tk.IsErrorString(fcT) {
+
+			return tk.Errf("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
+		}
+
+		decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
+
+		if tk.IsErrorString(decStrT) {
+
+			return tk.Errf("failed to decrypt content [%v]: %v", scriptT, tk.GetErrorString(decStrT))
+		}
+
+		rsT := tk.SaveStringToFile(decStrT, scriptT+"d")
+
+		if tk.IsErrorString(rsT) {
+
+			return tk.Errf("failed to decrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
+		}
+
+		return nil
+	}
+
+	decryptRunCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrun=", "")
+
+	ifBatchT := tk.IfSwitchExistsWhole(argsT, "-batch")
+
+	if !ifBatchT {
+		if tk.EndsWithIgnoreCase(scriptT, ".gxb") {
+			ifBatchT = true
+		}
+	}
+
+	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
+	ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
+	ifLocalT := tk.IfSwitchExistsWhole(argsT, "-local")
+	ifAppPathT := tk.IfSwitchExistsWhole(argsT, "-apppath")
+	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
+	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
+	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
+	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
+
+	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
+
+	ifMagicT := false
+	magicNumberT, errT := tk.StrToInt(scriptT)
+
+	if errT == nil {
+		ifMagicT = true
+	}
+
+	var fcT string
+
+	if ifMagicT {
+		fcT = getMagic(magicNumberT)
+
+		scriptPathG = ""
+	} else if ifExampleT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+		fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
+
+		scriptPathG = ""
+	} else if ifRemoteT {
+		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+
+		scriptPathG = ""
+	} else if ifCloudT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		basePathT, errT := tk.EnsureBasePath("gox")
+
+		gotT := false
+
+		if errT == nil {
+			cfgPathT := tk.JoinPath(basePathT, "cloud.cfg")
+
+			cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
+
+			if !tk.IsErrorString(cfgStrT) {
+				fcT = tk.DownloadPageUTF8(cfgStrT+scriptT, nil, "", 30)
+
+				gotT = true
+			}
+
+		}
+
+		if !gotT {
+			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+		}
+
+		scriptPathG = ""
+	} else if sshT != "" {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		fcT = downloadStringFromSSH(sshT, scriptT)
+
+		if tk.IsErrorString(fcT) {
+
+			return tk.Errf("failed to get script from SSH: %v", tk.GetErrorString(fcT))
+		}
+
+		scriptPathG = ""
+	} else if ifGoPathT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		scriptPathG = filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT)
+
+		fcT = tk.LoadStringFromFile(scriptPathG)
+	} else if ifAppPathT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		scriptPathG = filepath.Join(tk.GetApplicationPath(), scriptT)
+
+		fcT = tk.LoadStringFromFile(scriptPathG)
+	} else if ifLocalT {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+			scriptT += ".gox"
+		}
+
+		localPathT := getCfgString("localScriptPath.cfg")
+
+		if tk.IsErrorString(localPathT) {
+			// tk.Pl("failed to get local path: %v", tk.GetErrorString(localPathT))
+
+			return tk.Errf("failed to get local path: %v", tk.GetErrorString(localPathT))
+		}
+
+		// if tk.GetEnv("GOXVERBOSE") == "true" {
+		// 	tk.Pl("Try to load script from %v", filepath.Join(localPathT, scriptT))
+		// }
+
+		scriptPathG = filepath.Join(localPathT, scriptT)
+
+		fcT = tk.LoadStringFromFile(scriptPathG)
+	} else {
+		scriptPathG = scriptT
+		fcT = tk.LoadStringFromFile(scriptT)
+	}
+
+	if tk.IsErrorString(fcT) {
+		return tk.Errf("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+	}
+
+	if tk.StartsWith(fcT, "//TXDEF#") {
+		if decryptRunCodeT == "" {
+			tk.Prf("Password: ")
+			decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+			// fcT = fcT[8:]
+		}
+	}
+
+	if decryptRunCodeT != "" {
+		fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+	}
+
+	if ifViewT {
+		tk.Pl("%v", fcT)
+
+		return nil
+	}
+
+	if !ifBatchT {
+		if tk.RegStartsWith(fcT, `//\s*(GXB|gxb)`) {
+			ifBatchT = true
+		}
+	}
+
+	if ifBatchT {
+		listT := tk.SplitLinesRemoveEmpty(fcT)
+
+		tk.Plv(fcT)
+		tk.Plv(listT)
+
+		for _, v := range listT {
+			tk.Pl("Run line: %#v", v)
+			rsT := runLine(tk.Trim(v))
+
+			if rsT != nil {
+				valueT, ok := rsT.(error)
+
+				if ok {
+					return valueT
+				} else {
+					tk.Pl("%v", rsT)
+				}
+			}
+
+		}
+
+		return nil
+	}
+
+	initQLVM()
+
+	qlVMG.SetVar("argsG", argsT)
+
+	retG = notFoundG
+
+	errT = qlVMG.SafeEval(fcT)
+	if errT != nil {
+
+		tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
+
+		// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
+		// tk.Pl("Next line: %v, %v", f, l)
+
+		return errT
+	}
+
+	rs, ok := qlVMG.GetVar("outG")
+
+	if ok {
+		if rs != nil {
+			return rs
+		}
+	}
+
+	return retG
+}
+
 // init the main VM
 
 var retG interface{}
@@ -1095,7 +1482,7 @@ func getCfgString(fileNameA string) string {
 	return tk.ErrStrF("failed to get config string")
 }
 
-var editFileScriptT = `
+var editFileScriptG = `
 sciter = github_scitersdk_gosciter
 window = github_scitersdk_gosciter_window
 
@@ -1843,7 +2230,7 @@ w.Run()
 `
 
 func editFile(fileNameA string, argsA ...string) {
-	rs := runScriptX(editFileScriptT, argsA...)
+	rs := runScriptX(editFileScriptG, argsA...)
 
 	if rs != notFoundG {
 		// tk.Pl("%v", rs)
@@ -1852,7 +2239,7 @@ func editFile(fileNameA string, argsA ...string) {
 }
 
 func main() {
-	var errT error
+	// var errT error
 
 	defer func() {
 		err := recover()
@@ -1865,313 +2252,327 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	argsT := os.Args
+	rs := runArgs(os.Args[1:]...)
 
-	if tk.IfSwitchExistsWhole(argsT, "-version") {
-		tk.Pl("Gox by TopXeQ V%v", versionG)
-		return
-	}
+	if rs != nil {
+		valueT, ok := rs.(error)
 
-	if tk.IfSwitchExistsWhole(argsT, "-h") {
-		showHelp()
-		return
-	}
-
-	scriptT := tk.GetParameterByIndexWithDefaultValue(argsT, 1, "")
-
-	// GUI related start
-
-	// full version related start
-	if tk.IfSwitchExistsWhole(argsT, "-edit") {
-		// editFile(scriptT)
-		// tk.Pl("script:\n%v", editFileScriptT)
-		rs := runScriptX(editFileScriptT, os.Args[1:]...)
-
-		if rs != notFoundG && rs != nil {
+		if ok {
+			tk.Pl("Error: %v", valueT)
+		} else {
 			tk.Pl("%v", rs)
 		}
-
-		return
-	}
-	// full version related end
-
-	// GUI related end
-
-	if tk.IfSwitchExistsWhole(argsT, "-initgui") {
-		applicationPathT := tk.GetApplicationPath()
-
-		osT := tk.GetOSName()
-
-		if tk.Contains(osT, "inux") {
-			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
-
-			return
-		} else if tk.Contains(osT, "arwin") {
-			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
-
-			return
-		} else {
-			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll", false)
-
-			if tk.IsErrorString(rs) {
-				tk.Pl("failed to download Sciter DLL file.")
-				return
-			}
-
-			tk.Pl("Sciter DLL downloaded to application path.")
-
-			rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dll", applicationPathT, "liblcl.dll", false)
-
-			if tk.IsErrorString(rs) {
-				tk.Pl("failed to download LCL file.")
-				return
-			}
-
-			tk.Pl("LCL DLL downloaded to application path.")
-
-			return
-		}
 	}
 
-	if scriptT == "" {
+	// argsT := os.Args
 
-		autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
+	// if tk.IfSwitchExistsWhole(argsT, "-version") {
+	// 	tk.Pl("Gox by TopXeQ V%v", versionG)
+	// 	return
+	// }
 
-		if tk.IfFileExists(autoPathT) {
-			scriptT = autoPathT
-		} else {
-			initQLVM()
+	// if tk.IfSwitchExistsWhole(argsT, "-h") {
+	// 	showHelp()
+	// 	return
+	// }
 
-			runInteractiveQlang()
+	// scriptT := tk.GetParameterByIndexWithDefaultValue(argsT, 1, "")
 
-			// tk.Pl("not enough parameters")
+	// // GUI related start
 
-			return
-		}
+	// // full version related start
+	// if tk.IfSwitchExistsWhole(argsT, "-edit") {
+	// 	// editFile(scriptT)
+	// 	// tk.Pl("script:\n%v", editFileScriptG)
+	// 	rs := runScriptX(editFileScriptG, os.Args[1:]...)
 
-	}
+	// 	if rs != notFoundG && rs != nil {
+	// 		tk.Pl("%v", rs)
+	// 	}
 
-	encryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-encrypt=", "")
+	// 	return
+	// }
+	// // full version related end
 
-	if encryptCodeT != "" {
-		fcT := tk.LoadStringFromFile(scriptT)
+	// // GUI related end
 
-		if tk.IsErrorString(fcT) {
-			tk.Pl("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
-			return
-		}
+	// if tk.IfSwitchExistsWhole(argsT, "-initgui") {
+	// 	applicationPathT := tk.GetApplicationPath()
 
-		encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
+	// 	osT := tk.GetOSName()
 
-		if tk.IsErrorString(encStrT) {
-			tk.Pl("failed to encrypt content [%v]: %v", scriptT, tk.GetErrorString(encStrT))
-			return
-		}
+	// 	if tk.Contains(osT, "inux") {
+	// 		tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
 
-		rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, scriptT+"e")
+	// 		return
+	// 	} else if tk.Contains(osT, "arwin") {
+	// 		tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
 
-		if tk.IsErrorString(rsT) {
-			tk.Pl("failed to encrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
-			return
-		}
+	// 		return
+	// 	} else {
+	// 		rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll", false)
 
-		return
-	}
+	// 		if tk.IsErrorString(rs) {
+	// 			tk.Pl("failed to download Sciter DLL file.")
+	// 			return
+	// 		}
 
-	decryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrypt=", "")
+	// 		tk.Pl("Sciter DLL downloaded to application path.")
 
-	if decryptCodeT != "" {
-		fcT := tk.LoadStringFromFile(scriptT)
+	// 		rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/liblcl.dll", applicationPathT, "liblcl.dll", false)
 
-		if tk.IsErrorString(fcT) {
-			tk.Pl("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
-			return
-		}
+	// 		if tk.IsErrorString(rs) {
+	// 			tk.Pl("failed to download LCL file.")
+	// 			return
+	// 		}
 
-		decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
+	// 		tk.Pl("LCL DLL downloaded to application path.")
 
-		if tk.IsErrorString(decStrT) {
-			tk.Pl("failed to decrypt content [%v]: %v", scriptT, tk.GetErrorString(decStrT))
-			return
-		}
+	// 		return
+	// 	}
+	// }
 
-		rsT := tk.SaveStringToFile(decStrT, scriptT+"d")
+	// if scriptT == "" {
 
-		if tk.IsErrorString(rsT) {
-			tk.Pl("failed to decrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
-			return
-		}
+	// 	autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
 
-		return
-	}
+	// 	if tk.IfFileExists(autoPathT) {
+	// 		scriptT = autoPathT
+	// 	} else {
+	// 		initQLVM()
 
-	decryptRunCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrun=", "")
+	// 		runInteractiveQlang()
 
-	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
-	ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
-	ifLocalT := tk.IfSwitchExistsWhole(argsT, "-local")
-	ifAppPathT := tk.IfSwitchExistsWhole(argsT, "-apppath")
-	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
-	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
-	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
-	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
+	// 		// tk.Pl("not enough parameters")
 
-	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
+	// 		return
+	// 	}
 
-	ifMagicT := false
-	magicNumberT, errT := tk.StrToInt(scriptT)
+	// }
 
-	if errT == nil {
-		ifMagicT = true
-	}
+	// encryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-encrypt=", "")
 
-	var fcT string
+	// if encryptCodeT != "" {
+	// 	fcT := tk.LoadStringFromFile(scriptT)
 
-	if ifMagicT {
-		fcT = getMagic(magicNumberT)
+	// 	if tk.IsErrorString(fcT) {
+	// 		tk.Pl("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
+	// 		return
+	// 	}
 
-		scriptPathG = ""
-	} else if ifExampleT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-			scriptT += ".gox"
-		}
-		fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
+	// 	encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
 
-		scriptPathG = ""
-	} else if ifRemoteT {
-		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+	// 	if tk.IsErrorString(encStrT) {
+	// 		tk.Pl("failed to encrypt content [%v]: %v", scriptT, tk.GetErrorString(encStrT))
+	// 		return
+	// 	}
 
-		scriptPathG = ""
-	} else if ifCloudT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-			scriptT += ".gox"
-		}
+	// 	rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, scriptT+"e")
 
-		basePathT, errT := tk.EnsureBasePath("gox")
+	// 	if tk.IsErrorString(rsT) {
+	// 		tk.Pl("failed to encrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
+	// 		return
+	// 	}
 
-		gotT := false
+	// 	return
+	// }
 
-		if errT == nil {
-			cfgPathT := tk.JoinPath(basePathT, "cloud.cfg")
+	// decryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrypt=", "")
 
-			cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
+	// if decryptCodeT != "" {
+	// 	fcT := tk.LoadStringFromFile(scriptT)
 
-			if !tk.IsErrorString(cfgStrT) {
-				fcT = tk.DownloadPageUTF8(cfgStrT+scriptT, nil, "", 30)
+	// 	if tk.IsErrorString(fcT) {
+	// 		tk.Pl("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
+	// 		return
+	// 	}
 
-				gotT = true
-			}
+	// 	decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
 
-		}
+	// 	if tk.IsErrorString(decStrT) {
+	// 		tk.Pl("failed to decrypt content [%v]: %v", scriptT, tk.GetErrorString(decStrT))
+	// 		return
+	// 	}
 
-		if !gotT {
-			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-		}
+	// 	rsT := tk.SaveStringToFile(decStrT, scriptT+"d")
 
-		scriptPathG = ""
-	} else if sshT != "" {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-			scriptT += ".gox"
-		}
+	// 	if tk.IsErrorString(rsT) {
+	// 		tk.Pl("failed to decrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
+	// 		return
+	// 	}
 
-		fcT = downloadStringFromSSH(sshT, scriptT)
+	// 	return
+	// }
 
-		if tk.IsErrorString(fcT) {
-			tk.Pl("failed to get script from SSH: %v", tk.GetErrorString(fcT))
-			return
-		}
+	// decryptRunCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrun=", "")
 
-		scriptPathG = ""
-	} else if ifGoPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-			scriptT += ".gox"
-		}
+	// ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
+	// ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
+	// ifLocalT := tk.IfSwitchExistsWhole(argsT, "-local")
+	// ifAppPathT := tk.IfSwitchExistsWhole(argsT, "-apppath")
+	// ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
+	// ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
+	// sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
+	// ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 
-		scriptPathG = filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT)
+	// verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
-		fcT = tk.LoadStringFromFile(scriptPathG)
-	} else if ifAppPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-			scriptT += ".gox"
-		}
+	// ifMagicT := false
+	// magicNumberT, errT := tk.StrToInt(scriptT)
 
-		scriptPathG = filepath.Join(tk.GetApplicationPath(), scriptT)
+	// if errT == nil {
+	// 	ifMagicT = true
+	// }
 
-		fcT = tk.LoadStringFromFile(scriptPathG)
-	} else if ifLocalT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
-			scriptT += ".gox"
-		}
+	// var fcT string
 
-		localPathT := getCfgString("localScriptPath.cfg")
+	// if ifMagicT {
+	// 	fcT = getMagic(magicNumberT)
 
-		if tk.IsErrorString(localPathT) {
-			tk.Pl("failed to get local path: %v", tk.GetErrorString(localPathT))
+	// 	scriptPathG = ""
+	// } else if ifExampleT {
+	// 	if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+	// 		scriptT += ".gox"
+	// 	}
+	// 	fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
 
-			return
-		}
+	// 	scriptPathG = ""
+	// } else if ifRemoteT {
+	// 	fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 
-		// if tk.GetEnv("GOXVERBOSE") == "true" {
-		// 	tk.Pl("Try to load script from %v", filepath.Join(localPathT, scriptT))
-		// }
+	// 	scriptPathG = ""
+	// } else if ifCloudT {
+	// 	if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+	// 		scriptT += ".gox"
+	// 	}
 
-		scriptPathG = filepath.Join(localPathT, scriptT)
+	// 	basePathT, errT := tk.EnsureBasePath("gox")
 
-		fcT = tk.LoadStringFromFile(scriptPathG)
-	} else {
-		scriptPathG = scriptT
-		fcT = tk.LoadStringFromFile(scriptT)
-	}
+	// 	gotT := false
 
-	if tk.IsErrorString(fcT) {
-		tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+	// 	if errT == nil {
+	// 		cfgPathT := tk.JoinPath(basePathT, "cloud.cfg")
 
-		return
-	}
+	// 		cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
 
-	if tk.StartsWith(fcT, "//TXDEF#") {
-		if decryptRunCodeT == "" {
-			tk.Prf("Password: ")
-			decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+	// 		if !tk.IsErrorString(cfgStrT) {
+	// 			fcT = tk.DownloadPageUTF8(cfgStrT+scriptT, nil, "", 30)
 
-			// fcT = fcT[8:]
-		}
-	}
+	// 			gotT = true
+	// 		}
 
-	if decryptRunCodeT != "" {
-		fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-	}
+	// 	}
 
-	if ifViewT {
-		tk.Pl("%v", fcT)
+	// 	if !gotT {
+	// 		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+	// 	}
 
-		return
-	}
+	// 	scriptPathG = ""
+	// } else if sshT != "" {
+	// 	if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+	// 		scriptT += ".gox"
+	// 	}
 
-	initQLVM()
+	// 	fcT = downloadStringFromSSH(sshT, scriptT)
 
-	retG = notFoundG
+	// 	if tk.IsErrorString(fcT) {
+	// 		tk.Pl("failed to get script from SSH: %v", tk.GetErrorString(fcT))
+	// 		return
+	// 	}
 
-	errT = qlVMG.SafeEval(fcT)
-	if errT != nil {
+	// 	scriptPathG = ""
+	// } else if ifGoPathT {
+	// 	if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+	// 		scriptT += ".gox"
+	// 	}
 
-		tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
+	// 	scriptPathG = filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT)
 
-		// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
-		// tk.Pl("Next line: %v, %v", f, l)
+	// 	fcT = tk.LoadStringFromFile(scriptPathG)
+	// } else if ifAppPathT {
+	// 	if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+	// 		scriptT += ".gox"
+	// 	}
 
-		return
-	}
+	// 	scriptPathG = filepath.Join(tk.GetApplicationPath(), scriptT)
 
-	rs, ok := qlVMG.GetVar("outG")
+	// 	fcT = tk.LoadStringFromFile(scriptPathG)
+	// } else if ifLocalT {
+	// 	if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+	// 		scriptT += ".gox"
+	// 	}
 
-	if ok {
-		tk.Pl("%v", rs)
-	}
+	// 	localPathT := getCfgString("localScriptPath.cfg")
 
-	if retG != notFoundG && retG != nil {
-		tk.Pl("%v", retG)
-	}
+	// 	if tk.IsErrorString(localPathT) {
+	// 		tk.Pl("failed to get local path: %v", tk.GetErrorString(localPathT))
+
+	// 		return
+	// 	}
+
+	// 	// if tk.GetEnv("GOXVERBOSE") == "true" {
+	// 	// 	tk.Pl("Try to load script from %v", filepath.Join(localPathT, scriptT))
+	// 	// }
+
+	// 	scriptPathG = filepath.Join(localPathT, scriptT)
+
+	// 	fcT = tk.LoadStringFromFile(scriptPathG)
+	// } else {
+	// 	scriptPathG = scriptT
+	// 	fcT = tk.LoadStringFromFile(scriptT)
+	// }
+
+	// if tk.IsErrorString(fcT) {
+	// 	tk.Pl("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
+
+	// 	return
+	// }
+
+	// if tk.StartsWith(fcT, "//TXDEF#") {
+	// 	if decryptRunCodeT == "" {
+	// 		tk.Prf("Password: ")
+	// 		decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+
+	// 		// fcT = fcT[8:]
+	// 	}
+	// }
+
+	// if decryptRunCodeT != "" {
+	// 	fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
+	// }
+
+	// if ifViewT {
+	// 	tk.Pl("%v", fcT)
+
+	// 	return
+	// }
+
+	// initQLVM()
+
+	// retG = notFoundG
+
+	// errT = qlVMG.SafeEval(fcT)
+	// if errT != nil {
+
+	// 	tk.Pl("failed to execute script(%v) error: %v\n", scriptT, errT)
+
+	// 	// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
+	// 	// tk.Pl("Next line: %v, %v", f, l)
+
+	// 	return
+	// }
+
+	// rs, ok := qlVMG.GetVar("outG")
+
+	// if ok {
+	// 	if rs != nil {
+	// 		tk.Pl("%v", rs)
+	// 	}
+	// }
+
+	// if retG != notFoundG && retG != nil {
+	// 	tk.Pl("%v", retG)
+	// }
 
 }
 

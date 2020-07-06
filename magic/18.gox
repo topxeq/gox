@@ -12,4 +12,4 @@ result = eval(expression)
 
 println("result:", result)
 
-return
+pass()
