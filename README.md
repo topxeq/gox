@@ -143,6 +143,37 @@ the screenshot of Gox editor is as below,
 
 Although Gox provides a simple code editor, the editors with more powerful functions are recommended, such as Visual Studio Code. Currently, you can set the .gox files the same syntax highlight scheme as Golang files.
 
+### Batch run
+
+First create a file(better named with .gxb suffix), content as below for example:
+
+```
+basic.gox
+d:\scripts\next.gox -inputvalue=1 -verbose
+18
+```
+
+Each line in Gox batch file could be considered as a common Gox command line but the first paramter(Gox executable path) is omitted.
+
+There are 3 ways to inform Gox to know it's a batch file to run:
+
+- run with -batch switch
+
+  > gox -batch batchFile.txt
+
+- use the proper file extension(.gxb)
+
+  > gox batchFile.gxb
+
+- add // gxb to the batch file as first line
+
+	```
+	// gxb
+	basic.gox
+	d:\scripts\next.gox -inputvalue=1 -verbose
+	18
+	```
+
 ## 3. User/developer guide
 
 ### File encoding
@@ -420,7 +451,53 @@ Most of the standard Golang packages are available include: bytes, encoding/json
 
 Library tk (github.com/topxeq/tk) is the most frequently used package in Gox, the documents are [here](https://godoc.org/github.com/topxeq/tk) or [here](https://pkg.go.dev/github.com/topxeq/tk).
 
-Other libraries embedded in Gox include: gonum.org/v1/plot(scientific drawing and charts), github.com/domodwyer/mailyak(send mail via SMTP), github.com/360EntSecGroup-Skylar/excelize(Excel file processing), github.com/fogleman/gg(basic drawing), github.com/dgraph-io/badger(NoSQL DB), github.com/topxeq/govcl/vcl(derived from ying32's Govcl), github.com/AllenDang/giu(OpenGL GUI), github.com/topxeq/sqltk(general SQL operations, enable access to Oracle, MySQL, MSSQLServer, SQLite databases), github.com/topxeq/imagetk, github.com/beevik/etree(XML processing). Browse their Github pages for usage and documents.
+Other libraries embedded in Gox include: 
+
+- gonum.org/v1/plot(scientific drawing and charts, use it as gonumorg_v1_plot), and with gonumorg_v1_plot_plotter, gonumorg_v1_plot_plotutil, gonumorg_v1_plot_vg
+- github.com/domodwyer/mailyak(send mail via SMTP)
+- github.com/360EntSecGroup-Skylar/excelize(Excel file processing)
+- github.com/fogleman/gg(basic drawing)
+- github.com/dgraph-io/badger(NoSQL DB)
+- github.com/topxeq/govcl/vcl(derived from ying32's Govcl, GUI programming with LCL library)
+- github.com/AllenDang/giu(OpenGL GUI)
+- github.com/sciter-sdk/go-sciter(GUI programming with Sciter, HTML+CSS+TiScript+Golang)
+- github.com/topxeq/blink(control a chronium WebView, Windows only)
+- github.com/topxeq/sqltk(general SQL operations, enable access to Oracle, MySQL, MSSQLServer, SQLite databases)
+- github.com/topxeq/imagetk(various image-processing funtions)
+- github.com/beevik/etree(XML processing)
+- github.com/stretchr/objx(another JSON library)
+- github.com/kbinani/screenshot(cross-platform, multi-display screenshot)
+- github.com/topxeq/doc2vec/doc2vec(document to vector engine and training functions)
+
+Browse their Github pages for usage and documents, and of course the examples in the example directory.
+
+To use an embedded package, see the examples below:
+
+**directly use**
+
+```
+tk.Pl("1+3=%v", 1+3)
+```
+
+or
+
+```
+github_topxeq_tk.Pl("1+3=%v", 1+3)
+```
+
+Attention: To refer a 3rd-party package, '.com' is always omitted for the domain name such as github.com, and the same is '.org' for gonum.org. And the slash('/') is replaced by underscore('_'). For some packages used frequently(such as github.com/topxeq/tk), we will give it a convenient short-name(tk), but not all. You can define a short name for the packages that will be used.
+
+**define a short name**
+
+```
+excel = github_360EntSecGroupSkylar_excelize
+
+f, err = excel.OpenFile(`d:\tmpx\test.xlsx`)
+
+...
+
+```
+
 
 However, Gox provides some convenient global variables and functions decribed as below.
 
@@ -430,10 +507,13 @@ However, Gox provides some convenient global variables and functions decribed as
 
 get global variable
 
-The global value "argsG" could be used for retrieve command-line arguments, and the first element(the Gox executable) is removed. If you need the whole command-line, use os.Args instead.
+The global value "argsG" could be used for retrieve command-line arguments, and the first element(the Gox executable) is usually removed. If you need the whole command-line, use os.Args instead.
 
 ---
 
+#### scriptPathG
+
+holds the full script path(include the file name), for network scenes, will be ""(empty string)
 
 ### Functions
 
@@ -441,16 +521,118 @@ Note: some functions may exist or not in different script engine, and may have s
 
 ---
 
+#### pass
 
-#### getVar
-
-get global variable
+A function doing nothing. Usually used at the end of a script to ensure return nothing(so that will print nothing by the VM).
 
 ---
 
-#### setVar
+#### defined
 
-set global variable
+check if a variable is defined
+
+---
+
+#### eval
+
+evaluate an expression and return the result
+
+---
+
+#### typeof/typeOf/kindOf
+
+return the string representation of the type for a variable or expression
+
+```
+a = 1
+println(typeof(a))
+
+```
+
+---
+
+#### remove
+
+remove one or several items from an array
+
+```
+remove(arrayA, startIndexA, endIndexA)
+```
+
+---
+
+#### print/pr
+
+the same as fmt.Print
+
+---
+
+#### println/pln
+
+the same as fmt.Println
+
+---
+
+#### printf/prf
+
+the same as fmt.Printf
+
+---
+
+#### printfln/pl
+
+the same as fmt.Printf but add a new-line character at the end
+
+---
+
+#### sprintf
+
+the same as fmt.Sprintf
+
+---
+
+#### fprintln/fprintf
+
+the same as fmt.Fprintln/fmt.Fprintf
+
+---
+
+#### plv
+
+the same as pl("%#v", v)
+
+---
+
+#### pv
+
+output the name, type, value of a variable, attention: the parameter passed to this function should be a string, and only the global varibles are allowed.
+
+```
+s2 = "abcabcabc"
+
+pv("s2")
+
+// the output ->
+// s2(string): abcabcabc
+```
+
+---
+
+#### plvsr
+
+the same as pl("%#v", v), but for various arguments
+
+---
+
+#### plerr
+
+a convenient way to print an error value
+
+---
+
+#### exit
+
+the same as os.Exit(1), used to terminate\exit the whole script running
 
 ---
 
@@ -492,77 +674,25 @@ println(v) // will be "abc"
 
 ---
 
+#### setVar
+
+set global variable
+
+---
+
+#### getVar
+
+get global variable
+
+---
+
 #### bitXor
 
 bitwise XOR operation, since in Qlang engine, ^ is used for get address/pointer of a variable(like & in other engine),
 so the origin bitwise XOR operator in Golang is used and we will use bitXor function instead.
----
-
-#### defined
-
-check if a variable is defined(only available in Anko engine)
 
 ---
 
-
-#### print
-
-the same as fmt.Print
-
----
-
-#### printf
-
-the same as fmt.Printf
-
----
-
-
-#### println/pln
-
-the same as fmt.Println
-
----
-
-
-#### printfln/pl
-
-the same as fmt.Printf but add a new-line character at the end
-
----
-
-#### fprintln/fprintf
-
-the same as fmt.Fprintln/fmt.Fprintf
-
----
-
-#### plv
-
-the same as pl("%#v", v)
-
----
-
-#### pv
-
-output the name, type, value of a variable, attention: the parameter passed to this function should be a string, and only the global varibles are allowed.
-
-```
-s2 = "abcabcabc"
-
-pv("s2")
-
-// the output ->
-// s2(string): abcabcabc
-```
-
----
-
-#### plerr
-
-a convenient way to print an error value
-
----
 
 #### checkError
 
@@ -585,8 +715,38 @@ the same as checkError, but check a TXERROR string
 
 ---
 
+#### isErrStr
 
-#### getInput
+check if is TXERROR string (which starts with TXERROR:)
+
+---
+
+#### errStr
+
+generate a TXERROR string (which starts with TXERROR:)
+
+---
+
+#### errStrf
+
+generate a TXERROR string with format like printf, the same as tk.ErrStrF
+
+---
+
+#### getErrStr
+
+remove the prefix(TXERROR:) of a TXERROR string, return the result
+
+---
+
+#### errf
+
+the same as tk.Errf, generate an error
+
+---
+
+
+#### getInput(deprecated)
 
 get user input from command-line
 
@@ -623,12 +783,6 @@ println("A + B =", a+b)
 ---
 
 
-#### eval
-
-evaluate an expression and return the result
-
----
-
 #### panic
 
 raise a panic manually
@@ -655,18 +809,6 @@ try {
 
 ---
 
-#### typeof/typeOf/kindOf
-
-return the string representation of the type for a variable or expression
-
-```
-a = 1
-println(typeof(a))
-
-```
-
----
-
 #### keys
 
 get the keys of a map
@@ -675,23 +817,16 @@ get the keys of a map
 
 #### range
 
-range a int64 array
-
----
-
-#### remove
-
-remove one or several items from an array
+range an array, actually a keyword, not a function
 
 ```
-remove(arrayA, startIndexA, endIndexA)
+a = [1, 2, "list"]
+
+for i, v = range a {
+	println(a)
+}
+
 ```
-
----
-
-#### exit
-
-the same as os.Exit(1), used to terminate\exit the whole script running
 
 ---
 
@@ -747,6 +882,28 @@ set clipboard text
 
 ---
 
+#### trim
+
+trim a string
+
+---
+
+#### run
+
+execute a script file(in a new created VM)
+
+> run(argsA...)
+
+---
+
+#### runCode
+
+execute a script string(in a new created VM, argsG will hold the arguments)
+
+> runCode(codeA string, argsA ...string)
+
+---
+
 #### runScript
 
 runScript(scriptA, modeA, argsA ...)
@@ -755,15 +912,17 @@ runScript(scriptA, modeA, argsA ...)
 modeA == "" || modeA == "1" || modeA == "new" 
 ```
 
-run Anko script in a new VM
+run script in a new VM
 
-```
-modeA == "2" || modeA == "current"
-```
+any other modeA will run it as a system command.
 
-run Anko script in a current VM
+---
 
-```
+#### magic
+
+execute a script with a magic number(in a new created VM, argsG will hold the arguments)
+
+> magic(numberA, argsA...)
 
 ---
 
@@ -796,6 +955,23 @@ find more in this example script [here](https://gitee.com/topxeq/gox/tree/master
 
 ---
 
+#### getParameter
+
+the same as tk.GetParameterByIndexWithDefaultValue
+
+---
+
+#### getSwitch
+
+the same as tk.GetSwitchWithDefaultValue
+
+---
+
+#### switchExists
+
+the same as tk.IfSwitchExistsWhole
+
+---
 
 #### edit
 
