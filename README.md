@@ -715,6 +715,12 @@ the same as checkError, but check a TXERROR string
 
 ---
 
+#### checkErrf
+
+the same as tk.CheckErrf, check an error, if not nil, terminate the program and printf something
+
+---
+
 #### isErrStr
 
 check if is TXERROR string (which starts with TXERROR:)

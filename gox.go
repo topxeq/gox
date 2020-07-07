@@ -600,6 +600,7 @@ func importQLNonGUIPackages() {
 		"bitXor":           tk.BitXor,
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
+		"checkErrf":        tk.CheckErrf,
 		"isErrStr":         tk.IsErrStr,
 		"errStr":           tk.ErrStr,
 		"errStrf":          tk.ErrStrF,
