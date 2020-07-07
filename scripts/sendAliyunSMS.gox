@@ -1,0 +1,52 @@
+// 设置阿里云短信发送包的简称
+alisms = github_aliyun_alibabacloudsdkgo_services_dysmsapi
+
+// 从命令行获取手机号，如果没有则使用默认手机号
+mobileT = getParameter(os.Args, 2, `此处为默认手机号`)
+
+if mobileT == "" {
+	pl("手机号不能为空")
+	exit()
+}
+
+// 建立发送短信的客户端对象
+// 第二个和第三个参数分别为AccessKeyID和AccessKeySecret
+// 注意将它们都替换成自己的
+clientT, errT = alisms.NewClientWithAccessKey("cn-hangzhou", "此处为AccessKeyID", "此处为AccessKeySecret")
+if errT != nil {
+	pl("验证码发送失败：%v", errT)
+	exit()
+}
+
+// 建立发送短消息的请求
+requestT = alisms.CreateSendSmsRequest()
+requestT.Scheme = "https"
+requestT.PhoneNumbers = mobileT
+requestT.SignName = "此处替换为短信签名" // 短信签名
+requestT.TemplateCode = "此处替换为需要使用的短信模板名称" // 短信模板名称
+
+// 生成一个6位纯数字的随机验证码
+authCodeT := tk.GenerateRandomString(6, 6, false, false, true, false, false, false)
+pl("生成的验证码为：%v", authCodeT)
+
+// 在请求中填入验证码
+requestT.TemplateParam = `{"code":"` + authCodeT + `"}`
+
+// 发送短信请求
+responseT, errT := clientT.SendSms(requestT)
+
+if errT != nil {
+	pl("验证码发送失败：%v", errT)
+	exit()
+}
+
+// 判断发送是否成功
+if responseT.Code != "OK" {
+	pl("验证码发送失败，服务器返回消息：%v", responseT.Message)
+	exit()
+}
+
+pl("发送成功，服务器响应：%v", responseT)
+
+// 正常结束程序
+pass()

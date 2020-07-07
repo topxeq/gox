@@ -132,6 +132,8 @@ import (
 
 	qlgithub_topxeq_doc2vec_doc2vec "github.com/topxeq/qlang/lib/github.com/topxeq/doc2vec/doc2vec"
 
+	qlgithub_aliyun_alibabacloudsdkgo_services_dysmsapi "github.com/topxeq/qlang/lib/github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
+
 	// GUI related start
 
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
@@ -161,7 +163,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.03a"
+var versionG = "1.05a"
 
 var verboseG = false
 
@@ -793,6 +795,9 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_stretchr_objx", qlgithub_stretchr_objx.Exports)
 
 	qlang.Import("github_topxeq_doc2vec_doc2vec", qlgithub_topxeq_doc2vec_doc2vec.Exports)
+
+	qlang.Import("github_aliyun_alibabacloudsdkgo_services_dysmsapi", qlgithub_aliyun_alibabacloudsdkgo_services_dysmsapi.Exports)
+	qlang.Import("aliyunsms", qlgithub_aliyun_alibabacloudsdkgo_services_dysmsapi.Exports)
 
 }
 
