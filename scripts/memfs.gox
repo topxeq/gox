@@ -1,0 +1,46 @@
+// memfs = github_avfs_avfs_fs_memfs
+
+// fsT, errT = memfs.New(memfs.OptMainDirs())
+
+// plvsr(fsT, errT)
+
+// fileT, errT = fsT.Create("a.txt")
+
+// plvsr(fsT, errT)
+
+// fileT.WriteString("abc")
+
+// fileT.Close()
+
+afero = github_topxeq_afero
+
+fs = afero.NewMemMapFs()
+
+f, err = fs.Create(`a.txt`)
+
+plvsr(f, err)
+
+f.WriteString("abc")
+
+f.Close()
+
+rs, err := fs.LoadBytesFromFile(`a.txt`, -1)
+
+tk.Plvsr(rs, err)
+
+err = fs.CopyFileFrom(`d:\tmpx\sp\sel1.txt`, `/sel1.txt`, true, -1)
+
+tk.Plvsr(err)
+
+root, err = fs.Open(`/`)
+
+plvsr(root, err)
+
+plvsr(root.Readdirnames(-1))
+
+rs, err = fs.LoadBytesFromFile(`/sel1.txt`, -1)
+
+tk.Plvsr(string(rs), err)
+
+tk.Pl("%v", string(rs))
+
