@@ -469,6 +469,7 @@ Other libraries embedded in Gox include:
 - github.com/kbinani/screenshot(cross-platform, multi-display screenshot)
 - github.com/topxeq/doc2vec/doc2vec(document to vector engine and training functions)
 - github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi(send Aliyun SMS)
+- github.com/topxeq/afero(a memory file system)
 
 Browse their Github pages for usage and documents, and of course the examples in the example directory.
 
