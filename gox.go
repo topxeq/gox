@@ -630,6 +630,7 @@ func importQLNonGUIPackages() {
 		"newFunc":          NewFunc,
 
 		"scriptPathG": scriptPathG,
+		"versionG":    versionG,
 
 		// GUI related start
 
@@ -807,6 +808,7 @@ func importQLNonGUIPackages() {
 
 	// qlang.Import("github_avfs_avfs_fs_memfs", qlgithub_avfs_avfs_fs_memfs.Exports)
 	qlang.Import("github_topxeq_afero", qlgithub_topxeq_afero.Exports)
+	qlang.Import("memfs", qlgithub_topxeq_afero.Exports)
 
 }
 

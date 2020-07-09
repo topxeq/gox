@@ -1,46 +1,74 @@
-// memfs = github_avfs_avfs_fs_memfs
+// 创建一个内存文件系统对象
+fs = github_topxeq_afero.NewMemFS()
 
-// fsT, errT = memfs.New(memfs.OptMainDirs())
+// 在根目录下新建一个文件a.txt
+f, err = fs.Create(`/a.txt`)
 
-// plvsr(fsT, errT)
-
-// fileT, errT = fsT.Create("a.txt")
-
-// plvsr(fsT, errT)
-
-// fileT.WriteString("abc")
-
-// fileT.Close()
-
-afero = github_topxeq_afero
-
-fs = afero.NewMemMapFs()
-
-f, err = fs.Create(`a.txt`)
-
+// 输出一下创建结果，f是文件对象，如果发生错误，err中包含错误对象
+// plvsr用于连续输出多个对象信息
 plvsr(f, err)
 
+// 在该文件中写入字符串abc
 f.WriteString("abc")
 
+// 关闭文件（也可以用defer，但会在脚本最后才执行，所以不太适合）
 f.Close()
 
-rs, err := fs.LoadBytesFromFile(`a.txt`, -1)
+// 以二进制方式从该文件中载入字节数组进行检验
+rs, err := fs.LoadBytesFromFile(`/a.txt`)
 
-tk.Plvsr(rs, err)
+// 输出获得的字节数组
+plvsr(rs, err)
 
-err = fs.CopyFileFrom(`d:\tmpx\sp\sel1.txt`, `/sel1.txt`, true, -1)
+// 直接创建一个二级子目录（一级目录会自动创建）
+fs.MkdirAll("/tmp/data", 0x666)
 
-tk.Plvsr(err)
+// 复制真实文件系统的某个文件到内存文件系统，-force参数表示如果文件存在则覆盖
+err = fs.CopyFileFrom(`d:\tmpx\sp\sel1.txt`, fs.Join(`/tmp/data`, `sel1.txt`), "-force")
 
+plvsr(err)
+
+// 打开根目录
 root, err = fs.Open(`/`)
 
 plvsr(root, err)
 
+// 读取目录内所有文件名的方法之一
 plvsr(root.Readdirnames(-1))
 
-rs, err = fs.LoadBytesFromFile(`/sel1.txt`, -1)
+// 直接从文件中载入字符串（注意一定是UTF-8编码的）
+rs, err = fs.LoadStringFromFile(`/tmp/data/sel1.txt`)
 
-tk.Plvsr(string(rs), err)
+plvsr(rs, err)
 
-tk.Pl("%v", string(rs))
+// 列出该目录下所有文件（不包含子目录名和子目录下的文件）
+pl("ls files: %v", fs.Ls("/"))
 
+// 列出该目录下所有文件（不包含所有子目录本身，但包含各级子目录下的文件）
+pl("ls files recursively: %v", fs.Lsr("/"))
+
+// 创建另一个子目录（如果没有上级目录会报错）
+fs.Mkdir("/tmp/next", 0x666)
+
+// 在内存文件系统中复制文件
+err = fs.CopyFile(fs.Join(`/tmp/data`, `sel1.txt`), fs.Join(`/tmp/next`, `sel1bak.txt`))
+
+// 如果有错误则退出程序执行
+checkErrf("failed to copy file: %v", err)
+
+// 再次列出内存文件系统所有文件以验证
+// 按通配符列出符合条件的文件
+dirs, err = fs.Glob("/tmp/*/*.txt")
+plvsr(dirs, err)
+
+// 删除一个文件
+err = fs.RemoveFile(`/tmp/data/sel1.txt`)
+
+// 验证删除是否成功
+pl("ls files recursively: %v", fs.Lsr("/"))
+
+// 从内存文件系统中复制文件到真实文件系统（没有-force参数则如果存在文件会报错）
+err = fs.CopyFileTo(fs.Join(`/tmp/next`, `sel1bak.txt`), path_filepath.Join(`d:\tmpx\sp`, `testsel1.txt`))
+
+// 如果有错误则退出程序执行
+checkErrf("failed to copy file: %v", err)

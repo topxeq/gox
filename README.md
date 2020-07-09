@@ -487,7 +487,7 @@ or
 github_topxeq_tk.Pl("1+3=%v", 1+3)
 ```
 
-Attention: To refer a 3rd-party package, '.com' is always omitted for the domain name such as github.com, and the same is '.org' for gonum.org. And the slash('/') is replaced by underscore('_'). For some packages used frequently(such as github.com/topxeq/tk), we will give it a convenient short-name(tk), but not all. You can define a short name for the packages that will be used.
+Attention: To refer a 3rd-party package, '.com' is always omitted for the domain name such as github.com, and the same is '.org' for gonum.org. And the slash('/') is replaced by underscore('_'), other special characters will be removed. For some packages used frequently(such as github.com/topxeq/tk), we will give it a convenient short-name(tk), but not all. You can define a short name for the packages that will be used.
 
 **define a short name**
 
@@ -516,6 +516,10 @@ The global value "argsG" could be used for retrieve command-line arguments, and 
 #### scriptPathG
 
 holds the full script path(include the file name), for network scenes, will be ""(empty string)
+
+#### versionG
+
+holds the current version of Gox
 
 ### Functions
 
