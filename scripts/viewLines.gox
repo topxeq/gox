@@ -1,0 +1,47 @@
+fileNameT = getParameter(argsG, 1, "")
+
+if fileNameT == "" {
+	pl("not enough paramters")
+	exit()
+}
+
+strT = getSwitch(argsG, "-line=", "1")
+
+lineNumberT = tk.StrToIntWithDefaultValue(strT, 1)
+
+f, err = os.Open(fileNameT)
+
+defer f.Close()
+
+r = bufio.NewReader(f)
+
+i := 0
+
+for true {
+	line, err = r.ReadString('\n')
+
+	i ++
+
+	// pl("process %v", i)
+
+	if i < lineNumberT - 3 {
+		continue
+	}
+
+	if i > lineNumberT + 3 {
+		break
+	}
+
+	if err == io.EOF {
+		break
+	}
+
+	pl("%v", line)
+
+	checkErrf("failed to read content: %v, line: %v", err, line)
+
+	// if i == 1 {
+	// 	continue
+	// }
+
+}
