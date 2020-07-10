@@ -1,0 +1,58 @@
+excel = github_360EntSecGroupSkylar_excelize
+
+fileNameT = getParameter(argsG, 1, "")
+
+if fileNameT == "" {
+	pl("not enough parameters")
+	exit()
+}
+
+f, errT = excel.OpenFile(fileNameT)
+checkError(errT)
+
+sheets = f.GetSheetList()
+
+lenT = len(sheets)
+
+if lenT <= 1 {
+	rowsT, errT = f.GetRows(sheets[0])
+	checkError(errT)
+
+	of, err = os.Create(fileNameT+".csv")
+	checkError(err)
+
+	defer of.Close()
+
+	w = encoding_csv.NewWriter(of)
+
+	w.WriteAll(rowsT)
+
+	errT = w.Error()
+
+	checkErrf("failed to write output csv file: %v", errT)
+	
+} else {
+
+	func saveCSV(idxA) {
+		rowsT, errT = f.GetRows(sheets[idxA])
+		checkError(errT)
+	
+		of, err = os.Create(sprintf("%v_%d.csv", fileNameT, idxA+1))
+		checkError(err)
+	
+		defer of.Close()
+		
+		w = encoding_csv.NewWriter(of)
+	
+		w.WriteAll(rowsT)
+	
+		errT = w.Error()
+	
+		checkErrf("failed to write output csv file: %v", errT)
+	}
+	
+	for i, _ = range sheets {
+		saveCSV(i)
+	}
+
+}

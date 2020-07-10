@@ -1,0 +1,27 @@
+// view the specified lines in a text file along with the lines nearby
+// usage: gox getLines.gox fileToView.txt -start=3 -end=5
+// the start and end index start at 1
+// use command-line switch -index to indicate start and end index start at 0
+// i.e. gox getLines.gox fileToView.txt -start=3 -end=5 -index
+// if -range switch is used, the program will report error if start or end index exceed the range of lines in the file
+// but we will not catch the error returned in function tk.GetLinesFromFile in this example
+
+// get file name to view from command line
+fileNameT = getParameter(argsG, 1, "")
+
+if fileNameT == "" {
+	pl("not enough paramters")
+	exit()
+}
+
+// get the start and end index of the lines
+startLineNumberT = getIntSwitch(argsG, "-start=", 1)
+endLineNumberT = getIntSwitch(argsG, "-end=", 3)
+
+// get the lines from file
+listT, _ = tk.GetLinesFromFile(fileNameT, startLineNumberT, endLineNumberT, argsG...)
+
+// output the lines
+for i, v = range listT {
+	pl("[%v] %v", startLineNumberT + i, v)
+}

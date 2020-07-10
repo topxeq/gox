@@ -987,13 +987,19 @@ the same as tk.GetParameterByIndexWithDefaultValue
 
 #### getSwitch
 
-the same as tk.GetSwitchWithDefaultValue
+the same as tk.GetSwitchWithDefaultValue, get a command-line switch such as "-path=d:\tmp"
+
+---
+
+#### getIntSwitch
+
+the same as tk.GetSwitchWithDefaultIntValue
 
 ---
 
 #### switchExists
 
-the same as tk.IfSwitchExistsWhole
+the same as tk.IfSwitchExistsWhole, to determine if a command-line switch exists, such as "-verbose"
 
 ---
 

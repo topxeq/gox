@@ -1,3 +1,6 @@
+// view the specified line in a text file along with the lines nearby
+
+// get file name to view from command line
 fileNameT = getParameter(argsG, 1, "")
 
 if fileNameT == "" {
@@ -5,43 +8,48 @@ if fileNameT == "" {
 	exit()
 }
 
-strT = getSwitch(argsG, "-line=", "1")
+// get the line number
+lineNumberT = getIntSwitch(argsG, "-line=", 1)
 
-lineNumberT = tk.StrToIntWithDefaultValue(strT, 1)
+// get the range of the nearby lines
+rangeT = getIntSwitch(argsG, "-range=", 3)
 
+// open the file for read
 f, err = os.Open(fileNameT)
 
+// ensure close the file
 defer f.Close()
 
+// create a reader of the text file
 r = bufio.NewReader(f)
 
+// the index of lines
 i := 0
 
+// loop reading lines
 for true {
 	line, err = r.ReadString('\n')
 
 	i ++
 
-	// pl("process %v", i)
-
-	if i < lineNumberT - 3 {
+	// control the range
+	if i < lineNumberT - rangeT {
 		continue
 	}
 
-	if i > lineNumberT + 3 {
+	if i > lineNumberT + rangeT {
 		break
 	}
 
+	// if reach the end of file
 	if err == io.EOF {
 		break
 	}
 
-	pl("%v", line)
+	// output the line number and content
+	pl("[%v] %v", i, strings.TrimRight(line, "\r\n"))
 
+	// if error occured, terminate the program
 	checkErrf("failed to read content: %v, line: %v", err, line)
-
-	// if i == 1 {
-	// 	continue
-	// }
 
 }
