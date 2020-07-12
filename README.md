@@ -692,6 +692,12 @@ get global variable
 
 ---
 
+#### strToInt
+
+the same as tk.StrToIntWithDefaultValue
+
+---
+
 #### bitXor
 
 bitwise XOR operation, since in Qlang engine, ^ is used for get address/pointer of a variable(like & in other engine),

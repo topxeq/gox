@@ -601,6 +601,7 @@ func importQLNonGUIPackages() {
 		"setVar":           tk.SetVar,
 		"getVar":           tk.GetVar,
 		"bitXor":           tk.BitXor,
+		"strToInt":         tk.StrToIntWithDefaultValue,
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
 		"checkErrf":        tk.CheckErrf,
