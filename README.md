@@ -636,6 +636,12 @@ a convenient way to print an error value
 
 ---
 
+#### plExit
+
+the same as tk.PlAndExit, printfln then exit
+
+---
+
 #### exit
 
 the same as os.Exit(1), used to terminate\exit the whole script running
@@ -1003,7 +1009,7 @@ the same as tk.GetSwitchWithDefaultIntValue
 
 ---
 
-#### switchExists
+#### switchExists/ifSwitchExists
 
 the same as tk.IfSwitchExistsWhole, to determine if a command-line switch exists, such as "-verbose"
 

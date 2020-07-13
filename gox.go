@@ -595,6 +595,7 @@ func importQLNonGUIPackages() {
 		"pv":               printValue,
 		"plvsr":            tk.Plvsr,
 		"plerr":            tk.PlErr,
+		"plExit":           tk.PlAndExit,
 		"exit":             exit,
 		"setValue":         tk.SetValue,
 		"getValue":         tk.GetValue,
@@ -629,6 +630,7 @@ func importQLNonGUIPackages() {
 		"getSwitch":        tk.GetSwitchWithDefaultValue,
 		"getIntSwitch":     tk.GetSwitchWithDefaultIntValue,
 		"switchExists":     tk.IfSwitchExistsWhole,
+		"ifSwitchExists":   tk.IfSwitchExistsWhole,
 		"newFunc":          NewFunc,
 
 		"scriptPathG": scriptPathG,

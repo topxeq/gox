@@ -14,9 +14,29 @@ sheets = f.GetSheetList()
 
 lenT = len(sheets)
 
+fixColumnT = ifSwitchExists(argsG, "-fixColumn")
+
 if lenT <= 1 {
 	rowsT, errT = f.GetRows(sheets[0])
 	checkError(errT)
+
+	if fixColumnT {
+		colLenT = len(rowsT[0])
+
+		for i, v := range rowsT {
+			if i == 0 {
+				continue
+			}
+
+			diffG = colLenT - len(v)
+
+			if diffG > 0 {
+				for j = 0; j < diffG; j ++ {
+					rowsT[i] = append(rowsT[i], "")
+				}
+			}
+		}
+	}
 
 	of, err = os.Create(fileNameT+".csv")
 	checkError(err)
