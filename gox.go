@@ -176,16 +176,20 @@ var qlVMG *qlang.Qlang = nil
 
 var varMutexG sync.Mutex
 
-func exit() {
+func exit(argsA ...int) {
 	defer func() {
 		if r := recover(); r != nil {
-			tk.Printfln("发生异常，错误信息：%v", r)
+			tk.Printfln("exception: %v", r)
 
 			return
 		}
 	}()
 
-	os.Exit(1)
+	if argsA == nil || len(argsA) < 1 {
+		os.Exit(1)
+	}
+
+	os.Exit(argsA[0])
 }
 
 func qlEval(strA string) string {
@@ -596,7 +600,7 @@ func importQLNonGUIPackages() {
 		"plvsr":            tk.Plvsr,
 		"plerr":            tk.PlErr,
 		"plExit":           tk.PlAndExit,
-		"exit":             exit,
+		"exit":             tk.Exit,
 		"setValue":         tk.SetValue,
 		"getValue":         tk.GetValue,
 		"setVar":           tk.SetVar,

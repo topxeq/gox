@@ -31,6 +31,8 @@ func selectFile(n) {
 	}
 }
 
+println(1)
+
 f := imisc.NewFuncIntError(^selectFile)
 
 view.Inject("SelectFile", *f)
@@ -42,6 +44,8 @@ func selectFileS(n) {
 		return "0"
 	}
 }
+
+println(2)
 
 f2 := imisc.NewFuncIntString(^selectFileS)
 
@@ -72,15 +76,20 @@ f5 := imisc.NewFuncInterfaceInterfaceError(^selectFile5)
 
 view.Inject("SelectFile5", *f5)
 
+println(3)
+
 view.LoadURL(absT)
 
 view.SetWindowTitle("Golang GUI Application")
 view.MoveToCenter()
 view.ShowWindow()
-view.ShowDevTools()
+// view.ShowDevTools()
+println(5)
 
-value, err := view.Invoke("location.href")
-tk.Plvsr(value, err)
+// value, err := view.Invoke("location.href")
+// tk.Plvsr(value, err)
+
+println(6)
 
 i = 0
 for true {
