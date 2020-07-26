@@ -1,0 +1,49 @@
+// 准备发送到Web Service的XML请求体
+// 其中用“TX_”和“_TX”包含的是准备替换的文本
+// 这里用了简化处理，如果需要严谨的XML文本生成
+// 可以使用github.com/beevik/etree包（用github_beevik_etree引用）
+xmlT = `
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <CreateReceipt xmlns="urn:sap-com:document:sap:soap:functions:mc-style">
+            <Path xmlns="">TX_Path_XT</Path>
+            <Reserv1 xmlns="">TX_Reserv1_XT</Reserv1>
+            <Reserv2 xmlns="">TX_Reserv2_XT</Reserv2>
+            <Reserv3 xmlns="">TX_Reserv3_XT</Reserv3>
+            <Vbeln xmlns="">TX_Vbeln_XT</Vbeln>
+        <CreateReceipt>
+    </Body>
+</Envelope>
+`
+
+// 替换其中的文本内容为自己所需的值
+// 注意要把文本值用tk.EncodeToXMLString函数编码一下
+// 以防出现会对XML文本造成混淆的字符（例如“<”或“>”等）
+bodyT = tk.Replace(xmlT, "TX_Path_XT", tk.EncodeToXMLString(urlT))
+bodyT = tk.Replace(bodyT, "TX_Vbeln_XT", tk.EncodeToXMLString(v.customerOrderId))
+bodyT = tk.Replace(bodyT, "TX_Reserv1_XT", tk.EncodeToXMLString(v.printSn))
+bodyT = tk.Replace(bodyT, "TX_Reserv2_XT", tk.EncodeToXMLString(v.signDate))
+bodyT = tk.Replace(bodyT, "TX_Reserv3_XT", tk.EncodeToXMLString(v.receiptUploadDate))
+
+// 访问WebService接口
+// 替换其中的URL为自己实际的SOAP服务地址和端口
+// 其中请求头中加入了一个空的SOAPAction字段
+// 这是因为某些旧的SOAP服务需要这个字段
+rs, errT = tk.PostRequestX("http://your.webservice.com:8001/soap/create_receipt/801/create_receipt/create_receipt", tk.Trim(bodyT), "Content-Type:text/xml; charset=\"utf-8\"\nSOAPAction:", 15)
+
+// 检查可能出现的错误
+if errT != nil {
+	tk.Pl("server response error: err: %v", errT)
+	exit()
+}
+
+// 获取服务返回信息的某个xml字段
+// 我们这个例子服务将返回类似“<xml><response><Flag>1</Flag></response></xml>”这样的响应
+flagT, err = tk.GetNodeStringFromXML(rs, "Flag")
+
+checkErrf("failed to get flag: %v", err)
+
+if flagT != "" {
+	pl("invalid flag: %v", flagT)
+	exit()
+}
