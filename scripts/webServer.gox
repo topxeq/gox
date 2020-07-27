@@ -1,0 +1,64 @@
+http = net_http
+filepath = path_filepath
+
+portG = ":8080"
+sslPortG = ":8443"
+
+basePathG = `c:\web`
+
+muxG = nil
+
+staticFS = nil
+
+func serveStaticDirHandler(w, r) {
+	if staticFS == nil {
+		staticFS = http.FileServer(http.Dir(filepath.Join(basePathG, "pages")))
+	}
+
+	old = r.URL.Path
+
+	name = filepath.Join(basePathG, "pages", path.Clean(old))
+
+	info, err = os.Lstat(name)
+	if err == nil {
+		if !info.IsDir() {
+			staticFS.ServeHTTP(w, r)
+		} else {
+			if tk.IfFileExists(filepath.Join(name, "index.html")) {
+				staticFS.ServeHTTP(w, r)
+			} else {
+				http.NotFound(w, r)
+			}
+		}
+	} else {
+		http.NotFound(w, r)
+	}
+
+}
+
+func startHttpsServer(portA) {
+	pl("trying to start https server on %v...", portA)
+
+	err = http.ListenAndServeTLS(portA, filepath.Join(basePathG, "server.crt"), filepath.Join(basePathG, "server.key"), muxG)
+	if err != nil {
+		pl("failed to start https server: %v", err)
+	}
+
+}
+
+// main code
+
+muxG = http.NewServeMux()
+
+muxG.HandleFunc("/", serveStaticDirHandler)
+
+go startHttpsServer(sslPortG)
+
+pl("trying to start http server on %v...", portG)
+
+err = http.ListenAndServe(portG, muxG)
+
+if err != nil {
+	pl("failed to start http server: %v", err)
+}
+
