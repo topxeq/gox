@@ -1,0 +1,10 @@
+a = 3
+
+func f() {
+	pl(abc)
+	b.Show(1)
+}
+
+print(a)
+
+f()

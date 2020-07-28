@@ -1,0 +1,15 @@
+v, err =tk.FromJSON(`abc`)
+
+// checkErrf("err: %v", err)
+
+// pl("done 1")
+
+// checkErrf("[%v] err: %v", 1, err)
+
+// pl("done 2")
+
+v, err =tk.FromJSON(`{"abc": 1 23}`)
+
+checkErrf("[%v] %v err: %v", 1, nil, err)
+
+pl("done 3")
