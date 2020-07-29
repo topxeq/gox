@@ -166,7 +166,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.11a"
+var versionG = "1.12a"
 
 var verboseG = false
 
@@ -609,6 +609,8 @@ func importQLNonGUIPackages() {
 		"isNil":            tk.IsNil,
 		"strToInt":         tk.StrToIntWithDefaultValue,
 		"intToStr":         tk.IntToStr,
+		"floatToStr":       tk.Float64ToStr,
+		"toStr":            tk.ToStr,
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
 		"checkErrf":        tk.CheckErrf,
@@ -830,22 +832,22 @@ func showHelp() {
 
 }
 
-func compileSource(srcA string) string {
-	vmT := qlang.New()
+// func compileSource(srcA string) string {
+// 	vmT := qlang.New()
 
-	tk.Pl("vmT: %v", vmT)
+// 	tk.Pl("vmT: %v", vmT)
 
-	errT := vmT.TXCompile(srcA)
+// 	errT := vmT.TXCompile(srcA)
 
-	if errT != nil {
-		return errT.Error()
-	}
+// 	if errT != nil {
+// 		return errT.Error()
+// 	}
 
-	tk.Pl("vmT after: %v", vmT)
+// 	tk.Pl("vmT after: %v", vmT)
 
-	return ""
+// 	return ""
 
-}
+// }
 
 func runInteractiveQlang() int {
 	var following bool
@@ -1238,6 +1240,7 @@ func runArgs(argsA ...string) interface{} {
 	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
 	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
+	// ifCompileT := tk.IfSwitchExistsWhole(argsT, "-compile")
 
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
@@ -1368,6 +1371,37 @@ func runArgs(argsA ...string) interface{} {
 
 		return nil
 	}
+
+	// if ifCompileT {
+	// 	initQLVM()
+
+	// 	qlVMG.SetVar("argsG", argsT)
+
+	// 	retG = notFoundG
+
+	// 	endT, errT := qlVMG.SafeCl([]byte(fcT), "")
+	// 	if errT != nil {
+
+	// 		// tk.Pl()
+
+	// 		// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
+	// 		// tk.Pl("Next line: %v, %v", f, l)
+
+	// 		return tk.Errf("failed to compile script(%v) error: %v\n", scriptT, errT)
+	// 	}
+
+	// 	tk.Pl("endT: %v", endT)
+
+	// 	errT = qlVMG.DumpEngine()
+
+	// 	if errT != nil {
+	// 		return tk.Errf("failed to dump engine: %v\n", errT)
+	// 	}
+
+	// 	tk.Plvsr(qlVMG.Cpl.GetCode().Len(), qlVMG.Run())
+
+	// 	return nil
+	// }
 
 	if !ifBatchT {
 		if tk.RegStartsWith(fcT, `//\s*(GXB|gxb)`) {

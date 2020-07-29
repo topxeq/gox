@@ -698,12 +698,6 @@ get global variable
 
 ---
 
-#### strToInt
-
-the same as tk.StrToIntWithDefaultValue
-
----
-
 #### bitXor
 
 bitwise XOR operation, since in Qlang engine, ^ is used for get address/pointer of a variable(like & in other engine),
@@ -711,6 +705,24 @@ so the origin bitwise XOR operator in Golang is used and we will use bitXor func
 
 ---
 
+
+#### isNil
+
+check if a variable equals to nil(especially for non error type nil,such as *etree.Tree(nil))
+
+---
+
+#### strToInt
+
+the same as tk.StrToIntWithDefaultValue
+
+---
+
+#### intToStr/floatToStr/toStr
+
+convert the values to string accordingly
+
+---
 
 #### checkError
 
@@ -1012,6 +1024,12 @@ the same as tk.GetSwitchWithDefaultIntValue
 #### switchExists/ifSwitchExists
 
 the same as tk.IfSwitchExistsWhole, to determine if a command-line switch exists, such as "-verbose"
+
+---
+
+#### newFunc
+
+convert a pointer of type *execq.Function to *(func())
 
 ---
 
