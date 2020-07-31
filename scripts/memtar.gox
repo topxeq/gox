@@ -1,0 +1,28 @@
+// 新建一个内存虚拟文件系统
+mfs = memfs.NewMemFS()
+
+// 将一系列真实文件系统中的文件和文件夹进行打包压缩（TAR+GZ格式），生成的文件在虚拟文件系统上
+mfs.TarFrom([`d:\tmpx\demo1.html`, `d:\tmpx\demo2.html`, `d:\tmpx\test`], "/abc.tar.gz")
+
+// 将打包文件复制到真实文件系统中以备检查
+mfs.CopyFileTo("/abc.tar.gz", `d:\tmpx\abc.tar.gz`)
+
+// 解压缩该文件到内存虚拟文件系统中
+mfs.UntarFrom(`d:\tmpx\abc.tar.gz`, "/extract")
+
+// 列表检查所有文件是否存在
+plv(mfs.Lsr("/"))
+
+// 将虚拟文件系统中所有文件打包成all.tar.gz
+err = mfs.Tar(["/"], "/all.tar.gz")
+checkError(err)
+
+// 列表检查all.tar.gz是否存在
+plv(mfs.Lsr("/"))
+
+// 解压all.tar.gz文件到/all目录下
+err = mfs.Untar("/all.tar.gz", "/all")
+checkError(err)
+
+// 检查所有文件是否正常存在
+plv(mfs.Lsr("/"))

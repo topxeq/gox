@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 
+	// "context"
+
 	"io"
 	"math/rand"
 	"os"
@@ -166,7 +168,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.12a"
+var versionG = "1.15a"
 
 var verboseG = false
 
@@ -1230,6 +1232,10 @@ func runArgs(argsA ...string) interface{} {
 		if tk.EndsWithIgnoreCase(scriptT, ".gxb") {
 			ifBatchT = true
 		}
+	}
+
+	ifBinT := tk.IfSwitchExistsWhole(argsT, "-bin")
+	if ifBinT {
 	}
 
 	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
