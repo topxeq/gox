@@ -139,6 +139,8 @@ import (
 	// qlgithub_avfs_avfs_fs_memfs "github.com/topxeq/qlang/lib/github.com/avfs/avfs/fs/memfs"
 	qlgithub_topxeq_afero "github.com/topxeq/qlang/lib/github.com/topxeq/afero"
 
+	qlgithub_bhhbazinga_socks5go "github.com/topxeq/qlang/lib/github.com/bhhbazinga/socks5-go"
+
 	// GUI related start
 
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
@@ -168,7 +170,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.16a"
+var versionG = "1.17a"
 
 var verboseG = false
 
@@ -823,6 +825,8 @@ func importQLNonGUIPackages() {
 	// qlang.Import("github_avfs_avfs_fs_memfs", qlgithub_avfs_avfs_fs_memfs.Exports)
 	qlang.Import("github_topxeq_afero", qlgithub_topxeq_afero.Exports)
 	qlang.Import("memfs", qlgithub_topxeq_afero.Exports)
+
+	qlang.Import("github_bhhbazinga_socks5go", qlgithub_bhhbazinga_socks5go.Exports)
 
 }
 

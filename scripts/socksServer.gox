@@ -1,0 +1,27 @@
+socks5 = github_bhhbazinga_socks5go
+
+ipT = getSwitch(argsG, "-ip=", "0.0.0.0")
+portT = getSwitch(argsG, "-port=", "7480")
+passwordT = getSwitch(argsG, "-password=", "acb123!@#")
+
+lenT = len(passwordT)
+
+if lenT < 16 {
+	passwordT = passwordT + strings.Repeat("z", 16 - lenT)
+} elif lenT > 16 {
+	passwordT = passwordT[0:16]
+}
+
+remote, err := net.Listen("tcp", fmt.Sprintf("%s:%s", ipT, portT))
+if err != nil {
+	log.Fatal(err)
+}
+
+for {
+	conn, err := remote.Accept()
+	if err != nil {
+		log.Println("accept err:", err)
+	} else {
+		socks5.OpenRemoteTunnel(conn, passwordT)
+	}
+}
