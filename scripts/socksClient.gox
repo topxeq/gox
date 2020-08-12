@@ -1,4 +1,4 @@
-socks5 = github_bhhbazinga_socks5go
+socks5 = github_topxeq_socks
 
 remoteIpT = getSwitch(argsG, "-remoteIp=", "0.0.0.0")
 remotePortT = getSwitch(argsG, "-remotePort=", "7480")

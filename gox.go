@@ -139,7 +139,7 @@ import (
 	// qlgithub_avfs_avfs_fs_memfs "github.com/topxeq/qlang/lib/github.com/avfs/avfs/fs/memfs"
 	qlgithub_topxeq_afero "github.com/topxeq/qlang/lib/github.com/topxeq/afero"
 
-	qlgithub_bhhbazinga_socks5go "github.com/topxeq/qlang/lib/github.com/bhhbazinga/socks5-go"
+	qlgithub_topxeq_socks "github.com/topxeq/qlang/lib/github.com/topxeq/socks"
 
 	// GUI related start
 
@@ -827,7 +827,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_topxeq_afero", qlgithub_topxeq_afero.Exports)
 	qlang.Import("memfs", qlgithub_topxeq_afero.Exports)
 
-	qlang.Import("github_bhhbazinga_socks5go", qlgithub_bhhbazinga_socks5go.Exports)
+	qlang.Import("github_topxeq_socks", qlgithub_topxeq_socks.Exports)
 
 }
 

@@ -470,7 +470,7 @@ Other libraries embedded in Gox include:
 - github.com/topxeq/doc2vec/doc2vec(document to vector engine and training functions)
 - github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi(send Aliyun SMS)
 - github.com/topxeq/afero(a memory file system)
-- github.com/bhhbazinga/socks5-go(a library for socks5 server/client programming)
+- github.com/topxeq/socks(a library for socks5 server/client programming)
 
 Browse their Github pages for usage and documents, and of course the examples in the example directory.
 
@@ -607,6 +607,12 @@ the same as fmt.Fprintln/fmt.Fprintf
 #### plv
 
 the same as pl("%#v", v)
+
+---
+
+#### plvx
+
+the same as tk.Plvx, i.e. fmt.Printf("[TYPE] %T [VALUE] %v [ITYPE] %#v\n", argsA, argsA, argsA)
 
 ---
 
