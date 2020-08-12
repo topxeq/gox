@@ -170,7 +170,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.17a"
+var versionG = "1.18a"
 
 var verboseG = false
 
@@ -600,6 +600,7 @@ func importQLNonGUIPackages() {
 		"sprintf":          fmt.Sprintf,
 		"fprintf":          fmt.Fprintf,
 		"plv":              tk.Plv,
+		"plvx":             tk.Plvx,
 		"pv":               printValue,
 		"plvsr":            tk.Plvsr,
 		"plerr":            tk.PlErr,
