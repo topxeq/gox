@@ -1,0 +1,3 @@
+// usage: gox socksClientCompact.gox -remoteIp=9.9.9.9 -remotePort=10080 -localIp=0.0.0.0 -localPort=1080 -password=acb123
+
+checkError(tk.StartSocksClient(argsG...))

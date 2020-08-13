@@ -1,0 +1,30 @@
+socks5 = github_topxeq_socks
+
+remoteIpT = getSwitch(argsG, "-remoteIp=", "0.0.0.0")
+remotePortT = getSwitch(argsG, "-remotePort=", "7480")
+localIpT = getSwitch(argsG, "-localIp=", "0.0.0.0")
+localPortT = getSwitch(argsG, "-localPort=", "7481")
+passwordT = getSwitch(argsG, "-password=", "acb123!@#")
+
+lenT = len(passwordT)
+
+if lenT < 16 {
+	passwordT = passwordT + strings.Repeat("z", 16 - lenT)
+} elif lenT > 16 {
+	passwordT = passwordT[0:16]
+}
+
+local, err := net.Listen("tcp", fmt.Sprintf("%s:%s", localIpT, localPortT))
+if err != nil {
+	log.Fatal(err)
+}
+
+for {
+	conn, err := local.Accept()
+	if err != nil {
+		log.Println("accept err:", err)
+	} else {
+		socks5.OpenLocalTunnel(conn, fmt.Sprintf("%s:%s", remoteIpT, remotePortT), passwordT)
+	}
+}
+
