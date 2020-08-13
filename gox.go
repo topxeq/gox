@@ -1152,7 +1152,9 @@ func runArgs(argsA ...string) interface{} {
 		}
 	}
 
-	if scriptT == "" {
+	ifClipT := tk.IfSwitchExistsWhole(argsT, "-clip")
+
+	if scriptT == "" && (!ifClipT) {
 
 		// autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
 		// autoGxbPathT := filepath.Join(tk.GetApplicationPath(), "auto.gxb")
@@ -1277,6 +1279,10 @@ func runArgs(argsA ...string) interface{} {
 		scriptPathG = ""
 	} else if ifRemoteT {
 		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
+
+		scriptPathG = ""
+	} else if ifClipT {
+		fcT = tk.GetClipText()
 
 		scriptPathG = ""
 	} else if ifCloudT {
