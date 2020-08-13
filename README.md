@@ -103,6 +103,12 @@ MNS(Magic-Number-Script) can also be executed in the shell mode, i.e.
 > gox
 > \>magic(18) 
 
+### Run script from clipboard
+
+> gox -clip
+
+Gox will try to get the text content from system clipboard and run it as a script
+
 ### Encrypt source code file
 
 > gox -encrypt=mycode basic.gox
