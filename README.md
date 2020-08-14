@@ -477,6 +477,7 @@ Other libraries embedded in Gox include:
 - github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi(send Aliyun SMS)
 - github.com/topxeq/afero(a memory file system)
 - github.com/topxeq/socks(a library for socks5 server/client programming)
+- github.com/topxeq/regexpx(add more functions to the standard regexp package)
 
 Browse their Github pages for usage and documents, and of course the examples in the example directory.
 

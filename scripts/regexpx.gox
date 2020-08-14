@@ -1,0 +1,13 @@
+regexp = github_topxeq_regexpx
+
+
+re := regexp.MustCompile(`^(\w)\w+\k{1}$`)
+
+fmt.Println(re.MatchString("acca"))
+fmt.Println(re.MatchString("accccab"))
+fmt.Println(re.MatchString("AA"))
+
+pl("found1: %v", tk.RegFindFirstX("abcde123456!#@e1abcdefg", `(e\d).*?\k{1}`, 0))
+pl("found2: %v", tk.RegFindFirstX("abcde123456!#@e1abcdefg", `.e.(?![a-z])`, 0))
+
+pass()

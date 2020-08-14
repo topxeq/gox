@@ -121,11 +121,6 @@ import (
 
 	qlgithub_360EntSecGroupSkylar_excelize "github.com/topxeq/qlang/lib/github.com/360EntSecGroup-Skylar/excelize"
 
-	qlgonumorg_v1_plot "github.com/topxeq/qlang/lib/gonum.org/v1/plot"
-	qlgonumorg_v1_plot_plotter "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotter"
-	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
-	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
-
 	qlgithub_domodwyer_mailyak "github.com/topxeq/qlang/lib/github.com/domodwyer/mailyak"
 
 	qlgithub_kbinani_screenshot "github.com/topxeq/qlang/lib/github.com/kbinani/screenshot"
@@ -141,7 +136,14 @@ import (
 
 	qlgithub_topxeq_socks "github.com/topxeq/qlang/lib/github.com/topxeq/socks"
 
+	qlgithub_topxeq_regexpx "github.com/topxeq/qlang/lib/github.com/topxeq/regexpx"
+
 	// GUI related start
+
+	qlgonumorg_v1_plot "github.com/topxeq/qlang/lib/gonum.org/v1/plot"
+	qlgonumorg_v1_plot_plotter "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotter"
+	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
+	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
 
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
 	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
@@ -170,7 +172,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.19a"
+var versionG = "1.20a"
 
 var verboseG = false
 
@@ -789,18 +791,6 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 
-	InitBlink()
-
-	InitSysspec()
-
-	// GUI related end
-
-	qlang.Import("github_dgraphio_badger", qlgithub_dgraphio_badger.Exports)
-	qlang.Import("badger", qlgithub_dgraphio_badger.Exports)
-
-	qlang.Import("github_fogleman_gg", qlgithub_fogleman_gg.Exports)
-	qlang.Import("gg", qlgithub_fogleman_gg.Exports)
-
 	qlang.Import("gonumorg_v1_plot", qlgonumorg_v1_plot.Exports)
 	qlang.Import("plot", qlgonumorg_v1_plot.Exports)
 	qlang.Import("gonumorg_v1_plot_plotter", qlgonumorg_v1_plot_plotter.Exports)
@@ -809,6 +799,17 @@ func importQLNonGUIPackages() {
 	qlang.Import("plot_plotutil", qlgonumorg_v1_plot_plotutil.Exports)
 	qlang.Import("gonumorg_v1_plot_vg", qlgonumorg_v1_plot_vg.Exports)
 	qlang.Import("plot_vg", qlgonumorg_v1_plot_vg.Exports)
+
+	// InitBlink()
+
+	InitSysspec()
+
+	// GUI related end
+
+	qlang.Import("github_dgraphio_badger", qlgithub_dgraphio_badger.Exports)
+
+	qlang.Import("github_fogleman_gg", qlgithub_fogleman_gg.Exports)
+	qlang.Import("gg", qlgithub_fogleman_gg.Exports)
 
 	qlang.Import("github_360EntSecGroupSkylar_excelize", qlgithub_360EntSecGroupSkylar_excelize.Exports)
 
@@ -828,6 +829,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("memfs", qlgithub_topxeq_afero.Exports)
 
 	qlang.Import("github_topxeq_socks", qlgithub_topxeq_socks.Exports)
+
+	qlang.Import("github_topxeq_regexpx", qlgithub_topxeq_regexpx.Exports)
 
 }
 
