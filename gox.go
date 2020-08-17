@@ -172,7 +172,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.20a"
+var versionG = "1.21a"
 
 var verboseG = false
 
@@ -618,6 +618,8 @@ func importQLNonGUIPackages() {
 		"intToStr":         tk.IntToStr,
 		"floatToStr":       tk.Float64ToStr,
 		"toStr":            tk.ToStr,
+		"toInt":            tk.ToInt,
+		"toFloat":          tk.ToFloat,
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
 		"checkErrf":        tk.CheckErrf,

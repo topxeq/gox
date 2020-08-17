@@ -732,7 +732,7 @@ the same as tk.StrToIntWithDefaultValue
 
 ---
 
-#### intToStr/floatToStr/toStr
+#### intToStr/floatToStr/toStr/toInt/toFloat
 
 convert the values to string accordingly
 

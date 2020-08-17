@@ -1,0 +1,18 @@
+W = 65.0
+H = 1.75
+
+BMI = W / (H * H)
+
+pl("BMI: %.2f", BMI)
+
+if BMI < 18.5 {
+	println("偏瘦")
+} elif (18.5 <= BMI) && (BMI < 24) {
+	println("正常")
+} elif 24 <= BMI && BMI < 28 {
+	println("偏胖")
+} elif 28 <= BMI && BMI < 30 {
+	println("肥胖")
+} elif BMI >= 30 {
+	println("重度肥胖")
+}

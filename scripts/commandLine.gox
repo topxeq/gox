@@ -1,0 +1,11 @@
+args = os.Args
+
+for i, v = range args {
+	pl("命令行参数%v：%v", i, v)
+}
+
+for i, v = range argsG {
+	pl("精简命令行参数%v：%v", i, v)
+}
+
+pass()
