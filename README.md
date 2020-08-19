@@ -553,7 +553,7 @@ evaluate an expression and return the result
 
 ---
 
-#### typeof/typeOf/kindOf
+#### type/typeof/typeOf/kindOf
 
 return the string representation of the type for a variable or expression
 

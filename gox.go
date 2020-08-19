@@ -172,7 +172,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.21a"
+var versionG = "1.22a"
 
 var verboseG = false
 
@@ -592,7 +592,8 @@ func importQLNonGUIPackages() {
 		"pass":             tk.Pass,
 		"defined":          defined,
 		"eval":             qlEval,
-		"typeOf":           tk.TypeOfValueReflect,
+		"typeOf":           tk.TypeOfValue,
+		"typeOfReflect":    tk.TypeOfValueReflect,
 		"remove":           tk.RemoveItemsInArray,
 		"pr":               fmt.Print,
 		"pln":              fmt.Println,
