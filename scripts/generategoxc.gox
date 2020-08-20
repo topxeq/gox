@@ -34,4 +34,22 @@ if tk.IsErrorString(rsT) {
 	return
 } 
 
+sourceFileNameT = tk.JoinPath(gopathT, "/src/github.com/topxeq/gox/embed.go")
+
+fcT = tk.LoadStringFromFile(sourceFileNameT)
+
+if tk.IsErrorString(fcT) {
+	pl("load source file failed: %v", tk.GetErrorString(fcT))
+	return
+}
+
+newFilePathT = tk.JoinPath(gopathT, "/src/github.com/topxeq/goxc/embed.go")
+
+rsT = tk.SaveStringToFile(fcT, newFilePathT)
+
+if tk.IsErrorString(rsT) {
+	pl("failed to save destination file: %v", tk.GetErrorString(rsT))
+	return
+} 
+
 pl("Done")

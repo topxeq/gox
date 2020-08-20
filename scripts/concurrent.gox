@@ -1,0 +1,56 @@
+func a() {
+	for {
+		if v1 == undefined || isNil(v1) {
+			v1 = 0.0
+		} else {
+			v1 = v1 + 0.1
+		}
+	
+		pln("av1:"+ v1)
+
+		if v2 == undefined || isNil(v2) {
+			v2 = 0.0
+		} else {
+			v2 = v2 + 0.1
+		}
+	
+		pln("av2:"+ v2)
+	}
+}
+
+func b() {
+	for {
+		if v1 == undefined || isNil(v1) {
+			v1 = 0
+		} else {
+			v1 = v1 + 1
+		}
+
+		pln("bv1:"+ v1)
+
+		if v2 == undefined || isNil(v2) {
+			v2 = 0.0
+		} else {
+			v2 = v2 - 0.1
+		}
+	
+		pln("bv2:"+ v2)
+	}
+}
+
+go a()
+
+go b()
+
+for {
+	if v1 == undefined || isNil(v1) {
+		v1 = 0
+	} else {
+		v1 = v1 + 1
+	}
+
+	pln("mv1:"+ v1)
+
+	// pln("mv2:"+ v2)
+
+}
