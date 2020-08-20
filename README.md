@@ -1129,6 +1129,12 @@ qexport github.com/topxeq/sqltk
 
 ```
 
+or just use a Gox script if you have the Golang environment and "go get" the Gox repository already:
+
+```
+gox -gopath qexports github.com/topxeq/sqltk
+```
+
 and add them to the qlang/lib directory(look at the files inside for reference):
 
 
@@ -1142,3 +1148,9 @@ and add them to the qlang/lib directory(look at the files inside for reference):
 
 > go install -ldflags="-s -w"
 
+- You can embed custom Gox script inside the Gox/Goxc main executable, following this steps:
+
+	- change the content in the embed.go, assign your script to the variable codeTextG.
+	- build the Gox/Goxc using tag "embed", i.e. "go install -tags embed".
+	- then you can run the executable and the script embedded will be run. Or you can distributed it as a single file(also a more secure one).
+	- use command-line argument "-noembed" to prevent the embedded script from running automatically.
