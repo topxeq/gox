@@ -103,6 +103,7 @@ func InitGiuExports() {
 		"NewTextureFromRgba": giu.NewTextureFromRgba,
 
 		"Label":                  giu.Label,
+		"LabelV":                 giu.LabelV,
 		"Line":                   giu.Line,
 		"Button":                 giu.Button,
 		"InvisibleButton":        giu.InvisibleButton,
