@@ -17,6 +17,8 @@ import (
 )
 
 func InitGiu() {
+	// imgui.EnableFreeType = true
+
 	qlang.Import("github_AllenDang_giu", qlgithub_AllenDang_giu.Exports)
 	qlang.Import("giu", qlgithub_AllenDang_giu.Exports)
 	qlang.Import("github_AllenDang_giu_imgui", qlgithub_AllenDang_giu_imgui.Exports)

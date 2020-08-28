@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"strings"
 
 	// "context"
 
@@ -172,7 +173,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.23a"
+var versionG = "1.25a"
 
 var verboseG = false
 
@@ -623,6 +624,8 @@ func importQLNonGUIPackages() {
 		"toStr":            tk.ToStr,
 		"toInt":            tk.ToInt,
 		"toFloat":          tk.ToFloat,
+		"toLower":          strings.ToLower,
+		"toUpper":          strings.ToUpper,
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
 		"checkErrf":        tk.CheckErrf,
