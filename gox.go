@@ -656,6 +656,8 @@ func importQLNonGUIPackages() {
 		"ifSwitchExists":   tk.IfSwitchExistsWhole,
 		"xmlEncode":        tk.EncodeToXMLString,
 		"base64Encode":     tk.EncodeToBase64,
+		"md5Encode":        tk.MD5Encrypt,
+		"jsonEncode":       tk.ObjectToJSON,
 		"newFunc":          NewFunc,
 
 		"scriptPathG": scriptPathG,
