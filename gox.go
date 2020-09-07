@@ -173,7 +173,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.26a"
+var versionG = "1.27a"
 
 var verboseG = false
 
@@ -655,9 +655,13 @@ func importQLNonGUIPackages() {
 		"switchExists":     tk.IfSwitchExistsWhole,
 		"ifSwitchExists":   tk.IfSwitchExistsWhole,
 		"xmlEncode":        tk.EncodeToXMLString,
+		"htmlEncode":       tk.EncodeHTML,
+		"htmlDecode":       tk.DecodeHTML,
 		"base64Encode":     tk.EncodeToBase64,
+		"base64Decode":     tk.DecodeFromBase64,
 		"md5Encode":        tk.MD5Encrypt,
 		"jsonEncode":       tk.ObjectToJSON,
+		"jsonDecode":       tk.JSONToObject,
 		"newFunc":          NewFunc,
 
 		"scriptPathG": scriptPathG,
