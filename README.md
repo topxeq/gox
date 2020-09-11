@@ -471,6 +471,7 @@ Other libraries embedded in Gox include:
 - github.com/topxeq/sqltk(general SQL operations, enable access to Oracle, MySQL, MSSQLServer, SQLite databases)
 - github.com/topxeq/imagetk(various image-processing funtions)
 - github.com/beevik/etree(XML processing)
+- github.com/topxeq/xmlx(another XML processing package)
 - github.com/stretchr/objx(another JSON library)
 - github.com/kbinani/screenshot(cross-platform, multi-display screenshot)
 - github.com/topxeq/doc2vec/doc2vec(document to vector engine and training functions)
@@ -735,6 +736,12 @@ the same as tk.StrToIntWithDefaultValue
 #### intToStr/floatToStr/toStr/toInt/toFloat
 
 convert the values to string accordingly
+
+---
+
+#### toLower/toUpper
+
+convert the lower/upper case
 
 ---
 
@@ -1038,6 +1045,12 @@ the same as tk.GetSwitchWithDefaultIntValue
 #### switchExists/ifSwitchExists
 
 the same as tk.IfSwitchExistsWhole, to determine if a command-line switch exists, such as "-verbose"
+
+---
+
+#### xmlEncode/htmlEncode/htmlDecode/base64Encode/base64Decode/md5Encode/jsonEncode/jsonDecode
+
+misc encode/decode functions
 
 ---
 

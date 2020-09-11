@@ -139,6 +139,8 @@ import (
 
 	qlgithub_topxeq_regexpx "github.com/topxeq/qlang/lib/github.com/topxeq/regexpx"
 
+	qlgithub_topxeq_xmlx "github.com/topxeq/qlang/lib/github.com/topxeq/xmlx"
+
 	// GUI related start
 
 	qlgonumorg_v1_plot "github.com/topxeq/qlang/lib/gonum.org/v1/plot"
@@ -173,7 +175,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.27a"
+var versionG = "1.28a"
 
 var verboseG = false
 
@@ -793,6 +795,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("etree", qlgithubbeeviketree.Exports)
 	qlang.Import("github_topxeq_sqltk", qlgithubtopxeqsqltk.Exports)
 	qlang.Import("sqltk", qlgithubtopxeqsqltk.Exports)
+
+	qlang.Import("github_topxeq_xmlx", qlgithub_topxeq_xmlx.Exports)
 
 	// GUI related start
 
@@ -2391,14 +2395,5 @@ func main() {
 }
 
 func test() {
-	// srcT := `
-	// 	a = 1
-	// 	println(a+3)
-	// `
 
-	// errT := compileSource(srcT)
-
-	// tk.Pl("%v", errT)
-
-	// os.Exit(0)
 }
