@@ -1,0 +1,53 @@
+func copy(w, r) {
+	_, err1 := io.Copy(w, r)
+	if err1 != nil {
+		pl("failed to copy: %v", err1)
+	}
+
+	w.Close()
+}
+
+func forward(lc, server) {
+	defer lc.Close()
+
+	rc, err2 := net.Dial("tcp", server)
+	if err2 != nil {
+		pl("failed to forward: %v", err2)
+		return
+	}
+
+	pl("Forwarding connection to %v", server)
+
+	go copy(rc, lc)
+	copy(lc, rc)
+	pl("Terminated:  %s -> %s ", lc.RemoteAddr(), server)
+}
+
+func start(local, serverA) {
+	l, err3 := net.Listen("tcp", local)
+	if err3 != nil {
+		pl("failed to start: %v", err3)
+		exit()
+	}
+	defer l.Close()
+
+	pl("Listening on %v", local)
+
+	for {
+		// Wait for a connection.
+		conn, err4 := l.Accept()
+		if err4 != nil {
+			pl("failed to accept: %v", err4)
+		}
+
+		pl("New connection from %v", conn.RemoteAddr())
+		// Handle the connection in a new goroutine.
+		// The loop then returns to accepting, so that
+		// multiple connections may be served concurrently.
+		go forward(conn, serverA)
+	}
+}
+
+pl("Usage: %s <remote-addr:port> <local-addr:port>", argsG[0])
+
+start(getSwitch(argsG, "-local=", ""), getSwitch(argsG, "-remote=", ""))

@@ -1,40 +1,19 @@
-text1 = new(string)
+appT = fyne_app.New()
+windowT = appT.NewWindow("Calculator")
 
-onButton1Click = func() {
-	// evaluate the expression in the text input
-	rs = eval(*text1)
+textAreaT = fyne_widget.NewMultiLineEntry()
+textAreaT.SetText("abc")
 
-	println(rs)
+windowT.SetContent(fyne_widget.NewVBox(
+	fyne_widget.NewLabel("Enter an expression."),
+	textAreaT,
+	fyne_widget.NewHBox(fyne_widget.NewButton("Calculate", func() {
+		textAreaT.SetText("Welco大家好me :)")
+	}), fyne_widget.NewButton("Close", func() {
+		appT.Quit()
+	})),
+))
 
-	// set the result back into the text input
-	setValue(text1, rs)
-}
+windowT.CenterOnScreen()
 
-// close the window, also terminate the application
-onButton2Click = func() {
-	os.Exit(1)
-}
-
-// main window loop
-loop = func() {
-
-	// set the layout of GUI
-	layoutT := []gui.Widget{
-		gui.Label("Enter an expression."),
-		gui.InputText("", 0, text1),
-
-		// widgets in line layout is aligned left to right
-		gui.Line(gui.Button("Calculate", onButton1Click),
-			gui.Button("Close", onButton2Click)),
-	}
-
-	gui.SingleWindow("Calculator", layoutT)
-}
-
-// text1 used to hold the string value of the text input
-// notice: text1 is a pointer
-// setup the title, size (width and height, 400*200), style and font-loading function of main window,
-mainWindow := gui.NewMasterWindow("Calculator", 400, 200, gui.MasterWindowFlagsNotResizable, nil)
-
-// show the window and start the message loop
-gui.LoopWindow(mainWindow, loop)
+windowT.ShowAndRun()

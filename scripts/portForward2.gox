@@ -1,0 +1,36 @@
+func forward(connA, remoteA) {
+	clientT, errT := net.Dial("tcp", remoteA)
+	if errT != nil {
+		log.Fatalf("Dial failed: %v", errT)
+	}
+
+	log.Printf("Connected to localhost %v\n", connA)
+
+	go func() {
+		defer clientT.Close()
+		defer connA.Close()
+		io.Copy(clientT, connA)
+	}()
+
+	go func() {
+		defer clientT.Close()
+		defer connA.Close()
+		io.Copy(connA, clientT)
+	}()
+}
+
+listenerT, err1T := net.Listen("tcp", getSwitch(argsG, "-local=", "0.0.0.0:7481"))
+if err1T != nil {
+	log.Fatalf("Failed to setup listener: %v", err1T)
+}
+
+for {
+	connT, err1T := listenerT.Accept()
+	if err1T != nil {
+		log.Fatalf("ERROR: failed to accept listener: %v", err1T)
+	}
+
+	log.Printf("Accepted connection %v\n", connY)
+
+	go forward(connT, getSwitch(argsG, "-remote=", "0.0.0.0:7480"))
+}
