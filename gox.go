@@ -42,6 +42,7 @@ import (
 	qldatabasesql "github.com/topxeq/qlang/lib/database/sql"
 
 	qlencodingbase64 "github.com/topxeq/qlang/lib/encoding/base64"
+	qlencodingbinary "github.com/topxeq/qlang/lib/encoding/binary"
 	qlencodingcsv "github.com/topxeq/qlang/lib/encoding/csv"
 	qlencodinggob "github.com/topxeq/qlang/lib/encoding/gob"
 	qlencodinghex "github.com/topxeq/qlang/lib/encoding/hex"
@@ -175,7 +176,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.29a"
+var versionG = "1.30a"
 
 var verboseG = false
 
@@ -716,6 +717,7 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("encoding_pem", qlencodingpem.Exports)
 	qlang.Import("encoding_base64", qlencodingbase64.Exports)
+	qlang.Import("encoding_binary", qlencodingbinary.Exports)
 	qlang.Import("encoding_csv", qlencodingcsv.Exports)
 	qlang.Import("encoding_gob", qlencodinggob.Exports)
 	qlang.Import("encoding_hex", qlencodinghex.Exports)
