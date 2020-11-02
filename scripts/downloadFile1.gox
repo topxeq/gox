@@ -1,0 +1,11 @@
+grab = github_cavaliercoder_grab
+
+resp, err = grab.Get(".", "https://github.com/cmderdev/cmder/releases/download/v1.3.16/cmder_mini.zip")
+if err != nil {
+	plerr(err)
+	exit()
+}
+
+println("Download saved to", resp.Filename)
+
+pass()

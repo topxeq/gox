@@ -1,0 +1,30 @@
+grab = github_cavaliercoder_grab
+
+client := grab.NewClient()
+req, _ := grab.NewRequest(".", "https://github.com/cmderdev/cmder/releases/download/v1.3.16/cmder_mini.zip")
+
+fmt.Printf("Downloading %v...\n", req.URL())
+resp := client.Do(req)
+fmt.Printf("  %v\n", resp.HTTPResponse.Status)
+
+// 启动一个线程，每个100毫秒输出一次下载状态
+go func() {
+	for {
+		tk.SleepMilliSeconds(100)
+		fmt.Printf("\r  transferred %v / %v bytes (%.2f%%)",
+				resp.BytesComplete(),
+				resp.Size(),
+				100*resp.Progress())
+	}
+}()
+
+err := resp.Err()
+
+if err != nil {
+	fmt.Fprintf(os.Stderr, "Download failed: %v\n", err)
+	os.Exit(1)
+}
+
+fmt.Printf("Download saved to ./%v \n", resp.Filename)
+
+pass()
