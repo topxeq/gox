@@ -178,7 +178,9 @@ import (
 
 // Non GUI related
 
-var versionG = "1.50a"
+var versionG = "1.51a"
+
+// add tk.ToJSONX
 
 var verboseG = false
 
