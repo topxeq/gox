@@ -1,0 +1,32 @@
+pterm = github_pterm_pterm
+
+// pterm.DefaultBigText.WithLetters(pterm.NewLettersFromString("Welcome")).Render()
+
+// // Print a large text with differently colored letters.
+// pterm.DefaultBigText.WithLetters(pterm.NewLettersFromStringWithStyle("W", pterm.NewStyle(pterm.FgCyan)),
+// 	pterm.NewLettersFromStringWithStyle("elcome", pterm.NewStyle(pterm.FgLightMagenta))).
+// 	Render()
+
+// pterm.DefaultCenter.Println("This text is centered!\nIt centeres the whole block by default.\nIn that way you can do stuff like this:")
+
+// // Generate BigLetters
+// s, _ := pterm.DefaultBigText.WithLetters(pterm.NewLettersFromString("PTerm")).Srender()
+// pterm.DefaultCenter.Println(s) // Print BigLetters with the default CenterPrinter
+
+// pterm.DefaultCenter.WithCenterEachLineSeparately().Println("This text is centered!\nBut each line is\ncentered\nseparately")
+
+pterm.DefaultHeader.Println("This is the default header!")
+
+second = time.Second
+
+introSpinner, _ := pterm.DefaultSpinner.WithRemoveWhenDone(true).Start("Waiting for 15 seconds...")
+time.Sleep(second)
+for i := 14; i > 0; i-- {
+	if i > 1 {
+		introSpinner.UpdateText("Waiting for " + strconv.Itoa(i) + " seconds...")
+	} else {
+		introSpinner.UpdateText("Waiting for " + strconv.Itoa(i) + " second...")
+	}
+	time.Sleep(second)
+}
+introSpinner.Stop()
