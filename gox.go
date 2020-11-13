@@ -22,6 +22,7 @@ import (
 	_ "github.com/topxeq/qlang/lib/chan"
 
 	execq "github.com/topxeq/qlang/exec"
+	"github.com/topxeq/qlang/spec"
 
 	// import standard packages
 	qlarchivezip "github.com/topxeq/qlang/lib/archive/zip"
@@ -180,7 +181,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.52a"
+var versionG = "1.53a"
 
 // add tk.ToJSONX
 
@@ -2397,8 +2398,8 @@ func main() {
 		valueT, ok := rs.(error)
 
 		if ok {
-			if valueT != notFoundG {
-				tk.Pl("Error: %v", valueT)
+			if valueT != spec.Undefined && valueT != notFoundG {
+				tk.Pl("Error: %T %v", valueT, valueT)
 			}
 		} else {
 			tk.Pl("%v", rs)
