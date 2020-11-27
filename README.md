@@ -4,17 +4,13 @@ _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/
 
 # gox
 
-**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, [Sciter](https://sciter.com) is recommended for cross-platform GUI programming in Gox. Although it requires a dynamic library file, but it's worthy. From 1.29a, Fyne is used as default OpenGL based GUI library instead of Giu, use "-tags giugui" to enable Giu again and disable Fyne.**
+**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, [Sciter](https://sciter.com) is recommended for cross-platform GUI programming in Gox. Although it requires a dynamic library file, but it's worthy. From 1.29a, Fyne is used as default OpenGL based GUI library instead of Giu. From 1.56a, LCL library support is removed.**
 
 Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), with some improvement. The syntax of Gox language is very similar to Golang.
 
 Golang is not required to be installed. Gox is only in one executable file, green and fast.
 
 And thanks to [Sciter](https://sciter.com) and [Go-Sciter](https://github.com/sciter-sdk/go-sciter), which enables Gox to provide a modern GUI programming ability, and it's cross-platform, native, no dependencies and convenient, only an additional library will needed. Even more, Gox has an code editor embedded, so the external text editor may not be required for small piece of code. Note: this GUI library file is packed within the zip file in Windows release, for Linux/Mac, please see the instructions in Sciter website.
-
-And also many thanks to [Govcl](https://github.com/ying32/govcl) written by ying32, which enables Gox to provide GUI programming APIs based on the free Lazarus LCL library. It's from VCL library and very useful especially for experienced Delphi/VCL programmers. Since this library doesn't require OPENGL, it's more compatible in some server-side operating systems. It only requires a single library file(dll in Windows or so in Linux and dylib in Mac OS).
-
-If you do not want to use Giu GUI programming, try compiling from the source code and add "-tags nogiugui" command-line parameters in "go build" step.
 
 Gox supports password-protect your source code file, it's also a major difference from most script/interpretive language.
 
