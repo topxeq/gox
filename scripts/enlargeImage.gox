@@ -1,0 +1,21 @@
+// 引入imagetk包，获得ImageTK对象
+itk = imagetk.NewImageTK()
+
+// 获取命令行参数中指定要转换的图像文件名（第3个参数，序号为2，第1个参数是gox主程序，第2个是本脚本文件路径，第3个才是真正的参数）
+fileNameT = getParameter(os.Args, 2, "")
+
+pl("convert file: %v", fileNameT)
+
+// 加载图像文件中的文件到内存变量imageT中
+imageT, errT = itk.LoadImage(fileNameT)
+
+// 检查如果出现错误则中止程序运行
+checkError(errT)
+
+// 调用imagetk库中的EnlargeImage函数将图片放大4.5倍存入新内存变量newImageT中
+newImageT, errT = itk.EnlargeImage(imageT, 4.5)
+
+checkError(errT)
+
+// 将放大后的图片保存为新文件名
+itk.SaveImageAs(newImageT, fileNameT+".new.png", "")
