@@ -504,6 +504,7 @@ github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a h1:AbaDA3cbBe+3qpve
 github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a/go.mod h1:Y07Sl+FLd164UCoNlvVFUb0NJWtcehctV6kaNWPjLgM=
 github.com/topxeq/qlang v0.0.0-20201127011417-76bc2cdd3e31 h1:jRa5AuKSKXgajeoI2JDvB1yN1pRrVbuyVuhdhzDQnrg=
 github.com/topxeq/qlang v0.0.0-20201127011417-76bc2cdd3e31/go.mod h1:RNctyo0NhLeZ5HCRgq6nzOFcPVWesoAajmyRcRcqZUo=
+github.com/topxeq/qlang v0.0.0-20210112054309-c3946864b207 h1:6o/37nxv4FXdLVRH8U8mH6dn18ku0kSaJyRw8kjZ2vE=
 github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 h1:NmJisdKbTYN77elIJosh+8S0R+8gLUzsR0O1Q2k9a3A=
 github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029/go.mod h1:UVq5N0KFj5HnWtb+azlgFGygxGbhpFsG44uPjPNAbUE=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 h1:rK+vzRQ8z4If0mWMPuy25tSUdEbc5ngAbzknR+AF4j0=
