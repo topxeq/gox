@@ -4,10 +4,10 @@ windowT = appT.NewWindow("Calculator")
 textAreaT = fyne_widget.NewMultiLineEntry()
 textAreaT.SetPlaceHolder("1.2 * 3")
 
-windowT.SetContent(fyne_widget.NewVBox(
+windowT.SetContent(fyne_container.NewVBox(
 	fyne_widget.NewLabel("Enter an expression."),
 	textAreaT,
-	fyne_widget.NewHBox(fyne_widget.NewButton("Calculate", func() {
+	fyne_container.NewHBox(fyne_widget.NewButton("Calculate", func() {
 		rs = eval(textAreaT.Text)
 
 		println(rs)

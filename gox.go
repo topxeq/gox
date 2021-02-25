@@ -179,7 +179,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.58a"
+var versionG = "1.60a"
 
 // add tk.ToJSONX
 

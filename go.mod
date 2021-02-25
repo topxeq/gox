@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	fyne.io/fyne v1.4.3 // indirect
+	fyne.io/fyne/v2 v2.0.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2 // indirect
 	github.com/AllenDang/giu v0.5.0
@@ -36,13 +37,14 @@ require (
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/tinylib/msgp v1.1.5 // indirect
 	github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 // indirect
+	github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 // indirect
 	github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e // indirect
-	github.com/topxeq/imagetk v0.0.0-20200820085305-12bdf86ff4a2 // indirect
-	github.com/topxeq/qlang v0.0.0-20201127011417-76bc2cdd3e31
+	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
+	github.com/topxeq/qlang v0.0.0-20210225023257-2b5e3bf36691 // indirect
 	github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 // indirect
 	github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 // indirect
-	github.com/topxeq/sqltk v0.0.0-20210106074223-c176dfaecc89 // indirect
-	github.com/topxeq/tk v0.0.0-20210111014302-cdba490c0b31
+	github.com/topxeq/sqltk v0.0.0-20210112052931-55ad87cc9be3 // indirect
+	github.com/topxeq/tk v0.0.0-20210112051931-4640fa2841f4
 	github.com/topxeq/xmlx v0.0.0-20200914080208-c7e8f4878741 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
