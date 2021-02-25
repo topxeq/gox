@@ -4,7 +4,7 @@ _Gox语言的中文简介可以从[这篇文章](https://mbd.baidu.com/newspage/
 
 # gox
 
-**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, [Sciter](https://sciter.com) is recommended for cross-platform GUI programming in Gox. Although it requires a dynamic library file, but it's worthy. From 1.29a, Fyne is used as default OpenGL based GUI library instead of Giu. From 1.56a, LCL library support is removed.**
+**Notice: from version 0.986a, Goxlang removed some script-engine support for smaller size. Only Qlang-engine is kept. And from version 0.998a, [Sciter](https://sciter.com) is recommended for cross-platform GUI programming in Gox. Although it requires a dynamic library file, but it's worthy. From 1.29a, Fyne is used as default OpenGL based GUI library instead of Giu. From 1.56a, LCL library support is removed. From 1.60a, Go Modules is supported and GOPATH is deprecated.**
 
 Gox (or Goxlang) is a free, open-source script language or a interpreter written by Golang. It's based on [Qlang](https://github.com/qiniu/qlang), with some improvement. The syntax of Gox language is very similar to Golang.
 
