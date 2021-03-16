@@ -9,7 +9,34 @@ println(a)
 b = "I'm fine."
 
 fn(b) {
-	b = "Hi!"
+	b = "Hi!" + b
+	println(b)
 }(b)
 
 println(b)
+
+c = "abcd"
+
+func cal(c, d) {
+	c.attr1 = [1, 2, 3]
+	c.attr1 = append(c.attr1, 123)
+	c.attr1 = append(c.attr1, d)
+
+	c.attr2 = "That's nice."
+	c.attr3 = {}
+
+	c.attr3.a1 = 2.6
+
+	println(c)
+}
+
+cal({}, 1)
+
+cal({}, 5)
+
+cal({}, 10)
+
+println(c)
+
+
+
