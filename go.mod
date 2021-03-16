@@ -44,8 +44,8 @@ require (
 	github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 // indirect
 	github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 // indirect
 	github.com/topxeq/sqltk v0.0.0-20210112052931-55ad87cc9be3 // indirect
-	github.com/topxeq/tk v0.0.0-20210112051931-4640fa2841f4
-	github.com/topxeq/xmlx v0.0.0-20200914080208-c7e8f4878741 // indirect
+	github.com/topxeq/tk v0.0.0 // indirect
+	github.com/topxeq/xmlx v0.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	golang.org/x/sys v0.0.0-20210110051926-789bb1bd4061 // indirect
@@ -59,3 +59,9 @@ require (
 replace github.com/360EntSecGroup-Skylar/excelize v1.4.1 => github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2
 
 replace github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2 => github.com/360EntSecGroup-Skylar/excelize v1.4.1
+
+replace github.com/topxeq/tk v0.0.0 => /root/goprjs/src/github.com/topxeq/tk
+
+replace github.com/topxeq/xmlx v0.2.0 => /root/goprjs/src/github.com/topxeq/xmlx
+
+replace github.com/topxeq/sqltk v0.0.0 => /root/goprjs/src/github.com/topxeq/sqltk
