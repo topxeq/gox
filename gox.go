@@ -145,6 +145,8 @@ import (
 
 	qlgithub_pterm_pterm "github.com/topxeq/qlang/lib/github.com/pterm/pterm"
 
+	qlgithub_domodwyer_mailyak "github.com/topxeq/qlang/lib/github.com/domodwyer/mailyak"
+
 	// GUI related start
 
 	qlgonumorg_v1_plot "github.com/topxeq/qlang/lib/gonum.org/v1/plot"
@@ -179,7 +181,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.60a"
+var versionG = "1.62a"
 
 // add tk.ToJSONX
 
@@ -264,7 +266,7 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 			return errT
 		}
 
-		rs, ok := qlVMG.GetVar("outG")
+		rs, ok := vmT.GetVar("outG")
 
 		if ok {
 			if rs != nil {
@@ -326,7 +328,7 @@ func runCode(codeA string, argsA ...string) interface{} {
 		return errT
 	}
 
-	rs, ok := qlVMG.GetVar("outG")
+	rs, ok := vmT.GetVar("outG")
 
 	if ok {
 		if rs != nil {
@@ -813,6 +815,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_cavaliercoder_grab", qlgithub_cavaliercoder_grab.Exports)
 
 	qlang.Import("github_pterm_pterm", qlgithub_pterm_pterm.Exports)
+
+	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
 
 	// GUI related start
 
