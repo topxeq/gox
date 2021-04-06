@@ -69,6 +69,7 @@ import (
 	qlimage_png "github.com/topxeq/qlang/lib/image/png"
 
 	qlio "github.com/topxeq/qlang/lib/io"
+	qlio_fs "github.com/topxeq/qlang/lib/io/fs"
 	qlioioutil "github.com/topxeq/qlang/lib/io/ioutil"
 
 	qllog "github.com/topxeq/qlang/lib/log"
@@ -181,7 +182,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.62a"
+var versionG = "1.63a"
 
 // add tk.ToJSONX
 
@@ -754,6 +755,7 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("io", qlio.Exports)
 	qlang.Import("io_ioutil", qlioioutil.Exports)
+	qlang.Import("io_fs", qlio_fs.Exports)
 
 	qlang.Import("log", qllog.Exports)
 
