@@ -173,7 +173,7 @@ import (
 
 	// GUI related start
 	// full version related start
-	"github.com/sqweek/dialog"
+	// "github.com/sqweek/dialog"
 	// full version related end
 	// GUI related end
 
@@ -182,7 +182,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.66a"
+var versionG = "1.67a"
 
 // add tk.ToJSONX
 
@@ -827,7 +827,7 @@ func importQLNonGUIPackages() {
 
 	// GUI related start
 
-	InitGiu()
+	// InitGiu()
 
 	qlgithub_scitersdk_gosciter.Exports["NewValue"] = sciter.NewValue
 	qlgithub_scitersdk_gosciter.Exports["NullValue"] = sciter.NullValue
@@ -1025,56 +1025,56 @@ func importQLGUIPackages() {
 	// }
 
 	// qlang.Import("imagetk", imagetkExports)
-	InitGiuExports()
+	// InitGiuExports()
 
 	// full version related end
 }
 
 // full version related start
-func getConfirmGUI(titleA string, messageA string) bool {
-	return dialog.Message("%v", messageA).Title(titleA).YesNo()
-}
+// func getConfirmGUI(titleA string, messageA string) bool {
+// 	return dialog.Message("%v", messageA).Title(titleA).YesNo()
+// }
 
-func simpleInfo(titleA string, messageA string) {
-	dialog.Message("%v", messageA).Title(titleA).Info()
-}
+// func simpleInfo(titleA string, messageA string) {
+// 	dialog.Message("%v", messageA).Title(titleA).Info()
+// }
 
-func simpleError(titleA string, messageA string) {
-	dialog.Message("%v", messageA).Title(titleA).Error()
-}
+// func simpleError(titleA string, messageA string) {
+// 	dialog.Message("%v", messageA).Title(titleA).Error()
+// }
 
-// filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
-func selectFileToSaveGUI(titleA string, filterNameA string, filterTypeA string) string {
-	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Save()
+// // filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
+// func selectFileToSaveGUI(titleA string, filterNameA string, filterTypeA string) string {
+// 	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Save()
 
-	if errT != nil {
-		return tk.GenerateErrorStringF("failed: %v", errT)
-	}
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("failed: %v", errT)
+// 	}
 
-	return fileNameT
-}
+// 	return fileNameT
+// }
 
-// fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
-func selectFileGUI(titleA string, filterNameA string, filterTypeA string) string {
-	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Load()
+// // fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
+// func selectFileGUI(titleA string, filterNameA string, filterTypeA string) string {
+// 	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Load()
 
-	if errT != nil {
-		return tk.GenerateErrorStringF("failed: %v", errT)
-	}
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("failed: %v", errT)
+// 	}
 
-	return fileNameT
-}
+// 	return fileNameT
+// }
 
-// directory, err := dialog.Directory().Title("Load images").Browse()
-func selectDirectoryGUI(titleA string) string {
-	directoryT, errT := dialog.Directory().Title(titleA).Browse()
+// // directory, err := dialog.Directory().Title("Load images").Browse()
+// func selectDirectoryGUI(titleA string) string {
+// 	directoryT, errT := dialog.Directory().Title(titleA).Browse()
 
-	if errT != nil {
-		return tk.GenerateErrorStringF("failed: %v", errT)
-	}
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("failed: %v", errT)
+// 	}
 
-	return directoryT
-}
+// 	return directoryT
+// }
 
 // full version related end
 
@@ -1087,7 +1087,8 @@ func runFile(argsA ...string) interface{} {
 	// GUI related start
 
 	if lenT < 1 {
-		rs := selectFileGUI("Please select file to run...", "All files", "*")
+		rs := tk.GetInputf("Please enter file to run...")
+		// rs := selectFileGUI("Please select file to run...", "All files", "*")
 
 		if tk.IsErrorString(rs) {
 			return tk.Errf("Failed to load file: %v", tk.GetErrorString(rs))
@@ -1542,7 +1543,7 @@ func initQLVM() {
 
 		// GUI related start
 
-		importQLGUIPackages()
+		// importQLGUIPackages()
 
 		// GUI related end
 
