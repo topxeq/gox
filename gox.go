@@ -182,7 +182,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.67a"
+var versionG = "1.69a"
 
 // add tk.ToJSONX
 
@@ -585,6 +585,40 @@ func importQLNonGUIPackages() {
 
 	}
 
+	nilToEmpty := func(vA interface{}, argsA ...string) string {
+
+		if vA == nil {
+			return ""
+		}
+
+		if vA == spec.Undefined {
+			return ""
+		}
+
+		if tk.IsNil(vA) {
+			return ""
+		}
+
+		if (argsA != nil) && (len(argsA) > 0) {
+			vf, ok := vA.(float64)
+			if ok {
+				if tk.IfSwitchExistsWhole(argsA, "-nofloat") {
+					return tk.ToStr(int(vf))
+				} else {
+					return tk.Float64ToStr(vA.(float64))
+				}
+			}
+		}
+
+		return fmt.Sprintf("%v", vA)
+
+	}
+
+	logPrint := func(formatA string, argsA ...interface{}) {
+		tk.Pl(formatA, argsA...)
+		tk.LogWithTimeCompact(formatA, argsA...)
+	}
+
 	// getPointer := func(nameA string) {
 
 	// 	v, ok := qlVMG.GetVar(nameA)
@@ -630,6 +664,7 @@ func importQLNonGUIPackages() {
 		"bitXor":               tk.BitXor,
 		"isNil":                tk.IsNil,
 		"isError":              tk.IsError,
+		"nilToEmpty":           nilToEmpty,
 		"strToInt":             tk.StrToIntWithDefaultValue,
 		"intToStr":             tk.IntToStr,
 		"floatToStr":           tk.Float64ToStr,
@@ -677,10 +712,34 @@ func importQLNonGUIPackages() {
 		"hexDecode":            tk.HexToStr,
 		"jsonEncode":           tk.ObjectToJSON,
 		"jsonDecode":           tk.JSONToObject,
+		"toJSON":               tk.ToJSONX,
 		"simpleEncode":         tk.EncodeStringCustomEx,
 		"simpleDecode":         tk.DecodeStringCustom,
 		"getFormValue":         tk.GetFormValueWithDefaultValue,
 		"generateJSONResponse": tk.GenerateJSONPResponseWithMore,
+		"ifFileExists":         tk.IfFileExists,
+		"getFileSize":          tk.GetFileSizeCompact,
+		"loadText":             tk.LoadStringFromFile,
+		"saveText":             tk.SaveStringToFile,
+		"loadBytes":            tk.LoadBytesFromFileE,
+		"saveBytes":            tk.SaveBytesToFile,
+		"setLogFile":           tk.SetLogFile,
+		"logf":                 tk.LogWithTimeCompact,
+		"logPrint":             logPrint,
+		"strReplace":           tk.Replace,
+		"getNowString":         tk.GetNowTimeStringFormal,
+		"splitLines":           tk.SplitLines,
+		"sleep":                tk.SleepSeconds,
+		"sleepSeconds":         tk.SleepSeconds,
+		"regMatch":             tk.RegMatchX,
+		"regContains":          tk.RegContainsX,
+		"regFind":              tk.RegFindFirstX,
+		"regFindAll":           tk.RegFindAllX,
+		"regFindIndex":         tk.RegFindFirstIndexX,
+		"regReplace":           tk.RegReplaceX,
+		"startsWith":           tk.StartsWith,
+		"endsWith":             tk.EndsWith,
+		"contains":             strings.Contains,
 
 		"newFunc":     NewFunc,
 		"scriptPathG": scriptPathG,
