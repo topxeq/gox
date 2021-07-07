@@ -173,7 +173,7 @@ import (
 
 	// GUI related start
 	// full version related start
-	// "github.com/sqweek/dialog"
+	"github.com/sqweek/dialog"
 	// full version related end
 	// GUI related end
 
@@ -182,7 +182,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.69a"
+var versionG = "1.70a"
 
 // add tk.ToJSONX
 
@@ -637,111 +637,153 @@ func importQLNonGUIPackages() {
 	// }
 
 	var defaultExports = map[string]interface{}{
-		"pass":                 tk.Pass,
-		"defined":              defined,
-		"eval":                 qlEval,
-		"typeOf":               tk.TypeOfValue,
-		"typeOfReflect":        tk.TypeOfValueReflect,
-		"remove":               tk.RemoveItemsInArray,
-		"pr":                   tk.Pr,
-		"pln":                  tk.Pln,
-		"prf":                  tk.Printf,
-		"printfln":             tk.Pl,
-		"pl":                   tk.Pl,
-		"sprintf":              fmt.Sprintf,
-		"fprintf":              fmt.Fprintf,
-		"plv":                  tk.Plv,
-		"plvx":                 tk.Plvx,
-		"pv":                   printValue,
-		"plvsr":                tk.Plvsr,
-		"plerr":                tk.PlErr,
-		"plExit":               tk.PlAndExit,
-		"exit":                 tk.Exit,
-		"setValue":             tk.SetValue,
-		"getValue":             tk.GetValue,
-		"setVar":               tk.SetVar,
-		"getVar":               tk.GetVar,
-		"bitXor":               tk.BitXor,
-		"isNil":                tk.IsNil,
-		"isError":              tk.IsError,
-		"nilToEmpty":           nilToEmpty,
-		"strToInt":             tk.StrToIntWithDefaultValue,
-		"intToStr":             tk.IntToStr,
-		"floatToStr":           tk.Float64ToStr,
-		"toStr":                tk.ToStr,
-		"toInt":                tk.ToInt,
-		"toFloat":              tk.ToFloat,
-		"toLower":              strings.ToLower,
-		"toUpper":              strings.ToUpper,
-		"checkError":           tk.CheckError,
-		"checkErrorString":     tk.CheckErrorString,
-		"checkErrf":            tk.CheckErrf,
-		"checkErrStrf":         tk.CheckErrStrf,
-		"fatalf":               tk.Fatalf,
-		"isErrStr":             tk.IsErrStr,
-		"errStr":               tk.ErrStr,
-		"errStrf":              tk.ErrStrF,
-		"getErrStr":            tk.GetErrStr,
-		"errf":                 tk.Errf,
-		"getInput":             tk.GetUserInput,
-		"getInputf":            tk.GetInputf,
-		"deepClone":            tk.DeepClone,
-		"deepCopy":             tk.DeepCopyFromTo,
-		"getClipText":          tk.GetClipText,
-		"setClipText":          tk.SetClipText,
-		"trim":                 tk.Trim,
-		"run":                  runFile,
-		"runCode":              runCode,
-		"runScript":            runScript,
-		"magic":                magic,
-		"systemCmd":            tk.SystemCmd,
+		// common related
+		"pass":          tk.Pass,
+		"defined":       defined,
+		"eval":          qlEval,
+		"typeOf":        tk.TypeOfValue,
+		"typeOfReflect": tk.TypeOfValueReflect,
+		"exit":          tk.Exit,
+		"setValue":      tk.SetValue,
+		"getValue":      tk.GetValue,
+		"setVar":        tk.SetVar,
+		"getVar":        tk.GetVar,
+		"isNil":         tk.IsNil,
+		"deepClone":     tk.DeepClone,
+		"deepCopy":      tk.DeepCopyFromTo,
+		"run":           runFile,
+		"runCode":       runCode,
+		"runScript":     runScript,
+		"magic":         magic,
+
+		// output related
+		"pr":       tk.Pr,
+		"pln":      tk.Pln,
+		"prf":      tk.Printf,
+		"printfln": tk.Pl,
+		"pl":       tk.Pl,
+		"sprintf":  fmt.Sprintf,
+		"fprintf":  fmt.Fprintf,
+		"plv":      tk.Plv,
+		"plvx":     tk.Plvx,
+		"pv":       printValue,
+		"plvsr":    tk.Plvsr,
+		"plerr":    tk.PlErr,
+		"plExit":   tk.PlAndExit,
+
+		// math related
+		"bitXor": tk.BitXor,
+
+		// string related
+		"trim":         tk.Trim,
+		"strReplace":   tk.Replace,
+		"getNowString": tk.GetNowTimeStringFormal,
+		"splitLines":   tk.SplitLines,
+		"startsWith":   tk.StartsWith,
+		"endsWith":     tk.EndsWith,
+		"contains":     strings.Contains,
+
+		// regex related
+		"regMatch":     tk.RegMatchX,
+		"regContains":  tk.RegContainsX,
+		"regFind":      tk.RegFindFirstX,
+		"regFindAll":   tk.RegFindAllX,
+		"regFindIndex": tk.RegFindFirstIndexX,
+		"regReplace":   tk.RegReplaceX,
+
+		// conversion related
+		"nilToEmpty": nilToEmpty,
+		"strToInt":   tk.StrToIntWithDefaultValue,
+		"intToStr":   tk.IntToStr,
+		"floatToStr": tk.Float64ToStr,
+		"toStr":      tk.ToStr,
+		"toInt":      tk.ToInt,
+		"toFloat":    tk.ToFloat,
+		"toLower":    strings.ToLower,
+		"toUpper":    strings.ToUpper,
+
+		// array/map related
+		"remove":       tk.RemoveItemsInArray,
+		"getMapString": tk.SafelyGetStringForKeyWithDefault,
+
+		// error related
+		"isError":          tk.IsError,
+		"isErrStr":         tk.IsErrStr,
+		"checkError":       tk.CheckError,
+		"checkErrorString": tk.CheckErrorString,
+		"checkErrf":        tk.CheckErrf,
+		"checkErrStrf":     tk.CheckErrStrf,
+		"fatalf":           tk.Fatalf,
+		"errStr":           tk.ErrStr,
+		"errStrf":          tk.ErrStrF,
+		"getErrStr":        tk.GetErrStr,
+		"errf":             tk.Errf,
+
+		// encode/decode related
+		"xmlEncode":    tk.EncodeToXMLString,
+		"htmlEncode":   tk.EncodeHTML,
+		"htmlDecode":   tk.DecodeHTML,
+		"base64Encode": tk.EncodeToBase64,
+		"base64Decode": tk.DecodeFromBase64,
+		"md5Encode":    tk.MD5Encrypt,
+		"md5":          tk.MD5Encrypt,
+		"hexEncode":    tk.StrToHex,
+		"hexDecode":    tk.HexToStr,
+		"jsonEncode":   tk.ObjectToJSON,
+		"jsonDecode":   tk.JSONToObject,
+		"toJSON":       tk.ToJSONX,
+		"simpleEncode": tk.EncodeStringCustomEx,
+		"simpleDecode": tk.DecodeStringCustom,
+
+		// input related
+		"getInput":  tk.GetUserInput,
+		"getInputf": tk.GetInputf,
+
+		// log related
+		"setLogFile": tk.SetLogFile,
+		"logf":       tk.LogWithTimeCompact,
+		"logPrint":   logPrint,
+
+		// system related
+		"getClipText":  tk.GetClipText,
+		"setClipText":  tk.SetClipText,
+		"systemCmd":    tk.SystemCmd,
+		"ifFileExists": tk.IfFileExists,
+		"getFileSize":  tk.GetFileSizeCompact,
+		"loadText":     tk.LoadStringFromFile,
+		"saveText":     tk.SaveStringToFile,
+		"loadBytes":    tk.LoadBytesFromFileE,
+		"saveBytes":    tk.SaveBytesToFile,
+		"sleep":        tk.SleepSeconds,
+		"sleepSeconds": tk.SleepSeconds,
+
+		// command-line
+		"getParameter":   tk.GetParameterByIndexWithDefaultValue,
+		"getSwitch":      tk.GetSwitchWithDefaultValue,
+		"getIntSwitch":   tk.GetSwitchWithDefaultIntValue,
+		"switchExists":   tk.IfSwitchExistsWhole,
+		"ifSwitchExists": tk.IfSwitchExistsWhole,
+
+		// network related
 		"newSSHClient":         tk.NewSSHClient,
-		"getParameter":         tk.GetParameterByIndexWithDefaultValue,
-		"getSwitch":            tk.GetSwitchWithDefaultValue,
-		"getIntSwitch":         tk.GetSwitchWithDefaultIntValue,
-		"switchExists":         tk.IfSwitchExistsWhole,
-		"ifSwitchExists":       tk.IfSwitchExistsWhole,
-		"xmlEncode":            tk.EncodeToXMLString,
-		"htmlEncode":           tk.EncodeHTML,
-		"htmlDecode":           tk.DecodeHTML,
-		"base64Encode":         tk.EncodeToBase64,
-		"base64Decode":         tk.DecodeFromBase64,
-		"md5Encode":            tk.MD5Encrypt,
-		"md5":                  tk.MD5Encrypt,
-		"hexEncode":            tk.StrToHex,
-		"hexDecode":            tk.HexToStr,
-		"jsonEncode":           tk.ObjectToJSON,
-		"jsonDecode":           tk.JSONToObject,
-		"toJSON":               tk.ToJSONX,
-		"simpleEncode":         tk.EncodeStringCustomEx,
-		"simpleDecode":         tk.DecodeStringCustom,
 		"getFormValue":         tk.GetFormValueWithDefaultValue,
 		"generateJSONResponse": tk.GenerateJSONPResponseWithMore,
-		"ifFileExists":         tk.IfFileExists,
-		"getFileSize":          tk.GetFileSizeCompact,
-		"loadText":             tk.LoadStringFromFile,
-		"saveText":             tk.SaveStringToFile,
-		"loadBytes":            tk.LoadBytesFromFileE,
-		"saveBytes":            tk.SaveBytesToFile,
-		"setLogFile":           tk.SetLogFile,
-		"logf":                 tk.LogWithTimeCompact,
-		"logPrint":             logPrint,
-		"strReplace":           tk.Replace,
-		"getNowString":         tk.GetNowTimeStringFormal,
-		"splitLines":           tk.SplitLines,
-		"sleep":                tk.SleepSeconds,
-		"sleepSeconds":         tk.SleepSeconds,
-		"regMatch":             tk.RegMatchX,
-		"regContains":          tk.RegContainsX,
-		"regFind":              tk.RegFindFirstX,
-		"regFindAll":           tk.RegFindAllX,
-		"regFindIndex":         tk.RegFindFirstIndexX,
-		"regReplace":           tk.RegReplaceX,
-		"startsWith":           tk.StartsWith,
-		"endsWith":             tk.EndsWith,
-		"contains":             strings.Contains,
 
-		"newFunc":     NewFunc,
+		// GUI related start
+		// gui related
+		"getConfirmGUI":       getConfirmGUI,
+		"showInfoGUI":         showInfoGUI,
+		"showErrorGUI":        showErrorGUI,
+		"selectFileToSaveGUI": selectFileToSaveGUI,
+		"selectFileGUI":       selectFileGUI,
+		"selectDirectoryGUI":  selectDirectoryGUI,
+
+		// GUI related end
+
+		// misc
+		"newFunc": NewFunc,
+
+		// global variables
 		"scriptPathG": scriptPathG,
 		"versionG":    versionG,
 
@@ -1090,50 +1132,50 @@ func importQLGUIPackages() {
 }
 
 // full version related start
-// func getConfirmGUI(titleA string, messageA string) bool {
-// 	return dialog.Message("%v", messageA).Title(titleA).YesNo()
-// }
+func getConfirmGUI(titleA string, messageA string) bool {
+	return dialog.Message("%v", messageA).Title(titleA).YesNo()
+}
 
-// func simpleInfo(titleA string, messageA string) {
-// 	dialog.Message("%v", messageA).Title(titleA).Info()
-// }
+func showInfoGUI(titleA string, messageA string) {
+	dialog.Message("%v", messageA).Title(titleA).Info()
+}
 
-// func simpleError(titleA string, messageA string) {
-// 	dialog.Message("%v", messageA).Title(titleA).Error()
-// }
+func showErrorGUI(titleA string, messageA string) {
+	dialog.Message("%v", messageA).Title(titleA).Error()
+}
 
-// // filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
-// func selectFileToSaveGUI(titleA string, filterNameA string, filterTypeA string) string {
-// 	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Save()
+// filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
+func selectFileToSaveGUI(titleA string, filterNameA string, filterTypeA string) string {
+	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Save()
 
-// 	if errT != nil {
-// 		return tk.GenerateErrorStringF("failed: %v", errT)
-// 	}
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
 
-// 	return fileNameT
-// }
+	return fileNameT
+}
 
-// // fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
-// func selectFileGUI(titleA string, filterNameA string, filterTypeA string) string {
-// 	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Load()
+// fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
+func selectFileGUI(titleA string, filterNameA string, filterTypeA string) string {
+	fileNameT, errT := dialog.File().Filter(filterNameA, filterTypeA).Title(titleA).Load()
 
-// 	if errT != nil {
-// 		return tk.GenerateErrorStringF("failed: %v", errT)
-// 	}
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
 
-// 	return fileNameT
-// }
+	return fileNameT
+}
 
-// // directory, err := dialog.Directory().Title("Load images").Browse()
-// func selectDirectoryGUI(titleA string) string {
-// 	directoryT, errT := dialog.Directory().Title(titleA).Browse()
+// directory, err := dialog.Directory().Title("Load images").Browse()
+func selectDirectoryGUI(titleA string) string {
+	directoryT, errT := dialog.Directory().Title(titleA).Browse()
 
-// 	if errT != nil {
-// 		return tk.GenerateErrorStringF("failed: %v", errT)
-// 	}
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
 
-// 	return directoryT
-// }
+	return directoryT
+}
 
 // full version related end
 
