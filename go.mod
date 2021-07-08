@@ -22,6 +22,7 @@ require (
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0 // indirect
 	github.com/topxeq/tk v0.0.0
+	github.com/webview/webview v0.0.0-20210330151455-f540d88dde4e // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

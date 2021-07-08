@@ -268,6 +268,8 @@ github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljT
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=
 github.com/visualfc/pkgwalk v1.0.0/go.mod h1:1FBUxT6vBvYFqrUQVNrrmn1Nu30snrj2pTKlQMku3Tg=
+github.com/webview/webview v0.0.0-20210330151455-f540d88dde4e h1:z780M7mCrdt6KiICeW9SGirvQjxDlrVU+n99FO93nbI=
+github.com/webview/webview v0.0.0-20210330151455-f540d88dde4e/go.mod h1:rpXAuuHgyEJb6kXcXldlkOjU6y4x+YcASKKXJNUhh0Y=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
 github.com/xuri/efp v0.0.0-20201016154823-031c29024257 h1:6ldmGEJXtsRMwdR2KuS3esk9wjVJNvgk05/YY2XmOj0=
 github.com/xuri/efp v0.0.0-20201016154823-031c29024257/go.mod h1:uBiSUepVYMhGTfDeBKKasV4GpgBlzJ46gXUBAqV8qLk=

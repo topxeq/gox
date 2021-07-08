@@ -157,6 +157,7 @@ import (
 
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
 	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
+	qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
 
 	"github.com/sciter-sdk/go-sciter"
 	"github.com/sciter-sdk/go-sciter/window"
@@ -1444,6 +1445,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 
+	qlang.Import("github_webview_webview", qlgithub_webview_webview.Exports)
+
 	qlang.Import("gonumorg_v1_plot", qlgonumorg_v1_plot.Exports)
 	qlang.Import("plot", qlgonumorg_v1_plot.Exports)
 	qlang.Import("gonumorg_v1_plot_plotter", qlgonumorg_v1_plot_plotter.Exports)
@@ -1789,6 +1792,22 @@ func runArgs(argsA ...string) interface{} {
 			}
 
 			tk.Pl("Sciter DLL downloaded to application path.")
+
+			rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/webview.dll", applicationPathT, "webview.dll", false)
+
+			if tk.IsErrorString(rs) {
+
+				return tk.Errf("failed to download webview DLL file.")
+			}
+
+			rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/WebView2Loader.dll", applicationPathT, "WebView2Loader.dll", false)
+
+			if tk.IsErrorString(rs) {
+
+				return tk.Errf("failed to download webview DLL file.")
+			}
+
+			tk.Pl("webview DLL downloaded to application path.")
 
 			return nil
 		}
