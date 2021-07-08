@@ -1213,8 +1213,9 @@ func importQLNonGUIPackages() {
 		"simpleDecode": tk.DecodeStringCustom,
 
 		// input related
-		"getInput":  tk.GetUserInput,
-		"getInputf": tk.GetInputf,
+		"getInput":     tk.GetUserInput,
+		"getInputf":    tk.GetInputf,
+		"getPasswordf": tk.GetInputPasswordf,
 
 		// log related
 		"setLogFile": tk.SetLogFile,
