@@ -14,9 +14,9 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
-	github.com/sciter-sdk/go-sciter v0.5.1-0.20201129125056-ec87e3dd0d50
+	github.com/sciter-sdk/go-sciter v0.5.1
 	github.com/spf13/afero v1.5.1 // indirect
-	github.com/sqweek/dialog v0.0.0-20200911184034-8a3d98e8211d
+	github.com/sqweek/dialog v0.0.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
 	github.com/topxeq/qlang v0.0.0
@@ -38,3 +38,7 @@ replace github.com/topxeq/xmlx v0.2.0 => ../xmlx
 replace github.com/topxeq/sqltk v0.0.0 => ../sqltk
 
 replace github.com/topxeq/qlang v0.0.0 => ../qlang
+
+replace github.com/sciter-sdk/go-sciter v0.5.1 => ../../sciter-sdk/go-sciter
+
+replace github.com/sqweek/dialog v0.0.0 => ../../sqweek/dialog

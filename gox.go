@@ -159,6 +159,7 @@ import (
 	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
 	"github.com/sciter-sdk/go-sciter"
+	"github.com/sciter-sdk/go-sciter/window"
 
 	// GUI related end
 
@@ -182,7 +183,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.70a"
+var versionG = "1.71a"
 
 // add tk.ToJSONX
 
@@ -364,6 +365,326 @@ func getMagic(numberA int) string {
 
 	return fcT
 
+}
+
+// native functions
+
+var leBufG []string
+
+func leClear() {
+	leBufG = make([]string, 0, 100)
+}
+
+func leLoadString(strA string) {
+	if leBufG == nil {
+		leClear()
+	}
+
+	leBufG = tk.SplitLines(strA)
+}
+
+func leSaveString() string {
+	if leBufG == nil {
+		leClear()
+	}
+
+	return tk.JoinLines(leBufG)
+}
+
+func leLoadFile(fileNameA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	strT, errT := tk.LoadStringFromFileE(fileNameA)
+
+	if errT != nil {
+		return errT
+	}
+
+	leBufG = tk.SplitLines(strT)
+	// leBufG, errT = tk.LoadStringListBuffered(fileNameA, false, false)
+
+	return nil
+}
+
+func leSaveFile(fileNameA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	var errT error
+
+	textT := tk.JoinLines(leBufG)
+
+	if tk.IsErrStr(textT) {
+		return tk.Errf(tk.GetErrStr(textT))
+	}
+
+	errT = tk.SaveStringToFileE(textT, fileNameA)
+
+	return errT
+}
+
+func leLoadClip() error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	textT := tk.GetClipText()
+
+	if tk.IsErrStr(textT) {
+		return tk.Errf(tk.GetErrStr(textT))
+	}
+
+	leBufG = tk.SplitLines(textT)
+
+	return nil
+}
+
+func leSaveClip() error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	textT := tk.JoinLines(leBufG)
+
+	if tk.IsErrStr(textT) {
+		return tk.Errf(tk.GetErrStr(textT))
+	}
+
+	return tk.SetClipText(textT)
+}
+
+func leViewAll(argsA ...string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.Errf("buffer not initalized")
+	}
+
+	if tk.IfSwitchExistsWhole(argsA, "-nl") {
+		textT := tk.JoinLines(leBufG)
+
+		tk.Pln(textT)
+
+	} else {
+		for i, v := range leBufG {
+			tk.Pl("%v: %v", i, v)
+		}
+	}
+
+	return nil
+}
+
+func leViewLine(idxA int) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.Errf("buffer not initalized")
+	}
+
+	if idxA < 0 || idxA >= len(leBufG) {
+		return tk.Errf("line index out of range")
+	}
+
+	tk.Pln(leBufG[idxA])
+
+	return nil
+}
+
+func leGetLine(idxA int) string {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.ErrStrf("buffer not initalized")
+	}
+
+	if idxA < 0 || idxA >= len(leBufG) {
+		return tk.ErrStrf("line index out of range")
+	}
+
+	return leBufG[idxA]
+}
+
+func leSetLine(idxA int, strA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.Errf("buffer not initalized")
+	}
+
+	if idxA < 0 || idxA >= len(leBufG) {
+		return tk.Errf("line index out of range")
+	}
+
+	leBufG[idxA] = strA
+
+	return nil
+}
+
+func leSetLines(startA int, endA int, strA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if startA > endA {
+		return tk.Errf("start index greater than end index")
+	}
+
+	listT := tk.SplitLines(strA)
+
+	if endA < 0 {
+		rs := make([]string, 0, len(leBufG)+len(listT))
+
+		rs = append(rs, listT...)
+		rs = append(rs, leBufG...)
+
+		leBufG = rs
+
+		return nil
+	}
+
+	if startA >= len(leBufG) {
+		leBufG = append(leBufG, listT...)
+
+		return nil
+	}
+
+	if startA < 0 {
+		startA = 0
+	}
+
+	if endA >= len(leBufG) {
+		endA = len(leBufG) - 1
+	}
+
+	rs := make([]string, 0, len(leBufG)+len(listT)-1)
+
+	rs = append(rs, leBufG[:startA]...)
+	rs = append(rs, listT...)
+	rs = append(rs, leBufG[endA+1:]...)
+
+	leBufG = rs
+
+	return nil
+}
+
+func leInsertLine(idxA int, strA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	// if leBufG == nil {
+	// 	return tk.Errf("buffer not initalized")
+	// }
+
+	// if idxA < 0 || idxA >= len(leBufG) {
+	// 	return tk.Errf("line index out of range")
+	// }
+
+	if idxA < 0 {
+		idxA = 0
+	}
+
+	listT := tk.SplitLines(strA)
+
+	if idxA >= len(leBufG) {
+		leBufG = append(leBufG, listT...)
+	} else {
+		rs := make([]string, 0, len(leBufG)+1)
+
+		rs = append(rs, leBufG[:idxA]...)
+		rs = append(rs, listT...)
+		rs = append(rs, leBufG[idxA:]...)
+
+		leBufG = rs
+
+	}
+
+	return nil
+}
+
+func leAppendLine(strA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	// if leBufG == nil {
+	// 	return tk.Errf("buffer not initalized")
+	// }
+
+	// if idxA < 0 || idxA >= len(leBufG) {
+	// 	return tk.Errf("line index out of range")
+	// }
+
+	listT := tk.SplitLines(strA)
+
+	leBufG = append(leBufG, listT...)
+
+	return nil
+}
+
+func leRemoveLine(idxA int) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.Errf("buffer not initalized")
+	}
+
+	if idxA < 0 || idxA >= len(leBufG) {
+		return tk.Errf("line index out of range")
+	}
+
+	rs := make([]string, 0, len(leBufG)+1)
+
+	rs = append(rs, leBufG[:idxA]...)
+	rs = append(rs, leBufG[idxA+1:]...)
+
+	leBufG = rs
+
+	return nil
+}
+
+func leRemoveLines(startA int, endA int) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.Errf("buffer not initalized")
+	}
+
+	if startA < 0 || startA >= len(leBufG) {
+		return tk.Errf("start line index out of range")
+	}
+
+	if endA < 0 || endA >= len(leBufG) {
+		return tk.Errf("end line index out of range")
+	}
+
+	if startA > endA {
+		return tk.Errf("start line index greater than end line index")
+	}
+
+	rs := make([]string, 0, len(leBufG)+1)
+
+	rs = append(rs, leBufG[:startA]...)
+	rs = append(rs, leBufG[endA+1:]...)
+
+	leBufG = rs
+
+	return nil
 }
 
 func magic(numberA int, argsA ...string) interface{} {
@@ -561,64 +882,213 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 	return &f
 }
 
+func printValue(nameA string) {
+
+	v, ok := qlVMG.GetVar(nameA)
+
+	if !ok {
+		tk.Pl("no variable by the name found: %v", nameA)
+		return
+	}
+
+	tk.Pl("%v(%T): %v", nameA, v, v)
+
+}
+
+func defined(nameA string) bool {
+
+	_, ok := qlVMG.GetVar(nameA)
+
+	return ok
+
+}
+
+func nilToEmpty(vA interface{}, argsA ...string) string {
+
+	if vA == nil {
+		return ""
+	}
+
+	if vA == spec.Undefined {
+		return ""
+	}
+
+	if tk.IsNil(vA) {
+		return ""
+	}
+
+	if (argsA != nil) && (len(argsA) > 0) {
+		vf, ok := vA.(float64)
+		if ok {
+			if tk.IfSwitchExistsWhole(argsA, "-nofloat") {
+				return tk.ToStr(int(vf))
+			} else {
+				return tk.Float64ToStr(vA.(float64))
+			}
+		}
+	}
+
+	return fmt.Sprintf("%v", vA)
+
+}
+
+func logPrint(formatA string, argsA ...interface{}) {
+	tk.Pl(formatA, argsA...)
+	tk.LogWithTimeCompact(formatA, argsA...)
+}
+
+// -1 return random item
+func getArrayItem(aryA interface{}, idxA int, defaultA ...interface{}) interface{} {
+	var hasDefaultT = false
+	if len(defaultA) > 0 {
+		hasDefaultT = true
+	}
+
+	if aryA == nil {
+		if hasDefaultT {
+			return defaultA[0]
+		}
+
+		return ""
+	}
+
+	switch aryT := aryA.(type) {
+	case []interface{}:
+		lenT := len(aryT)
+
+		if lenT < 0 || (idxA < -1 || idxA >= lenT) {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		if idxA == -1 {
+			return aryT[tk.GetRandomIntLessThan(lenT)]
+		}
+
+		return aryT[idxA]
+	case []string:
+		lenT := len(aryT)
+
+		if lenT < 0 || (idxA < -1 || idxA >= lenT) {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		if idxA == -1 {
+			return aryT[tk.GetRandomIntLessThan(lenT)]
+		}
+
+		return aryT[idxA]
+	case []int:
+		lenT := len(aryT)
+
+		if lenT < 0 || (idxA < -1 || idxA >= lenT) {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		if idxA == -1 {
+			return aryT[tk.GetRandomIntLessThan(lenT)]
+		}
+
+		return aryT[idxA]
+	case []float64:
+		lenT := len(aryT)
+
+		if lenT < 0 || (idxA < -1 || idxA >= lenT) {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		if idxA == -1 {
+			return aryT[tk.GetRandomIntLessThan(lenT)]
+		}
+
+		return aryT[idxA]
+	case []bool:
+		lenT := len(aryT)
+
+		if lenT < 0 || (idxA < -1 || idxA >= lenT) {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		if idxA == -1 {
+			return aryT[tk.GetRandomIntLessThan(lenT)]
+		}
+
+		return aryT[idxA]
+	}
+
+	return ""
+
+}
+
+func getMapItem(mapA interface{}, keyA string, defaultA ...interface{}) interface{} {
+	var hasDefaultT = false
+	if len(defaultA) > 0 {
+		hasDefaultT = true
+	}
+
+	if mapA == nil {
+		if hasDefaultT {
+			return defaultA[0]
+		}
+
+		return ""
+	}
+
+	switch mapT := mapA.(type) {
+	case map[string]interface{}:
+		itemT, ok := mapT[keyA]
+		if !ok {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		return itemT
+	case map[string]string:
+		itemT, ok := mapT[keyA]
+		if !ok {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		return itemT
+	}
+
+	return ""
+}
+
+func initGUI() {
+	dialog.Do_init()
+	window.Do_init()
+}
+
 var scriptPathG string
 
 func importQLNonGUIPackages() {
-	printValue := func(nameA string) {
-
-		v, ok := qlVMG.GetVar(nameA)
-
-		if !ok {
-			tk.Pl("no variable by the name found: %v", nameA)
-			return
-		}
-
-		tk.Pl("%v(%T): %v", nameA, v, v)
-
-	}
-
-	defined := func(nameA string) bool {
-
-		_, ok := qlVMG.GetVar(nameA)
-
-		return ok
-
-	}
-
-	nilToEmpty := func(vA interface{}, argsA ...string) string {
-
-		if vA == nil {
-			return ""
-		}
-
-		if vA == spec.Undefined {
-			return ""
-		}
-
-		if tk.IsNil(vA) {
-			return ""
-		}
-
-		if (argsA != nil) && (len(argsA) > 0) {
-			vf, ok := vA.(float64)
-			if ok {
-				if tk.IfSwitchExistsWhole(argsA, "-nofloat") {
-					return tk.ToStr(int(vf))
-				} else {
-					return tk.Float64ToStr(vA.(float64))
-				}
-			}
-		}
-
-		return fmt.Sprintf("%v", vA)
-
-	}
-
-	logPrint := func(formatA string, argsA ...interface{}) {
-		tk.Pl(formatA, argsA...)
-		tk.LogWithTimeCompact(formatA, argsA...)
-	}
-
 	// getPointer := func(nameA string) {
 
 	// 	v, ok := qlVMG.GetVar(nameA)
@@ -636,6 +1106,7 @@ func importQLNonGUIPackages() {
 	// 	*p = strA
 	// }
 
+	// import native functions and global variables
 	var defaultExports = map[string]interface{}{
 		// common related
 		"pass":          tk.Pass,
@@ -705,6 +1176,8 @@ func importQLNonGUIPackages() {
 		// array/map related
 		"remove":       tk.RemoveItemsInArray,
 		"getMapString": tk.SafelyGetStringForKeyWithDefault,
+		"getMapItem":   getMapItem,
+		"getArrayItem": getArrayItem,
 
 		// error related
 		"isError":          tk.IsError,
@@ -769,8 +1242,28 @@ func importQLNonGUIPackages() {
 		"getFormValue":         tk.GetFormValueWithDefaultValue,
 		"generateJSONResponse": tk.GenerateJSONPResponseWithMore,
 
+		// line editor related
+		"leClear":       leClear,
+		"leLoadStr":     leLoadString,
+		"leSaveStr":     leSaveString,
+		"leSetAll":      leLoadString,
+		"leGetAll":      leSaveString,
+		"leLoad":        leLoadFile,
+		"leSave":        leSaveFile,
+		"leLoadClip":    leLoadClip,
+		"leSaveClip":    leSaveClip,
+		"leInsert":      leInsertLine,
+		"leAppend":      leAppendLine,
+		"leSet":         leSetLine,
+		"leSetLines":    leSetLines,
+		"leRemove":      leRemoveLine,
+		"leRemoveLines": leRemoveLines,
+		"leViewAll":     leViewAll,
+		"leView":        leViewLine,
+
 		// GUI related start
 		// gui related
+		"initGUI":             initGUI,
 		"getConfirmGUI":       getConfirmGUI,
 		"showInfoGUI":         showInfoGUI,
 		"showErrorGUI":        showErrorGUI,
@@ -786,6 +1279,7 @@ func importQLNonGUIPackages() {
 		// global variables
 		"scriptPathG": scriptPathG,
 		"versionG":    versionG,
+		"leBufG":      leBufG,
 
 		// GUI related start
 
