@@ -95,6 +95,7 @@ func startServer() {
 go startServer()
 
 // 打开系统中默认浏览器并访问本WEB服务器网址
+// 注意这里是Windows下的方法，Linux和Mac下要改成响应的命令行
 systemCmd("cmd", "/c", "start", "http://127.0.0.1:7488")
 // systemCmd("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:7488")
 
