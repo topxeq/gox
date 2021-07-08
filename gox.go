@@ -183,7 +183,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.71a"
+var versionG = "1.72a"
 
 // add tk.ToJSONX
 
@@ -1081,10 +1081,14 @@ func getMapItem(mapA interface{}, keyA string, defaultA ...interface{}) interfac
 	return ""
 }
 
+// GUI related start
+
 func initGUI() {
 	dialog.Do_init()
 	window.Do_init()
 }
+
+// GUI related end
 
 var scriptPathG string
 
@@ -1146,13 +1150,13 @@ func importQLNonGUIPackages() {
 		"bitXor": tk.BitXor,
 
 		// string related
-		"trim":         tk.Trim,
-		"strReplace":   tk.Replace,
-		"getNowString": tk.GetNowTimeStringFormal,
-		"splitLines":   tk.SplitLines,
-		"startsWith":   tk.StartsWith,
-		"endsWith":     tk.EndsWith,
-		"contains":     strings.Contains,
+		"trim":       tk.Trim,
+		"strReplace": tk.Replace,
+		"getNowStr":  tk.GetNowTimeStringFormal,
+		"splitLines": tk.SplitLines,
+		"startsWith": tk.StartsWith,
+		"endsWith":   tk.EndsWith,
+		"contains":   strings.Contains,
 
 		// regex related
 		"regMatch":     tk.RegMatchX,
@@ -1245,18 +1249,24 @@ func importQLNonGUIPackages() {
 		// line editor related
 		"leClear":       leClear,
 		"leLoadStr":     leLoadString,
-		"leSaveStr":     leSaveString,
 		"leSetAll":      leLoadString,
+		"leSaveStr":     leSaveString,
 		"leGetAll":      leSaveString,
 		"leLoad":        leLoadFile,
+		"leLoadFile":    leLoadFile,
 		"leSave":        leSaveFile,
+		"leSaveFile":    leSaveFile,
 		"leLoadClip":    leLoadClip,
 		"leSaveClip":    leSaveClip,
 		"leInsert":      leInsertLine,
+		"leInsertLine":  leInsertLine,
 		"leAppend":      leAppendLine,
+		"leAppendLine":  leAppendLine,
 		"leSet":         leSetLine,
+		"leSetLine":     leSetLine,
 		"leSetLines":    leSetLines,
 		"leRemove":      leRemoveLine,
+		"leRemoveLine":  leRemoveLine,
 		"leRemoveLines": leRemoveLines,
 		"leViewAll":     leViewAll,
 		"leView":        leViewLine,

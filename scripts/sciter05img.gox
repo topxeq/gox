@@ -1,0 +1,51 @@
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
+
+initGUI()
+
+htmlT = `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>加载图像</title>
+</head>
+<body>
+<img id="imgID">
+</body>
+</html>
+`
+
+//创建一个新窗口
+w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
+if err != nil {
+	log.Fatal(err)
+}
+
+// w.LoadFile(`d:\tmpx\demo4.html`)
+w.LoadHtml(htmlT, "")
+
+//设置标题
+w.SetTitle("加载图像……")
+
+//获取根元素
+root, _ := w.GetRootElement()
+
+img, _ := root.SelectById("imgID")
+
+imgData, errT := loadBytes(`c:\test\points.png`)
+
+checkError(errT)
+
+base64Data = base64Encode(imgData)
+
+img.SetAttr("src", `data:image/jpg;base64,`+base64Data)
+
+// img.Load("http://mat1.gtimg.com/www/images/qq2012/qqLogoFilter.png", sciter.RT_DATA_IMAGE)
+
+//显示窗口
+w.Show()
+
+//运行窗口，进入消息循环
+w.Run()

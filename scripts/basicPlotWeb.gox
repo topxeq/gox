@@ -1,0 +1,107 @@
+// 导入imagetk包
+itk = imagetk.NewImageTK()
+
+// 创建一个绘制上下文环境
+p, _ = plot.New()
+
+// 设置图表的抬头标题
+// 注意Gox语言中取得成员变量的指针需要用@操作符
+p@Title.Text = "Gonum Plot Example"
+
+// 设置图标X、Y坐标的文字
+p@X@Label.Text = "X"
+p@Y@Label.Text = "Y"
+
+// 创建一组准备绘制的坐标点（4个点）
+points = make(plot_plotter.XYs, 4)
+
+// 创建并为第一个点赋值X、Y坐标
+tmpXY = new(plot_plotter.XY)
+tmpXY.X = 0.0
+tmpXY.Y = 0.0
+
+points[0] = *tmpXY
+
+// 采用简便的方法创建第2、3、4个点
+points[1] = itk.NewPlotXY(1.0, 1.0)
+points[2] = itk.NewPlotXY(2.0, 4.0)
+points[3] = itk.NewPlotXY(3.0, 9.0)
+
+// 在图表中加入这些点，并给相应的曲线设定图例的名字
+plot_plotutil.AddLinePoints(p, "y = x * x", points)
+
+// 将折线图保存为4英寸见方大小的图片points.png，
+// 需要确保c:\test目录已经存在
+p.Save(4*plot_vg.Inch.Points(), 4*plot_vg.Inch.Points(), `c:\test\points.png`)
+
+// 设定net/http包的简称
+http = net_http
+
+// 设定网页内容
+// img标签中的src属性是准备在后面代码中替换为BASE64编码的图片数据的
+htmlT = `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>加载图像</title>
+</head>
+<body>
+<img id="imgID" src="TX_IMG_GT">
+</body>
+</html>
+`
+
+// 处理HTTP请求的函数
+// 读取前面保存的图片
+// 将其转换为BASE64格式的文本
+// 然后将其设置到img标签的src属性中
+func httpHandler(w, req) {
+	// 载入图片数据
+	imgData, errT := loadBytes(`c:\test\points.png`)
+
+	checkError(errT)
+
+	// 将图片数据转换为BASE64编码的文本
+	base64Data = base64Encode(imgData)
+
+	// 将img标签的src属性替换为BASE64格式的表达
+	htmlT = strReplace(htmlT, "TX_IMG_GT", `data:image/jpg;base64,`+base64Data)
+
+	// 写HTTP响应头
+	w.WriteHeader(http.StatusOK)
+
+	// 输出HTML页面
+	w.Write([]byte(htmlT))
+}
+
+// 设置服务器处理
+muxG = http.NewServeMux()
+
+// 处理网页根路径的处理函数
+muxG.HandleFunc("/", httpHandler)
+
+// 启动WEB服务器的函数，如果成功将是阻塞的
+func startServer() {
+	errT := http.ListenAndServe(":7488", muxG)
+
+	if errT != nil {
+		pl("启动服务器失败：%v", errT)
+	}	
+}
+
+// 因为监听WEB服务是阻塞的，因此在线程内启动
+go startServer()
+
+// 打开系统中默认浏览器并访问本WEB服务器网址
+systemCmd("cmd", "/c", "start", "http://127.0.0.1:7488")
+// systemCmd("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:7488")
+
+// 启动无限循环，否则程序退出后，WEB服务器也将中止（主进程退出后，线程会终止）
+for true {
+	sleep(1)
+}
+
+
+
