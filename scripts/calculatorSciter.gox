@@ -1,6 +1,8 @@
 sciter = github_scitersdk_gosciter
 window = github_scitersdk_gosciter_window
 
+initGUI()
+
 htmlT := `
 <!DOCTYPE html>
 <html>
@@ -46,7 +48,7 @@ w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
 
 checkError(err)
 
-w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL | sciter.ALLOW_SYSINFO)
+w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL|sciter.ALLOW_SYSINFO)
 
 w.LoadHtml(htmlT, "")
 
