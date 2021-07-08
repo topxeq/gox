@@ -1,43 +1,75 @@
+// 设置github.com/webview/webview包的简称
 webView = github_webview_webview
 
-runtime.LockOSThread()
-
+// 创建一个webView，参数是是否允许debug
 w := webView.New(true)
 
+// 确认退出时关闭webView
 defer w.Destroy()
 
+// 设置webView窗口标题
 w.SetTitle("Hello")
 
-w.Bind("noop", func() {
-	pl("hello")
-	return "hello"
-})
+// 设置窗口大小
+// hint的取值：HintNone 设定的宽度和高度（前两个参数）是窗口默认大小，
+// HintFixed 窗口大小不能变更
+// HintMin 设定的宽度和高度（前两个参数）是窗口最小大小
+// HintMax 设定的宽度和高度（前两个参数）是窗口最大大小
+w.SetSize(800, 600, webView.HintNone)
 
-w.Bind("add", func(a, b) {
-	return a + b
-})
+// 定义一个准备在JavaScript中调用的函数
+func goPr(a) {
+	pl("%v", a)
+	return "测试结果", errf("")
+}
 
-w.Bind("quit", func() {
+goPrP = imisc.NewFuncStringStringError(^goPr)
+
+w.Bind("pr", *goPrP)
+
+func myQuit() {
 	w.Terminate()
-})
+}
+
+myQuitP = imisc.NewFunc(^myQuit)
+w.Bind("quit", *myQuitP)
 
 w.Navigate(`data:text/html,
 		<!doctype html>
 		<html>
-			<body>hello</body>
+			<body>
+				<div>hello</div>
+				<div id="mainDiv">
+				</div>
+
+				<button onclick="javascript:test();">Go!</button>
+				<button onclick="javascript:quit();">Quit</button>
+			</body>
 			<script>
-				window.onload = function() {
-					document.body.innerText = ` + "`hello, ${navigator.userAgent}`" + `;
-					noop().then(function(res) {
-						console.log('noop res', res);
-						add(1, 2).then(function(res) {
-							console.log('add res', res);
-							quit();
-						});
+				function test() {
+					pr("123").then(
+						res => document.getElementById('mainDiv').innerHTML = res;
 					});
-				};
+					// pr("123").then(function(res) {
+					// 	var el = document.getElementById('mainDiv');
+
+					// 	el.innerHTML = res;
+					// });
+					
+				}
+
+				// window.onload = function() {
+				// 	document.body.innerText = ` + "`hello, ${navigator.userAgent}`" + `;
+				// 	noop().then(function(res) {
+				// 		console.log('noop res', res);
+				// 		add(1, 2).then(function(res) {
+				// 			console.log('add res', res);
+				// 			quit();
+				// 		});
+				// 	});
+				// };
 			</script>
 		</html>
-	)`)
+	`)
 
 w.Run()
