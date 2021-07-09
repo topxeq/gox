@@ -1,0 +1,23 @@
+// 从命令行获取要读取文件列表的目录，默认为“.”，即当前目录
+pathT = getSwitch(argsG, "-dir=", ".")
+
+// 调用内置函数getFileList获取文件列表
+// 除了第一个参数表示目录外，其他参数都是可选
+// 有-recursive表示也递归获取所有子目录下的文件
+// -pattern=用于指定获取文件的名字匹配模板，*代表获取所有文件，*.txt表示所有扩展名为.txt的文件
+// -exclusive=用于指定排除的文件名匹配模板
+// 有-verbose开关表示输出每一个文件路径（所有读到的，而不是最终过滤过的）
+listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-verbose")
+
+// 将文件列表转换成JSON格式文本输出
+// 其中toJSON函数用于将任意对象转换为JSON格式
+// 除第一个参数外都是可选参数，-sort表示编码的字段按排序（否则Go语言中字段是会随机排序的）
+// -indent表示输出带缩进的多行JSON格式
+pl("%v", toJSON(listT, "-sort", "-indent"))
+
+// 遍历得到的文件列表，并做一下比较友好的输出
+// 其中v是每次遍历中获得的枚举对象，就是一条文件信息记录
+// v["Name"], v.Size是对v中各个属性字段的两种访问方式
+for i, v = range listT {
+	pl("[%v] 文件名：%v，文件大小（字节）：%v", i+1, v["Name"], v.Size)
+}

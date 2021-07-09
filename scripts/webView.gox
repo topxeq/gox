@@ -15,61 +15,103 @@ w.SetTitle("Hello")
 // HintFixed 窗口大小不能变更
 // HintMin 设定的宽度和高度（前两个参数）是窗口最小大小
 // HintMax 设定的宽度和高度（前两个参数）是窗口最大大小
-w.SetSize(800, 600, webView.HintNone)
+w.SetSize(400, 300, webView.HintNone)
 
 // 定义一个准备在JavaScript中调用的函数
-func goPr(a) {
-	pl("%v", a)
-	return "测试结果", errf("")
+func goPr(valueA) {
+	pl("%v", valueA)
+	return "", nil
 }
 
-goPrP = imisc.NewFuncStringStringError(^goPr)
+goPrP = newFuncIIE(goPr)
 
-w.Bind("pr", *goPrP)
+w.Bind("pr", goPrP)
+
+func goHex(valueA) {
+	if !isValid(valueA, "string") {
+		return "", errf("无效参数，应为一个字符串，收到的类型是%T", valueA)
+	}
+
+	rs = hexEncode(valueA)
+
+	return rs, nil
+}
+
+goHexP = newFuncIIE(goHex)
+
+w.Bind("hex", goHexP)
+
+// func goAdd(valueA) {
+// 	rs = valueA+"a"
+
+// 	return rs, errf("abc")
+// }
+
+// goAddP = newFuncSSE(goAdd)
+
+// w.Bind("add", goAddP)
 
 func myQuit() {
 	w.Terminate()
 }
 
-myQuitP = imisc.NewFunc(^myQuit)
-w.Bind("quit", *myQuitP)
+myQuitP = newFunc(myQuit)
+w.Bind("quit", myQuitP)
 
-w.Navigate(`data:text/html,
-		<!doctype html>
+htmlT = `<!DOCTYPE html>
 		<html>
+			<head>
+				<meta charset="gb2312"> 
+			</head>
 			<body>
 				<div>hello</div>
 				<div id="mainDiv">
 				</div>
 
-				<button onclick="javascript:test();">Go!</button>
+				<button onclick="javascript:test1();">测试1</button>
+				<button onclick="javascript:test2();">Test2</button>
 				<button onclick="javascript:quit();">Quit</button>
 			</body>
 			<script>
-				function test() {
-					pr("123").then(
-						res => document.getElementById('mainDiv').innerHTML = res;
+				function test1() {
+					hex('123abc').then(function(res) {
+						document.getElementById('mainDiv').innerHTML = res;
+						pr("正确")
+					}, function(err) {
+						document.getElementById('mainDiv').innerHTML = '<span style="color: red;">'+err+'</span>';
+						pr("错误："+err)
 					});
-					// pr("123").then(function(res) {
-					// 	var el = document.getElementById('mainDiv');
-
-					// 	el.innerHTML = res;
-					// });
-					
 				}
 
-				// window.onload = function() {
-				// 	document.body.innerText = ` + "`hello, ${navigator.userAgent}`" + `;
-				// 	noop().then(function(res) {
-				// 		console.log('noop res', res);
-				// 		add(1, 2).then(function(res) {
-				// 			console.log('add res', res);
-				// 			quit();
-				// 		});
-				// 	});
-				// };
+				function test2() {
+					hex(123).then(function(res) {
+						document.getElementById('mainDiv').innerHTML = res;
+						pr("正确")
+					}, function(err) {
+						document.getElementById('mainDiv').innerHTML = '<span style="color: red;">'+err+'</span>';
+						pr("错误："+err)
+					});
+				}
+
 			</script>
 		</html>
-	`)
+		`
+
+// htmlT = strReplace(htmlT, "+", "%2B")
+
+// htmlT = net_url.PathEscape(htmlT)
+
+plv(htmlT)
+
+// w.Navigate(`data:text/html;charset=utf-8,` + htmlT)
+// w.Navigate(`data:text/html;base64,` + base64Encode([]byte(htmlT)))
+
+// w.Navigate(`data:text/text,` + htmlT)
+// w.Navigate(`data:text/html,` + net_url.QueryEscape(htmlT))
+// w.Navigate(`data:text/html,` + htmlT)
+w.Navigate(`data:text/html;charset=UTF-8,` + htmlT)
+
+// w.Navigate("file:///D:/tmpx/test.html")
+// w.Navigate("http://shupei.fltrp.com")
 
 w.Run()
