@@ -185,7 +185,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.76a"
+var versionG = "1.77a"
 
 // add tk.ToJSONX
 
@@ -1019,6 +1019,14 @@ func isValid(vA interface{}, argsA ...string) bool {
 	return true
 }
 
+func isDefined(vA interface{}) bool {
+	if vA == spec.Undefined {
+		return false
+	}
+
+	return true
+}
+
 func logPrint(formatA string, argsA ...interface{}) {
 	tk.Pl(formatA, argsA...)
 	tk.LogWithTimeCompact(formatA, argsA...)
@@ -1202,6 +1210,7 @@ func importQLNonGUIPackages() {
 		// common related
 		"pass":          tk.Pass,
 		"defined":       defined,
+		"isDefined":     isDefined,
 		"isValid":       isValid,
 		"eval":          qlEval,
 		"typeOf":        tk.TypeOfValue,
@@ -1238,13 +1247,14 @@ func importQLNonGUIPackages() {
 		"bitXor": tk.BitXor,
 
 		// string related
-		"trim":       tk.Trim,
-		"strReplace": tk.Replace,
-		"getNowStr":  tk.GetNowTimeStringFormal,
-		"splitLines": tk.SplitLines,
-		"startsWith": tk.StartsWith,
-		"endsWith":   tk.EndsWith,
-		"contains":   strings.Contains,
+		"trim":             tk.Trim,
+		"strReplace":       tk.Replace,
+		"getNowStr":        tk.GetNowTimeStringFormal,
+		"getNowStrCompact": tk.GetNowTimeString,
+		"splitLines":       tk.SplitLines,
+		"startsWith":       tk.StartsWith,
+		"endsWith":         tk.EndsWith,
+		"contains":         strings.Contains,
 
 		// regex related
 		"regMatch":     tk.RegMatchX,
@@ -1277,6 +1287,7 @@ func importQLNonGUIPackages() {
 		"checkError":       tk.CheckError,
 		"checkErrorString": tk.CheckErrorString,
 		"checkErrf":        tk.CheckErrf,
+		"checkErrStr":      tk.CheckErrStr,
 		"checkErrStrf":     tk.CheckErrStrf,
 		"fatalf":           tk.Fatalf,
 		"errStr":           tk.ErrStr,
