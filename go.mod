@@ -40,6 +40,8 @@ replace github.com/topxeq/sqltk v0.0.0 => ../sqltk
 
 replace github.com/topxeq/qlang v0.0.0 => ../qlang
 
+replace github.com/topxeq/text v0.0.0 => ../text
+
 replace github.com/sciter-sdk/go-sciter v0.5.1 => ../../sciter-sdk/go-sciter
 
 replace github.com/sqweek/dialog v0.0.0 => ../../sqweek/dialog
