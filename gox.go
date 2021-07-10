@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"strconv"
 	"strings"
 
 	// "context"
@@ -185,7 +186,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.77a"
+var versionG = "1.78a"
 
 // add tk.ToJSONX
 
@@ -1176,6 +1177,80 @@ func getMapItem(mapA interface{}, keyA string, defaultA ...interface{}) interfac
 	return ""
 }
 
+func intToStr(n interface{}, defaultA ...string) string {
+	var defaultT string = ""
+	if (defaultA != nil) && (len(defaultA) > 0) {
+		defaultT = defaultA[0]
+	}
+
+	switch nv := n.(type) {
+	case int:
+		return fmt.Sprintf("%v", nv)
+	case int8:
+		return fmt.Sprintf("%v", nv)
+	case int16:
+		return fmt.Sprintf("%v", nv)
+	case int32:
+		return fmt.Sprintf("%v", nv)
+	case int64:
+		return fmt.Sprintf("%v", nv)
+	case float64:
+		return tk.Float64ToStr(nv)
+	case float32:
+		tmps := fmt.Sprintf("%f", nv)
+		if tk.Contains(tmps, ".") {
+			tmps = strings.TrimRight(tmps, "0")
+			tmps = strings.TrimRight(tmps, ".")
+		}
+
+		return tmps
+	case string:
+		nT, errT := strconv.ParseInt(nv, 10, 0)
+		if errT != nil {
+			return defaultT
+		}
+
+		return fmt.Sprintf("%v", nT)
+	default:
+		nT, errT := strconv.ParseInt(fmt.Sprintf("%v", nv), 10, 0)
+		if errT != nil {
+			return defaultT
+		}
+
+		return fmt.Sprintf("%v", nT)
+	}
+
+}
+
+func strJoin(aryA interface{}, sepA string, defaultA ...string) string {
+	var defaultT string = ""
+	if (defaultA != nil) && (len(defaultA) > 0) {
+		defaultT = defaultA[0]
+	}
+
+	if aryA == nil {
+		return defaultT
+	}
+
+	switch v := aryA.(type) {
+	case []string:
+		return strings.Join(v, sepA)
+	case []interface{}:
+		var bufT strings.Builder
+		for j, jv := range v {
+			if j > 0 {
+				bufT.WriteString(sepA)
+			}
+
+			bufT.WriteString(fmt.Sprintf("%v", jv))
+		}
+
+		return bufT.String()
+	}
+
+	return defaultT
+}
+
 // GUI related start
 
 func initGUI() {
@@ -1229,32 +1304,37 @@ func importQLNonGUIPackages() {
 		"magic":         magic,
 
 		// output related
-		"pr":       tk.Pr,
-		"pln":      tk.Pln,
-		"prf":      tk.Printf,
-		"printfln": tk.Pl,
-		"pl":       tk.Pl,
-		"sprintf":  fmt.Sprintf,
-		"fprintf":  fmt.Fprintf,
-		"plv":      tk.Plv,
-		"plvx":     tk.Plvx,
-		"pv":       printValue,
-		"plvsr":    tk.Plvsr,
-		"plerr":    tk.PlErr,
-		"plExit":   tk.PlAndExit,
+		"pr":        tk.Pr,
+		"pln":       tk.Pln,
+		"prf":       tk.Printf,
+		"printfln":  tk.Pl,
+		"pl":        tk.Pl,
+		"sprintf":   fmt.Sprintf,
+		"spr":       fmt.Sprintf,
+		"fprintf":   fmt.Fprintf,
+		"plv":       tk.Plv,
+		"plvx":      tk.Plvx,
+		"plNow":     tk.PlNow,
+		"plVerbose": tk.PlVerbose,
+		"pv":        printValue,
+		"plvsr":     tk.Plvsr,
+		"plerr":     tk.PlErr,
+		"plExit":    tk.PlAndExit,
 
 		// math related
 		"bitXor": tk.BitXor,
 
 		// string related
 		"trim":             tk.Trim,
+		"strContains":      strings.Contains,
 		"strReplace":       tk.Replace,
+		"strJoin":          strJoin,
+		"strSplit":         strings.Split,
 		"getNowStr":        tk.GetNowTimeStringFormal,
 		"getNowStrCompact": tk.GetNowTimeString,
 		"splitLines":       tk.SplitLines,
 		"startsWith":       tk.StartsWith,
 		"endsWith":         tk.EndsWith,
-		"contains":         strings.Contains,
 
 		// regex related
 		"regMatch":     tk.RegMatchX,
@@ -1263,11 +1343,12 @@ func importQLNonGUIPackages() {
 		"regFindAll":   tk.RegFindAllX,
 		"regFindIndex": tk.RegFindFirstIndexX,
 		"regReplace":   tk.RegReplaceX,
+		"regSplit":     tk.RegSplitX,
 
 		// conversion related
 		"nilToEmpty": nilToEmpty,
 		"strToInt":   tk.StrToIntWithDefaultValue,
-		"intToStr":   tk.IntToStr,
+		"intToStr":   intToStr,
 		"floatToStr": tk.Float64ToStr,
 		"toStr":      tk.ToStr,
 		"toInt":      tk.ToInt,
@@ -1327,6 +1408,8 @@ func importQLNonGUIPackages() {
 		"setClipText":  tk.SetClipText,
 		"systemCmd":    tk.SystemCmd,
 		"ifFileExists": tk.IfFileExists,
+		"fileExists":   tk.IfFileExists,
+		"joinPath":     filepath.Join,
 		"getFileSize":  tk.GetFileSizeCompact,
 		"getFileList":  tk.GetFileList,
 		"loadText":     tk.LoadStringFromFile,
@@ -1345,7 +1428,13 @@ func importQLNonGUIPackages() {
 
 		// network related
 		"newSSHClient":         tk.NewSSHClient,
+		"mapToPostData":        tk.MapToPostData,
+		"getWebPage":           tk.DownloadPageUTF8,
+		"httpRequest":          tk.RequestX,
 		"getFormValue":         tk.GetFormValueWithDefaultValue,
+		"formValueExist":       tk.IfFormValueExists,
+		"ifFormValueExist":     tk.IfFormValueExists,
+		"formToMap":            tk.FormToMap,
 		"generateJSONResponse": tk.GenerateJSONPResponseWithMore,
 
 		// line editor related
