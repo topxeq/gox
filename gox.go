@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"strconv"
 	"strings"
 
 	// "context"
@@ -186,7 +185,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.78a"
+var versionG = "1.79a"
 
 // add tk.ToJSONX
 
@@ -1177,51 +1176,6 @@ func getMapItem(mapA interface{}, keyA string, defaultA ...interface{}) interfac
 	return ""
 }
 
-func intToStr(n interface{}, defaultA ...string) string {
-	var defaultT string = ""
-	if (defaultA != nil) && (len(defaultA) > 0) {
-		defaultT = defaultA[0]
-	}
-
-	switch nv := n.(type) {
-	case int:
-		return fmt.Sprintf("%v", nv)
-	case int8:
-		return fmt.Sprintf("%v", nv)
-	case int16:
-		return fmt.Sprintf("%v", nv)
-	case int32:
-		return fmt.Sprintf("%v", nv)
-	case int64:
-		return fmt.Sprintf("%v", nv)
-	case float64:
-		return tk.Float64ToStr(nv)
-	case float32:
-		tmps := fmt.Sprintf("%f", nv)
-		if tk.Contains(tmps, ".") {
-			tmps = strings.TrimRight(tmps, "0")
-			tmps = strings.TrimRight(tmps, ".")
-		}
-
-		return tmps
-	case string:
-		nT, errT := strconv.ParseInt(nv, 10, 0)
-		if errT != nil {
-			return defaultT
-		}
-
-		return fmt.Sprintf("%v", nT)
-	default:
-		nT, errT := strconv.ParseInt(fmt.Sprintf("%v", nv), 10, 0)
-		if errT != nil {
-			return defaultT
-		}
-
-		return fmt.Sprintf("%v", nT)
-	}
-
-}
-
 func strJoin(aryA interface{}, sepA string, defaultA ...string) string {
 	var defaultT string = ""
 	if (defaultA != nil) && (len(defaultA) > 0) {
@@ -1249,6 +1203,22 @@ func strJoin(aryA interface{}, sepA string, defaultA ...string) string {
 	}
 
 	return defaultT
+}
+
+func strToTime(strA string, formatA ...string) interface{} {
+	formatT := tk.TimeFormat
+
+	if (formatA != nil) && (len(formatA) > 0) {
+		formatT = formatA[0]
+	}
+
+	timeT, errT := tk.StrToTimeByFormat(strA, formatT)
+
+	if errT != nil {
+		return spec.Undefined
+	}
+
+	return timeT
 }
 
 // GUI related start
@@ -1326,6 +1296,7 @@ func importQLNonGUIPackages() {
 
 		// string related
 		"trim":             tk.Trim,
+		"strTrim":          tk.Trim,
 		"strContains":      strings.Contains,
 		"strReplace":       tk.Replace,
 		"strJoin":          strJoin,
@@ -1335,6 +1306,8 @@ func importQLNonGUIPackages() {
 		"splitLines":       tk.SplitLines,
 		"startsWith":       tk.StartsWith,
 		"endsWith":         tk.EndsWith,
+		"strStartsWith":    tk.StartsWith,
+		"strEndsWith":      tk.EndsWith,
 
 		// regex related
 		"regMatch":     tk.RegMatchX,
@@ -1348,7 +1321,9 @@ func importQLNonGUIPackages() {
 		// conversion related
 		"nilToEmpty": nilToEmpty,
 		"strToInt":   tk.StrToIntWithDefaultValue,
-		"intToStr":   intToStr,
+		"strToTime":  strToTime,
+		"timeToStr":  tk.FormatTime,
+		"intToStr":   tk.IntToStrX,
 		"floatToStr": tk.Float64ToStr,
 		"toStr":      tk.ToStr,
 		"toInt":      tk.ToInt,
@@ -1361,6 +1336,7 @@ func importQLNonGUIPackages() {
 		"getMapString": tk.SafelyGetStringForKeyWithDefault,
 		"getMapItem":   getMapItem,
 		"getArrayItem": getArrayItem,
+		"joinList":     tk.JoinList,
 
 		// error related
 		"isError":          tk.IsError,
@@ -1430,6 +1406,7 @@ func importQLNonGUIPackages() {
 		"newSSHClient":         tk.NewSSHClient,
 		"mapToPostData":        tk.MapToPostData,
 		"getWebPage":           tk.DownloadPageUTF8,
+		"downloadFile":         tk.DownloadFile,
 		"httpRequest":          tk.RequestX,
 		"getFormValue":         tk.GetFormValueWithDefaultValue,
 		"formValueExist":       tk.IfFormValueExists,
@@ -1481,6 +1458,9 @@ func importQLNonGUIPackages() {
 		"newFuncSS":  NewFuncStringStringB,
 
 		// global variables
+		"timeFormatG":        tk.TimeFormat,
+		"timeFormatCompactG": tk.TimeFormatCompact,
+
 		"scriptPathG": scriptPathG,
 		"versionG":    versionG,
 		"leBufG":      leBufG,
@@ -1978,7 +1958,7 @@ func runArgs(argsA ...string) interface{} {
 
 			return nil
 		} else {
-			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll", false)
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll")
 
 			if tk.IsErrorString(rs) {
 
