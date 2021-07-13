@@ -186,7 +186,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.79a"
+var versionG = "1.80a"
 
 // add tk.ToJSONX
 
@@ -370,7 +370,7 @@ func getMagic(numberA int) string {
 
 }
 
-// native functions
+// native functions 内置函数
 
 var leBufG []string
 
@@ -1251,22 +1251,24 @@ func importQLNonGUIPackages() {
 	// 	*p = strA
 	// }
 
-	// import native functions and global variables
+	// import native functions and global variables 内置函数与全局变量
 	var defaultExports = map[string]interface{}{
-		// common related
-		"pass":          tk.Pass,
-		"defined":       defined,
-		"isDefined":     isDefined,
-		"isValid":       isValid,
-		"eval":          qlEval,
-		"typeOf":        tk.TypeOfValue,
-		"typeOfReflect": tk.TypeOfValueReflect,
-		"exit":          tk.Exit,
-		"setValue":      tk.SetValue,
-		"getValue":      tk.GetValue,
-		"setVar":        tk.SetVar,
-		"getVar":        tk.GetVar,
-		"isNil":         tk.IsNil,
+		// 其中 tk.开头的函数都是github.com/topxeq/tk包中的，可以去pkg.go.dev/github.com/topxeq/tk查看函数定义
+
+		// common related 一般函数
+		"defined":       defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
+		"pass":          tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
+		"isDefined":     isDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
+		"isValid":       isValid,               // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
+		"eval":          qlEval,                // 运行一段Gox语言代码
+		"typeOf":        tk.TypeOfValue,        // 给出某变量的类型名
+		"typeOfReflect": tk.TypeOfValueReflect, // 给出某变量的类型名（使用了反射方式）
+		"exit":          tk.Exit,               // 立即退出脚本的执行，可以带一个整数作为参数，也可以没有
+		"setValue":      tk.SetValue,           // 用反射的方式设定一个变量的值
+		"getValue":      tk.GetValue,           // 用反射的方式获取一个变量的值
+		"setVar":        tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
+		"getVar":        tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
+		"isNil":         tk.IsNil,              // 判断一个变量或表达式是否为nil
 		"deepClone":     tk.DeepClone,
 		"deepCopy":      tk.DeepCopyFromTo,
 		"run":           runFile,
@@ -1274,204 +1276,251 @@ func importQLNonGUIPackages() {
 		"runScript":     runScript,
 		"magic":         magic,
 
-		// output related
-		"pr":        tk.Pr,
-		"pln":       tk.Pln,
-		"prf":       tk.Printf,
-		"printfln":  tk.Pl,
-		"pl":        tk.Pl,
-		"sprintf":   fmt.Sprintf,
-		"spr":       fmt.Sprintf,
-		"fprintf":   fmt.Fprintf,
-		"plv":       tk.Plv,
-		"plvx":      tk.Plvx,
-		"plNow":     tk.PlNow,
-		"plVerbose": tk.PlVerbose,
-		"pv":        printValue,
-		"plvsr":     tk.Plvsr,
-		"plerr":     tk.PlErr,
-		"plExit":    tk.PlAndExit,
+		// output related 输出相关
+		"pv":        printValue,   // 输出一个变量的值，注意参数是字符串类型的变量名，例： pv("a")
+		"pr":        tk.Pr,        // 等同于其他语言中的print
+		"prf":       tk.Printf,    // 等同于其他语言中的printf
+		"pln":       tk.Pln,       // 等同于其他语言中的println
+		"printfln":  tk.Pl,        // 等同于其他语言中的printf，但多输出一个回车换行
+		"pl":        tk.Pl,        // 等同于printfln
+		"sprintf":   fmt.Sprintf,  // 等同于其他语言中的sprintf
+		"spr":       fmt.Sprintf,  // 等同于sprintf
+		"fprintf":   fmt.Fprintf,  // 等同于其他语言中的frintf
+		"plv":       tk.Plv,       // 输出某变量或表达式的内容/值，以Go语言内部的表达方式，例如字符串将加上双引号
+		"plvx":      tk.Plvx,      // 输出某变量或表达式的内容/值和类型等信息
+		"plNow":     tk.PlNow,     // 相当于pl，但前面多加了一个时间标记
+		"plVerbose": tk.PlVerbose, // 相当于pl，但前面多了一个布尔类型的参数，可以传入一个verbose变量，指定是否输出该信息，例：
+		// v = false
+		// plVerbose(v, "a: %v", 3) // 由于v的值为false，因此本条语句将不输出
+		"plvsr":  tk.Plvsr,     // 输出多个变量或表达式的值，每行一个
+		"plerr":  tk.PlErr,     // 快捷输出一个error类型的值
+		"plExit": tk.PlAndExit, // 相当于pl然后exit退出脚本的执行
 
-		// math related
-		"bitXor": tk.BitXor,
+		// input related 输入相关
+		"getInput":     tk.GetUserInput,      // 从命令行获取用户的输入
+		"getInputf":    tk.GetInputf,         // 从命令行获取用户的输入，同时可以用printf先输出一个提示信息
+		"getPasswordf": tk.GetInputPasswordf, // 从命令行获取密码输入，输入信息将不显示
 
-		// string related
-		"trim":             tk.Trim,
-		"strTrim":          tk.Trim,
-		"strContains":      strings.Contains,
-		"strReplace":       tk.Replace,
-		"strJoin":          strJoin,
-		"strSplit":         strings.Split,
-		"getNowStr":        tk.GetNowTimeStringFormal,
-		"getNowStrCompact": tk.GetNowTimeString,
-		"splitLines":       tk.SplitLines,
-		"startsWith":       tk.StartsWith,
-		"endsWith":         tk.EndsWith,
-		"strStartsWith":    tk.StartsWith,
-		"strEndsWith":      tk.EndsWith,
+		// math related数学相关
+		"bitXor": tk.BitXor, // 异或运算
 
-		// regex related
-		"regMatch":     tk.RegMatchX,
-		"regContains":  tk.RegContainsX,
-		"regFind":      tk.RegFindFirstX,
-		"regFindAll":   tk.RegFindAllX,
-		"regFindIndex": tk.RegFindFirstIndexX,
-		"regReplace":   tk.RegReplaceX,
-		"regSplit":     tk.RegSplitX,
+		// string related 字符串相关
+		"trim":             tk.Trim,                   // 取出字符串前后的空白字符
+		"strTrim":          tk.Trim,                   // 等同于trim
+		"toLower":          strings.ToLower,           // 字符串转小写
+		"toUpper":          strings.ToUpper,           // 字符串转大写
+		"strContains":      strings.Contains,          // 判断字符串中是否包含某个字串
+		"strReplace":       tk.Replace,                // 替换字符串中的字串
+		"strJoin":          strJoin,                   // 连接一个字符串数组，以指定的分隔符，例： s = strJoin(listT, "\n")
+		"strSplit":         strings.Split,             // 拆分一个字符串为数组，例： listT = strSplit(strT, "\n")
+		"splitLines":       tk.SplitLines,             // 相当于strSplit(strT, "\n")
+		"startsWith":       tk.StartsWith,             // 判断字符串是否以某子串开头
+		"strStartsWith":    tk.StartsWith,             // 等同于startsWith
+		"endsWith":         tk.EndsWith,               // 判断字符串是否以某子串结尾
+		"strEndsWith":      tk.EndsWith,               // 等同于endsWith
+		"strIn":            tk.InStrings,              // 判断字符串是否在一个字符串列表中出现，函数定义： strIn(strA string, argsA ...string) bool
+		"getNowStr":        tk.GetNowTimeStringFormal, // 获取一个表示当前时间的字符串，格式：2020-02-02 08:09:15
+		"getNowStrCompact": tk.GetNowTimeString,       // 获取一个简化的表示当前时间的字符串，格式：20200202080915
+		"genRandomStr":     tk.GenerateRandomString,   // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
-		// conversion related
-		"nilToEmpty": nilToEmpty,
-		"strToInt":   tk.StrToIntWithDefaultValue,
-		"strToTime":  strToTime,
-		"timeToStr":  tk.FormatTime,
-		"intToStr":   tk.IntToStrX,
-		"floatToStr": tk.Float64ToStr,
-		"toStr":      tk.ToStr,
-		"toInt":      tk.ToInt,
-		"toFloat":    tk.ToFloat,
-		"toLower":    strings.ToLower,
-		"toUpper":    strings.ToUpper,
+		// regex related 正则表达式相关
+		"regMatch":     tk.RegMatchX,          // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
+		"regContains":  tk.RegContainsX,       // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
+		"regFind":      tk.RegFindFirstX,      // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
+		"regFindAll":   tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
+		"regFindIndex": tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
+		"regReplace":   tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string
+		"regSplit":     tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 
-		// array/map related
-		"remove":       tk.RemoveItemsInArray,
-		"getMapString": tk.SafelyGetStringForKeyWithDefault,
-		"getMapItem":   getMapItem,
-		"getArrayItem": getArrayItem,
-		"joinList":     tk.JoinList,
+		// conversion related 转换相关
+		"nilToEmpty": nilToEmpty,                  // 将nil等值都转换为空字符串
+		"intToStr":   tk.IntToStrX,                // 整数转字符串
+		"strToInt":   tk.StrToIntWithDefaultValue, // 字符串转整数
+		"floatToStr": tk.Float64ToStr,             // 浮点数转字符串
+		"timeToStr":  tk.FormatTime,               // 时间转字符串，函数定义: timeToStr(timeA time.Time, formatA ...string) string
+		"strToTime":  strToTime,                   // 字符串转时间
+		"toStr":      tk.ToStr,                    // 任意值转字符串
+		"toInt":      tk.ToInt,                    // 任意值转整数
+		"toFloat":    tk.ToFloat,                  // 任意值转浮点数
 
-		// error related
-		"isError":          tk.IsError,
-		"isErrStr":         tk.IsErrStr,
-		"checkError":       tk.CheckError,
-		"checkErrorString": tk.CheckErrorString,
-		"checkErrf":        tk.CheckErrf,
-		"checkErrStr":      tk.CheckErrStr,
-		"checkErrStrf":     tk.CheckErrStrf,
-		"fatalf":           tk.Fatalf,
-		"errStr":           tk.ErrStr,
-		"errStrf":          tk.ErrStrF,
-		"getErrStr":        tk.GetErrStr,
-		"errf":             tk.Errf,
+		// array/map related 数组（切片）/映射（字典）相关
+		"remove":       tk.RemoveItemsInArray,               // 从切片中删除指定的项，例： remove(aryT, 3)
+		"getMapString": tk.SafelyGetStringForKeyWithDefault, // 从映射中获得指定的键值，避免返回nil，函数定义：func getMapString(mapA map[string]string, keyA string, defaultA ...string) string， 不指定defaultA将返回空字符串
+		"getMapItem":   getMapItem,                          // 类似于getMapString，但可以取任意类型的值
+		"getArrayItem": getArrayItem,                        // 类似于getMapItem，但是是去一个切片中指定序号的值
+		"joinList":     tk.JoinList,                         // 类似于strJoin，但可以连接任意类型的值
 
-		// encode/decode related
-		"xmlEncode":    tk.EncodeToXMLString,
-		"htmlEncode":   tk.EncodeHTML,
-		"htmlDecode":   tk.DecodeHTML,
-		"base64Encode": tk.EncodeToBase64,
-		"base64Decode": tk.DecodeFromBase64,
-		"md5Encode":    tk.MD5Encrypt,
-		"md5":          tk.MD5Encrypt,
-		"hexEncode":    tk.StrToHex,
-		"hexDecode":    tk.HexToStr,
-		"jsonEncode":   tk.ObjectToJSON,
-		"jsonDecode":   tk.JSONToObject,
-		"toJSON":       tk.ToJSONX,
-		"fromJSON":     tk.FromJSONWithDefault,
-		"simpleEncode": tk.EncodeStringCustomEx,
-		"simpleDecode": tk.DecodeStringCustom,
+		// error related 错误处理相关
+		"isError":          tk.IsError,          // 判断表达式的值是否为error类型
+		"isErrStr":         tk.IsErrStr,         // 判断字符串是否是TXERROR:开始的字符串
+		"checkError":       tk.CheckError,       // 检查变量，如果是error则立即停止脚本的执行
+		"checkErrorString": tk.CheckErrorString, // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行
+		"checkErrStr":      tk.CheckErrStr,      // 等同于checkErrorString
+		"checkErrf":        tk.CheckErrf,        // 检查变量，如果是error则立即停止脚本的执行，之前可以printfln输出信息
+		"checkErrStrf":     tk.CheckErrStrf,     // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行，之前可以printfln输出信息
+		"fatalf":           tk.Fatalf,           // printfln输出信息后终止脚本的执行
+		"errStr":           tk.ErrStr,           // 生成TXERROR:开始的字符串
+		"errStrf":          tk.ErrStrF,          // 生成TXERROR:开始的字符串，类似sprintf的用法
+		"getErrStr":        tk.GetErrStr,        // 从TXERROR:开始的字符串获取其后的错误信息
+		"errf":             tk.Errf,             // 生成error类型的变量，其中提示信息类似sprintf的用法
 
-		// input related
-		"getInput":     tk.GetUserInput,
-		"getInputf":    tk.GetInputf,
-		"getPasswordf": tk.GetInputPasswordf,
+		// encode/decode related 编码/解码相关
+		"xmlEncode":          tk.EncodeToXMLString,    // 编码为XML
+		"xmlDecode":          tk.FromXMLWithDefault,   // 解码XML为对象，函数定义：(xmlA string, defaultA interface{}) interface{}
+		"htmlEncode":         tk.EncodeHTML,           // HTML编码（&nbsp;等）
+		"htmlDecode":         tk.DecodeHTML,           // HTML解码
+		"base64Encode":       tk.EncodeToBase64,       // Base64编码，输入参数是[]byte字节数组
+		"base64Decode":       tk.DecodeFromBase64,     // base64解码
+		"md5Encode":          tk.MD5Encrypt,           // MD5编码
+		"md5":                tk.MD5Encrypt,           // 等同于md5Encode
+		"hexEncode":          tk.StrToHex,             // 16进制编码
+		"strToHex":           tk.StrToHex,             // 等同于hexEncode
+		"hexDecode":          tk.HexToStr,             // 16进制解码
+		"hexToStr":           tk.HexToStr,             // 等同于hexDecode
+		"jsonEncode":         tk.ObjectToJSON,         // JSON编码
+		"jsonDecode":         tk.JSONToObject,         // JSON解码
+		"toJSON":             tk.ToJSONX,              // 增强的JSON编码，建议使用，函数定义： toJSON(objA interface{}, optsA ...string) string，参数optsA可选。例：s = toJSON(textA, "-indent", "-sort")
+		"fromJSON":           tk.FromJSONWithDefault,  // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
+		"simpleEncode":       tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
+		"simpleDecode":       tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
+		"tableToMSSArray":    tk.TableToMSSArray,
+		"tableToMSSMap":      tk.TableToMSSMap,
+		"tableToMSSMapArray": tk.TKX.TableToMSSMapArray,
 
-		// log related
-		"setLogFile": tk.SetLogFile,
-		"logf":       tk.LogWithTimeCompact,
-		"logPrint":   logPrint,
+		// encrypt/decrypt related 加密/解密相关
+		"encryptStr":  tk.EncryptStringByTXDEF, // 加密字符串，第二个参数（可选）是密钥字串
+		"decryptStr":  tk.DecryptStringByTXDEF, // 解密字符串，第二个参数（可选）是密钥字串
+		"encryptData": tk.EncryptDataByTXDEF,   // 加密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
+		"decryptData": tk.DecryptDataByTXDEF,   // 解密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
 
-		// system related
-		"getClipText":  tk.GetClipText,
-		"setClipText":  tk.SetClipText,
-		"systemCmd":    tk.SystemCmd,
-		"ifFileExists": tk.IfFileExists,
-		"fileExists":   tk.IfFileExists,
-		"joinPath":     filepath.Join,
-		"getFileSize":  tk.GetFileSizeCompact,
-		"getFileList":  tk.GetFileList,
-		"loadText":     tk.LoadStringFromFile,
-		"saveText":     tk.SaveStringToFile,
-		"loadBytes":    tk.LoadBytesFromFileE,
-		"saveBytes":    tk.SaveBytesToFile,
-		"sleep":        tk.SleepSeconds,
-		"sleepSeconds": tk.SleepSeconds,
+		// log related 日志相关
+		"setLogFile": tk.SetLogFile,         // 设置日志文件路径，下面有关日志的函数将用到
+		"logf":       tk.LogWithTimeCompact, // 输出到日志文件，函数定义： func logf(formatA string, argsA ...interface{})
+		"logPrint":   logPrint,              // 同时输出到标准输出和日志文件
 
-		// command-line
-		"getParameter":   tk.GetParameterByIndexWithDefaultValue,
-		"getSwitch":      tk.GetSwitchWithDefaultValue,
-		"getIntSwitch":   tk.GetSwitchWithDefaultIntValue,
-		"switchExists":   tk.IfSwitchExistsWhole,
-		"ifSwitchExists": tk.IfSwitchExistsWhole,
+		// system related 系统相关
+		"getClipText":  tk.GetClipText,        // 从系统剪贴板获取文本，例： textT = getClipText()
+		"setClipText":  tk.SetClipText,        // 设定系统剪贴板中的文本，例： setClipText("测试")
+		"systemCmd":    tk.SystemCmd,          // 执行一条系统命令，例如： systemCmd("cmd", "/k", "copy a.txt b.txt")
+		"ifFileExists": tk.IfFileExists,       // 判断文件是否存在
+		"fileExists":   tk.IfFileExists,       // 等同于ifFileExists
+		"joinPath":     filepath.Join,         // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
+		"getFileSize":  tk.GetFileSizeCompact, // 获取文件大小
+		"getFileList":  tk.GetFileList,        // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-verbose")
+		"loadText":     tk.LoadStringFromFile, // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回TXERROR:开头的字符串指明原因
+		"saveText":     tk.SaveStringToFile,   // 将字符串保存到文件，函数定义： func saveText(strA string, fileA string) string
+		"loadBytes":    tk.LoadBytesFromFileE, // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) ([]byte, error)
+		"saveBytes":    tk.SaveBytesToFile,    // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) string
+		"sleep":        tk.SleepSeconds,       // 休眠指定的秒数，例：sleep(30)
+		"sleepSeconds": tk.SleepSeconds,       // 等同于sleep
 
-		// network related
-		"newSSHClient":         tk.NewSSHClient,
-		"mapToPostData":        tk.MapToPostData,
-		"getWebPage":           tk.DownloadPageUTF8,
-		"downloadFile":         tk.DownloadFile,
-		"httpRequest":          tk.RequestX,
-		"getFormValue":         tk.GetFormValueWithDefaultValue,
-		"formValueExist":       tk.IfFormValueExists,
-		"ifFormValueExist":     tk.IfFormValueExists,
-		"formToMap":            tk.FormToMap,
-		"generateJSONResponse": tk.GenerateJSONPResponseWithMore,
+		// command-line 命令行处理相关
+		"getParameter":   tk.GetParameterByIndexWithDefaultValue, // 按顺序序号获取命令行参数，其中0代表第一个参数，也就是软件名称或者命令名称，1开始才是第一个参数，注意参数不包括开关，即类似-verbose=true这样的，函数定义：func getParameter(argsA []string, idxA int, defaultA string) string
+		"getSwitch":      tk.GetSwitchWithDefaultValue,           // 获取命令行参数中的开关，用法：tmps = getSwitch(args, "-verbose=", "false")，第三个参数是默认值（如果在命令行中没取到的话返回该值）
+		"getIntSwitch":   tk.GetSwitchWithDefaultIntValue,        // 与getSwitch类似，但获取到的是整数的值
+		"switchExists":   tk.IfSwitchExistsWhole,                 // 判断命令行参数中是否存在开关（完整的，），用法：flag = switchExists(args, "-restart")
+		"ifSwitchExists": tk.IfSwitchExistsWhole,                 // 等同于switchExists
+
+		// network related 网络相关
+		"newSSHClient": tk.NewSSHClient, // 新建一个SSH连接，以便执行各种SSH操作，例：
+		// clientT, errT = newSSHClient(hostName, port, userName, password)
+		// outT, errT = clientT.Run(`ls -p; cat abc.txt`)
+		// errT = clientT.Upload(`./abc.txt`, strReplace(joinPath(pathT, `abc.txt`), `\`, "/"))
+		// errT = clientT.Download(`down.txt`, `./down.txt`)
+		"mapToPostData": tk.MapToPostData,    // 从一个映射（map）对象生成进行POST请求的参数对象，函数定义func mapToPostData(postDataA map[string]string) url.Values
+		"getWebPage":    tk.DownloadPageUTF8, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA url.Values, customHeaders string, timeoutSecsA time.Duration, optsA ...string) string
+		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
+		// 返回结果是TXERROR字符串，即如果是以TXERROR:开头，则表示错误信息，否则是网页或请求响应
+		"downloadFile": tk.DownloadFile, // 从网络下载一个文件，函数定义func downloadFile(urlA, dirA, fileNameA string, argsA ...string) string
+		"httpRequest":  tk.RequestX,     // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
+		// 其中methodA可以是"GET"，"POST"等
+		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
+		"getFormValue":         tk.GetFormValueWithDefaultValue,  // 从HTTP请求中获取字段参数，可以是Query参数，也可以是POST参数，函数定义func getFormValue(reqA *http.Request, keyA string, defaultA string) string
+		"formValueExist":       tk.IfFormValueExists,             // 判断HTTP请求中的是否有某个字段参数，函数定义func formValueExist(reqA *http.Request, keyA string) bool
+		"ifFormValueExist":     tk.IfFormValueExists,             // 等同于formValueExist
+		"formToMap":            tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
+		"generateJSONResponse": tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
 
 		// database related
-		"dbConnect":     sqltk.ConnectDBX,
-		"dbExec":        sqltk.ExecDBX,
-		"dbQuery":       sqltk.QueryDBX,
-		"dbQueryCount":  sqltk.QueryCountX,
-		"dbQueryString": sqltk.QueryStringX,
+		"dbConnect": sqltk.ConnectDBX, // 连接数据库以便后续读写操作，例：
+		// dbT = dbConnect("sqlserver", "server=127.0.0.1;port=1443;portNumber=1443;user id=user;password=userpass;database=db1")
+		// 	if isError(dbT) {
+		// 		fatalf("打开数据库%v错误：%v", dbT)
+		// 	}
+		// }
+		// defer dbT.Close()
 
-		// line editor related
-		"leClear":       leClear,
-		"leLoadStr":     leLoadString,
-		"leSetAll":      leLoadString,
-		"leSaveStr":     leSaveString,
-		"leGetAll":      leSaveString,
-		"leLoad":        leLoadFile,
-		"leLoadFile":    leLoadFile,
-		"leSave":        leSaveFile,
-		"leSaveFile":    leSaveFile,
-		"leLoadClip":    leLoadClip,
-		"leSaveClip":    leSaveClip,
-		"leInsert":      leInsertLine,
-		"leInsertLine":  leInsertLine,
-		"leAppend":      leAppendLine,
-		"leAppendLine":  leAppendLine,
-		"leSet":         leSetLine,
-		"leSetLine":     leSetLine,
-		"leSetLines":    leSetLines,
-		"leRemove":      leRemoveLine,
-		"leRemoveLine":  leRemoveLine,
-		"leRemoveLines": leRemoveLines,
-		"leViewAll":     leViewAll,
-		"leView":        leViewLine,
+		"dbExec": sqltk.ExecDBX, // 进行数据库操作，例：
+		// rs := dbExec(dbT, `insert into table1 (field1,id,field2) values('value1',1,'value2')`
+		// 	if isError(rs) {
+		// 		fatalf("新增数据库记录时发生错误：%v", rs)
+		// 	}
+		// }
+		// insertID, affectedRows = rs[0], rs[1]
+		"dbQuery": sqltk.QueryDBX, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为[]map[string]string，用JSON格式表达类似：[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]，例：
+		// sqlRsT = dbQuery(dbT, `SELECT * FROM TABLE1 WHERE ID=3`)
+		// if isError(sqlRsT) {
+		//		fatalf("查询数据库错误：%v", dbT)
+		//	}
+		// pl("在数据库中找到%v条记录", len(sqlRsT))
+		"dbQueryCount": sqltk.QueryCountX, // 与dbQuery类似，但主要进行数量查询，也支持结果只有一个整数的查询，例：
+		// sqlRsT = dbQueryCount(dbT, `SELECT COUNT(*) FROM TABLE1 WHERE ID>3`)
+		// if isError(sqlRsT) {
+		//		fatalf("查询数据库错误：%v", dbT)
+		//	}
+		// pl("在数据库中共有符合条件的%v条记录", sqlRsT)
+		"dbQueryString": sqltk.QueryStringX, // 与dbQueryCount类似，但主要支持结果只有一个字符串的查询
+
+		// line editor related 内置行文本编辑器有关
+		"leClear":       leClear,       // 清空行文本编辑器缓冲区，例：leClear()
+		"leLoadStr":     leLoadString,  // 行文本编辑器缓冲区载入指定字符串内容，例：leLoadStr("abc\nbbb\n结束")
+		"leSetAll":      leLoadString,  // 等同于leLoadString
+		"leSaveStr":     leSaveString,  // 取出行文本编辑器缓冲区中内容，例：s = leSaveStr()
+		"leGetAll":      leSaveString,  // 等同于leSaveStr
+		"leLoad":        leLoadFile,    // 从文件中载入文本到行文本编辑器缓冲区中，例：err = leLoad(`c:\test.txt`)
+		"leLoadFile":    leLoadFile,    // 等同于leLoad
+		"leSave":        leSaveFile,    // 将行文本编辑器缓冲区中内容保存到文件中，例：err = leSave(`c:\test.txt`)
+		"leSaveFile":    leSaveFile,    // 等同于leSave
+		"leLoadClip":    leLoadClip,    // 从剪贴板中载入文本到行文本编辑器缓冲区中，例：err = leLoadClip()
+		"leSaveClip":    leSaveClip,    // 将行文本编辑器缓冲区中内容保存到剪贴板中，例：err = leSaveClip()
+		"leInsert":      leInsertLine,  // 行文本编辑器缓冲区中的指定位置前插入指定内容，例：err = leInsert(3， "abc")
+		"leInsertLine":  leInsertLine,  // 行文本编辑器缓冲区中的指定位置前插入指定内容，例：err = leInsertLine(3， "abc")
+		"leAppend":      leAppendLine,  // 行文本编辑器缓冲区中的指定位置后插入指定内容，例：err = leAppend(3， "abc")
+		"leAppendLine":  leAppendLine,  // 行文本编辑器缓冲区中的指定位置后插入指定内容，例：err = leAppendLine(3， "abc")
+		"leSet":         leSetLine,     // 设定行文本编辑器缓冲区中的指定行为指定内容，例：err = leSet(3， "abc")
+		"leSetLine":     leSetLine,     // 设定行文本编辑器缓冲区中的指定行为指定内容，例：err = leSetLine(3， "abc")
+		"leSetLines":    leSetLines,    // 设定行文本编辑器缓冲区中指定范围的多行为指定内容，例：err = leSetLines(3, 5， "abc\nbbb")
+		"leRemove":      leRemoveLine,  // 删除行文本编辑器缓冲区中的指定行，例：err = leRemove(3)
+		"leRemoveLine":  leRemoveLine,  // 删除行文本编辑器缓冲区中的指定行，例：err = leRemoveLine(3)
+		"leRemoveLines": leRemoveLines, // 删除行文本编辑器缓冲区中指定范围的多行，例：err = leRemoveLines(1, 3)
+		"leViewAll":     leViewAll,     // 查看行文本编辑器缓冲区中的所有内容，例：allText = leViewAll()
+		"leView":        leViewLine,    // 查看行文本编辑器缓冲区中的指定行，例：lineText = leView(18)
 
 		// GUI related start
-		// gui related
-		"initGUI":             initGUI,
-		"getConfirmGUI":       getConfirmGUI,
-		"showInfoGUI":         showInfoGUI,
-		"showErrorGUI":        showErrorGUI,
-		"selectFileToSaveGUI": selectFileToSaveGUI,
-		"selectFileGUI":       selectFileGUI,
-		"selectDirectoryGUI":  selectDirectoryGUI,
+		// gui related 图形界面相关
+		"initGUI":             initGUI,             // GUI操作，一般均需调用initGUI来进行初始化，例：initGUI()
+		"getConfirmGUI":       getConfirmGUI,       // 显示一个提示信息并让用户确认的对话框，例：getConfirmGUI("对话框标题", "信息内容")
+		"showInfoGUI":         showInfoGUI,         // 显示一个提示信息的对话框，例：showInfoGUI("对话框标题", "信息内容")
+		"showErrorGUI":        showErrorGUI,        // 显示一个错误或警告信息的对话框，例：showErrorGUI("对话框标题", "错误或警告内容")
+		"selectFileToSaveGUI": selectFileToSaveGUI, // 图形化选取用于保存数据的文件，例：fileName = selectFileToSaveGUI("请选择文件……", "所有文件", "*")
+		"selectFileGUI":       selectFileGUI,       // 图形化选取文件，例：fileName = selectFileGUI("请选择文件……", "所有文件", "*")
+		"selectDirectoryGUI":  selectDirectoryGUI,  // 图形化选取目录，例：dirName = selectDirectoryGUI("请选择目录……")
 
 		// GUI related end
 
-		// misc
-		"newFunc":    NewFuncB,
-		"newFuncIIE": NewFuncInterfaceInterfaceErrorB,
-		"newFuncSSE": NewFuncStringStringErrorB,
-		"newFuncSS":  NewFuncStringStringB,
+		// misc 杂项函数
+		"newFunc":    NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
+		"newFuncIIE": NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
+		"newFuncSSE": NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
+		"newFuncSS":  NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
 
-		// global variables
-		"timeFormatG":        tk.TimeFormat,
-		"timeFormatCompactG": tk.TimeFormatCompact,
+		// global variables 全局变量
+		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
+		"timeFormatCompactG": tk.TimeFormatCompact, // 用于时间处理时的简化时间格式，值为"20060102150405"
 
-		"scriptPathG": scriptPathG,
-		"versionG":    versionG,
-		"leBufG":      leBufG,
+		"scriptPathG": scriptPathG, // 所执行脚本的路径
+		"versionG":    versionG,    // Gox/Goxc的版本号
+		"leBufG":      leBufG,      // 内置行文本编辑器所用的编辑缓冲区
 
 		// GUI related start
 
