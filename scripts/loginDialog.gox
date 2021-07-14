@@ -1,0 +1,188 @@
+// 本例代码完整演示了在Gox语言中如何使用Sciter包
+// 来显示一个图形化（GUI）的登录对话框
+// 并获得用户输入的信息供以后使用
+// 主要知识点包括：
+// 1、初始化图形界面环境
+// 2、使用HTML+TIScript来构建对话框界面和界面操作
+// 3、获得屏幕大小并使对话框窗口居中的两种方法
+// 4、如何从对话框获取用户录入的信息以便后续使用
+// 5. Gox语言和Sciter方式的图形界面如何互相调用其中的函数
+//    并进行参数传递
+
+// 设定用到的Sciter包和screenshot包的简称
+// 使用github.com/kbinani/screenshot包的原因是
+// 使用其中的获取屏幕分辨率的函数
+// 这是第一种让对话框居中的方法中用到的
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
+screenshot = github_kbinani_screenshot
+
+// Gox语言中使用图形化界面（GUI）编程能力时
+// 均需要调用initGUI()函数来进行初始化
+initGUI()
+
+// Sciter的图形界面编程，可以简单地理解为
+// 类似Electron等，用一个内置的浏览器执行
+// HTML+CSS+JavaScript制作的网页作为界面
+// 只不过Sciter将JavaScript换成了类似的TIScript
+// 下面的htmlT就是定义了用HTML+CSS+TIScript制作的
+// 登录对话框界面
+// 具备JavaScript的知识的话，TIScript应该很好理解
+// TIScript已经将类似JQuery的功能集成在其中了
+htmlT := `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Calculator</title>
+</head>
+<body>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+		<span>请输入用户名和密码登录……</span>
+	</div>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+		<label for="userNameID" >用户名： </label><input id="userNameID" type=text />
+	</div>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+		<label for="userNameID" >密码： </label><input id="passwordID" type=password />
+	</div>
+	<div>
+		<button id="btnLoginID">登录</button>
+		<button id="btnClose">关闭</button>
+	</div>
+
+    <script type="text/tiscript">
+        $(#btnLoginID).on("click", function() {
+			var userNameT = $(#userNameID).value.trim();
+			var passwordT = $(#passwordID).value.trim();
+
+			view.setResult(userNameT, passwordT);
+			view.close();
+        });
+ 
+        $(#btnClose).on("click", function() {
+            view.close();
+        });
+    </script>
+</body>
+</html>
+`
+
+// 锁定图形界面在当前线程中，以免出现异常
+runtime.LockOSThread()
+
+// 获取当前屏幕（第一块屏幕）的分辨率及区域
+// 返回结果类似 image.Rectangle{Min:image.Point{X:0, Y:0}, Max:image.Point{X:1920, Y:1080}}
+// 其中Max中的X、Y可以分别理解为屏幕的宽和高
+bounds := screenshot.GetDisplayBounds(0)
+
+// 计算我们准备展示的登录框的尺寸和位置
+// 对话框宽高分别为400*300，然后根据屏幕尺寸
+// 计算居中时对话框的x，y坐标（左上角）
+w = 400
+h = 300
+left = bounds.Max.X/2 - w/2
+top = bounds.Max.Y/2 - h/2
+
+// 按计算的结果创建对话框窗口
+w, err := window.New(sciter.DefaultWindowCreateFlag, &sciter.Rect{Left: int32(left), Top: int32(top), Right: int32(left + w), Bottom: int32(top + h)})
+
+// 如果创建错误则中止代码执行
+checkError(err)
+
+// 加载前面设计的网页界面
+// 第二个参数可以设定一个网页根路径，
+// 作为页面中使用相对路径的超级链接的根路径
+w.LoadHtml(htmlT, "")
+
+// 设置窗口标题
+w.SetTitle("登录窗口")
+
+// 设置用于接收登录框中用户输入信息的变量
+userNameT = ""
+passwordT = ""
+
+// 定义准备在TIScript调用的Gox语言函数
+// setResult将把对话框中用户输入的
+// 用户名和密码传到变量userNameT和passwordT中
+w.DefineFunction("setResult", func(args) {
+	// args是TIScript中调用setResult函数时传入的参数
+	// 可以是多个，Gox中按位置索引进行访问
+	userNameT = args[0].String()
+	passwordT = args[1].String()
+
+	// 最后一定要返回一个值，空字符串也可以
+	return sciter.NewValue("")
+})
+
+// 将对话框显示出来
+w.Show()
+
+// 开始运行图形界面，以便可以接受界面操作
+w.Run()
+
+// 此处第一个对话框已经退出，
+// 输出接收到的用户输入信息
+pln("用户名：", userNameT, ", 密码：", passwordT)
+
+// 在新建一个窗口，先使用默认的位置和大小（将在屏幕左上方）
+// 然后在对话框加载网页是通过TIScript的代码进行位置和大小调整
+w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
+
+checkError(err)
+
+// 下面是新窗口的网页内容，其中id为mainSpanID的SPAN标签
+// 演示了如何用插入字符串的方式直接将Gox语言中
+// 所需传递的信息传入Sciter界面
+htmlT = `
+<html>
+<head>
+</head>
+<body>
+	<div>
+		<span id="mainSpanID">`+spr("用户名：%v, 密码：%v", userNameT, passwordT)+`</span>
+	</div>
+</body>
+<script type="text/tiscript">
+	function moveToCenter() {
+		var (w, h) = view.screenBox(#frame, #dimension)
+
+		view.move((w-480)/2, (h-200)/2, 480, 200);
+
+		return String.printf("%v|%v", w, h);
+	}
+
+	function self.ready() {
+		$(#mainSpanID).value = view.getText();
+	}
+</script>
+
+</html>
+`
+
+// 定义了getText函数演示以另一种方式传入信息到Sciter界面
+// 由于self.ready()函数将在Sciter网页被加载后立即执行
+// 因此本对话框中显示的信息应该是密码在前的
+w.DefineFunction("getText", func(args) {
+	return sciter.NewValue(spr("密码：%v, 用户名：%v", passwordT, userNameT))
+})
+
+w.LoadHtml(htmlT, "")
+
+w.SetTitle("结果")
+
+// 在显示对话框之前先调用TIScript定义的函数
+// moveToCenter来将对话框的位置和大小改变
+// 这次的大小是480*200
+result, _ := w.Call("moveToCenter")
+
+// moveToCenter函数还会返回Sciter中获取到的
+// 屏幕尺寸，我们将其展示出来
+listT = strSplit(result.String(), "|")
+
+pl("屏幕宽度：%v，屏幕高度： %v", listT[0], listT[1])
+
+w.Show()
+
+w.Run()
