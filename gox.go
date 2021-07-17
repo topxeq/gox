@@ -186,7 +186,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.81a"
+var versionG = "1.83a"
 
 // add tk.ToJSONX
 
@@ -1521,10 +1521,11 @@ func importQLNonGUIPackages() {
 		// GUI related end
 
 		// misc 杂项函数
-		"newFunc":    NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
-		"newFuncIIE": NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
-		"newFuncSSE": NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
-		"newFuncSS":  NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
+		"newFunc":       NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
+		"newFuncIIE":    NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
+		"newFuncSSE":    NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
+		"newFuncSS":     NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
+		"newStringRing": tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"

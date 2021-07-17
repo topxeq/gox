@@ -1,0 +1,10 @@
+ring = newStringRing(5)
+
+for i = 0; i < 20; i ++ {
+	ring.Push("a"+toStr(i))
+
+	plv(ring)
+	pln(ring.GetList())
+	pln(ring.GetString())
+}
+

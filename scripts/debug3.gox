@@ -1,0 +1,14 @@
+a = 3
+
+func f() {
+	a = a + 1
+	if a < 10 {
+		pal("a=%v", a)
+	}
+	pl(abc)
+	b.Show(1)
+}
+
+print(a)
+
+f()
