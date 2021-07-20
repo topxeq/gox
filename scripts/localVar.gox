@@ -1,0 +1,61 @@
+
+func  cal(lo...) {
+	lo = {}
+
+	lo.map1 = {"a": 10001, "b": 30003, "c": 50005}
+
+	lo["i"] = 0
+	lo["v"] = 0
+
+	for true {
+		for i, v = range lo.map1 {
+			pl("i: %v, v: %v, lo: %v", i, v, lo)
+
+			sleep(1)
+		}
+	}
+
+}
+
+func  cal2(idxA, secA) {
+	lo = {}
+
+	lo.map1 = {"a": idxA, "b": idxA+1, "c": idxA+2}
+
+	lo.ary1 = ["a", "b", "c"]
+
+	if (idxA == 5) {
+		lo.ary1 = ["***", "###", "^^^"]
+	}
+
+	for true {
+		for iL1, vL1 = range lo.ary1 {
+			pl("[%v] i: %v, v: %v, lo: %v", idxA, iL1, vL1, lo)
+
+			sleep(secA)
+		}
+	}
+
+}
+
+
+iL1
+vL1
+// go cal()
+
+go cal2(1, 1)
+go cal2(2, 0.7)
+
+go cal2(3, 1.1)
+go cal2(4, 0.3)
+
+go cal2(5, 0.1)
+
+i = 0
+lo = [1, 2, 3]
+
+for true {
+	i ++
+	pl("main i=%v, lo=%v", i, lo)
+	sleep(1)
+}

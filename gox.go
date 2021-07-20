@@ -186,7 +186,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.85a"
+var versionG = "1.87a"
 
 // add tk.ToJSONX
 
@@ -1330,7 +1330,7 @@ func importQLNonGUIPackages() {
 		"regFind":      tk.RegFindFirstX,      // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
 		"regFindAll":   tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
 		"regFindIndex": tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
-		"regReplace":   tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string
+		"regReplace":   tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string, 例：regReplace("abcdefgabcdfg", "(b.*)f(ga.*?)g", "${1}_${2}")，结果是abcde_gabcdf
 		"regSplit":     tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 
 		// conversion related 转换相关
@@ -1385,6 +1385,7 @@ func importQLNonGUIPackages() {
 		"md5Encode":          tk.MD5Encrypt,           // MD5编码
 		"md5":                tk.MD5Encrypt,           // 等同于md5Encode
 		"hexEncode":          tk.StrToHex,             // 16进制编码
+		"hex":                tk.StrToHex,             // 等同于hexEncode
 		"strToHex":           tk.StrToHex,             // 等同于hexEncode
 		"hexDecode":          tk.HexToStr,             // 16进制解码
 		"hexToStr":           tk.HexToStr,             // 等同于hexDecode
@@ -1394,9 +1395,9 @@ func importQLNonGUIPackages() {
 		"fromJSON":           tk.FromJSONWithDefault,  // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
 		"simpleEncode":       tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
 		"simpleDecode":       tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
-		"tableToMSSArray":    tk.TableToMSSArray,
-		"tableToMSSMap":      tk.TableToMSSMap,
-		"tableToMSSMapArray": tk.TKX.TableToMSSMapArray,
+		"tableToMSSArray":    tk.TableToMSSArray,      // 参见dbRecsToMapArray，主要用于处理数据库查询结果
+		"tableToMSSMap":      tk.TableToMSSMap,        // 类似tableToMSSArray，但还加上一个ID作为主键成为字典/映射类型
+		"tableToMSSMapArray": tk.TableToMSSMapArray,   // 类似tableToMSSMap，但主键下的键值是一个数组，其中每一项是一个map[string]string
 
 		// encrypt/decrypt related 加密/解密相关
 		"encryptStr":  tk.EncryptStringByTXDEF, // 加密字符串，第二个参数（可选）是密钥字串
@@ -1429,8 +1430,10 @@ func importQLNonGUIPackages() {
 
 		// command-line 命令行处理相关
 		"getParameter":   tk.GetParameterByIndexWithDefaultValue, // 按顺序序号获取命令行参数，其中0代表第一个参数，也就是软件名称或者命令名称，1开始才是第一个参数，注意参数不包括开关，即类似-verbose=true这样的，函数定义：func getParameter(argsA []string, idxA int, defaultA string) string
+		"getParam":       tk.GetParam,                            // 类似于getParameter，只是后两个参数都是可选，默认是1和""（空字符串），且顺序随意
 		"getSwitch":      tk.GetSwitchWithDefaultValue,           // 获取命令行参数中的开关，用法：tmps = getSwitch(args, "-verbose=", "false")，第三个参数是默认值（如果在命令行中没取到的话返回该值）
-		"getIntSwitch":   tk.GetSwitchWithDefaultIntValue,        // 与getSwitch类似，但获取到的是整数的值
+		"getIntSwitch":   tk.GetSwitchWithDefaultIntValue,        // 与getSwitch类似，但获取到的是整型（int）的值
+		"getFloatSwitch": tk.GetSwitchWithDefaultFloatValue,      // 与getSwitch类似，但获取到的是浮点数（float64）的值
 		"switchExists":   tk.IfSwitchExistsWhole,                 // 判断命令行参数中是否存在开关（完整的，），用法：flag = switchExists(args, "-restart")
 		"ifSwitchExists": tk.IfSwitchExistsWhole,                 // 等同于switchExists
 
@@ -1470,21 +1473,35 @@ func importQLNonGUIPackages() {
 		// 	}
 		// }
 		// insertID, affectedRows = rs[0], rs[1]
+
 		"dbQuery": sqltk.QueryDBX, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为[]map[string]string，用JSON格式表达类似：[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]，例：
 		// sqlRsT = dbQuery(dbT, `SELECT * FROM TABLE1 WHERE ID=3`)
 		// if isError(sqlRsT) {
 		//		fatalf("查询数据库错误：%v", dbT)
 		//	}
 		// pl("在数据库中找到%v条记录", len(sqlRsT))
+
+		"dbQueryRecs": sqltk.QueryDBNSSF, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为[][]string，即二维数组，其中第一行为表头字段名：[["Field1", "Field2"],["Value1","Value2"]]，例：
+		// sqlRsT, errT = dbQueryRec(dbT, `SELECT * FROM TABLE1 WHERE ID=3`)
+		// if errT != nil {
+		//		fatalf("查询数据库错误：%v", errT)
+		//	}
+		// pl("在数据库中找到%v条记录", len(sqlRsT))
+
 		"dbQueryCount": sqltk.QueryCountX, // 与dbQuery类似，但主要进行数量查询，也支持结果只有一个整数的查询，例：
 		// sqlRsT = dbQueryCount(dbT, `SELECT COUNT(*) FROM TABLE1 WHERE ID>3`)
 		// if isError(sqlRsT) {
 		//		fatalf("查询数据库错误：%v", dbT)
 		//	}
 		// pl("在数据库中共有符合条件的%v条记录", sqlRsT)
-		"dbQueryString":        sqltk.QueryStringX,       // 与dbQueryCount类似，但主要支持结果只有一个字符串的查询
-		"dbFormat":             sqltk.FormatSQLValue,     // 将字符串转换为可用在SQL语句中的字符串（将单引号变成双单引号）
+
+		"dbQueryString": sqltk.QueryStringX, // 与dbQueryCount类似，但主要支持结果只有一个字符串的查询
+
+		"dbFormat": sqltk.FormatSQLValue, // 将字符串转换为可用在SQL语句中的字符串（将单引号变成双单引号）
+
 		"dbOneLineRecordToMap": sqltk.OneLineRecordToMap, // 将只有一行（加标题行两行）的SQL语句查询结果（[][]string格式）变为类似{"Field1": "Value1", "Field2": "Value2"}的map[string]string格式
+
+		"dbRecsToMapArray": sqltk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的SQL语句查询结果（[][]string格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
 
 		// line editor related 内置行文本编辑器有关
 		"leClear":       leClear,       // 清空行文本编辑器缓冲区，例：leClear()
@@ -2322,8 +2339,14 @@ func runArgs(argsA ...string) interface{} {
 
 	if tk.StartsWith(fcT, "//TXDEF#") {
 		if decryptRunCodeT == "" {
-			tk.Prf("Password: ")
-			decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+			tmps := tk.DecryptStringByTXDEF(fcT, "topxeq")
+
+			if tk.IsErrStr(tmps) {
+				tk.Prf("Password: ")
+				decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
+			} else {
+				fcT = tmps
+			}
 
 			// fcT = fcT[8:]
 		}
