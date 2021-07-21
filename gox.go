@@ -2433,12 +2433,10 @@ func runArgs(argsA ...string) interface{} {
 
 		tk.CheckError(errT)
 
-		codeFileT := tk.Trim(tk.GetParam(os.Args))
-
 		outputT := tk.Trim(tk.GetSwitch(os.Args, "-output=", "output.exe"))
 
-		if codeFileT == "" {
-			tk.Fatalf("code file empty")
+		if fcT == "" {
+			tk.Fatalf("code empty")
 		}
 
 		buf1, errT := tk.LoadBytesFromFileE(appPathT)
@@ -2446,10 +2444,7 @@ func runArgs(argsA ...string) interface{} {
 			tk.Fatalf("loading bin failed: %v", errT)
 		}
 
-		textT := tk.LoadStringFromFile(codeFileT)
-		tk.CheckErrorString(textT)
-
-		encTextT := tk.EncryptStringByTXDEF(textT, "topxeq")
+		encTextT := tk.EncryptStringByTXDEF(fcT, "topxeq")
 
 		var buf3 bytes.Buffer
 
