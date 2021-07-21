@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"os/exec"
 	"regexp"
 	"strings"
 
@@ -180,7 +179,10 @@ import (
 
 	// GUI related start
 	// full version related start
+	"os/exec"
+
 	"github.com/sqweek/dialog"
+
 	// full version related end
 	// GUI related end
 
