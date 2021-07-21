@@ -2,6 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"os/exec"
+	"regexp"
 	"strings"
 
 	// "context"
@@ -186,7 +189,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.87a"
+var versionG = "1.88a"
 
 // add tk.ToJSONX
 
@@ -1225,6 +1228,25 @@ func strToTime(strA string, formatA ...string) interface{} {
 // GUI related start
 
 func initGUI() {
+	applicationPathT := tk.GetApplicationPath()
+
+	osT := tk.GetOSName()
+
+	if tk.Contains(osT, "inux") {
+	} else if tk.Contains(osT, "arwin") {
+	} else {
+		_, errT := exec.LookPath("sciter.dll")
+
+		if errT != nil {
+			tk.Pl("Initialzing GUI environment...")
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll")
+
+			if tk.IsErrorString(rs) {
+				tk.Pl("Failed to initialze GUI environment.")
+			}
+		}
+	}
+
 	dialog.Do_init()
 	window.Do_init()
 }
@@ -1401,7 +1423,9 @@ func importQLNonGUIPackages() {
 
 		// encrypt/decrypt related 加密/解密相关
 		"encryptStr":  tk.EncryptStringByTXDEF, // 加密字符串，第二个参数（可选）是密钥字串
+		"encryptText": tk.EncryptStringByTXDEF, // 等同于encryptStr
 		"decryptStr":  tk.DecryptStringByTXDEF, // 解密字符串，第二个参数（可选）是密钥字串
+		"decryptText": tk.DecryptStringByTXDEF, // 等同于decryptStr
 		"encryptData": tk.EncryptDataByTXDEF,   // 加密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
 		"decryptData": tk.DecryptDataByTXDEF,   // 解密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
 
@@ -1422,8 +1446,8 @@ func importQLNonGUIPackages() {
 		"getFileList":       tk.GetFileList,                 // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-verbose")
 		"loadText":          tk.LoadStringFromFile,          // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回TXERROR:开头的字符串指明原因
 		"saveText":          tk.SaveStringToFile,            // 将字符串保存到文件，函数定义： func saveText(strA string, fileA string) string
-		"loadBytes":         tk.LoadBytesFromFileE,          // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) ([]byte, error)
-		"saveBytes":         tk.SaveBytesToFile,             // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) string
+		"loadBytes":         tk.LoadBytesFromFile,           // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) interface{}，返回[]byte或error，第二个参数没有或者小于零的话表示读取所有
+		"saveBytes":         tk.SaveBytesToFileE,            // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) error
 		"sleep":             tk.Sleep,                       // 休眠指定的秒数，例：sleep(30)，可以是小数
 		"sleepSeconds":      tk.SleepSeconds,                // 基本等同于sleep，但只能是整数秒
 		"sleepMilliSeconds": tk.SleepMilliSeconds,           // 类似于sleep，但单位是毫秒
@@ -2116,7 +2140,41 @@ func runArgs(argsA ...string) interface{} {
 	ifClipT := tk.IfSwitchExistsWhole(argsT, "-clip")
 	ifEmbedT := (codeTextG != "") && (!tk.IfSwitchExistsWhole(argsT, "-noembed"))
 
-	if scriptT == "" && (!ifClipT) && (!ifEmbedT) {
+	ifInExeT := false
+	inExeCodeT := ""
+
+	binNameT, errT := os.Executable()
+	if errT != nil {
+		binNameT = ""
+	}
+
+	baseBinNameT := filepath.Base(binNameT)
+
+	text1T := `7404046`
+	text2T := tk.Trim(`90415740404`)
+
+	if binNameT != "" {
+		if !tk.StartsWith(baseBinNameT, "gox") {
+			buf1, errT := tk.LoadBytesFromFileE(binNameT)
+			if errT == nil {
+				re := regexp.MustCompile(text1T + `90415840215(.*)8402156` + text2T)
+				matchT := re.FindSubmatch(buf1)
+				if matchT != nil {
+					codeStrT := string(matchT[1])
+
+					decCodeT := tk.DecryptStringByTXDEF(codeStrT, "topxeq")
+
+					if !tk.IsErrStr(decCodeT) {
+						ifInExeT = true
+						inExeCodeT = decCodeT
+					}
+
+				}
+			}
+		}
+	}
+
+	if scriptT == "" && (!ifClipT) && (!ifEmbedT) && (!ifInExeT) {
 
 		// autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
 		// autoGxbPathT := filepath.Join(tk.GetApplicationPath(), "auto.gxb")
@@ -2216,7 +2274,7 @@ func runArgs(argsA ...string) interface{} {
 	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
 	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
 	ifOpenT := tk.IfSwitchExistsWhole(argsT, "-open")
-	// ifCompileT := tk.IfSwitchExistsWhole(argsT, "-compile")
+	ifCompileT := tk.IfSwitchExistsWhole(argsT, "-compile")
 
 	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
 
@@ -2229,7 +2287,11 @@ func runArgs(argsA ...string) interface{} {
 
 	var fcT string
 
-	if ifMagicT {
+	if ifInExeT && inExeCodeT != "" && !tk.IfSwitchExistsWhole(os.Args, "-noin") {
+		fcT = inExeCodeT
+
+		scriptPathG = ""
+	} else if ifMagicT {
 		fcT = getMagic(magicNumberT)
 
 		scriptPathG = ""
@@ -2357,7 +2419,45 @@ func runArgs(argsA ...string) interface{} {
 	}
 
 	if ifViewT {
-		tk.Pl("%v", fcT)
+		if !ifInExeT {
+			tk.Pl("%v", fcT)
+		}
+
+		return nil
+	}
+
+	if ifCompileT {
+		appPathT, errT := os.Executable()
+
+		tk.CheckError(errT)
+
+		codeFileT := tk.Trim(tk.GetParam(os.Args))
+
+		outputT := tk.Trim(tk.GetSwitch(os.Args, "-output=", "output.exe"))
+
+		if codeFileT == "" {
+			tk.Fatalf("code file empty")
+		}
+
+		buf1, errT := tk.LoadBytesFromFileE(appPathT)
+		if errT != nil {
+			tk.Fatalf("loading bin failed: %v", errT)
+		}
+
+		textT := tk.LoadStringFromFile(codeFileT)
+		tk.CheckErrorString(textT)
+
+		encTextT := tk.EncryptStringByTXDEF(textT, "topxeq")
+
+		var buf3 bytes.Buffer
+
+		buf3.Write(buf1)
+		buf3.Write([]byte("74040469" + "0415840215"))
+		buf3.Write([]byte(encTextT))
+		buf3.Write([]byte("840215690" + "415740404"))
+
+		errT = tk.SaveBytesToFileE(buf3.Bytes(), outputT)
+		tk.CheckError(errT)
 
 		return nil
 	}
