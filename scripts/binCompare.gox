@@ -1,0 +1,74 @@
+file1 = trim(getParam(argsG))
+
+if file1 == "" {
+	fatalf("file1 empty")
+}
+
+file2 = trim(getParam(argsG, 2))
+
+if file2 == "" {
+	fatalf("file2 empty")
+}
+
+pl("compare %v -> %v", file1, file2)
+
+buf1 = loadBytes(file1)
+
+if isError(buf1) {
+	fatalf("failed to read file1")
+}
+
+buf2 = loadBytes(file2)
+
+if isError(buf2) {
+	fatalf("failed to read file2")
+}
+
+limit = getIntSwitch(argsG, "-limit=", 0)
+
+compareResult = tk.CompareBytes(buf1, buf2)
+
+for i, v = range compareResult {
+	if limit > 0 {
+		if i+1 > limit {
+			break
+		}
+	}
+	pl("[%v] %v(%v) - %v %v", i+1, v[0], v[0], toHex(v[1]), toHex(v[2]))
+}
+
+// len1 = len(buf1)
+
+// len2 = len(buf2)
+
+// lenT = len1
+
+// if lenT < len2 {
+// 	lenT = len2
+// }
+
+// c1
+// c2
+
+// for i = 0; i < lenT; i++ {
+// 	if i >= len1 {
+// 		c1 = "!!"
+// 	} else {
+// 		c1 = toHex(buf1[i])
+// 	}
+
+// 	if i >= len2 {
+// 		c2 = "!!"
+// 	} else {
+// 		c2 = toHex(buf2[i])
+// 	}
+
+// 	// if i%1000000 == 0 {
+// 	// 	pl("%v(%v) - %v %v", i, i, c1, c2)
+// 	// }
+
+// 	if c1 != c2 {
+// 		pl("%v(%v) - %v %v", i, i, c1, c2)
+// 	}
+
+// }
