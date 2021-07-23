@@ -50,7 +50,7 @@ htmlT := `
 	<script type="text/tiscript">
 		function colorize() 
 		{
-			const apply = Selection.applyMark; // shortcut
+			const apply = Selection.applyMark; 
 			const isEditor = this.tag == "plaintext";
 			
 			// forward declarations:
@@ -72,7 +72,6 @@ htmlT := `
 					textElement = tz.element;
 					textElement.attributes["type"] = "markup";
 				}
-				//stdout.println(tt,tz.attr,tz.value);
 				switch(tt) {
 					case #TAG-START: {    
 						bnTagStart = tz.tokenStart; 
@@ -138,7 +137,6 @@ htmlT := `
 					}
 					case #COMMENT:      apply(tz.tokenStart,tz.tokenEnd,"comment"); break;
 					case #END-OF-ISLAND:  
-					// got </scr ipt>
 					tz.pop(); //pop tokenizer layer
 					break loop;
 				}
@@ -308,11 +306,8 @@ htmlT := `
 	</style>
 	<script type="text/tiscript">
 		// if (view.connectToInspector) {
-		 	view.connectToInspector(rootElement, inspectorIpAddress);
+		// 	view.connectToInspector(rootElement, inspectorIpAddress);
 		// }
-
-		//stdout.println("__FOLDER__:", __FOLDER__);
-		//stdout.println("__FILE__:", __FILE__);
 
 		function isErrStr(strA) {
 			if (strA.substr(0, 6) == "TXERROR:") {
@@ -335,7 +330,6 @@ htmlT := `
 				type:#question,
 				title: titelA,
 				content: msgA, 
-				//buttons:[#yes,#no]
 				buttons: [
 					{id:#yes,text:"Ok",role:"default-button"},
 					{id:#cancel,text:"Cancel",role:"cancel-button"}]                               
@@ -349,7 +343,6 @@ htmlT := `
 				type:#information,
 				title: titelA,
 				content: msgA, 
-				//buttons:[#yes,#no]
 				buttons: [
 					{id:#cancel,text:"Close",role:"cancel-button"}]                               
 				};
@@ -362,7 +355,6 @@ htmlT := `
 				type:#alert,
 				title: titelA,
 				content: msgA, 
-				//buttons:[#yes,#no]
 				buttons: [
 					{id:#cancel,text:"Close",role:"cancel-button"}]                               
 				};
@@ -371,9 +363,7 @@ htmlT := `
 		}
 
 		function getScreenWH() {
-//			view.prints(String.printf("screenBoxO: %v, %v", 1, 2));
 			var (w, h) = view.screenBox(#frame, #dimension)
-//			view.prints(String.printf("screenBox: %v, %v", w, h));
 
 			view.move((w-800)/2, (h-600)/2, 800, 600);
 
@@ -391,7 +381,6 @@ htmlT := `
 			//var fn = view.selectFile(#open, "Gotx Files (*.gt,*.go)|*.gt;*.go|All Files (*.*)|*.*" , "gotx" );
 			var fn = view.selectFile(#open);
 			view.prints(String.printf("fn: %v", fn));
-			//view.prints(String.printf("screenBox: %v", view.screenBox(#frame, #dimension)));
 
 			if (fn == undefined) {
 				return;
@@ -415,8 +404,6 @@ htmlT := `
 			editFileCleanFlagG = "";
 
 			updateFileName();
-
-			// return fn;
 		}
 
 		function editFileLoadClick() {
@@ -484,17 +471,16 @@ htmlT := `
 
 		function editRunClick() {
 			view.close();
-			// view.exit();
 		}
 
 		function getInput(msgA) {
 			var res = view.dialog({ 
-				html: `
+				html: `+"`"+`
 				<html>
 				<body>
 				  <center>
 					  <div style="margin-top: 10px; margin-bottom: 10px;">
-						  <span>`+msgA+`</span>
+						  <span`+"`"+`msgA`+"`"+`span>
 					  </div>
 					  <div style="margin-top: 10px; margin-bottom: 10px;">
 						  <input id="mainTextID" type="text" />
@@ -512,10 +498,10 @@ htmlT := `
 					  $(#cancelButtonID).onClick = function() {
 						  view.close();
 					  };
-				  </scr`+`ipt>
+				  </scr`+"`"+`+`+"`"+`ipt>
 				</body>
 				</html>
-				`
+				`+"`"+`
 			  });
   
 			  return res;
@@ -574,20 +560,15 @@ htmlT := `
 			var rs = view.runScript($(plaintext).value, res);
 
 			showInfo("Result", rs)
-		 
-		  	// view.prints(String.printf("result = %v", rs));
 		}
 	
 
 		function editCloseClick() {
 			view.close();
-			// view.exit();
 		}
 
 		function editFile(fileNameA) {
 			var fcT string;
-
-			//view.prints("fileNameA: "+fileNameA);
 
 			if (fileNameA == "") {
 				editFileNameG = "";
@@ -600,16 +581,8 @@ htmlT := `
 
 				fcT = view.loadStringFromFile(fileNameA);
 
-//		if tk.IsErrorString(fcT) {
-//			tk.Pl("failed to load file %v: %v", editFileNameG, tk.GetErrorString(fcT))
-//			return
-
-//		}
-
 				editFileCleanFlagG = "";
 			}
-
-			//view.prints(fcT);
 
 			$(plaintext).attributes["type"] = "text/script";
 
@@ -620,9 +593,6 @@ htmlT := `
 		}
 
 		function self.ready() {
-
-			//$(plaintext).value = "<html>\n<body>\n<span>abc</span>\n</body></html>";
-
 			$(#btnLoad).onClick = editFileLoadClick;
 			$(#btnSave).onClick = editFileSaveClick;
 			$(#btnSaveAs).onClick = editFileSaveAsClick;
@@ -661,10 +631,6 @@ htmlT := `
 </body>
 </html>
 `
-
-// htmlT = tk.LoadStringFromFile(tk.JoinPath(path_filepath.Dir(scriptPathG), "editFileSciter.st"))
-
-// tk.CheckErrorString(htmlT)
 
 runtime.LockOSThread()
 
@@ -705,17 +671,16 @@ w.DefineFunction("decryptText", func(args) {
 
 w.DefineFunction("runScript", func(args) {
 	rs := runScript(args[0].String(), "", args[1].String())
-	return sciter.NewValue(tk.Spr("%v", rs))
+	return sciter.NewValue(spr("%v", rs))
 })
 
 w.DefineFunction("exit", func(args) {
 	os.Exit(1);
 })
 
-data, _ := w.Call("getScreenWH") //, sciter.NewValue(10), sciter.NewValue(20))
-// fmt.Println("data:", data.String())
+data, _ := w.Call("getScreenWH")
 
-fileNameT := tk.GetParameterByIndexWithDefaultValue(os.Args, 2, "")
+fileNameT := getParam(os.Args, 2, "")
 
 w.Call("editFile", sciter.NewValue(fileNameT))
 

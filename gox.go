@@ -1328,6 +1328,8 @@ func importQLNonGUIPackages() {
 		"setVar":        tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
 		"getVar":        tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
 		"isNil":         tk.IsNil,              // 判断一个变量或表达式是否为nil
+		"ifThenElse":         tk.IfThenElse,              // 相当于三元操作符a?b:c
+		"ifElse":         tk.IfThenElse,              // 相当于ifThenElse
 		"deepClone":     tk.DeepClone,
 		"deepCopy":      tk.DeepCopyFromTo,
 		"run":           runFile,
@@ -1558,6 +1560,13 @@ func importQLNonGUIPackages() {
 		//		fatalf("查询数据库错误：%v", dbT)
 		//	}
 		// pl("在数据库中共有符合条件的%v条记录", sqlRsT)
+
+		"dbQueryFloat": sqltk.QueryFloatX, // 与dbQueryCount类似，但主要进行返回一个浮点数结果的查询，例：
+		// sqlRsT = dbQueryFloat(dbT, `SELECT PRICE FROM TABLE1 WHERE ID=3`)
+		// if isError(sqlRsT) {
+		//		fatalf("查询数据库错误：%v", dbT)
+		//	}
+		// pl("查询结果为%v", sqlRsT)
 
 		"dbQueryString": sqltk.QueryStringX, // 与dbQueryCount类似，但主要支持结果只有一个字符串的查询
 
@@ -2217,6 +2226,16 @@ func runArgs(argsA ...string) interface{} {
 				}
 			}
 		}
+	}
+
+	if tk.IfSwitchExistsWhole(argsT, "-shell") {
+		initQLVM()
+
+		runInteractiveQlang()
+
+		// tk.Pl("not enough parameters")
+
+		return nil
 	}
 
 	if scriptT == "" && (!ifClipT) && (!ifEmbedT) && (!ifInExeT) {
