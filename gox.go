@@ -191,7 +191,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.90a"
+var versionG = "1.91a"
 
 // add tk.ToJSONX
 
@@ -1506,6 +1506,7 @@ func importQLNonGUIPackages() {
 		"getFloatSwitch": tk.GetSwitchWithDefaultFloatValue,      // 与getSwitch类似，但获取到的是浮点数（float64）的值
 		"switchExists":   tk.IfSwitchExistsWhole,                 // 判断命令行参数中是否存在开关（完整的，），用法：flag = switchExists(args, "-restart")
 		"ifSwitchExists": tk.IfSwitchExistsWhole,                 // 等同于switchExists
+		"parseCommand":   tk.ParseCommandLine,                    // 等同于switchExists
 
 		// network related 网络相关
 		"newSSHClient": tk.NewSSHClient, // 新建一个SSH连接，以便执行各种SSH操作，例：
@@ -3488,7 +3489,7 @@ w.DefineFunction("decryptText", func(args) {
 })
 
 w.DefineFunction("runScript", func(args) {
-	rs := runScript(args[0].String(), "", args[1].String())
+	rs := runScript(args[0].String(), "", parseCommand(args[1].String())[0]...)
 	return sciter.NewValue(tk.Spr("%v", rs))
 })
 
