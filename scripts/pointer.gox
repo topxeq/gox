@@ -10,7 +10,15 @@ setValue(b, "abb")
 // but * could be used as dereference operator
 c = *b
 
-println("c:", c)
+pc1 = ^c
+
+println("c:", c, "pc1:", pc1)
+
+setValue(pc1, "123")
+
+println("c:", c, "pc1:", pc1)
+
+pl("b: %#v, *b: %#v", b, *b)
 
 // built-in function getValue is also available to get value from pointer
 d = getValue(b)
@@ -33,20 +41,34 @@ println("*f:", *f)
 
 setValue(f, true)
 
-println("*f:", e)
+println("*f:", *f)
 
 // value in e is changed after setValue called
 println("e:", e)
 
 // for complex types
 a = []string{"first", "second", "3rd"} // &[]string{"aa", "bb"} 这种方式在Gox语言（Qlang引擎）中是不允许的
+// a = []int{1, 2, 3}
 
 println("a:", a)
 
 // but you can retrieve pointer by this way
 pa = ^a
 
-printfln("pa: %#v", pa)
+printfln("pa: %T, %v, %#v, %p, %#v", pa, pa, pa, pa, *pa)
+
+va = getValue(pa)
+
+va[1] = "aaa"
+
+printfln("*pa: %#v", *pa)
+printfln("a: %#v", a)
+
+np = new(int)
+
+setValue(np, 16)
+
+pl("np: %v, *np: %v", np, *np)
 
 b1 = 0x7A // 01111010
 

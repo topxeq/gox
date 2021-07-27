@@ -1,0 +1,32 @@
+
+func f1(m) {
+	i = 0
+	v = 0
+
+	c = [1 * m, 2 * m, 3 * m]
+
+	for {
+		for i, v = range c {
+			pln(m, i, v)
+		}
+
+		sleep(toFloat(m) / 100)
+	}
+
+}
+
+go f1(1)
+
+go f1(2)
+
+go f1(2.3)
+
+d = ["a", "b", "c", "d"]
+
+for {
+	for i, v = range d {
+		pln(0, i, v)
+	}
+
+	sleep(1.7)
+}

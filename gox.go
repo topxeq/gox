@@ -191,7 +191,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.89a"
+var versionG = "1.90a"
 
 // add tk.ToJSONX
 
@@ -1325,6 +1325,8 @@ func importQLNonGUIPackages() {
 		"exit":          tk.Exit,               // 立即退出脚本的执行，可以带一个整数作为参数，也可以没有
 		"setValue":      tk.SetValue,           // 用反射的方式设定一个变量的值
 		"getValue":      tk.GetValue,           // 用反射的方式获取一个变量的值
+		"getPointer":    tk.GetPointer,         // 用反射的方式获取一个变量的指针
+		"getAddr":       tk.GetAddr,            // 用反射的方式获取一个变量的地址
 		"setVar":        tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
 		"getVar":        tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
 		"isNil":         tk.IsNil,              // 判断一个变量或表达式是否为nil
@@ -1431,6 +1433,7 @@ func importQLNonGUIPackages() {
 
 		// error related 错误处理相关
 		"isError":          tk.IsError,          // 判断表达式的值是否为error类型
+		"isErr":            tk.IsError,          // 等同于isError
 		"isErrStr":         tk.IsErrStr,         // 判断字符串是否是TXERROR:开始的字符串
 		"checkError":       tk.CheckError,       // 检查变量，如果是error则立即停止脚本的执行
 		"checkErr":         tk.CheckError,       // 等同于checkError
@@ -1493,6 +1496,7 @@ func importQLNonGUIPackages() {
 		"sleep":             tk.Sleep,                       // 休眠指定的秒数，例：sleep(30)，可以是小数
 		"sleepSeconds":      tk.SleepSeconds,                // 基本等同于sleep，但只能是整数秒
 		"sleepMilliSeconds": tk.SleepMilliSeconds,           // 类似于sleep，但单位是毫秒
+		"sleepMS":           tk.SleepMilliSeconds,           // 等同于sleepMilliSeconds
 
 		// command-line 命令行处理相关
 		"getParameter":   tk.GetParameterByIndexWithDefaultValue, // 按顺序序号获取命令行参数，其中0代表第一个参数，也就是软件名称或者命令名称，1开始才是第一个参数，注意参数不包括开关，即类似-verbose=true这样的，函数定义：func getParameter(argsA []string, idxA int, defaultA string) string
@@ -1547,12 +1551,26 @@ func importQLNonGUIPackages() {
 		//	}
 		// pl("在数据库中找到%v条记录", len(sqlRsT))
 
-		"dbQueryRecs": sqltk.QueryDBNSSF, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为[][]string，即二维数组，其中第一行为表头字段名：[["Field1", "Field2"],["Value1","Value2"]]，例：
-		// sqlRsT, errT = dbQueryRec(dbT, `SELECT * FROM TABLE1 WHERE ID=3`)
-		// if errT != nil {
-		//		fatalf("查询数据库错误：%v", errT)
+		"dbQueryRecs": sqltk.QueryDBRecsX, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为[][]string，即二维数组，其中第一行为表头字段名：[["Field1", "Field2"],["Value1","Value2"]]，例：
+		// sqlRsT = dbQueryRecs(dbT, `SELECT * FROM TABLE1 WHERE ID=3`)
+		// if isErr(sqlRsT) {
+		//		fatalf("查询数据库错误：%v", sqlRsT)
 		//	}
 		// pl("在数据库中找到%v条记录", len(sqlRsT))
+
+		"dbQueryMap": sqltk.QueryDBMapX, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为map[string]map[string]string，即将dbQuery的结果再加上一个索引，例：{"Value1": {"Field1": "Value1"}, "Value2": {"Field2": "Value2"}}
+		// sqlRsT = dbQueryMap(dbT, `SELECT * FROM TABLE1 WHERE ID=3`, "ID")
+		// if isErr(sqlRsT) {
+		//		fatalf("查询数据库错误：%v", sqlRsT)
+		//	}
+		// pl("在数据库中找到结果：%v", sqlRsT)
+
+		"dbQueryMapArray": sqltk.QueryDBMapArrayX, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为map[string][]map[string]string，即将dbQueryMap的结果中，每一个键值中可以是一个数组（[]map[string]string类型），例：{"Value1": [{"Field1": "Value1"}, {"Field1": "Value1a"}], "Value2": [{"Field1": "Value2"}, {"Field1": "Value2a"}, {"Field1": "Value2b"}]}
+		// sqlRsT = dbQueryMapArray(dbT, `SELECT * FROM TABLE1 WHERE ID=3`, "ID")
+		// if isErr(sqlRsT) {
+		//		fatalf("查询数据库错误：%v", sqlRsT)
+		//	}
+		// pl("在数据库中找到结果：%v", sqlRsT)
 
 		"dbQueryCount": sqltk.QueryCountX, // 与dbQuery类似，但主要进行数量查询，也支持结果只有一个整数的查询，例：
 		// sqlRsT = dbQueryCount(dbT, `SELECT COUNT(*) FROM TABLE1 WHERE ID>3`)
@@ -1575,6 +1593,8 @@ func importQLNonGUIPackages() {
 		"dbOneLineRecordToMap": sqltk.OneLineRecordToMap, // 将只有一行（加标题行两行）的SQL语句查询结果（[][]string格式）变为类似{"Field1": "Value1", "Field2": "Value2"}的map[string]string格式
 
 		"dbRecsToMapArray": sqltk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的SQL语句查询结果（[][]string格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
+
+		"dbRecsToMapArrayMap": sqltk.RecordsToMapArrayMap, // 将多行行（第一行为标头字段行）的SQL语句查询结果（[][]string格式）变为类似dbQueryMapArray函数返回的结果
 
 		// line editor related 内置行文本编辑器有关
 		"leClear":       leClear,       // 清空行文本编辑器缓冲区，例：leClear()
