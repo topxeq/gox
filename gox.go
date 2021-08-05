@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.93a"
+var versionG = "1.96a"
 
 // add tk.ToJSONX
 
@@ -993,10 +993,16 @@ func nilToEmpty(vA interface{}, argsA ...string) string {
 				return tk.Float64ToStr(vA.(float64))
 			}
 		}
+
 	}
 
-	return fmt.Sprintf("%v", vA)
+	rsT := fmt.Sprintf("%v", vA)
 
+	if tk.IfSwitchExistsWhole(argsA, "-trim") {
+		rsT = tk.Trim(rsT)
+	}
+
+	return rsT
 }
 
 func isValid(vA interface{}, argsA ...string) bool {
@@ -1024,6 +1030,21 @@ func isValid(vA interface{}, argsA ...string) bool {
 	}
 
 	return true
+}
+
+func isValidNotEmpty(vA interface{}, argsA ...string) bool {
+	rsT := isValid(vA, argsA...)
+
+	if rsT {
+		nv, ok := vA.(string)
+		if ok {
+			if nv == "" {
+				return false
+			}
+		}
+	}
+
+	return rsT
 }
 
 func isDefined(vA interface{}) bool {
@@ -1315,31 +1336,32 @@ func importQLNonGUIPackages() {
 		// 其中 tk.开头的函数都是github.com/topxeq/tk包中的，可以去pkg.go.dev/github.com/topxeq/tk查看函数定义
 
 		// common related 一般函数
-		"defined":       defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
-		"pass":          tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
-		"isDefined":     isDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
-		"isValid":       isValid,               // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
-		"eval":          qlEval,                // 运行一段Gox语言代码
-		"typeOf":        tk.TypeOfValue,        // 给出某变量的类型名
-		"typeOfReflect": tk.TypeOfValueReflect, // 给出某变量的类型名（使用了反射方式）
-		"typeOfVar":     typeOfVar,             // 给出某变量的内部类型名，注意参数是字符串类型的变量名
-		"exit":          tk.Exit,               // 立即退出脚本的执行，可以带一个整数作为参数，也可以没有
-		"setValue":      tk.SetValue,           // 用反射的方式设定一个变量的值
-		"getValue":      tk.GetValue,           // 用反射的方式获取一个变量的值
-		"getPointer":    tk.GetPointer,         // 用反射的方式获取一个变量的指针
-		"getAddr":       tk.GetAddr,            // 用反射的方式获取一个变量的地址
-		"setVar":        tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
-		"getVar":        tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
-		"isNil":         tk.IsNil,              // 判断一个变量或表达式是否为nil
-		"ifThenElse":    tk.IfThenElse,         // 相当于三元操作符a?b:c
-		"ifElse":        tk.IfThenElse,         // 相当于ifThenElse
-		"ifThen":        tk.IfThenElse,         // 相当于ifThenElse
-		"deepClone":     tk.DeepClone,
-		"deepCopy":      tk.DeepCopyFromTo,
-		"run":           runFile,
-		"runCode":       runCode,
-		"runScript":     runScript,
-		"magic":         magic,
+		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
+		"pass":            tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
+		"isDefined":       isDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
+		"isValid":         isValid,               // 判断某变量是否已经定义，并且不是nil，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
+		"isValidNotEmpty": isValidNotEmpty,       // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
+		"eval":            qlEval,                // 运行一段Gox语言代码
+		"typeOf":          tk.TypeOfValue,        // 给出某变量的类型名
+		"typeOfReflect":   tk.TypeOfValueReflect, // 给出某变量的类型名（使用了反射方式）
+		"typeOfVar":       typeOfVar,             // 给出某变量的内部类型名，注意参数是字符串类型的变量名
+		"exit":            tk.Exit,               // 立即退出脚本的执行，可以带一个整数作为参数，也可以没有
+		"setValue":        tk.SetValue,           // 用反射的方式设定一个变量的值
+		"getValue":        tk.GetValue,           // 用反射的方式获取一个变量的值
+		"getPointer":      tk.GetPointer,         // 用反射的方式获取一个变量的指针
+		"getAddr":         tk.GetAddr,            // 用反射的方式获取一个变量的地址
+		"setVar":          tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
+		"getVar":          tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
+		"isNil":           tk.IsNil,              // 判断一个变量或表达式是否为nil
+		"ifThenElse":      tk.IfThenElse,         // 相当于三元操作符a?b:c
+		"ifElse":          tk.IfThenElse,         // 相当于ifThenElse
+		"ifThen":          tk.IfThenElse,         // 相当于ifThenElse
+		"deepClone":       tk.DeepClone,
+		"deepCopy":        tk.DeepCopyFromTo,
+		"run":             runFile,
+		"runCode":         runCode,
+		"runScript":       runScript,
+		"magic":           magic,
 
 		// output related 输出相关
 		"pv":        printValue,   // 输出一个变量的值，注意参数是字符串类型的变量名，例： pv("a")
@@ -1401,7 +1423,7 @@ func importQLNonGUIPackages() {
 		"regSplit":     tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 
 		// conversion related 转换相关
-		"nilToEmpty":  nilToEmpty,                  // 将nil等值都转换为空字符串
+		"nilToEmpty":  nilToEmpty,                  // 将nil等值都转换为空字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
 		"intToStr":    tk.IntToStrX,                // 整数转字符串
 		"strToInt":    tk.StrToIntWithDefaultValue, // 字符串转整数
 		"floatToStr":  tk.Float64ToStr,             // 浮点数转字符串
@@ -1458,6 +1480,8 @@ func importQLNonGUIPackages() {
 		"xmlDecode":          tk.FromXMLWithDefault,   // 解码XML为对象，函数定义：(xmlA string, defaultA interface{}) interface{}
 		"htmlEncode":         tk.EncodeHTML,           // HTML编码（&nbsp;等）
 		"htmlDecode":         tk.DecodeHTML,           // HTML解码
+		"urlEncode":          tk.UrlEncode2,           // URL编码（http://www.aaa.com -> http%3A%2F%2Fwww.aaa.com）
+		"urlDecode":          tk.UrlDecode,            // URL解码
 		"base64Encode":       tk.EncodeToBase64,       // Base64编码，输入参数是[]byte字节数组
 		"base64Decode":       tk.DecodeFromBase64,     // base64解码
 		"md5Encode":          tk.MD5Encrypt,           // MD5编码
@@ -1533,6 +1557,7 @@ func importQLNonGUIPackages() {
 		"ifFormValueExist":     tk.IfFormValueExists,             // 等同于formValueExist
 		"formToMap":            tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
 		"generateJSONResponse": tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
+		"writeResp":            tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
 
 		// database related
 		"dbConnect": sqltk.ConnectDBX, // 连接数据库以便后续读写操作，例：
@@ -1748,6 +1773,7 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("net", qlnet.Exports)
 	qlang.Import("net_http", qlnethttp.Exports)
+	qlang.Import("http", qlnethttp.Exports)
 	qlang.Import("net_http_cookiejar", qlnet_http_cookiejar.Exports)
 	qlang.Import("net_http_httputil", qlnet_http_httputil.Exports)
 	qlang.Import("net_mail", qlnet_mail.Exports)
@@ -1755,6 +1781,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("net_rpc_jsonrpc", qlnet_rpc_jsonrpc.Exports)
 	qlang.Import("net_smtp", qlnet_smtp.Exports)
 	qlang.Import("net_url", qlneturl.Exports)
+	qlang.Import("url", qlneturl.Exports)
 
 	qlang.Import("os", qlos.Exports)
 	qlang.Import("os_exec", qlos_exec.Exports)
@@ -1762,6 +1789,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("os_user", qlos_user.Exports)
 	qlang.Import("path", qlpath.Exports)
 	qlang.Import("path_filepath", qlpathfilepath.Exports)
+	qlang.Import("filepath", qlpathfilepath.Exports)
 
 	qlang.Import("reflect", qlreflect.Exports)
 	qlang.Import("regexp", qlregexp.Exports)
@@ -1813,7 +1841,8 @@ func importQLNonGUIPackages() {
 	qlgithub_scitersdk_gosciter.Exports["NewScnDataLoaded"] = NewScnDataLoaded
 
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
-	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
+	qlang.Import("sciter", qlgithub_scitersdk_gosciter.Exports)
+	qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
 
 	// qlang.Import("github_webview_webview", qlgithub_webview_webview.Exports)
 
