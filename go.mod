@@ -13,6 +13,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
+	github.com/mholt/archiver/v3 v3.5.0 // indirect
 	github.com/sciter-sdk/go-sciter v0.5.1
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/sqweek/dialog v0.0.0

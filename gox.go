@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.96a"
+var versionG = "1.97a"
 
 // add tk.ToJSONX
 
@@ -1842,6 +1842,7 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("sciter", qlgithub_scitersdk_gosciter.Exports)
+	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 	qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
 
 	// qlang.Import("github_webview_webview", qlgithub_webview_webview.Exports)
