@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.97a"
+var versionG = "1.98a"
 
 // add tk.ToJSONX
 
@@ -1379,6 +1379,7 @@ func importQLNonGUIPackages() {
 		"plVerbose": tk.PlVerbose, // 相当于pl，但前面多了一个布尔类型的参数，可以传入一个verbose变量，指定是否输出该信息，例：
 		// v = false
 		// plVerbose(v, "a: %v", 3) // 由于v的值为false，因此本条语句将不输出
+		"vpl":    tk.PlVerbose, // 等同于plVerbose
 		"plvsr":  tk.Plvsr,     // 输出多个变量或表达式的值，每行一个
 		"plerr":  tk.PlErr,     // 快捷输出一个error类型的值
 		"plExit": tk.PlAndExit, // 相当于pl然后exit退出脚本的执行
@@ -1460,20 +1461,22 @@ func importQLNonGUIPackages() {
 		"joinList":     tk.JoinList,                         // 类似于strJoin，但可以连接任意类型的值
 
 		// error related 错误处理相关
-		"isError":          tk.IsError,          // 判断表达式的值是否为error类型
-		"isErr":            tk.IsError,          // 等同于isError
-		"isErrStr":         tk.IsErrStr,         // 判断字符串是否是TXERROR:开始的字符串
-		"checkError":       tk.CheckError,       // 检查变量，如果是error则立即停止脚本的执行
-		"checkErr":         tk.CheckError,       // 等同于checkError
-		"checkErrf":        tk.CheckErrf,        // 检查变量，如果是error则立即停止脚本的执行，之前可以printfln输出信息
-		"checkErrorString": tk.CheckErrorString, // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行
-		"checkErrStr":      tk.CheckErrStr,      // 等同于checkErrorString
-		"checkErrStrf":     tk.CheckErrStrf,     // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行，之前可以printfln输出信息
-		"fatalf":           tk.Fatalf,           // printfln输出信息后终止脚本的执行
-		"errStr":           tk.ErrStr,           // 生成TXERROR:开始的字符串
-		"errStrf":          tk.ErrStrF,          // 生成TXERROR:开始的字符串，类似sprintf的用法
-		"getErrStr":        tk.GetErrStr,        // 从TXERROR:开始的字符串获取其后的错误信息
-		"errf":             tk.Errf,             // 生成error类型的变量，其中提示信息类似sprintf的用法
+		"isError":          tk.IsError,           // 判断表达式的值是否为error类型
+		"isErr":            tk.IsError,           // 等同于isError
+		"isErrStr":         tk.IsErrStr,          // 判断字符串是否是TXERROR:开始的字符串
+		"checkError":       tk.CheckError,        // 检查变量，如果是error则立即停止脚本的执行
+		"checkErr":         tk.CheckError,        // 等同于checkError
+		"checkErrf":        tk.CheckErrf,         // 检查变量，如果是error则立即停止脚本的执行，之前可以printfln输出信息
+		"checkErrorString": tk.CheckErrorString,  // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行
+		"checkErrStr":      tk.CheckErrStr,       // 等同于checkErrorString
+		"checkErrStrf":     tk.CheckErrStrf,      // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行，之前可以printfln输出信息
+		"fatalf":           tk.Fatalf,            // printfln输出信息后终止脚本的执行
+		"fatalfc":          tk.FatalfByCondition, // printfln输出信息后如果第一个参数为false，才终止脚本的执行
+		"fatalfi":          tk.FatalfByCondition, // 同fatalfc
+		"errStr":           tk.ErrStr,            // 生成TXERROR:开始的字符串
+		"errStrf":          tk.ErrStrF,           // 生成TXERROR:开始的字符串，类似sprintf的用法
+		"getErrStr":        tk.GetErrStr,         // 从TXERROR:开始的字符串获取其后的错误信息
+		"errf":             tk.Errf,              // 生成error类型的变量，其中提示信息类似sprintf的用法
 
 		// encode/decode related 编码/解码相关
 		"xmlEncode":          tk.EncodeToXMLString,    // 编码为XML
@@ -1552,6 +1555,11 @@ func importQLNonGUIPackages() {
 		"httpRequest":  tk.RequestX,     // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
 		// 其中methodA可以是"GET"，"POST"等
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
+		"postRequest": tk.PostRequestX, // 进行一个POST网络请求并获得服务器返回结果，函数定义func postRequest(urlA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
+		// 其中reqBodyA是POST的body
+		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
+		// timeoutSecsA是请求超时的秒数
+		// optsA是一组字符串，可以是-verbose和-detail，均表示是否输出某些信息
 		"getFormValue":         tk.GetFormValueWithDefaultValue,  // 从HTTP请求中获取字段参数，可以是Query参数，也可以是POST参数，函数定义func getFormValue(reqA *http.Request, keyA string, defaultA string) string
 		"formValueExist":       tk.IfFormValueExists,             // 判断HTTP请求中的是否有某个字段参数，函数定义func formValueExist(reqA *http.Request, keyA string) bool
 		"ifFormValueExist":     tk.IfFormValueExists,             // 等同于formValueExist
