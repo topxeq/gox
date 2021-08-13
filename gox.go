@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "1.98a"
+var versionG = "1.99a"
 
 // add tk.ToJSONX
 
@@ -1831,12 +1831,14 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_topxeq_xmlx", qlgithub_topxeq_xmlx.Exports)
 
 	qlang.Import("github_topxeq_awsapi", qlgithub_topxeq_awsapi.Exports)
+	qlang.Import("awsapi", qlgithub_topxeq_awsapi.Exports)
 
 	qlang.Import("github_cavaliercoder_grab", qlgithub_cavaliercoder_grab.Exports)
 
 	qlang.Import("github_pterm_pterm", qlgithub_pterm_pterm.Exports)
 
 	qlang.Import("github_domodwyer_mailyak", qlgithub_domodwyer_mailyak.Exports)
+	qlang.Import("mailyak", qlgithub_domodwyer_mailyak.Exports)
 
 	// GUI related start
 
