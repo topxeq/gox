@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "2.1a"
+var versionG = "2.2a"
 
 // add tk.ToJSONX
 
@@ -1410,6 +1410,7 @@ func importQLNonGUIPackages() {
 		"endsWith":             tk.EndsWith,               // 判断字符串是否以某子串结尾
 		"strEndsWith":          tk.EndsWith,               // 等同于endsWith
 		"strIn":                tk.InStrings,              // 判断字符串是否在一个字符串列表中出现，函数定义： strIn(strA string, argsA ...string) bool，第一个可变参数如果以“-”开头，将表示参数开关，-it表示忽略大小写，并且trim再比较（strA并不trim）
+		"strFindAll":           tk.FindSubStringAll,       // 寻找字符串中某个子串出现的所有位置，函数定义： func strFindAll(strA string, subStrA string) [][]int，每个匹配是两个整数，分别表示开头和结尾（不包含）
 		"getNowStr":            tk.GetNowTimeStringFormal, // 获取一个表示当前时间的字符串，格式：2020-02-02 08:09:15
 		"getNowString":         tk.GetNowTimeStringFormal, // 等同于getNowStr
 		"getNowStrCompact":     tk.GetNowTimeString,       // 获取一个简化的表示当前时间的字符串，格式：20200202080915
@@ -1418,13 +1419,14 @@ func importQLNonGUIPackages() {
 		"generateRandomString": tk.GenerateRandomString,   // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
 		// regex related 正则表达式相关
-		"regMatch":     tk.RegMatchX,          // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
-		"regContains":  tk.RegContainsX,       // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
-		"regFind":      tk.RegFindFirstX,      // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
-		"regFindAll":   tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
-		"regFindIndex": tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
-		"regReplace":   tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string, 例：regReplace("abcdefgabcdfg", "(b.*)f(ga.*?)g", "${1}_${2}")，结果是abcde_gabcdf
-		"regSplit":     tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
+		"regMatch":        tk.RegMatchX,          // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
+		"regContains":     tk.RegContainsX,       // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
+		"regFind":         tk.RegFindFirstX,      // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
+		"regFindAll":      tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
+		"regFindIndex":    tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
+		"regFindAllIndex": tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
+		"regReplace":      tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string, 例：regReplace("abcdefgabcdfg", "(b.*)f(ga.*?)g", "${1}_${2}")，结果是abcde_gabcdf
+		"regSplit":        tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 
 		// conversion related 转换相关
 		"nilToEmpty":  nilToEmpty,                  // 将nil等值都转换为空字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
