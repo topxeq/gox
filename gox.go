@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "2.0a"
+var versionG = "2.1a"
 
 // add tk.ToJSONX
 
@@ -1518,6 +1518,8 @@ func importQLNonGUIPackages() {
 		// system related 系统相关
 		"getClipText":       tk.GetClipText,                 // 从系统剪贴板获取文本，例： textT = getClipText()
 		"setClipText":       tk.SetClipText,                 // 设定系统剪贴板中的文本，例： setClipText("测试")
+		"getEnv":            tk.GetEnv,                      // 获取系统环境变量
+		"setEnv":            tk.SetEnv,                      // 设定系统环境变量
 		"systemCmd":         tk.SystemCmd,                   // 执行一条系统命令，例如： systemCmd("cmd", "/k", "copy a.txt b.txt")
 		"openFile":          tk.RunWinFileWithSystemDefault, // 用系统默认的方式打开一个文件，例如： openFile("a.jpg")
 		"ifFileExists":      tk.IfFileExists,                // 判断文件是否存在
@@ -1525,8 +1527,13 @@ func importQLNonGUIPackages() {
 		"joinPath":          filepath.Join,                  // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
 		"getFileSize":       tk.GetFileSizeCompact,          // 获取文件大小
 		"getFileList":       tk.GetFileList,                 // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose")
+		"createFile":        tk.CreateFile,                  // 等同于tk.CreateFile
+		"createTempFile":    tk.CreateTempFile,              // 等同于tk.CreateTempFile
+		"removeFile":        tk.RemoveFile,                  // 等同于tk.RemoveFile
+		"renameFile":        tk.RenameFile,                  // 等同于tk.RenameFile
 		"loadText":          tk.LoadStringFromFile,          // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回TXERROR:开头的字符串指明原因
 		"saveText":          tk.SaveStringToFile,            // 将字符串保存到文件，函数定义： func saveText(strA string, fileA string) string
+		"appendText":        tk.AppendStringToFile,          // 将字符串增加到文件末尾，函数定义： func appendText(strA string, fileA string) string
 		"loadBytes":         tk.LoadBytesFromFile,           // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) interface{}，返回[]byte或error，第二个参数没有或者小于零的话表示读取所有
 		"saveBytes":         tk.SaveBytesToFileE,            // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) error
 		"sleep":             tk.Sleep,                       // 休眠指定的秒数，例：sleep(30)，可以是小数
