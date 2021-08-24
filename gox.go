@@ -192,7 +192,7 @@ import (
 
 // Non GUI related
 
-var versionG = "2.2a"
+var versionG = "2.6a"
 
 // add tk.ToJSONX
 
@@ -951,14 +951,14 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 
 func printValue(nameA string) {
 
-	v, ok := qlVMG.GetVar(nameA)
+	v, idx, ok := qlVMG.GetVarWithIndex(nameA)
 
 	if !ok {
 		tk.Pl("no variable by the name found: %v", nameA)
 		return
 	}
 
-	tk.Pl("%v(%T): %v", nameA, v, v)
+	tk.Pl("%v[%v](%T): %v", nameA, idx, v, v)
 
 }
 
@@ -1283,6 +1283,18 @@ func typeOfVar(nameA string) string {
 	return tk.Spr("%T", v)
 }
 
+func isNil(vA interface{}) bool {
+	if vA == nil {
+		return true
+	}
+
+	if vA == spec.Undefined {
+		return true
+	}
+
+	return tk.IsNil(vA)
+}
+
 // GUI related start
 
 func initGUI() {
@@ -1352,7 +1364,7 @@ func importQLNonGUIPackages() {
 		"getAddr":         tk.GetAddr,            // 用反射的方式获取一个变量的地址
 		"setVar":          tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
 		"getVar":          tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
-		"isNil":           tk.IsNil,              // 判断一个变量或表达式是否为nil
+		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"ifThenElse":      tk.IfThenElse,         // 相当于三元操作符a?b:c
 		"ifElse":          tk.IfThenElse,         // 相当于ifThenElse
 		"ifThen":          tk.IfThenElse,         // 相当于ifThenElse
@@ -1400,6 +1412,7 @@ func importQLNonGUIPackages() {
 		"toLower":              strings.ToLower,           // 字符串转小写
 		"toUpper":              strings.ToUpper,           // 字符串转大写
 		"strContains":          strings.Contains,          // 判断字符串中是否包含某个字串
+		"strContainsIn":        tk.ContainsIn,             // 判断字符串中是否包含某几个字串
 		"strReplace":           tk.Replace,                // 替换字符串中的字串
 		"strReplaceIn":         tk.StringReplace,          // strReplaceIn("2020-02-02 08:09:15", "-", "", ":", "", " ", "")
 		"strJoin":              strJoin,                   // 连接一个字符串数组，以指定的分隔符，例： s = strJoin(listT, "\n")
@@ -1435,6 +1448,7 @@ func importQLNonGUIPackages() {
 		"floatToStr":  tk.Float64ToStr,             // 浮点数转字符串
 		"strToFloat":  tk.StrToFloat64,             // 字符串转浮点数，如果第二个参数（可选）存在，则默认错误时返回该值，否则错误时返回-1
 		"timeToStr":   tk.FormatTime,               // 时间转字符串，函数定义: timeToStr(timeA time.Time, formatA ...string) string
+		"formatTime":  tk.FormatTime,               // 等同于timeToStr
 		"strToTime":   strToTime,                   // 字符串转时间
 		"bytesToData": tk.BytesToData,              // 字节数组转任意类型变量，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
 		"dataToBytes": tk.DataToBytes,              // 任意类型值转字节数组，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
@@ -1640,7 +1654,8 @@ func importQLNonGUIPackages() {
 
 		"dbQueryString": sqltk.QueryStringX, // 与dbQueryCount类似，但主要支持结果只有一个字符串的查询
 
-		"dbFormat": sqltk.FormatSQLValue, // 将字符串转换为可用在SQL语句中的字符串（将单引号变成双单引号）
+		"dbFormat":       sqltk.FormatSQLValue, // 将字符串转换为可用在SQL语句中的字符串（将单引号变成双单引号）
+		"formatSQLValue": sqltk.FormatSQLValue, // 将字符串转换为可用在SQL语句中的字符串（将单引号变成双单引号）
 
 		"dbOneLineRecordToMap": sqltk.OneLineRecordToMap, // 将只有一行（加标题行两行）的SQL语句查询结果（[][]string格式）变为类似{"Field1": "Value1", "Field2": "Value2"}的map[string]string格式
 
