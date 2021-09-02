@@ -1,0 +1,40 @@
+vmT, errT = newChar(`
+param (...vargs)
+
+try {
+
+	for i, v in vargs {
+		println(i, v)
+	}
+
+	setRespHeader(vargs[1], "Content-Type", "text/json; charset=utf-8")
+	setRespHeader(vargs[1], "Access-Control-Allow-Origin", "*")
+
+	writeRespHeader(vargs[1], 200)
+
+	println("writeResp:", writeResp(vargs[1], bytes(string(vargs[2]))))
+} catch err {
+	printf("%+v\n", err)
+}
+
+
+
+`)
+
+if errT != nil {
+	pl("compile failed: %v", errT)
+	exit()
+}
+
+mux = net_http.NewServeMux()
+
+mux.HandleFunc("/", fn(w, req) {
+	// fprintf(w, "host: %#v, path: %#v\n", req.Host, req.URL)
+
+	runChar(vmT, nil, nil, *newCharAny(w), msiToCharMap(fromJSON(`{"start": "1", "count": "10"}`)))
+})
+
+err = net_http.ListenAndServe(":8888", mux)
+if err != nil {
+	fprintln(os.Stderr, err)
+}

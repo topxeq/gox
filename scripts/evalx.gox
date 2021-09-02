@@ -1,0 +1,12 @@
+env = {}
+
+env.Field1 = "1"
+env.Field2 = "2"
+
+plv(env)
+
+vm = tk.NewEval("Field1 + Field2", env)
+
+r, err = tk.RunEval(vm, env)
+
+pln(r, err)

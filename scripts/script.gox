@@ -1,0 +1,21 @@
+vm, err = tk.NewScript(`
+print( "The variable the script received was ", var, "\n" );
+
+if ( var >= 20 ) {
+   print( "\tWe've run a long time..\n");
+} else {
+   print("\tWe'll keep going until we hit 20 iterations.\n");
+}
+
+new = var * 4;
+
+return false;
+`)
+
+tk.SetScriptValue(vm, "var", 15)
+
+ret, err = vm.Run(nil)
+
+result = tk.GetScriptValue(vm, "new")
+
+pln(ret, err, result)

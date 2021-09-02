@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/topxeq/charlang"
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
@@ -146,6 +147,8 @@ import (
 
 	qlgithub_topxeq_awsapi "github.com/topxeq/qlang/lib/github.com/topxeq/awsapi"
 
+	qlgithub_topxeq_charlang "github.com/topxeq/qlang/lib/github.com/topxeq/charlang"
+
 	qlgithub_cavaliercoder_grab "github.com/topxeq/qlang/lib/github.com/cavaliercoder/grab"
 
 	qlgithub_pterm_pterm "github.com/topxeq/qlang/lib/github.com/pterm/pterm"
@@ -192,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "2.6a"
+var versionG = "2.8a"
 
 // add tk.ToJSONX
 
@@ -1466,6 +1469,12 @@ func importQLNonGUIPackages() {
 		"hexDecode":  tk.HexToStr,   // 16进制解码
 		"hexToStr":   tk.HexToStr,   // 等同于hexDecode
 
+		"mssToMsi": tk.MSS2MSI, // 转换map[string]string到map[string]interface{}
+		"msiToMss": tk.MSI2MSS, // 转换map[string]interface{}到map[string]string
+
+		"mssToCharMap": charlang.MssToMap, // 转换map[string]string到charlang中的map
+		"msiToCharMap": charlang.MsiToMap, // 转换map[string]interface{}到charlang中的map
+
 		"toInterface": tk.ToInterface, // 任意值转interface{}
 		"toPointer":   tk.ToPointer,   // 任意值转相应的指针
 		"toVar":       tk.ToVar,       // 任意值（*interface{}）转相应的值
@@ -1701,14 +1710,20 @@ func importQLNonGUIPackages() {
 		// GUI related end
 
 		// misc 杂项函数
-		"newFunc":       NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
-		"newFuncIIE":    NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
-		"newFuncSSE":    NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
-		"newFuncSS":     NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
-		"newStringRing": tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
-		"getCfgStr":     getCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
-		"setCfgStr":     setCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
-		"genQR":         tk.GenerateQR,                   // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
+		"newFunc":         NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
+		"newFuncIIE":      NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
+		"newFuncSSE":      NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
+		"newFuncSS":       NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
+		"newStringRing":   tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
+		"getCfgStr":       getCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
+		"setCfgStr":       setCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
+		"genQR":           tk.GenerateQR,                   // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
+		"newScript":       tk.NewScript,
+		"newChar":         charlang.NewChar,     // new a charlang script VM
+		"runChar":         charlang.RunChar,     // run a charlang script VM
+		"runCharCode":     charlang.RunCharCode, // run a charlang script
+		"newCharAny":      charlang.NewAny,      // create a interface{} pointer in charlang
+		"newCharAnyValue": charlang.NewAnyValue, // create a interface{} value in charlang
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
@@ -1860,6 +1875,9 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_topxeq_awsapi", qlgithub_topxeq_awsapi.Exports)
 	qlang.Import("awsapi", qlgithub_topxeq_awsapi.Exports)
+
+	qlang.Import("github_topxeq_charlang", qlgithub_topxeq_charlang.Exports)
+	qlang.Import("charlang", qlgithub_topxeq_charlang.Exports)
 
 	qlang.Import("github_cavaliercoder_grab", qlgithub_cavaliercoder_grab.Exports)
 
