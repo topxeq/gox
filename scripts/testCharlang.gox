@@ -1,0 +1,47 @@
+vmT, errT = newChar(`
+param (...vargs)
+
+println(vargs)
+
+try {
+
+	a := 1
+
+	println("abc")
+
+	f := vargs[3]["test"]
+
+	b := f(2, 3)
+
+	println("b=", b)
+
+	return "zzz"
+
+} catch err {
+	printf("%+v\n", err)
+}
+
+
+
+`)
+
+if errT != nil {
+	pl("compile failed: %v", errT)
+	exit()
+}
+
+func test(x, y) {
+	pl("x+y=%v", x+y)
+	return x+y, nil
+}
+
+mapT = make(charlang.Map)
+
+mapT["a"] = charlang.ConvertToObject("abv")
+mapT["test"] = newCharFunc(test)
+
+plv(mapT)
+
+r, err := runChar(vmT, nil, nil, *newCharAny(w), msiToCharMap(fromJSON(`{"start": "1", "count": "10"}`)), mapT)
+
+plvsr(r, err)
