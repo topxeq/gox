@@ -1619,6 +1619,9 @@ func importQLNonGUIPackages() {
 		"getWebPage":    tk.DownloadPageUTF8, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA url.Values, customHeaders string, timeoutSecsA time.Duration, optsA ...string) string
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
 		// 返回结果是TXERROR字符串，即如果是以TXERROR:开头，则表示错误信息，否则是网页或请求响应
+		"getWeb": tk.DownloadWebPage, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA map[string]string, customHeadersA map[string]string, optsA ...string) string
+		// customHeadersA 是自定义请求头，optsA支持-verbose， -detail， -timeout=30（秒），-encoding=utf-8/gb2312/gbk/gb18030等,
+		// 返回结果是TXERROR字符串，即如果是以TXERROR:开头，则表示错误信息，否则是网页或请求响应
 		"downloadFile": tk.DownloadFile, // 从网络下载一个文件，函数定义func downloadFile(urlA, dirA, fileNameA string, argsA ...string) string
 		"httpRequest":  tk.RequestX,     // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
 		// 其中methodA可以是"GET"，"POST"等
@@ -1743,20 +1746,22 @@ func importQLNonGUIPackages() {
 		// GUI related end
 
 		// misc 杂项函数
-		"newFunc":         NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
-		"newFuncIIE":      NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
-		"newFuncSSE":      NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
-		"newFuncSS":       NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
-		"newCharFunc":     newCharFunc,                     // 将Gox语言中的定义的函数转换为Charlang语言中类似 func f() 的形式
-		"newStringRing":   tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
-		"getCfgStr":       getCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
-		"setCfgStr":       setCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
-		"genQR":           tk.GenerateQR,                   // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
-		"newChar":         charlang.NewChar,                // new a charlang script VM
-		"runChar":         charlang.RunChar,                // run a charlang script VM
-		"runCharCode":     charlang.RunCharCode,            // run a charlang script
-		"newCharAny":      charlang.NewAny,                 // create a interface{} pointer in charlang
-		"newCharAnyValue": charlang.NewAnyValue,            // create a interface{} value in charlang
+		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
+		"newFuncIIE":       NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
+		"newFuncSSE":       NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
+		"newFuncSS":        NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
+		"newCharFunc":      newCharFunc,                     // 将Gox语言中的定义的函数转换为Charlang语言中类似 func f() 的形式
+		"newStringRing":    tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
+		"getCfgStr":        getCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
+		"setCfgStr":        setCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
+		"genQR":            tk.GenerateQR,                   // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
+		"newChar":          charlang.NewChar,                // new a charlang script VM
+		"runChar":          charlang.RunChar,                // run a charlang script VM
+		"runCharCode":      charlang.RunCharCode,            // run a charlang script
+		"quickCompileChar": charlang.QuickCompile,           // compile a charlang script VM
+		"quickRunChar":     charlang.QuickRun,               // run a charlang script VM
+		"newCharAny":       charlang.NewAny,                 // create a interface{} pointer in charlang
+		"newCharAnyValue":  charlang.NewAnyValue,            // create a interface{} value in charlang
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
