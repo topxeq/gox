@@ -23,7 +23,6 @@ github.com/aliyun/alibaba-cloud-sdk-go v1.61.1007 h1:K3mTYkN2D2oAPjkIkbcBvLM5p7u
 github.com/aliyun/alibaba-cloud-sdk-go v1.61.1007/go.mod h1:pUKYbK5JQ+1Dfxk80P0qxGqe5dkxDoabbZS7zOcouyA=
 github.com/andybalholm/brotli v1.0.0 h1:7UCwP93aiSfvWpapti8g88vVVGp2qqtGyePsSuDafo4=
 github.com/andybalholm/brotli v1.0.0/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
-github.com/antonmedv/expr v1.9.0 h1:j4HI3NHEdgDnN9p6oI6Ndr0G5QryMY0FNxT4ONrFDGU=
 github.com/antonmedv/expr v1.9.0/go.mod h1:5qsM3oLGDND7sDmQGDXHkYfkjYMUX14qsgqmHhwGEk8=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/atotto/clipboard v0.1.2 h1:YZCtFu5Ie8qX2VmVTBnrqLSiU9XOWwqNRmdT3gIQzbY=
@@ -51,8 +50,8 @@ github.com/davecgh/go-spew v0.0.0-20161028175848-04cdfd42973b/go.mod h1:J7Y8YcW2
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/denisenkom/go-mssqldb v0.9.0 h1:RSohk2RsiZqLZ0zCjtfn3S4Gp4exhpBWHyQ7D0yGjAk=
-github.com/denisenkom/go-mssqldb v0.9.0/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=
+github.com/denisenkom/go-mssqldb v0.10.0 h1:QykgLZBorFE95+gO3u9esLd0BmbvpWp0/waNNZfHBM8=
+github.com/denisenkom/go-mssqldb v0.10.0/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=
 github.com/dgraph-io/badger v1.6.1/go.mod h1:FRmFw3uxvcpa8zG3Rxs0th+hCLIuaQg8HlNV5bjgnuU=
 github.com/dgraph-io/ristretto v0.0.2/go.mod h1:KPxhHT9ZxKefz+PCeOGsrHpl1qZ7i70dGTu2u+Ahh6E=
 github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2/go.mod h1:SqUrOPUnsFjfmXRMNPybcSiG0BgUW2AuFH8PAnS2iTw=
@@ -80,12 +79,12 @@ github.com/go-latex/latex v0.0.0-20201220152147-94de1316b515 h1:Spqn/xa/awtXR9Kv
 github.com/go-latex/latex v0.0.0-20201220152147-94de1316b515/go.mod h1:+NEBlGpUmd27C4conBcPcj8bSk7UXWnzcFSfskIVV8M=
 github.com/go-logfmt/logfmt v0.5.0 h1:TrB8swr/68K7m9CcGut2g3UOihhbcbiMAYiuTXdEih4=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
-github.com/go-sql-driver/mysql v1.5.0 h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gGcHOs=
-github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
+github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
+github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-test/deep v1.0.7 h1:/VSMRlnY/JSyqxQUzQLKVMAskpY/NZKFA5j2P+0pP2M=
 github.com/go-test/deep v1.0.7/go.mod h1:QV8Hv/iy04NyLBxAdO9njL0iVPN1S4d/A3NVv1V36o8=
-github.com/godror/godror v0.23.1 h1:JllRZ14r/2+65m8bn+rJJTKjfsYXN/FM2kpUs4TbiB8=
-github.com/godror/godror v0.23.1/go.mod h1:wZv/9vPiUib6tkoDl+AZ/QLf5YZgMravZ7jxH2eQWAE=
+github.com/godror/godror v0.25.3 h1:ltL94Ct9otjMfUNTRMqyZh0GpepPd9f9pyFgtUciT9k=
+github.com/godror/godror v0.25.3/go.mod h1:JgtdZ1iSaNoioa/B53BVVWji9J9iGPDDj2763T5d1So=
 github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28 h1:gBeyun7mySAKWg7Fb0GOcv0upX9bdaZScs8QcRo8mEY=
 github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28/go.mod h1:Pcatq5tYkCW2Q6yrR2VRHlbHpZ/R4/7qyL1TCF7vl14=
 github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d/go.mod h1:nnjvkQ9ptGaCkuDUx6wNykzzlUixGxvkme+H/lnzb+A=
@@ -132,7 +131,6 @@ github.com/klauspost/compress v1.10.10/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdY
 github.com/klauspost/cpuid v1.2.0/go.mod h1:Pj4uuM528wm8OyEC2QMXAi2YiTZ96dNQPGgoMS4s3ek=
 github.com/klauspost/pgzip v1.2.4 h1:TQ7CNpYKovDOmqzRHKxJh0BeaBI7UdQZYc6p7pMQh1A=
 github.com/klauspost/pgzip v1.2.4/go.mod h1:Ch1tH69qFZu15pkjo5kYi6mth2Zzwzt50oCQKQE9RUs=
-github.com/kortschak/utter v1.0.1/go.mod h1:vSmSjbyrlKjjsL71193LmzBOKgwePk9DH6uFaWHIInc=
 github.com/kr/fs v0.1.0 h1:Jskdu9ieNAYnjxsi0LbQp1ulIKZV1LAFgK1tWhpZgl8=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=
 github.com/kr/pretty v0.2.0/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
@@ -159,6 +157,7 @@ github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRC
 github.com/mattn/go-runewidth v0.0.12 h1:Y41i/hVW3Pgwr8gV+J23B9YEY0zxjptBuCWEaxmAOow=
 github.com/mattn/go-runewidth v0.0.12/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/mattn/go-sqlite3 v1.14.6/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
+github.com/mattn/go-sqlite3 v1.14.8/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
 github.com/mattn/go-sqlite3 v2.0.3+incompatible h1:gXHsfypPkaMZrKbD5209QV9jbUTJKjyR5WD3HYQSd+U=
 github.com/mattn/go-sqlite3 v2.0.3+incompatible/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/mattn/go-tty v0.0.3/go.mod h1:ihxohKRERHTVzN+aSVRwACLCeqIoZAWpoICkkvrWyR0=
@@ -220,7 +219,6 @@ github.com/ruudk/golang-pdf417 v0.0.0-20181029194003-1af4ab5afa58/go.mod h1:6lfF
 github.com/sanity-io/litter v1.2.0/go.mod h1:JF6pZUFgu2Q0sBZ+HSV35P8TVPI1TTzEwyu9FXAw2W4=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
 github.com/sciter-sdk/go-sciter v0.5.0/go.mod h1:myhbEunWE4R+6J7GxJsr4SU4q0OIMOEbWFJ2qYzIdPc=
-github.com/skx/evalfilter/v2 v2.1.17 h1:ZnLaMwcfKAvOEkZEndNp+VMNOZAmM5NvoecGUt+J9ZA=
 github.com/skx/evalfilter/v2 v2.1.17/go.mod h1:Kett8pWXFLb9kfeytJiO+/Ci534U8YcNp6WD+2goYsI=
 github.com/skx/subcommands v0.9.1/go.mod h1:HpOZHVUXT5Rc/Q7UCiyj7h5u6BleDfFjt+vxy2igonA=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d h1:zE9ykElWQ6/NYmHa3jpm/yHnI4xSofP+UP6SpjHcSeM=
@@ -260,7 +258,6 @@ github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4/go.mod h1:LSJyQqZ2K+a
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 h1:SPJ/3/AfLh1Ae6N6A2hPRdWI5VLnTI0+G6dCcxV9X3o=
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97/go.mod h1:4OH+jvJsOmDlZo0w/14dBxg/zQ6jnbrxdUdasWdgoR8=
 github.com/topxeq/blockix v0.0.0-20210301072129-59538096fd95/go.mod h1:xyAfbPzbZwTQ1XIyYCvtE0oHzU9efcOB8KqqDmMdGdY=
-github.com/topxeq/charlang v0.0.0-20210901014301-5a3685cc69c4 h1:e+/ReeoXh7DlFDiYxeqyo9cv5yQNrHffjGjjcgBl7tc=
 github.com/topxeq/charlang v0.0.0-20210901014301-5a3685cc69c4/go.mod h1:OX3bZtL3PxdMLw7xmcFDW24KjBui7ME3RXrSOUHyBQw=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e h1:/wlnbdgwQS5AY2zDhv68utbTPCYiIAhQsobpJX9R5T0=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e/go.mod h1:V81PuRavrZfUlLORzIAcJ5h84s52j49oYnPdQQ2d9Qw=
@@ -275,6 +272,7 @@ github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029/go.mod h1:UVq5N0KFj
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 h1:rK+vzRQ8z4If0mWMPuy25tSUdEbc5ngAbzknR+AF4j0=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3/go.mod h1:rxUzYlbHy6wU8ci0i5R1zs3YlgXqe5gDRwXwFLp2BqA=
 github.com/topxeq/sqltk v0.0.0-20210112052931-55ad87cc9be3/go.mod h1:KOl6vGec44tFypvXpWi2d/V1bvnOljyiIizuwIeBWu4=
+github.com/topxeq/sqltk v0.0.0-20210810003219-4a98f83d992a/go.mod h1:V5CrS3PNfWUo4BFsY/rGDmEp6wle+yyDPO3Lq1SRdic=
 github.com/topxeq/tk v0.0.0-20210112051931-4640fa2841f4/go.mod h1:JxOz/UPMGGicnycWXCt1sanGXvbIeTtlNQi55kCFUT4=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=

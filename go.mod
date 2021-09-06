@@ -6,9 +6,9 @@ require (
 	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
 	github.com/ajstarks/svgo v0.0.0-20200725142600-7a3c8b57fecb // indirect
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
-	github.com/denisenkom/go-mssqldb v0.9.0
-	github.com/go-sql-driver/mysql v1.5.0
-	github.com/godror/godror v0.23.1
+	github.com/denisenkom/go-mssqldb v0.10.0
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/godror/godror v0.25.3
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -17,7 +17,7 @@ require (
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/sqweek/dialog v0.0.0
 	github.com/stretchr/objx v0.3.0 // indirect
-	github.com/topxeq/charlang v0.0.0 // indirect
+	github.com/topxeq/charlang v0.0.0
 	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0

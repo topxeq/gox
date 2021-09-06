@@ -1,0 +1,46 @@
+scriptT = `
+param (...args)
+
+dbConnectStr := getSwitch(args, "-connect=")
+
+dbT := dbConnect("godror", dbConnectStr)
+
+if isError(dbT) {
+    pl("failed to connect DB: %v", dbT)
+    exit()
+}
+
+sqlT := "select count(*) from AWS2.BO_EU_RIGHTS_PROTECT_DATA"
+
+sqlRsT := dbQueryCount(dbT, sqlT)
+
+pl("result1: %v", sqlRsT)
+
+sqlT = "select * from AWS2.BO_EU_TEST1"
+
+sqlRs2T := dbQuery(dbT, sqlT)
+
+pl("result2: %v", sqlRs2T)
+
+sqlT = "select * from AWS2.BO_EU_TEST1"
+
+sqlRs3T := dbQueryRecs(dbT, sqlT)
+
+pl("result3: %v", sqlRs3T)
+
+sqlT = "update AWS2.BO_EU_TEST1 set ABC=:v1 where ID='8ceaf7f4-62e1-4915-85a9-138f0651d715'"
+
+sqlRs4T := dbExec(dbT, sqlT, "ABC"+getNowStr())
+
+if isError(sqlRs4T) {
+    pl("exec failed: %v", sqlRs4T)
+} else {
+    pl("result4: %v", sqlRs4T)
+}
+
+dbClose(dbT)
+
+`
+
+// connect string is like: user/password@127.0.0.1:1521/mydb
+quickRunChar(scriptT, toCharValue("-connect="+getSwitch(argsG, "-connect=", "")))
