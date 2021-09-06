@@ -1638,7 +1638,7 @@ func importQLNonGUIPackages() {
 		"generateJSONResponse":  tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
 		"writeResp":             tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
 		"replaceHtmlByMap":      tk.ReplaceHtmlByMap,
-		"CleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
+		"cleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
 
 		// database related
 		"dbConnect": sqltk.ConnectDBX, // 连接数据库以便后续读写操作，例：
