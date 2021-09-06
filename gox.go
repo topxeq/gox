@@ -195,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.0a"
+var versionG = "3.1a"
 
 // add tk.ToJSONX
 
@@ -1631,12 +1631,14 @@ func importQLNonGUIPackages() {
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
 		// timeoutSecsA是请求超时的秒数
 		// optsA是一组字符串，可以是-verbose和-detail，均表示是否输出某些信息
-		"getFormValue":         tk.GetFormValueWithDefaultValue,  // 从HTTP请求中获取字段参数，可以是Query参数，也可以是POST参数，函数定义func getFormValue(reqA *http.Request, keyA string, defaultA string) string
-		"formValueExist":       tk.IfFormValueExists,             // 判断HTTP请求中的是否有某个字段参数，函数定义func formValueExist(reqA *http.Request, keyA string) bool
-		"ifFormValueExist":     tk.IfFormValueExists,             // 等同于formValueExist
-		"formToMap":            tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
-		"generateJSONResponse": tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
-		"writeResp":            tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
+		"getFormValue":          tk.GetFormValueWithDefaultValue,  // 从HTTP请求中获取字段参数，可以是Query参数，也可以是POST参数，函数定义func getFormValue(reqA *http.Request, keyA string, defaultA string) string
+		"formValueExist":        tk.IfFormValueExists,             // 判断HTTP请求中的是否有某个字段参数，函数定义func formValueExist(reqA *http.Request, keyA string) bool
+		"ifFormValueExist":      tk.IfFormValueExists,             // 等同于formValueExist
+		"formToMap":             tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
+		"generateJSONResponse":  tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
+		"writeResp":             tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
+		"replaceHtmlByMap":      tk.ReplaceHtmlByMap,
+		"CleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
 
 		// database related
 		"dbConnect": sqltk.ConnectDBX, // 连接数据库以便后续读写操作，例：
