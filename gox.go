@@ -734,11 +734,13 @@ func newCharFunc(funcA interface{}) *charlang.Function {
 
 			r := funcT.Call(execq.NewStack(), s...).([]interface{})
 
-			if r[1] == nil {
-				return charlang.ConvertToObject(r[0].(interface{})), nil
-			}
+			return charlang.ConvertToObject(r), nil
 
-			return charlang.ConvertToObject(r[0].(interface{})), charlang.NewCommonError(r[1].(error).Error())
+			// if r[1] == nil {
+			// 	return charlang.ConvertToObject(r[0].(interface{})), nil
+			// }
+
+			// return charlang.ConvertToObject(r[0].(interface{})), charlang.NewCommonError(r[1].(error).Error())
 		},
 	}
 }
