@@ -195,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.1a"
+var versionG = "3.2a"
 
 // add tk.ToJSONX
 
@@ -1673,6 +1673,8 @@ func importQLNonGUIPackages() {
 		"formToMap":             tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
 		"generateJSONResponse":  tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
 		"writeResp":             tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
+		"writeRespHeader":       tk.WriteResponseHeader,           // 写http响应头，函数原型writeRespHeader(resA http.ResponseWriter, argsA ...interface{}) error
+		"setRespHeader":         tk.SetResponseHeader,             // 设置http响应头，函数原型setRespHeader(resA http.ResponseWriter, keyA string, valueA string) error
 		"replaceHtmlByMap":      tk.ReplaceHtmlByMap,
 		"cleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
 
