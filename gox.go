@@ -1622,9 +1622,11 @@ func importQLNonGUIPackages() {
 		"fileExists":        tk.IfFileExists,                // 等同于ifFileExists
 		"joinPath":          filepath.Join,                  // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
 		"getFileSize":       tk.GetFileSizeCompact,          // 获取文件大小
+		"getFileInfo":       tk.GetFileInfo,                 // 获取文件信息，返回map[string]string
 		"getFileList":       tk.GetFileList,                 // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose")
 		"createFile":        tk.CreateFile,                  // 等同于tk.CreateFile
 		"createTempFile":    tk.CreateTempFile,              // 等同于tk.CreateTempFile
+		"copyFile":          tk.CopyFile,                    // 等同于tk.CopyFile，可带参数-force和-bufferSize=100000
 		"removeFile":        tk.RemoveFile,                  // 等同于tk.RemoveFile
 		"renameFile":        tk.RenameFile,                  // 等同于tk.RenameFile
 		"loadText":          tk.LoadStringFromFile,          // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回TXERROR:开头的字符串指明原因
