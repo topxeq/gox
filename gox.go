@@ -195,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.2a"
+var versionG = "3.21a"
 
 // add tk.ToJSONX
 
@@ -1524,6 +1524,7 @@ func importQLNonGUIPackages() {
 		"timeToStr":    tk.FormatTime,               // 时间转字符串，函数定义: timeToStr(timeA time.Time, formatA ...string) string
 		"formatTime":   tk.FormatTime,               // 等同于timeToStr
 		"strToTime":    strToTime,                   // 字符串转时间
+		"toTime":       tk.ToTime,                   // 字符串或时间转时间
 		"bytesToData":  tk.BytesToData,              // 字节数组转任意类型变量，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
 		"dataToBytes":  tk.DataToBytes,              // 任意类型值转字节数组，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
 		"toStr":        tk.ToStr,                    // 任意值转字符串
