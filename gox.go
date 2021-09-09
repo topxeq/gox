@@ -195,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.22a"
+var versionG = "3.23a"
 
 // add tk.ToJSONX
 
@@ -1507,6 +1507,7 @@ func importQLNonGUIPackages() {
 		// regex related 正则表达式相关
 		"regMatch":        tk.RegMatchX,          // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
 		"regContains":     tk.RegContainsX,       // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
+		"regContainsIn":   tk.RegContainsIn,      // 判断字符串中是否包含符合正则表达式的某几个字串
 		"regFind":         tk.RegFindFirstX,      // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
 		"regFindAll":      tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
 		"regFindIndex":    tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
