@@ -195,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.23a"
+var versionG = "3.26a"
 
 // add tk.ToJSONX
 
@@ -1368,6 +1368,22 @@ func isNil(vA interface{}) bool {
 	return tk.IsNil(vA)
 }
 
+func trim(vA interface{}, argsA ...string) string {
+	if vA == nil {
+		return ""
+	}
+
+	if vA == spec.Undefined {
+		return ""
+	}
+
+	if nv, ok := vA.(string); ok {
+		return tk.Trim(nv, argsA...)
+	}
+
+	return tk.Trim(fmt.Sprintf("%v", vA), argsA...)
+}
+
 // GUI related start
 
 func initGUI() {
@@ -1475,11 +1491,13 @@ func importQLNonGUIPackages() {
 		"getPasswordf": tk.GetInputPasswordf, // 从命令行获取密码输入，输入信息将不显示
 
 		// math related数学相关
-		"bitXor": tk.BitXor, // 异或运算
+		"bitXor":       tk.BitXor,               // 异或运算
+		"getRandomInt": tk.GetRandomIntLessThan, // 获取[0-maxA)之间的随机整数
+		"getRandom":    tk.GetRandomFloat,       // 获取[0.0-1.0)之间的随机浮点数
 
 		// string related 字符串相关
-		"trim":                 tk.Trim,                   // 取出字符串前后的空白字符
-		"strTrim":              tk.Trim,                   // 等同于trim
+		"trim":                 trim,                      // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）
+		"strTrim":              tk.Trim,                   // 等同于tk.Trim
 		"trimSafely":           tk.TrimSafely,             // 取出字符串前后的空白字符，非字符串则返回默认值空，可以通过第二个（可选）参数设置默认值
 		"trimx":                tk.TrimSafely,             // 等同于trimSafely
 		"toLower":              strings.ToLower,           // 字符串转小写
