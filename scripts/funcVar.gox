@@ -1,0 +1,27 @@
+func f1() {
+	a = 1
+
+	for true {
+		pl("a1=%v", a)
+
+		sleep(1.1)
+	}
+}
+
+func f2() {
+	a = "abc"
+
+	for true {
+		pl("a2=%v", a)
+
+		sleep(1.3)
+	}
+}
+
+go f1()
+go f2()
+
+for true {
+	// pl("a=%v", a)
+	sleep(2.7)
+}
