@@ -1,0 +1,26 @@
+portG = ":8401"
+
+dirT = getSwitch(argsG, "-dir=", `d:\downtemp`)
+
+pl("generate list in %v", dirT)
+fileListT := getFileList(dirT, "-recursive", "-pattern=*.[jpg][pni][gf]")
+
+pln(fileListT)
+return
+
+muxG = http.NewServeMux()
+
+muxG.HandleFunc("/getimagecontent/", fn(w, req) {
+	pl("req: %#v", req)
+	writeResp(w, spr("host: %#v, path: %#v\n", req.Host, req.URL))
+})
+
+muxG.HandleFunc("/", fn(w, req) {
+	writeResp(w, spr("host: %#v, path: %#v\n", req.Host, req.URL))
+})
+
+pl("try start server on %v", portG)
+err = http.ListenAndServe(portG, muxG)
+if err != nil {
+	pl("failed to start server on %v: %v", portG, err)
+}
