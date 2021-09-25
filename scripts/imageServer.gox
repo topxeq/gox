@@ -3,16 +3,136 @@ portG = ":8401"
 dirT = getSwitch(argsG, "-dir=", `d:\downtemp`)
 
 pl("generate list in %v", dirT)
-fileListT := getFileList(dirT, "-recursive", "-pattern=*.[jpg][pni][gf]")
+fileListG := getFileList(dirT, "-recursive", "-pattern=*.[jpg][pni][gf]")
 
-pln(fileListT)
-return
+pl("len: %v", len(fileListG))
+// return
 
 muxG = http.NewServeMux()
 
-muxG.HandleFunc("/getimagecontent/", fn(w, req) {
-	pl("req: %#v", req)
-	writeResp(w, spr("host: %#v, path: %#v\n", req.Host, req.URL))
+jpgOptionsG = new(image_jpeg.Options)
+jpgOptionsG.Quality = 90
+
+muxG.HandleFunc("/getimagecontent/", fn(res, req) {
+	// pl("req: %#v", req)
+
+	// if !isNil(req) {
+	// 	req.ParseForm()
+	// }
+
+	reqT = req.RequestURI[len("/getimagecontent/"):]
+
+	// pl("reqT: %v", reqT)
+
+	// return
+
+	res.WriteHeader(200) // HTTP 200
+
+	if len(fileListG) < 1 {
+		writeResp(res, "no file")
+		return
+	} else {
+		idxt := strToInt(reqT, -1)
+
+		if (idxt < 0) || (idxt >= len(fileListG)) {
+			res.Write([]byte("invalid image index"))
+			return
+		}
+
+		if !ifFileExists(fileListG[idxt].Abs) {
+			res.Write([]byte("file not exists"))
+			return
+		}
+
+		imgT := imagetk.ITKX.GetImageFileContentAndThumb(fileListG[idxt].Abs, 640, 960, fileListG[idxt].Ext)
+		if imgT == nil {
+			res.Write([]byte("loading image failed"))
+			return
+		}
+
+		res.Header().Set("Content-Type", "image/jpeg")
+		err := image_jpeg.Encode(res, imgT, jpgOptionsG)
+		// if err != nil {
+		// 	res.WriteHeader(500)
+		// } else {
+		// 	res.WriteHeader(200)
+		// }
+	}
+
+})
+
+muxG.HandleFunc("/getimage", fn(res, req) {
+	// pl("req: %#v", req)
+	// writeResp(res, spr("host: %#v, path: %#v\n", req.Host, req.URL))
+
+	res.WriteHeader(200) // HTTP 200
+
+	if len(fileListG) < 1 {
+		writeResp(res, generateJSONResponse("fail", "no file", req))
+		return
+	}
+
+	cnt := getRandomInt(len(fileListG))
+	writeResp(res, generateJSONResponse("success", spr("http://%v/getimagecontent/%v", req.Host, cnt), req))
+})
+
+muxG.HandleFunc("/deleteimage/", fn(res, req) {
+	reqT = req.RequestURI[len("/deleteimage/"):]
+
+	// pl("reqT: %v", reqT)
+
+	if len(fileListG) < 1 {
+		writeResp(res, "no file")
+		return
+	} else {
+		idxt := strToInt(reqT, -1)
+
+		if (idxt < 0) || (idxt >= len(fileListG)) {
+			res.Write([]byte("invalid image index"))
+			return
+		}
+
+		if !ifFileExists(fileListG[idxt].Abs) {
+			res.Write([]byte("file not exists"))
+			return
+		}
+
+		rs := os.Remove(fileListG[idxt].Abs)
+
+		if rs != nil {
+			res.Write([]byte("delete image failed: " + rs.Error()))
+			return
+		}
+
+		res.Write([]byte("successfully deleted the image"))
+	}
+
+})
+
+muxG.HandleFunc("/showimageinfo/", fn(res, req) {
+	reqT = req.RequestURI[len("/showimageinfo/"):]
+
+	// pl("reqT: %v", reqT)
+
+	if len(fileListG) < 1 {
+		writeResp(res, "no file")
+		return
+	} else {
+		idxt := strToInt(reqT, -1)
+
+		if (idxt < 0) || (idxt >= len(fileListG)) {
+			res.Write([]byte("invalid image index"))
+			return
+		}
+
+		if !ifFileExists(fileListG[idxt].Abs) {
+			res.Write([]byte("file not exists"))
+			return
+		}
+
+		res.Write([]byte(fileListG[idxt].Path))
+	}
+
 })
 
 muxG.HandleFunc("/", fn(w, req) {
