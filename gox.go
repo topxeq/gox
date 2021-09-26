@@ -195,7 +195,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.26a"
+var versionG = "3.27a"
 
 // add tk.ToJSONX
 
@@ -1767,6 +1767,8 @@ func importQLNonGUIPackages() {
 		"formatSQLValue": sqltk.FormatSQLValue, // 将字符串转换为可用在SQL语句中的字符串（将单引号变成双单引号）
 
 		"dbOneLineRecordToMap": sqltk.OneLineRecordToMap, // 将只有一行（加标题行两行）的SQL语句查询结果（[][]string格式）变为类似{"Field1": "Value1", "Field2": "Value2"}的map[string]string格式
+
+		"dbOneColumnRecordsToArray": sqltk.OneColumnRecordsToArray, // 将只有一列的SQL语句查询结果（[][]string格式）变为类似["Value1", "Value2"]的[]string格式
 
 		"dbRecsToMapArray": sqltk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的SQL语句查询结果（[][]string格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
 
