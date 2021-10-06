@@ -13,6 +13,8 @@ muxG = http.NewServeMux()
 jpgOptionsG = new(image_jpeg.Options)
 jpgOptionsG.Quality = 90
 
+currentImageIndexG = -1
+
 muxG.HandleFunc("/getimagecontent/", fn(res, req) {
 	// pl("req: %#v", req)
 
@@ -33,6 +35,9 @@ muxG.HandleFunc("/getimagecontent/", fn(res, req) {
 		return
 	} else {
 		idxt := strToInt(reqT, -1)
+		if reqT == "current" {
+			idxt = currentImageIndexG
+		}
 
 		if (idxt < 0) || (idxt >= len(fileListG)) {
 			res.Write([]byte("invalid image index"))
@@ -104,7 +109,7 @@ muxG.HandleFunc("/deleteimage/", fn(res, req) {
 			return
 		}
 
-		res.Write([]byte("successfully deleted the image"))
+		res.Write([]byte(spr("successfully deleted the image: %v", fileListG[idxt].Abs)))
 	}
 
 })
@@ -135,12 +140,121 @@ muxG.HandleFunc("/showimageinfo/", fn(res, req) {
 
 })
 
+
+imagePageTemplateG = `
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="content-type" content="text/html;" charset="UTF-8" />
+		<meta name='viewport' content='width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;' /> 
+		<script>
+			function goImage() {
+				location.href='/index/'+document.getElementById("num").value;
+			}
+		</script>
+	</head>
+	<body>
+		<div>
+			<a href="/random"><img src="TX_imageUrl_XT" width="100%"></img></a>
+		</div>
+		<div>
+			<span>TX_imageIndex_XT/TX_imageCount_XT:</span> <span>TX_imageFileName_XT</span>
+		</div>
+		<div>
+			<input type="button" name="random" value="Random" onclick="location.href='/random'" />
+			<input type="button" name="previous" value="Previous" onclick="location.href='/previous'" />
+			<input type="button" name="next" value="Next" onclick="location.href='/next'" />
+			<input type="button" name="delete" value="Trash" onclick="location.href='/deleteimage/TX_imageIndexReal_XT'" />
+		</div>
+		<div style="margin-top: 3px;">
+			<input id=num value="TX_imageIndex_XT" />
+			<input type="button" name="go" value="Go" onclick="javascript:goImage();" />
+		</div>
+		<div style="height: 2.0em;"></div>
+	</body>
+</html>
+
+`
+
+func writeImage(resA) {
+	if currentImageIndexG < 0 {
+		return
+	}
+
+	// pl("currentImageIndexG: %v", currentImageIndexG)
+
+	tmpStrL := strReplace(imagePageTemplateG, "TX_imageUrl_XT", "/getimagecontent/current")
+	tmpStrL = strReplace(tmpStrL, "TX_imageIndex_XT", spr("%v", currentImageIndexG+1))
+	tmpStrL = strReplace(tmpStrL, "TX_imageIndexReal_XT", spr("%v", currentImageIndexG))
+	tmpStrL = strReplace(tmpStrL, "TX_imageCount_XT", spr("%v", len(fileListG)))
+	listL = filepath.Split(fileListG[currentImageIndexG].Abs)
+	tmpStrL = strReplace(tmpStrL, "TX_imageFileName_XT", joinPath(filepath.Base(listL[0]), listL[1]))
+
+	writeResp(resA, tmpStrL)
+}
+
+func showImage(resA, indexA) {
+	if indexA == undefined || indexA < 0 || indexA >= len(fileListG) {
+		currentImageIndexG = getRandomInt(len(fileListG))
+	} else {
+		currentImageIndexG = indexA
+	}
+
+	writeImage(resA)
+
+}
+
 muxG.HandleFunc("/", fn(w, req) {
-	writeResp(w, spr("host: %#v, path: %#v\n", req.Host, req.URL))
+	// writeResp(w, spr("host: %#v, path: %#v\n", req.Host, req.URL))
+	w.Header().Set("Content-Type", "text/html;charset=utf-8")
+
+	reqL = trim(req.RequestURI[len("/"):])
+	// pl("reqL: %v", reqL)
+
+	if reqL == "previous" {
+		currentImageIndexG--
+		if currentImageIndexG < 0 {
+			currentImageIndexG = 0
+		}
+
+		writeImage(w)
+
+		return
+	} elif reqL == "next" {
+		currentImageIndexG++
+		if currentImageIndexG >= len(fileListG) {
+			currentImageIndexG = len(fileListG) - 1
+		}
+
+		writeImage(w)
+
+		return
+	} elif reqL == "random" {
+		showImage(w, -1)
+	} elif startsWith(reqL, "index/") {
+		idxL = strToInt(reqL[len("index/"):], -1)
+
+		if idxL < 1 {
+			idxL = 1
+		} elif idxL > len(fileListG) {
+			idxL = len(fileListG)
+		}
+
+		showImage(w, idxL-1)
+	}
+
 })
 
-pl("try start server on %v", portG)
-err = http.ListenAndServe(portG, muxG)
-if err != nil {
-	pl("failed to start server on %v: %v", portG, err)
+func startService() {
+	errL = http.ListenAndServe(portG, muxG)
+	if errL != nil {
+		pl("failed to start server on %v: %v", portG, errL)
+		exit()
+	}
 }
+
+pl("try start service on %v", portG)
+
+startService()
+
+
