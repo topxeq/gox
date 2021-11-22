@@ -18,7 +18,7 @@ require (
 	github.com/sqweek/dialog v0.0.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/topxeq/charlang v0.0.0
-	github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836 // indirect
+	github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836
 	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0
