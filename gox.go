@@ -165,6 +165,8 @@ import (
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
 	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
+	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
+
 	// qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
 
 	"github.com/sciter-sdk/go-sciter"
@@ -195,7 +197,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.31a"
+var versionG = "3.32a"
 
 // add tk.ToJSONX
 
@@ -2013,6 +2015,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("sciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 	qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
+
+	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
 
 	// qlang.Import("github_webview_webview", qlgithub_webview_webview.Exports)
 

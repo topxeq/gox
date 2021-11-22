@@ -1,0 +1,5 @@
+dlgs = github_topxeq_dlgs
+
+rs = dlgs.Entry("Please enter...", "Gender", "")
+
+pv("rs")
