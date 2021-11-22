@@ -1,5 +1,13 @@
 dlgs = github_topxeq_dlgs
 
-rs = dlgs.Entry("Please enter...", "Gender", "")
+// rs = dlgs.Entry("Please enter...", "Gender", "")
+
+// pv("rs")
+
+// rs = getDateGUI("Please select...", "%v date", "Start")
+
+// pv("rs")
+
+rs = getColorGUI("Please select the color...")
 
 pv("rs")

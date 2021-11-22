@@ -188,6 +188,7 @@ import (
 	"os/exec"
 
 	"github.com/sqweek/dialog"
+	"github.com/topxeq/dlgs"
 
 	// full version related end
 	// GUI related end
@@ -1812,6 +1813,10 @@ func importQLNonGUIPackages() {
 		// gui related 图形界面相关
 		"initGUI":             initGUI,             // GUI操作，一般均需调用initGUI来进行初始化，例：initGUI()
 		"getConfirmGUI":       getConfirmGUI,       // 显示一个提示信息并让用户确认的对话框，例：getConfirmGUI("对话框标题", "信息内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getConfirmGUI("对话框标题", "信息内容=%v", abc)
+		"getInputGUI":         getInputGUI,         // 显示一个提示信息并让用户输入信息的对话框，例：getInputGUI("请输入……", "姓名")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getInputGUI("对话框标题", "信息内容=%v", abc)
+		"getPasswordGUI":      getPasswordGUI,      // 显示一个提示信息并让用户输入密码/口令的对话框，例：getPasswordGUI("请输入……", "密码")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getPasswordGUI("对话框标题", "信息内容=%v", abc)
+		"getColorGUI":         getColorGUI,         // 获取用户选择的颜色，结果格式是FFEEDD或者TXERROR字符串；示例：getColorGUI("请选择颜色", "CCCCCC")
+		"getDateGUI":          getDateGUI,          // 获取用户选择的日期，结果格式是20210218或者TXERROR字符串；示例：getDateGUI("请选择……", "开始日期")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getPasswordGUI("对话框标题", "信息内容=%v", abc)
 		"showInfoGUI":         showInfoGUI,         // 显示一个提示信息的对话框，例：showInfoGUI("对话框标题", "信息内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如showInfoGUI("对话框标题", "信息内容=%v", abc)
 		"showErrorGUI":        showErrorGUI,        // 显示一个错误或警告信息的对话框，例：showErrorGUI("对话框标题", "错误或警告内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如showErrorGUI("对话框标题", "信息内容=%v", abc)
 		"selectFileToSaveGUI": selectFileToSaveGUI, // 图形化选取用于保存数据的文件，例：fileName = selectFileToSaveGUI("-title=请选择文件……", "-filterName=所有文件", "-filter=*", "-start=.")，参数均为可选，start是默认起始目录
@@ -2216,6 +2221,69 @@ func importQLGUIPackages() {
 }
 
 // full version related start
+
+func getColorGUI(titleA string, defaultA ...string) string {
+	defaultT := ""
+
+	if len(defaultA) > 0 {
+		defaultT = defaultA[0]
+	}
+
+	rsT, flagT, errT := dlgs.Color(titleA, defaultT)
+
+	if errT != nil {
+		return tk.ErrorToString(errT)
+	}
+
+	if !flagT {
+		return tk.ErrStrf("") // indicate no input
+	}
+
+	return tk.ColorToHex(rsT)
+}
+
+func getDateGUI(titleA string, formatA string, messageA ...interface{}) string {
+	rsT, flagT, errT := dlgs.Date(titleA, fmt.Sprintf(formatA, messageA...), time.Now())
+
+	if errT != nil {
+		return tk.ErrorToString(errT)
+	}
+
+	if !flagT {
+		return tk.ErrStrf("") // indicate no input
+	}
+
+	return tk.FormatTime(rsT, "20060102")
+}
+
+func getInputGUI(titleA string, formatA string, messageA ...interface{}) string {
+	rsT, flagT, errT := dlgs.Entry(titleA, fmt.Sprintf(formatA, messageA...), "")
+
+	if errT != nil {
+		return tk.ErrorToString(errT)
+	}
+
+	if !flagT {
+		return tk.ErrStrf("") // indicate no input
+	}
+
+	return rsT
+}
+
+func getPasswordGUI(titleA string, formatA string, messageA ...interface{}) string {
+	rsT, flagT, errT := dlgs.Password(titleA, fmt.Sprintf(formatA, messageA...))
+
+	if errT != nil {
+		return tk.ErrorToString(errT)
+	}
+
+	if !flagT {
+		return tk.ErrStrf("") // indicate no input
+	}
+
+	return rsT
+}
+
 func getConfirmGUI(titleA string, formatA string, messageA ...interface{}) bool {
 	return dialog.Message(formatA, messageA...).Title(titleA).YesNo()
 }
