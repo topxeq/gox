@@ -165,6 +165,7 @@ import (
 	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
 	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
+	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
 
 	// qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
@@ -1815,8 +1816,8 @@ func importQLNonGUIPackages() {
 		"getConfirmGUI":       getConfirmGUI,       // 显示一个提示信息并让用户确认的对话框，例：getConfirmGUI("对话框标题", "信息内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getConfirmGUI("对话框标题", "信息内容=%v", abc)
 		"getInputGUI":         getInputGUI,         // 显示一个提示信息并让用户输入信息的对话框，例：getInputGUI("请输入……", "姓名")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getInputGUI("对话框标题", "信息内容=%v", abc)
 		"getPasswordGUI":      getPasswordGUI,      // 显示一个提示信息并让用户输入密码/口令的对话框，例：getPasswordGUI("请输入……", "密码")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getPasswordGUI("对话框标题", "信息内容=%v", abc)
-		"getListItemGUI":      getListItemGUI,      // 提供单选列表供用户选择，结果格式是选中的字符串或者TXERROR字符串；示例：getListItemGUI("请选择", "所需的颜色", ["红色","黄色"])
-		"getListItemsGUI":     getListItemsGUI,     // 提供多选列表供用户选择，结果格式是选中的字符串数组或者TXERROR字符串；示例：getListItemGUI("请选择", "所需的颜色", ["红色","黄色","蓝色"])
+		"getListItemGUI":      getListItemGUI,      // 提供单选列表供用户选择，结果格式是选中的字符串或者TXERROR字符串；示例：getListItemGUI("请选择", "所需的颜色", ["红色","黄色"]...)
+		"getListItemsGUI":     getListItemsGUI,     // 提供多选列表供用户选择，结果格式是选中的字符串数组或者TXERROR字符串；示例：getListItemGUI("请选择", "所需的颜色", ["红色","黄色","蓝色"]...)
 		"getColorGUI":         getColorGUI,         // 获取用户选择的颜色，结果格式是FFEEDD或者TXERROR字符串；示例：getColorGUI("请选择颜色", "CCCCCC")
 		"getDateGUI":          getDateGUI,          // 获取用户选择的日期，结果格式是20210218或者TXERROR字符串；示例：getDateGUI("请选择……", "开始日期")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getPasswordGUI("对话框标题", "信息内容=%v", abc)
 		"showInfoGUI":         showInfoGUI,         // 显示一个提示信息的对话框，例：showInfoGUI("对话框标题", "信息内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如showInfoGUI("对话框标题", "信息内容=%v", abc)
@@ -2024,6 +2025,7 @@ func importQLNonGUIPackages() {
 	qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
 
 	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
+	qlang.Import("github_topxeq_dialog", qlgithub_topxeq_dialog.Exports)
 
 	// qlang.Import("github_webview_webview", qlgithub_webview_webview.Exports)
 
