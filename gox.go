@@ -187,7 +187,7 @@ import (
 	// full version related start
 	"os/exec"
 
-	"github.com/sqweek/dialog"
+	"github.com/topxeq/dialog"
 	"github.com/topxeq/dlgs"
 
 	// full version related end
@@ -198,7 +198,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.32a"
+var versionG = "3.33a"
 
 // add tk.ToJSONX
 
@@ -1815,6 +1815,8 @@ func importQLNonGUIPackages() {
 		"getConfirmGUI":       getConfirmGUI,       // 显示一个提示信息并让用户确认的对话框，例：getConfirmGUI("对话框标题", "信息内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getConfirmGUI("对话框标题", "信息内容=%v", abc)
 		"getInputGUI":         getInputGUI,         // 显示一个提示信息并让用户输入信息的对话框，例：getInputGUI("请输入……", "姓名")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getInputGUI("对话框标题", "信息内容=%v", abc)
 		"getPasswordGUI":      getPasswordGUI,      // 显示一个提示信息并让用户输入密码/口令的对话框，例：getPasswordGUI("请输入……", "密码")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getPasswordGUI("对话框标题", "信息内容=%v", abc)
+		"getListItemGUI":      getListItemGUI,      // 提供单选列表供用户选择，结果格式是选中的字符串或者TXERROR字符串；示例：getListItemGUI("请选择", "所需的颜色", ["红色","黄色"])
+		"getListItemsGUI":     getListItemsGUI,     // 提供多选列表供用户选择，结果格式是选中的字符串数组或者TXERROR字符串；示例：getListItemGUI("请选择", "所需的颜色", ["红色","黄色","蓝色"])
 		"getColorGUI":         getColorGUI,         // 获取用户选择的颜色，结果格式是FFEEDD或者TXERROR字符串；示例：getColorGUI("请选择颜色", "CCCCCC")
 		"getDateGUI":          getDateGUI,          // 获取用户选择的日期，结果格式是20210218或者TXERROR字符串；示例：getDateGUI("请选择……", "开始日期")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如getPasswordGUI("对话框标题", "信息内容=%v", abc)
 		"showInfoGUI":         showInfoGUI,         // 显示一个提示信息的对话框，例：showInfoGUI("对话框标题", "信息内容")，注意，从第二个参数开始可以类似于printf那样带格式化字符串和任意长度参数值，例如showInfoGUI("对话框标题", "信息内容=%v", abc)
@@ -2270,6 +2272,34 @@ func getInputGUI(titleA string, formatA string, messageA ...interface{}) string 
 	return rsT
 }
 
+func getListItemGUI(titleA string, messageA string, strsA ...string) string {
+	rsT, flagT, errT := dlgs.List(titleA, messageA, strsA)
+
+	if errT != nil {
+		return tk.ErrorToString(errT)
+	}
+
+	if !flagT {
+		return tk.ErrStrf("") // indicate no input
+	}
+
+	return rsT
+}
+
+func getListItemsGUI(titleA string, messageA string, strsA ...string) interface{} {
+	rsT, flagT, errT := dlgs.ListMulti(titleA, messageA, strsA)
+
+	if errT != nil {
+		return errT
+	}
+
+	if !flagT {
+		return tk.Errf("") // indicate no input
+	}
+
+	return rsT
+}
+
 func getPasswordGUI(titleA string, formatA string, messageA ...interface{}) string {
 	rsT, flagT, errT := dlgs.Password(titleA, fmt.Sprintf(formatA, messageA...))
 
@@ -2285,15 +2315,24 @@ func getPasswordGUI(titleA string, formatA string, messageA ...interface{}) stri
 }
 
 func getConfirmGUI(titleA string, formatA string, messageA ...interface{}) bool {
-	return dialog.Message(formatA, messageA...).Title(titleA).YesNo()
+	flagT, errT := dlgs.Question(titleA, fmt.Sprintf(formatA, messageA...), true)
+	if errT != nil {
+		return false
+	}
+
+	return flagT
+
+	// return dialog.Message(formatA, messageA...).Title(titleA).YesNo()
 }
 
 func showInfoGUI(titleA string, formatA string, messageA ...interface{}) {
-	dialog.Message(formatA, messageA...).Title(titleA).Info()
+	dlgs.Info(titleA, fmt.Sprintf(formatA, messageA...))
+	// dialog.Message(formatA, messageA...).Title(titleA).Info()
 }
 
 func showErrorGUI(titleA string, formatA string, messageA ...interface{}) {
-	dialog.Message(formatA, messageA...).Title(titleA).Error()
+	dlgs.Error(titleA, fmt.Sprintf(formatA, messageA...))
+	// dialog.Message(formatA, messageA...).Title(titleA).Error()
 }
 
 // filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()

@@ -15,9 +15,9 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/sciter-sdk/go-sciter v0.5.1
 	github.com/spf13/afero v1.5.1 // indirect
-	github.com/sqweek/dialog v0.0.0
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/topxeq/charlang v0.0.0
+	github.com/topxeq/dialog v0.0.0
 	github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836
 	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
 	github.com/topxeq/qlang v0.0.0
@@ -49,4 +49,4 @@ replace github.com/topxeq/charlang v0.0.0 => ../charlang
 
 replace github.com/sciter-sdk/go-sciter v0.5.1 => ../../sciter-sdk/go-sciter
 
-replace github.com/sqweek/dialog v0.0.0 => ../../sqweek/dialog
+replace github.com/topxeq/dialog v0.0.0 => ../../topxeq/dialog
