@@ -1,0 +1,30 @@
+func f1() {
+	a = 1.1
+	for {
+		pl("f1: %v", a)
+
+		sleep(1.0)
+	}
+}
+
+func f2() {
+	a
+	for {
+		a = "A"
+		pl("f2: %v", a)
+
+		sleep(0.7)
+	}
+}
+
+a
+
+go f1()
+go f2()
+
+a = 0
+for {
+	pl("f0: %v", a)
+
+	sleep(0.3)
+}
