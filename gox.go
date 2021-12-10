@@ -1631,6 +1631,7 @@ func importQLNonGUIPackages() {
 		"htmlEncode":         tk.EncodeHTML,           // HTML编码（&nbsp;等）
 		"htmlDecode":         tk.DecodeHTML,           // HTML解码
 		"urlEncode":          tk.UrlEncode2,           // URL编码（http://www.aaa.com -> http%3A%2F%2Fwww.aaa.com）
+		"urlEncodeX":         tk.UrlEncode,            // 增强URL编码（会将+和\n等也编码）
 		"urlDecode":          tk.UrlDecode,            // URL解码
 		"base64Encode":       tk.EncodeToBase64,       // Base64编码，输入参数是[]byte字节数组
 		"base64Decode":       tk.DecodeFromBase64,     // base64解码
