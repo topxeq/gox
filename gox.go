@@ -2729,7 +2729,11 @@ func runArgs(argsA ...string) interface{} {
 
 		scriptPathG = ""
 	} else if ifRunT {
-		fcT = scriptT
+		if tk.IfSwitchExistsWhole(os.Args, "-urlDecode") {
+			fcT = tk.UrlDecode(scriptT)
+		} else {
+			fcT = scriptT
+		}
 
 		scriptPathG = ""
 	} else if ifExampleT {
