@@ -250,6 +250,7 @@ github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4/go.mod h1:LSJyQqZ2K+a
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 h1:SPJ/3/AfLh1Ae6N6A2hPRdWI5VLnTI0+G6dCcxV9X3o=
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97/go.mod h1:4OH+jvJsOmDlZo0w/14dBxg/zQ6jnbrxdUdasWdgoR8=
 github.com/topxeq/blockix v0.0.0-20210301072129-59538096fd95/go.mod h1:xyAfbPzbZwTQ1XIyYCvtE0oHzU9efcOB8KqqDmMdGdY=
+github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533/go.mod h1:VThQgbdym2seGYfauRSCVo9sSoaDX79OJYO1bRpn4Mw=
 github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836 h1:nyCfyp0RtcddP5ygVfQnvZkVtkwj383ze1I6sG6lHH8=
 github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836/go.mod h1:kFhnUTa5MiRVbkEsoTjB/UbVWQyMAzWrnmU6CuGmx30=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e h1:/wlnbdgwQS5AY2zDhv68utbTPCYiIAhQsobpJX9R5T0=
@@ -264,7 +265,6 @@ github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 h1:NmJisdKbTYN77elI
 github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029/go.mod h1:UVq5N0KFj5HnWtb+azlgFGygxGbhpFsG44uPjPNAbUE=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 h1:rK+vzRQ8z4If0mWMPuy25tSUdEbc5ngAbzknR+AF4j0=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3/go.mod h1:rxUzYlbHy6wU8ci0i5R1zs3YlgXqe5gDRwXwFLp2BqA=
-github.com/topxeq/sqltk v0.0.0-20210112052931-55ad87cc9be3/go.mod h1:KOl6vGec44tFypvXpWi2d/V1bvnOljyiIizuwIeBWu4=
 github.com/topxeq/tk v0.0.0-20210112051931-4640fa2841f4/go.mod h1:JxOz/UPMGGicnycWXCt1sanGXvbIeTtlNQi55kCFUT4=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=

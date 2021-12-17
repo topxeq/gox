@@ -1,0 +1,5 @@
+func f1(a) {
+	return a+1
+}
+
+println(f1(2))

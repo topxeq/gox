@@ -1,3 +1,5 @@
+// define a complex anonymous function
+// 定义一个复杂的匿名函数
 fn(x) {
 	return fn(y) {
 		x(y)
@@ -6,6 +8,8 @@ fn(x) {
 		println("Hi!", z)
 	})("Nice to see you.")
 
+// anonymous function to test variable "count"
+// 测试闭包的函数，用于将count进行计算
 NewAddFunc = fn() {
 	count = 0
 
@@ -19,6 +23,7 @@ NewAddFunc = fn() {
 main {
 	println("count=", count)
 
+	// 通过闭包操作count，可以发现count是在变化的
 	f2 = NewAddFunc()
 	
 	println(f2(3))
@@ -27,6 +32,8 @@ main {
 	
 	println(f2(9))
 	
+	// should panic here, since count is nil/undefined
+	// 此处程序会崩溃，因为count未经定义
 	count += 20
 	
 	println("count=", count)
