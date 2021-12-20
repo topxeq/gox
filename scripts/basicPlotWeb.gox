@@ -48,7 +48,7 @@ htmlT = `
     <title>加载图像</title>
 </head>
 <body>
-<img id="imgID" src="TX_IMG_GT">
+<img id="imgID" src="TX_IMG_XT">
 </body>
 </html>
 `
@@ -59,15 +59,15 @@ htmlT = `
 // 然后将其设置到img标签的src属性中
 func httpHandler(w, req) {
 	// 载入图片数据
-	imgData, errT := loadBytes(`c:\test\points.png`)
+	imgDataT := loadBytes(`c:\test\points.png`)
 
-	checkError(errT)
+	checkError(imgDataT)
 
 	// 将图片数据转换为BASE64编码的文本
-	base64Data = base64Encode(imgData)
+	base64DataT = base64Encode(imgDataT)
 
 	// 将img标签的src属性替换为BASE64格式的表达
-	htmlT = strReplace(htmlT, "TX_IMG_GT", `data:image/jpg;base64,`+base64Data)
+	htmlT = strReplace(htmlT, "TX_IMG_XT", `data:image/jpg;base64,`+base64DataT)
 
 	// 写HTTP响应头
 	w.WriteHeader(http.StatusOK)

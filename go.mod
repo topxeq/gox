@@ -23,6 +23,8 @@ require (
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0
 	github.com/topxeq/tk v0.0.0
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
@@ -50,3 +52,5 @@ replace github.com/topxeq/charlang v0.0.0 => ../charlang
 replace github.com/sciter-sdk/go-sciter v0.5.1 => ../../sciter-sdk/go-sciter
 
 replace github.com/topxeq/dialog v0.0.0 => ../../topxeq/dialog
+
+replace github.com/topxeq/goph v0.0.0 => ../goph

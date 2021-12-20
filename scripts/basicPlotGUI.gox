@@ -5,11 +5,11 @@ itk = imagetk.NewImageTK()
 p, _ = plot.New()
 
 // 设置图表的抬头标题
-p.Title.Text = "Gonum Plot Example"
+p@Title.Text = "Gonum Plot Example"
 
 // 设置图标X、Y坐标的文字
-p.X.Label.Text = "X"
-p.Y.Label.Text = "Y"
+p@X@Label.Text = "X"
+p@Y@Label.Text = "Y"
 
 // 创建一组准备绘制的坐标点（4个点）
 points = make(plot_plotter.XYs, 4)
@@ -33,22 +33,86 @@ plot_plotutil.AddLinePoints(p, "y = x * x", points)
 // 需要确保c:\test目录已经存在
 p.Save(4*plot_vg.Inch.Points(), 4*plot_vg.Inch.Points(), `c:\test\points.png`)
 
-onButtonClick = func() {
-	os.Exit(0)
-}
+// 设置Sciter格式的HTML网页字符串
+// 此处非常简单，就是一个网页框架
+// 后续DOM操作将由Gox代码来进行
+// 注意，为了正确在Sciter中显示中文，最好加上两种meta定义utf-8编码
+htmlT := `
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+</body>
+</html>
 
-loop = func() {
+`
 
-	layoutT = []giu.Widget{
-		giu.ImageWithFile(`c:\test\points.png`, 300, 300),
-		giu.Button("Close", onButtonClick),
-	}
+// 锁定GUI线程，理论上GUI编程都要求在同一线程中更新界面元素
+runtime.LockOSThread()
 
-	giu.SingleWindow("Plot Diagram", layoutT)
-}
+// 创建Sciter窗口，并指定窗口区域位置及大小
+w, err := sciterWindow.New(sciter.DefaultWindowCreateFlag, sciter.NewRect(0, 0, 480, 480))
 
-mainWindow = giu.NewMasterWindow("Plot Diagram", 700, 400, giu.MasterWindowFlagsNotResizable, nil)
+checkError(err)
 
-// giu.LoopWindow(mainWindow, loop)
-mainWindow.Main(loop)
+// 设置该窗口的一些属性
+w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO)
 
+// 载入HTML页面框架
+// 第二个参数是基URL（base url），我们一般不用
+w.LoadHtml(htmlT, "")
+
+// 设置窗口标题，注意是中文的
+w.SetTitle("展示文件点线图")
+
+// 获取Sciter页面的根元素
+rootT, _ := w.GetRootElement()
+
+// 获取body元素
+bodyT, _ := rootT.SelectFirst("body")
+
+// 创建一个div，其中文本为空（第二个参数）
+divT, _ := sciter.CreateElement("div", "")
+
+// 在body元素中插入div，第二个参数是插入的位置
+_ := bodyT.Insert(divT, 0)
+
+// 设置div的innerHTML
+// 第二个标志SIH_REPLACE_CONTENT表示替换innerHTML的全部
+// 还有可用的标志位有SIH_INSERT_AT_START、SIH_APPEND_AFTER_LAST
+// SOH_REPLACE、SOH_INSERT_BEFORE、SOH_INSERT_AFTER，看名字即可知道大意
+divT.SetHtml(`<span id="titleTextID">演示图片</span>`, sciter.SIH_REPLACE_CONTENT)
+
+// 设置div的id属性
+divT.SetAttr("id", "mainDivID")
+
+// 设置div的style属性（即CSS）
+divT.SetStyle("margin-bottom", "10px")
+
+// 获取我们之前定义的span标签
+// 这是在设置div的HTML中用文本定义的
+// 注意选择器的快捷写法
+spanT, _ := bodyT.SelectFirst("span#titleTextID")
+
+// 设置文字颜色为红色
+spanT.SetStyle("color", "#ff0000")
+
+// 再创建一个img元素准备装载图片
+imgT, _ := sciter.CreateElement("img", "")
+
+// 在body中插入元素，序号为1，也就是第二个元素，即在前面的div之后
+_ := bodyT.Insert(imgT, 1)
+
+// 设置该元素的src属性为BASE64格式的图片
+// imgT.SetAttr("src", `data:image/png;base64,`+base64StrT)
+imgT.SetAttr("src", `C:\test\points.png`)
+
+// 输出目前的根节点的HTML文本以供参考
+// 第二个参数为true表示是outerHTML，否则是innerHTML
+plv(rootT.Html(true))
+
+// 显示窗口并运行GUI图形界面
+w.Show()
+w.Run()

@@ -76,7 +76,7 @@ w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_FILE_IO | sc
 w.LoadHtml(htmlT, "")
 
 // 设置窗口标题，注意是中文的
-w.SetTitle("图片转向")
+w.SetTitle("并列点线图")
 
 // 获取Sciter页面的根元素
 rootT, _ := w.GetRootElement()
