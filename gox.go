@@ -167,16 +167,16 @@ import (
 	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
 	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
 
-	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
-	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
+	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/topxeq/go-sciter"
+	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/topxeq/go-sciter/window"
 
 	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
 
 	// qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
 
-	"github.com/sciter-sdk/go-sciter"
-	"github.com/sciter-sdk/go-sciter/window"
+	"github.com/topxeq/go-sciter"
+	"github.com/topxeq/go-sciter/window"
 
 	// GUI related end
 
@@ -204,7 +204,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.38a"
+var versionG = "3.39a"
 
 // add tk.ToJSONX
 
@@ -2061,8 +2061,10 @@ func importQLNonGUIPackages() {
 	qlgithub_scitersdk_gosciter.Exports["NewScnDataLoaded"] = NewScnDataLoaded
 
 	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
+	qlang.Import("github_topxeq_gosciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("sciter", qlgithub_scitersdk_gosciter.Exports)
 	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
+	qlang.Import("github_topxeq_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
 	qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
 
 	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
