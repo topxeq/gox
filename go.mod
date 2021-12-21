@@ -49,8 +49,6 @@ replace github.com/topxeq/text v0.0.0 => ../text
 
 replace github.com/topxeq/charlang v0.0.0 => ../charlang
 
-replace github.com/sciter-sdk/go-sciter v0.5.1 => ../../sciter-sdk/go-sciter
-
 replace github.com/topxeq/dialog v0.0.0 => ../../topxeq/dialog
 
 replace github.com/topxeq/goph v0.0.0 => ../goph
