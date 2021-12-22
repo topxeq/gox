@@ -1,0 +1,64 @@
+// XML string to parse
+xmlT = `
+
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+	<to>Michael</to>
+	<from>Johnson</from>
+	<heading>Reminder</heading>
+	<body>Don't forget the meeting!</body>
+	<members>
+		<member>
+			<name lang="fr">Louis</name>
+			<age>27</age>
+		</member>
+		<member>
+			<name lang="en">Lisa</name>
+			<age>23</age>
+		</member>
+		<member>
+			<name lang="en">Tom</name>
+			<age>31</age>
+		</member>
+	</members>
+</note> 
+
+`
+
+// parse XML and get the root node of the XML
+rootT = fromXML(xmlT)
+
+if isErr(rootT) {
+	pl("failed to parse XML")
+	return
+}
+
+// get the full tag of the node
+pl("root element is: %v", rootT.FullTag())
+
+// get the child node text of the node
+pl("heading is: %v", rootT.SelectElement("heading").Text())
+
+// get child elements
+membersT = rootT.SelectElement("members").ChildElements()
+
+// enumerate the child elements
+for i, v = range membersT {
+	pl("[%v] name(%v): %v, age: %v", i, v.SelectElement("name").SelectAttrValue("lang", ""), v.SelectElement("name").Text(), v.SelectElement("age").Text())
+}
+
+// find node/nodes using XPath
+tomT = rootT.FindElement(`//members/member[name='Lisa']`)
+
+// examples of native function: toXML
+pl("[to 1]%v", toXML(tomT))
+
+pl("[to 2] %v", toXML(`abc 剑荡四方红树林 <1> "list"`))
+
+pl("[to 3a] %v", toXML({"f1": "v1", "f2": {"f21":18, "f22": "v22", "f23": [{"itemName": "item1", "weight": 99}, {"itemName": "item2", "weight": 36}]}}, "-indent=2", "-root=test", `-rootAttr={"attr1": 69}`))
+pl("[to 3b] %v", toXML({"f1": "v1", "f2": {"f21":18, "f22": "v22", "f23": [{"itemName": "item1", "weight": 99}, {"itemName": "item2", "weight": 36}]}}))
+
+pl("[to 4a] %v", toXML([1, 2, 3, "abc"], "-root=root", "-indent=2"))
+pl("[to 4b] %v", toXML([1, 2, 3, "abc"]))
+
+pass()

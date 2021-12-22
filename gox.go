@@ -204,7 +204,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.39a"
+var versionG = "3.50a"
 
 // add tk.ToJSONX
 
@@ -1053,6 +1053,11 @@ func nilToEmpty(vA interface{}, argsA ...string) string {
 		return ""
 	}
 
+	_, ok := vA.(error)
+	if ok {
+		return ""
+	}
+
 	if (argsA != nil) && (len(argsA) > 0) {
 		vf, ok := vA.(float64)
 		if ok {
@@ -1085,6 +1090,11 @@ func nilToEmptyOk(vA interface{}, argsA ...string) (string, bool) {
 	}
 
 	if tk.IsNil(vA) {
+		return "", true
+	}
+
+	_, ok := vA.(error)
+	if ok {
 		return "", true
 	}
 
@@ -1552,6 +1562,7 @@ func importQLNonGUIPackages() {
 		"getNowStrCompact":     tk.GetNowTimeString,       // 获取一个简化的表示当前时间的字符串，格式：20200202080915
 		"getNowStringCompact":  tk.GetNowTimeStringFormal, // 等同于getNowStringCompact
 		"getNowDateStrCompact": getNowDateStrCompact,      // 获取一个简化的表示当前日期的字符串，格式：20210215
+		"genTimeStamp":         tk.GetTimeStampMid,        // 生成时间戳，格式为13位的Unix时间戳1640133706954，例：timeStampT = genTimeStamp(time.Now())
 		"genRandomStr":         tk.GenerateRandomStringX,  // 生成随机字符串，函数定义： genRandomStr("-min=6", "-max=8", "-noUpper", "-noLower", "-noDigit", "-special", "-space", "-invalid")
 		"generateRandomString": tk.GenerateRandomString,   // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
@@ -1567,8 +1578,8 @@ func importQLNonGUIPackages() {
 		"regSplit":        tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 
 		// conversion related 转换相关
-		"nilToEmpty":   nilToEmpty,                  // 将nil等值都转换为空字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
-		"nilToEmptyOk": nilToEmptyOk,                // 将nil等值都转换为空字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim，第二个返回值是bool类型，如果值是undefined，则返回false，其他情况为true
+		"nilToEmpty":   nilToEmpty,                  // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
+		"nilToEmptyOk": nilToEmptyOk,                // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim，第二个返回值是bool类型，如果值是undefined，则返回false，其他情况为true
 		"intToStr":     tk.IntToStrX,                // 整数转字符串
 		"strToInt":     tk.StrToIntWithDefaultValue, // 字符串转整数
 		"floatToStr":   tk.Float64ToStr,             // 浮点数转字符串
@@ -1633,6 +1644,8 @@ func importQLNonGUIPackages() {
 		// encode/decode related 编码/解码相关
 		"xmlEncode":          tk.EncodeToXMLString,    // 编码为XML
 		"xmlDecode":          tk.FromXMLWithDefault,   // 解码XML为对象，函数定义：(xmlA string, defaultA interface{}) interface{}
+		"fromXML":            tk.FromXMLX,             // 解码XML为etree.Element对象，函数定义：fromXML(xmlA string, pathA ...interface{}) interface{}，出错时返回error，否则返回*etree.Element对象
+		"toXML":              tk.ToXML,                // 编码数据为XML格式，可选参数-indent, -cdata, -root=ABC, -rootAttr={"f1", "v1"}, -default="<xml>ab c</xml>"
 		"htmlEncode":         tk.EncodeHTML,           // HTML编码（&nbsp;等）
 		"htmlDecode":         tk.DecodeHTML,           // HTML解码
 		"urlEncode":          tk.UrlEncode2,           // URL编码（http://www.aaa.com -> http%3A%2F%2Fwww.aaa.com）
@@ -1731,14 +1744,16 @@ func importQLNonGUIPackages() {
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
 		// timeoutSecsA是请求超时的秒数
 		// optsA是一组字符串，可以是-verbose和-detail，均表示是否输出某些信息
-		"getFormValue":          tk.GetFormValueWithDefaultValue,  // 从HTTP请求中获取字段参数，可以是Query参数，也可以是POST参数，函数定义func getFormValue(reqA *http.Request, keyA string, defaultA string) string
-		"formValueExist":        tk.IfFormValueExists,             // 判断HTTP请求中的是否有某个字段参数，函数定义func formValueExist(reqA *http.Request, keyA string) bool
-		"ifFormValueExist":      tk.IfFormValueExists,             // 等同于formValueExist
-		"formToMap":             tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
-		"generateJSONResponse":  tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
-		"writeResp":             tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
-		"writeRespHeader":       tk.WriteResponseHeader,           // 写http响应头，函数原型writeRespHeader(resA http.ResponseWriter, argsA ...interface{}) error
-		"setRespHeader":         tk.SetResponseHeader,             // 设置http响应头，函数原型setRespHeader(resA http.ResponseWriter, keyA string, valueA string) error
+		"getFormValue":         tk.GetFormValueWithDefaultValue,  // 从HTTP请求中获取字段参数，可以是Query参数，也可以是POST参数，函数定义func getFormValue(reqA *http.Request, keyA string, defaultA string) string
+		"formValueExist":       tk.IfFormValueExists,             // 判断HTTP请求中的是否有某个字段参数，函数定义func formValueExist(reqA *http.Request, keyA string) bool
+		"ifFormValueExist":     tk.IfFormValueExists,             // 等同于formValueExist
+		"formToMap":            tk.FormToMap,                     // 将HTTP请求中的form内容转换为map（字典/映射类型），例：mapT = formToMap(req.Form)
+		"generateJSONResponse": tk.GenerateJSONPResponseWithMore, // 生成Web API服务器的JSON响应，支持JSONP，例：return generateJSONResponse("fail", sprintf("数据库操作失败：%v", errT), req)
+		"genResp":              tk.GenerateJSONPResponseWithMore, // 等同于generateJSONResponse
+		"writeResp":            tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
+		"writeRespHeader":      tk.WriteResponseHeader,           // 写http响应头的状态（200、404等），函数原型writeRespHeader(resA http.ResponseWriter, argsA ...interface{}) error，例：writeRespHeader(http.StatusOK)
+		"setRespHeader":        tk.SetResponseHeader,             // 设置http响应头中的内容，函数原型setRespHeader(resA http.ResponseWriter, keyA string, valueA string) error，例：setRespHeader(responseG, "Content-Type", "text/json; charset=utf-8")
+
 		"replaceHtmlByMap":      tk.ReplaceHtmlByMap,
 		"cleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
 
@@ -2080,8 +2095,6 @@ func importQLNonGUIPackages() {
 	qlang.Import("plot_plotutil", qlgonumorg_v1_plot_plotutil.Exports)
 	qlang.Import("gonumorg_v1_plot_vg", qlgonumorg_v1_plot_vg.Exports)
 	qlang.Import("plot_vg", qlgonumorg_v1_plot_vg.Exports)
-
-	// InitBlink()
 
 	InitSysspec()
 

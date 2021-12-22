@@ -1,24 +1,64 @@
-appT = fyne_app.New()
-windowT = appT.NewWindow("Calculator")
+sciter = github_scitersdk_gosciter
+window = github_scitersdk_gosciter_window
 
-textAreaT = fyne_widget.NewMultiLineEntry()
-textAreaT.SetPlaceHolder("1.2 * 3")
+initGUI()
 
-windowT.SetContent(fyne_container.NewVBox(
-	fyne_widget.NewLabel("Enter an expression."),
-	textAreaT,
-	fyne_container.NewHBox(fyne_widget.NewButton("Calculate", func() {
-		rs = eval(textAreaT.Text)
+htmlT := `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Calculator</title>
+</head>
+<body>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+		<span>Please enter the expression:</span>
+	</div>
+	<div style="margin-top: 10px; margin-bottom: 10px;">
+		<input id="mainInputID" type=text />
+	</div>
+	<div>
+		<button id="btnCal">Calculate!</button>
+		<button id="btnClose">Close</button>
+	</div>
 
-		println(rs)
+    <script type="text/tiscript">
+        $(#btnCal).on("click", function() {
+			var result = eval($(#mainInputID).value);
 
-		// set the result back into the text input
-		textAreaT.SetText(rs)
-	}), fyne_widget.NewButton("Close", func() {
-		appT.Quit()
-	})),
-))
+			view.prints(String.printf("%v", result));
 
-windowT.CenterOnScreen()
+            $(#mainInputID).value = result;
+        });
+ 
+        $(#btnClose).on("click", function() {
+            view.close();
+        });
+ 
+    </script>
+</body>
+</html>
 
-windowT.ShowAndRun()
+`
+
+runtime.LockOSThread()
+
+w, err := window.New(sciter.DefaultWindowCreateFlag, sciter.DefaultRect)
+
+checkError(err)
+
+w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL|sciter.ALLOW_SYSINFO)
+
+w.LoadHtml(htmlT, "")
+
+w.SetTitle("Calculator")
+
+w.DefineFunction("prints", func(args) {
+	tk.Pl("%v", args[0].String())
+	return sciter.NewValue("")
+})
+
+w.Show()
+
+w.Run()
