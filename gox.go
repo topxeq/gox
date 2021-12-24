@@ -862,6 +862,25 @@ func NewFuncStringStringErrorB(funcA interface{}) func(string) (string, error) {
 	return f
 }
 
+func NewFuncInterfaceInt(funcA interface{}) func(interface{}) int {
+	funcT := (funcA).(*execq.Function)
+	f := func(v interface{}) int {
+		r := funcT.Call(execq.NewStack(), v).([]interface{})
+
+		if r == nil {
+			return 0
+		}
+
+		if len(r) < 1 {
+			return 0
+		}
+
+		return tk.ToInt(r[0])
+	}
+
+	return f
+}
+
 func NewFuncStringStringError(funcA *interface{}) *(func(string) (string, error)) {
 	funcT := (*funcA).(*execq.Function)
 	f := func(s string) (string, error) {
@@ -1481,6 +1500,7 @@ func importQLNonGUIPackages() {
 		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
 		"pass":            tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
 		"isDefined":       isDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
+		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"isValid":         isValid,               // 判断某变量是否已经定义，并且不是nil，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
 		"isValidNotEmpty": isValidNotEmpty,       // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
 		"eval":            qlEval,                // 运行一段Gox语言代码
@@ -1494,7 +1514,6 @@ func importQLNonGUIPackages() {
 		"getAddr":         tk.GetAddr,            // 用反射的方式获取一个变量的地址
 		"setVar":          tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
 		"getVar":          tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
-		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"ifThenElse":      tk.IfThenElse,         // 相当于三元操作符a?b:c
 		"ifElse":          tk.IfThenElse,         // 相当于ifThenElse
 		"ifThen":          tk.IfThenElse,         // 相当于ifThenElse
@@ -1881,6 +1900,7 @@ func importQLNonGUIPackages() {
 		// GUI related end
 
 		// misc 杂项函数
+		"sortX":            tk.Sort,                         // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
 		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
 		"newFuncIIE":       NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
 		"newFuncSSE":       NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式

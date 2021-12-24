@@ -1,0 +1,18 @@
+a = [1,3,2.5,435,"abc", "zbds123", "0123a", "2.33", 2.33]
+
+b = sortX(a)
+plv(b)
+
+c = sortX(a, "-desc")
+plv(c)
+
+
+m = [{"Name": "Tom", "Age": 18}, {"Name": "Jerry", "Age": 22}, {"Name": "Peter", "Age": 8}]
+
+sortX(m, "-key=Name")
+plv(m)
+
+sortX(m, "-key=Age")
+plv(m)
+
+
