@@ -204,7 +204,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.50a"
+var versionG = "3.51a"
 
 // add tk.ToJSONX
 
@@ -389,6 +389,16 @@ func getMagic(numberA int) string {
 }
 
 // native functions 内置函数
+
+func fromJSONX(jsonA string) interface{} {
+	rsT, errT := tk.FromJSON(jsonA)
+
+	if errT != nil {
+		return errT
+	}
+
+	return rsT
+}
 
 func getNowDateStrCompact() string {
 	return tk.GetNowTimeString()[0:8]
@@ -1677,7 +1687,9 @@ func importQLNonGUIPackages() {
 		"jsonEncode":         tk.ObjectToJSON,         // JSON编码
 		"jsonDecode":         tk.JSONToObject,         // JSON解码
 		"toJSON":             tk.ToJSONX,              // 增强的JSON编码，建议使用，函数定义： toJSON(objA interface{}, optsA ...string) string，参数optsA可选。例：s = toJSON(textA, "-indent", "-sort")
-		"fromJSON":           tk.FromJSONWithDefault,  // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
+		"toJSONX":            tk.ToJSONX,              // 等同于toJSON
+		"fromJSON":           tk.FromJSONWithDefault,  // 增强的JSON解码，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
+		"fromJSONX":          fromJSONX,               // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string) interface{}，如果解码失败，返回error对象
 		"getJSONNode":        tk.GetJSONNode,          // 获取JSON中的某个节点，未取到则返回nil，示例： getJSONNode("{\"ID\":1,\"Name\":\"Reds\",\"Colors\":[\"Crimson\",\"Red\",\"Ruby\",\"Maroon\"]}", "Colors", 0)
 		"simpleEncode":       tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
 		"simpleDecode":       tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
