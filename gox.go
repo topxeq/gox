@@ -204,7 +204,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.51a"
+var versionG = "3.52a"
 
 // add tk.ToJSONX
 
@@ -1580,6 +1580,7 @@ func importQLNonGUIPackages() {
 		"strJoin":              strJoin,                   // 连接一个字符串数组，以指定的分隔符，例： s = strJoin(listT, "\n")
 		"strSplit":             strings.Split,             // 拆分一个字符串为数组，例： listT = strSplit(strT, "\n")
 		"splitLines":           tk.SplitLines,             // 相当于strSplit(strT, "\n")
+		"strSplitLines":        tk.SplitLines,             // 相当于splitLines
 		"startsWith":           tk.StartsWith,             // 判断字符串是否以某子串开头
 		"strStartsWith":        tk.StartsWith,             // 等同于startsWith
 		"endsWith":             tk.EndsWith,               // 判断字符串是否以某子串结尾
