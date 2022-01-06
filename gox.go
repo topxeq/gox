@@ -394,7 +394,13 @@ func newStringBuilder() *strings.Builder {
 	return new(strings.Builder)
 }
 
-func fromJSONX(jsonA string) interface{} {
+func fromJSONX(vA interface{}) interface{} {
+	jsonA, ok := vA.(string)
+
+	if !ok {
+		return tk.Errf("string type required")
+	}
+
 	rsT, errT := tk.FromJSON(jsonA)
 
 	if errT != nil {
