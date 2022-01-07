@@ -1,0 +1,32 @@
+// 以POST方式访问Web服务
+
+// 定义需要POST的数据
+data = {"theCityName": "北京"}
+
+// 访问网络API接口
+// 直接将POST数据代入参数即可，getWeb函数第一个参数必须是URL，后面的参数顺序无所谓
+rs = getWeb("http://www.webxml.com.cn/WebServices/WeatherWebService.asmx/getWeatherbyCityName", data)
+
+// 检查可能出现的错误
+if isErrStr(rs) {
+	pl("server response error: %v", getErrStr(rs))
+	exit()
+}
+
+// 输出返回结果
+pln(rs)
+
+// 获取服务返回信息的某个xml节点
+// 这里是天气预报信息
+node = fromXML(rs, "ArrayOfString")
+
+// 检查可能的XML格式错误
+checkErrf("failed to get XML node: %v", node)
+
+// 获取该节点下所有的子节点
+ary = node.ChildElements()
+
+// 遍历这些节点并输出每个节点的文字
+for i, v = range ary {
+	pl("[%v] %v", i, v.Text())
+}
