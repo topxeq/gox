@@ -1,0 +1,6 @@
+pln(!a)
+
+a = nil
+pln(!a)
+
+pln(!nil)
