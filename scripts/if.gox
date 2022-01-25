@@ -1,0 +1,21 @@
+if !a {
+	pln("!a")
+}
+
+if a {
+	pln("a =", a)
+} else {
+	pln("a is not defined")
+}
+
+b = 1
+
+if b {
+	pln("b =", b)
+} else {
+	pln("b is not defined")
+}
+
+pln("!b", !b)
+
+pln("!c", !c)

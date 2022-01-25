@@ -246,6 +246,8 @@ github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836 h1:nyCfyp0RtcddP5ygVfQ
 github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836/go.mod h1:kFhnUTa5MiRVbkEsoTjB/UbVWQyMAzWrnmU6CuGmx30=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e h1:/wlnbdgwQS5AY2zDhv68utbTPCYiIAhQsobpJX9R5T0=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e/go.mod h1:V81PuRavrZfUlLORzIAcJ5h84s52j49oYnPdQQ2d9Qw=
+github.com/topxeq/gods v0.0.0-20220125014124-07d522bd22df h1:XwJypQXhBgUM6VxMkx3LZtp6Cgs6r5caoWv72qufoBw=
+github.com/topxeq/gods v0.0.0-20220125014124-07d522bd22df/go.mod h1:pwCuhd06kBt3NUKc3BQwXbh6DOznm8sbFyMixA1Im/M=
 github.com/topxeq/gox v0.0.0-20200331064850-8210ab21ae74/go.mod h1:swFd+vkW9RohRyExeYnHeS9dmLsDxJabxwFu0a411+Q=
 github.com/topxeq/imagetk v0.0.0-20200429123347-cfc2b754475d/go.mod h1:5yPPipsPS5Rg8ea7bK3PhAuoQwHtXLwHEm4c+V/BWrE=
 github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f h1:LVUbV3TrzHr54obD5233g+xCUZdX3OtanmdSXKd3Nz8=

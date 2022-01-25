@@ -1,0 +1,27 @@
+utils = github_topxeq_gods_utils
+
+stack := newObject("stack")
+
+stack.Push(1)       // 1
+pln(stack)
+
+stack.Push(2)       // 1, 2
+pln(stack)
+
+pln(stack.Values())      // 2, 1 (LIFO order)
+pln(stack.Peek()) // 2,true
+pln(stack.Pop())  // 2, true
+pln(stack.Pop())  // 1, true
+pln(stack.Pop())  // nil, false (nothing to pop)
+
+stack.Push(1)       // 1
+pln(stack)
+
+stack.Clear()       // empty
+pln(stack)
+
+stack.Empty()       // true
+pln(stack)
+
+stack.Size()        // 0
+pln(stack)

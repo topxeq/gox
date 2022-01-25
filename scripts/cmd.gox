@@ -1,0 +1,43 @@
+cmd = github_gocmd_cmd
+
+findCmd := cmd.NewCmd("dir", ".", "/s")
+statusChan := findCmd.Start() // non-blocking
+
+// Print last line of stdout every 2s
+go func() {
+	for {
+		status := findCmd.Status()
+		n := len(status.Stdout)
+		fmt.Println(status.Stdout[n-1])
+
+		sleep(2.0)
+	}
+}()
+
+// Stop command after 1 hour
+go func() {
+	<-time.After(1 * time.Hour)
+	findCmd.Stop()
+}()
+
+// Check if command is done
+// select {
+// case finalStatus := <-statusChan:
+// 	fmt.Println("finalStatus:", finalStatus)
+// 	// done
+// default:
+// 	// no, still running
+// }
+
+// go func() {
+// 	finalStatus := <-statusChan
+
+// 	if finalStatus != undefined {
+// 		fmt.Println("finalStatus:", finalStatus)
+// 	}
+// }
+
+// Block waiting for command to exit, be stopped, or be killed
+finalStatus := <-statusChan
+
+fmt.Println("finalStatus:", finalStatus)

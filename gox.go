@@ -148,6 +148,8 @@ import (
 
 	qlgithub_topxeq_xmlx "github.com/topxeq/qlang/lib/github.com/topxeq/xmlx"
 
+	qlgithub_topxeq_gods_utils "github.com/topxeq/qlang/lib/github.com/topxeq/gods/utils"
+
 	qlgithub_topxeq_goph "github.com/topxeq/qlang/lib/github.com/topxeq/goph"
 
 	qlgithub_topxeq_awsapi "github.com/topxeq/qlang/lib/github.com/topxeq/awsapi"
@@ -204,7 +206,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.56a"
+var versionG = "3.58a"
 
 // add tk.ToJSONX
 
@@ -389,6 +391,69 @@ func getMagic(numberA int) string {
 }
 
 // native functions 内置函数
+
+func fnASRSE(fn func(string) (string, error)) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		if len(args) != 1 {
+			return tk.Errf("not enough parameters")
+		}
+
+		s := tk.ToStr(args[0])
+
+		strT, errT := fn(s)
+
+		if errT != nil {
+			return errT
+		}
+
+		return strT
+	}
+}
+
+func fnASRSe(fn func(string) string) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		if len(args) != 1 {
+			return tk.Errf("not enough parameters")
+		}
+
+		s := tk.ToStr(args[0])
+
+		strT := fn(s)
+
+		if tk.IsErrStr(strT) {
+			return tk.Errf("%v", tk.GetErrStr(strT))
+		}
+
+		return strT
+	}
+}
+
+func fnASSRSe(fn func(string, string) string) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		if len(args) < 2 {
+			return tk.Errf("not enough parameters")
+		}
+
+		s1 := tk.ToStr(args[0])
+		s2 := tk.ToStr(args[1])
+
+		strT := fn(s1, s2)
+
+		if tk.IsErrStr(strT) {
+			return tk.Errf("%v", tk.GetErrStr(strT))
+		}
+
+		return strT
+	}
+}
+
+// func loadTextX(fileNameA string) interface{} {
+// 	strT, errT := tk.LoadStringFromFileE(fileNameA)
+
+// 	if errT != nil {
+// 		return errT
+// 	}
+// }
 
 func newStringBuilder() *strings.Builder {
 	return new(strings.Builder)
@@ -1666,6 +1731,10 @@ func importQLNonGUIPackages() {
 		"getArrayItem": getArrayItem,                        // 类似于getMapItem，但是是取一个切片中指定序号的值
 		"joinList":     tk.JoinList,                         // 类似于strJoin，但可以连接任意类型的值
 
+		// object related 对象有关
+
+		"newObject": tk.NewObject, // 新建一个对象，目前支持stack, list, arrayList等，用法：objT = newObject("stack")
+
 		// error related 错误处理相关
 		"isError":          tk.IsError,           // 判断表达式的值是否为error类型
 		"isErr":            tk.IsError,           // 等同于isError
@@ -1727,32 +1796,36 @@ func importQLNonGUIPackages() {
 		"logPrint":   logPrint,              // 同时输出到标准输出和日志文件
 
 		// system related 系统相关
-		"getClipText":       tk.GetClipText,                 // 从系统剪贴板获取文本，例： textT = getClipText()
-		"setClipText":       tk.SetClipText,                 // 设定系统剪贴板中的文本，例： setClipText("测试")
-		"getEnv":            tk.GetEnv,                      // 获取系统环境变量
-		"setEnv":            tk.SetEnv,                      // 设定系统环境变量
-		"systemCmd":         tk.SystemCmd,                   // 执行一条系统命令，例如： systemCmd("cmd", "/k", "copy a.txt b.txt")
-		"openFile":          tk.RunWinFileWithSystemDefault, // 用系统默认的方式打开一个文件，例如： openFile("a.jpg")
-		"ifFileExists":      tk.IfFileExists,                // 判断文件是否存在
-		"fileExists":        tk.IfFileExists,                // 等同于ifFileExists
-		"joinPath":          filepath.Join,                  // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
-		"getFileSize":       tk.GetFileSizeCompact,          // 获取文件大小
-		"getFileInfo":       tk.GetFileInfo,                 // 获取文件信息，返回map[string]string
-		"getFileList":       tk.GetFileList,                 // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose")
-		"createFile":        tk.CreateFile,                  // 等同于tk.CreateFile
-		"createTempFile":    tk.CreateTempFile,              // 等同于tk.CreateTempFile
-		"copyFile":          tk.CopyFile,                    // 等同于tk.CopyFile，可带参数-force和-bufferSize=100000
-		"removeFile":        tk.RemoveFile,                  // 等同于tk.RemoveFile
-		"renameFile":        tk.RenameFile,                  // 等同于tk.RenameFile
-		"loadText":          tk.LoadStringFromFile,          // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回TXERROR:开头的字符串指明原因
-		"saveText":          tk.SaveStringToFile,            // 将字符串保存到文件，函数定义： func saveText(strA string, fileA string) string
-		"appendText":        tk.AppendStringToFile,          // 将字符串增加到文件末尾，函数定义： func appendText(strA string, fileA string) string
-		"loadBytes":         tk.LoadBytesFromFile,           // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) interface{}，返回[]byte或error，第二个参数没有或者小于零的话表示读取所有
-		"saveBytes":         tk.SaveBytesToFileE,            // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) error
-		"sleep":             tk.Sleep,                       // 休眠指定的秒数，例：sleep(30)，可以是小数
-		"sleepSeconds":      tk.SleepSeconds,                // 基本等同于sleep，但只能是整数秒
-		"sleepMilliSeconds": tk.SleepMilliSeconds,           // 类似于sleep，但单位是毫秒
-		"sleepMS":           tk.SleepMilliSeconds,           // 等同于sleepMilliSeconds
+		"getClipText":       tk.GetClipText,                  // 从系统剪贴板获取文本，例： textT = getClipText()
+		"setClipText":       tk.SetClipText,                  // 设定系统剪贴板中的文本，例： setClipText("测试")
+		"getEnv":            tk.GetEnv,                       // 获取系统环境变量
+		"setEnv":            tk.SetEnv,                       // 设定系统环境变量
+		"systemCmd":         tk.SystemCmd,                    // 执行一条系统命令，例如： systemCmd("cmd", "/k", "copy a.txt b.txt")
+		"openFile":          tk.RunWinFileWithSystemDefault,  // 用系统默认的方式打开一个文件，例如： openFile("a.jpg")
+		"ifFileExists":      tk.IfFileExists,                 // 判断文件是否存在
+		"fileExists":        tk.IfFileExists,                 // 等同于ifFileExists
+		"joinPath":          filepath.Join,                   // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
+		"getFileSize":       tk.GetFileSizeCompact,           // 获取文件大小
+		"getFileInfo":       tk.GetFileInfo,                  // 获取文件信息，返回map[string]string
+		"getFileList":       tk.GetFileList,                  // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose")
+		"getFiles":          tk.GetFileList,                  // 等同于getFileList
+		"createFile":        tk.CreateFile,                   // 等同于tk.CreateFile
+		"createTempFile":    tk.CreateTempFile,               // 等同于tk.CreateTempFile
+		"copyFile":          tk.CopyFile,                     // 等同于tk.CopyFile，可带参数-force和-bufferSize=100000
+		"removeFile":        tk.RemoveFile,                   // 等同于tk.RemoveFile
+		"renameFile":        tk.RenameFile,                   // 等同于tk.RenameFile
+		"loadText":          tk.LoadStringFromFile,           // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回TXERROR:开头的字符串指明原因
+		"loadTextX":         fnASRSE(tk.LoadStringFromFileE), // 从文件中读取文本字符串，函数定义：func loadText(fileNameA string) string，出错时返回error对象
+		"saveText":          tk.SaveStringToFile,             // 将字符串保存到文件，函数定义： func saveText(strA string, fileA string) string
+		"saveTextX":         fnASSRSe(tk.SaveStringToFile),   // 将字符串保存到文件，如果失败返回error对象
+		"appendText":        tk.AppendStringToFile,           // 将字符串增加到文件末尾，函数定义： func appendText(strA string, fileA string) string
+		"appendTextX":       fnASSRSe(tk.AppendStringToFile), // 将字符串增加到文件末尾，如果失败返回error对象
+		"loadBytes":         tk.LoadBytesFromFile,            // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) interface{}，返回[]byte或error，第二个参数没有或者小于零的话表示读取所有
+		"saveBytes":         tk.SaveBytesToFileE,             // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) error
+		"sleep":             tk.Sleep,                        // 休眠指定的秒数，例：sleep(30)，可以是小数
+		"sleepSeconds":      tk.SleepSeconds,                 // 基本等同于sleep，但只能是整数秒
+		"sleepMilliSeconds": tk.SleepMilliSeconds,            // 类似于sleep，但单位是毫秒
+		"sleepMS":           tk.SleepMilliSeconds,            // 等同于sleepMilliSeconds
 
 		// command-line 命令行处理相关
 		"getParameter":   tk.GetParameterByIndexWithDefaultValue, // 按顺序序号获取命令行参数，其中0代表第一个参数，也就是软件名称或者命令名称，1开始才是第一个参数，注意参数不包括开关，即类似-verbose=true这样的，函数定义：func getParameter(argsA []string, idxA int, defaultA string) string
@@ -1928,7 +2001,7 @@ func importQLNonGUIPackages() {
 		// GUI related end
 
 		// misc 杂项函数
-		"sortX":            tk.Sort,                         // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
+		"sortX":            tk.SortX,                        // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
 		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
 		"newFuncIIE":       NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
 		"newFuncSSE":       NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
@@ -2097,6 +2170,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("sqltk", qlgithubtopxeqsqltk.Exports)
 
 	qlang.Import("github_topxeq_xmlx", qlgithub_topxeq_xmlx.Exports)
+
+	qlang.Import("github_topxeq_gods_utils", qlgithub_topxeq_gods_utils.Exports)
 
 	qlang.Import("github_topxeq_goph", qlgithub_topxeq_goph.Exports)
 
