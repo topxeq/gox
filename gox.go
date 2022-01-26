@@ -206,7 +206,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.58a"
+var versionG = "3.59a"
 
 // add tk.ToJSONX
 
@@ -1701,6 +1701,8 @@ func importQLNonGUIPackages() {
 		"toStr":           tk.ToStr,                       // 任意值转字符串
 		"toInt":           tk.ToInt,                       // 任意值转整数
 		"toFloat":         tk.ToFloat,                     // 任意值转浮点数
+		"toSimpleMap":     tk.SimpleMapToString,           // 将一个map（map[string]string或map[string]interface{}）转换为Simple Map字符串
+		"fromSimpleMap":   tk.LoadSimpleMapFromString,     // 将一个Simple Map字符串转换为map[string]string
 		"toByte":          tk.ToByte,                      // 任意值转字节
 
 		"hexToBytes": tk.HexToBytes, // 将16进制字符串转换为字节数组([]byte)
