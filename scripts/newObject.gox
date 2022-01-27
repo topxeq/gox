@@ -1,0 +1,12 @@
+nilT = newObject("nil")
+
+plv(nilT)
+
+errT = newObject("error", "0/%v is not allowed", 0)
+
+plv(errT)
+
+errStrT = newObject("errStr", "0/%v is not allowed", 0)
+
+plv(errStrT)
+
