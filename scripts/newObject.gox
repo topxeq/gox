@@ -10,3 +10,54 @@ errStrT = newObject("errStr", "0/%v is not allowed", 0)
 
 plv(errStrT)
 
+buf1 = newObj("bytesBuffer")
+
+buf1.WriteString("abc")
+
+buf1.Write([]byte{2, 5, 8})
+
+buf1.WriteByte('\t')
+
+buf1.WriteRune(rune(123456))
+
+plv(buf1)
+
+buf2 = newObj("bytesBuffer", "123")
+
+pln(buf2.Bytes())
+pln(buf2.String())
+
+buf3 = newObj("bytesBuffer", []byte{1, 4, 7})
+
+plv(buf3)
+
+buf4 = newObj("stringBuilder")
+
+plv(buf4)
+
+buf4.WriteString("qwerty")
+
+plv(buf4.String())
+
+buf5 = newObj("stringBuilder", "1234567")
+
+plv(buf5.String())
+
+reader1 = newObj("stringReader", "abcde12345")
+
+for {
+	b, err = reader1.ReadByte()
+
+	if err != nil {
+		if err == io.EOF {
+			break
+		}
+		
+		pl("err: %v", err)
+		break
+	}
+
+	plv(b)
+}
+
+

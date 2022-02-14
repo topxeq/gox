@@ -206,7 +206,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.59a"
+var versionG = "3.60a"
 
 // add tk.ToJSONX
 
@@ -392,6 +392,48 @@ func getMagic(numberA int) string {
 
 // native functions 内置函数
 
+func isErrX(vA interface{}) bool {
+	if vA == nil {
+		return false
+	}
+
+	_, ok := vA.(error)
+
+	if ok {
+		return true
+	}
+
+	nv2, ok := vA.(string)
+
+	if ok {
+		return tk.IsErrStr(nv2)
+	}
+
+	return false
+}
+
+func getErrStrX(vA interface{}) string {
+	if vA == nil {
+		return ""
+	}
+
+	nv1, ok := vA.(error)
+
+	if ok {
+		return nv1.Error()
+	}
+
+	nv2, ok := vA.(string)
+
+	if ok {
+		if tk.IsErrStr(nv2) {
+			return tk.GetErrStr(nv2)
+		}
+	}
+
+	return ""
+}
+
 func fnASRSE(fn func(string) (string, error)) func(args ...interface{}) interface{} {
 	return func(args ...interface{}) interface{} {
 		if len(args) != 1 {
@@ -438,6 +480,31 @@ func fnASSRSe(fn func(string, string) string) func(args ...interface{}) interfac
 		s2 := tk.ToStr(args[1])
 
 		strT := fn(s1, s2)
+
+		if tk.IsErrStr(strT) {
+			return tk.Errf("%v", tk.GetErrStr(strT))
+		}
+
+		return strT
+	}
+}
+
+func fnASSVRSe(fn func(string, ...string) string) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		lenT := len(args)
+		if lenT < 1 {
+			return tk.Errf("not enough parameters")
+		}
+
+		s1 := tk.ToStr(args[0])
+
+		var strT string
+
+		if lenT < 2 {
+			strT = fn(s1)
+		} else {
+			strT = fn(s1, tk.ObjectsToS(args[1:])...)
+		}
 
 		if tk.IsErrStr(strT) {
 			return tk.Errf("%v", tk.GetErrStr(strT))
@@ -1741,6 +1808,7 @@ func importQLNonGUIPackages() {
 		// error related 错误处理相关
 		"isError":          tk.IsError,           // 判断表达式的值是否为error类型
 		"isErr":            tk.IsError,           // 等同于isError
+		"isErrX":           isErrX,               // 判断表达式的值是否为error类型，同时也判断是否是TXERROR:开始的字符串
 		"isErrStr":         tk.IsErrStr,          // 判断字符串是否是TXERROR:开始的字符串
 		"checkError":       tk.CheckError,        // 检查变量，如果是error则立即停止脚本的执行
 		"checkErr":         tk.CheckError,        // 等同于checkError
@@ -1754,6 +1822,7 @@ func importQLNonGUIPackages() {
 		"errStr":           tk.ErrStr,            // 生成TXERROR:开始的字符串
 		"errStrf":          tk.ErrStrF,           // 生成TXERROR:开始的字符串，类似sprintf的用法
 		"getErrStr":        tk.GetErrStr,         // 从TXERROR:开始的字符串获取其后的错误信息
+		"getErrStrX":       getErrStrX,           // 从error对象或TXERROR:开始的字符串获取其中的错误信息，返回为空字符串一般表示没有错误
 		"errf":             tk.Errf,              // 生成error类型的变量，其中提示信息类似sprintf的用法
 
 		// encode/decode related 编码/解码相关
@@ -1786,12 +1855,14 @@ func importQLNonGUIPackages() {
 		"tableToMSSMapArray": tk.TableToMSSMapArray,   // 类似tableToMSSMap，但主键下的键值是一个数组，其中每一项是一个map[string]string
 
 		// encrypt/decrypt related 加密/解密相关
-		"encryptStr":  tk.EncryptStringByTXDEF, // 加密字符串，第二个参数（可选）是密钥字串
-		"encryptText": tk.EncryptStringByTXDEF, // 等同于encryptStr
-		"decryptStr":  tk.DecryptStringByTXDEF, // 解密字符串，第二个参数（可选）是密钥字串
-		"decryptText": tk.DecryptStringByTXDEF, // 等同于decryptStr
-		"encryptData": tk.EncryptDataByTXDEF,   // 加密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
-		"decryptData": tk.DecryptDataByTXDEF,   // 解密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
+		"encryptStr":   tk.EncryptStringByTXDEF,            // 加密字符串，第二个参数（可选）是密钥字串
+		"encryptText":  tk.EncryptStringByTXDEF,            // 等同于encryptStr
+		"encryptTextX": fnASSVRSe(tk.EncryptStringByTXDEF), // 等同于encryptStr，但错误时返回error对象
+		"decryptStr":   tk.DecryptStringByTXDEF,            // 解密字符串，第二个参数（可选）是密钥字串
+		"decryptText":  tk.DecryptStringByTXDEF,            // 等同于decryptStr
+		"decryptTextX": fnASSVRSe(tk.DecryptStringByTXDEF), // 等同于decryptStr，但错误时返回error对象
+		"encryptData":  tk.EncryptDataByTXDEF,              // 加密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
+		"decryptData":  tk.DecryptDataByTXDEF,              // 解密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
 
 		// log related 日志相关
 		"setLogFile": tk.SetLogFile,         // 设置日志文件路径，下面有关日志的函数将用到
