@@ -1881,7 +1881,7 @@ func importQLNonGUIPackages() {
 		"joinPath":          filepath.Join,                   // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
 		"getFileSize":       tk.GetFileSizeCompact,           // 获取文件大小
 		"getFileInfo":       tk.GetFileInfo,                  // 获取文件信息，返回map[string]string
-		"getFileList":       tk.GetFileList,                  // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose")
+		"getFileList":       tk.GetFileList,                  // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose"), -compact 参数将只给出Abs、Size、IsDir三项
 		"getFiles":          tk.GetFileList,                  // 等同于getFileList
 		"createFile":        tk.CreateFile,                   // 等同于tk.CreateFile
 		"createTempFile":    tk.CreateTempFile,               // 等同于tk.CreateTempFile
