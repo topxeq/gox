@@ -206,7 +206,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.60a"
+var versionG = "3.61a"
 
 // add tk.ToJSONX
 
@@ -1914,6 +1914,8 @@ func importQLNonGUIPackages() {
 		// network related 网络相关
 		"newSSHClient": tk.NewSSHClient, // 新建一个SSH连接，以便执行各种SSH操作，例：
 		// clientT, errT = newSSHClient(hostName, port, userName, password)
+		// defer clientT.Close() // 别忘了用完关闭网络连接
+
 		// outT, errT = clientT.Run(`ls -p; cat abc.txt`)
 		// errT = clientT.Upload(`./abc.txt`, strReplace(joinPath(pathT, `abc.txt`), `\`, "/"))
 		// errT = clientT.Download(`down.txt`, `./down.txt`)
@@ -1947,6 +1949,7 @@ func importQLNonGUIPackages() {
 		"writeResp":            tk.WriteResponse,                 // 写http输出，函数原型writeResp(resA http.ResponseWriter, strA string) error
 		"writeRespHeader":      tk.WriteResponseHeader,           // 写http响应头的状态（200、404等），函数原型writeRespHeader(resA http.ResponseWriter, argsA ...interface{}) error，例：writeRespHeader(http.StatusOK)
 		"setRespHeader":        tk.SetResponseHeader,             // 设置http响应头中的内容，函数原型setRespHeader(resA http.ResponseWriter, keyA string, valueA string) error，例：setRespHeader(responseG, "Content-Type", "text/json; charset=utf-8")
+		"jsonRespToHtml":       tk.JSONResponseToHTML,            // 类似{"Status":"fail", "Value":"failed to connect DB"}的JSON响应转换为通用的简单的错误网页
 
 		"replaceHtmlByMap":      tk.ReplaceHtmlByMap,
 		"cleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
