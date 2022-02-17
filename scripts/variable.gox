@@ -1,0 +1,8 @@
+a = 1.6
+b = 12
+
+pln( a + b)
+
+c // define a variable but not assign the value
+
+c = 19

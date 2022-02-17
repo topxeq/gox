@@ -206,7 +206,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.61a"
+var versionG = "3.62a"
 
 // add tk.ToJSONX
 
@@ -1655,7 +1655,8 @@ func importQLNonGUIPackages() {
 		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"isValid":         isValid,               // 判断某变量是否已经定义，并且不是nil，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
 		"isValidNotEmpty": isValidNotEmpty,       // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
-		"eval":            qlEval,                // 运行一段Gox语言代码
+		"isValidX":        isValidNotEmpty,       // 等同于isValidNotEmpty
+		"eval":            qlEval,                // 运行一段Gox语言代码并获得其返回值，返回值可以放于名为outG的全局变量中，也可以作为最后一个表达式的返回值返回
 		"typeOf":          tk.TypeOfValue,        // 给出某变量的类型名
 		"typeOfReflect":   tk.TypeOfValueReflect, // 给出某变量的类型名（使用了反射方式）
 		"typeOfVar":       typeOfVar,             // 给出某变量的内部类型名，注意参数是字符串类型的变量名
@@ -1666,7 +1667,7 @@ func importQLNonGUIPackages() {
 		"getAddr":         tk.GetAddr,            // 用反射的方式获取一个变量的地址
 		"setVar":          tk.SetVar,             // 设置一个全局变量，例： setVar("a", "value of a")
 		"getVar":          tk.GetVar,             // 获取一个全局变量的值，例： v = getVar("a")
-		"ifThenElse":      tk.IfThenElse,         // 相当于三元操作符a?b:c
+		"ifThenElse":      tk.IfThenElse,         // 相当于三元操作符a?b:c，但注意a、b、c三个表达式仍需语法正确
 		"ifElse":          tk.IfThenElse,         // 相当于ifThenElse
 		"ifThen":          tk.IfThenElse,         // 相当于ifThenElse
 		"deepClone":       tk.DeepClone,
@@ -1708,13 +1709,13 @@ func importQLNonGUIPackages() {
 		"getRandom":    tk.GetRandomFloat,       // 获取[0.0-1.0)之间的随机浮点数
 
 		// string related 字符串相关
-		"trim":                 trim,                      // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）
+		"trim":                 trim,                      // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）和nil
 		"strTrim":              tk.Trim,                   // 等同于tk.Trim
 		"trimSafely":           tk.TrimSafely,             // 取出字符串前后的空白字符，非字符串则返回默认值空，可以通过第二个（可选）参数设置默认值
 		"trimx":                tk.TrimSafely,             // 等同于trimSafely
 		"toLower":              strings.ToLower,           // 字符串转小写
 		"toUpper":              strings.ToUpper,           // 字符串转大写
-		"padStr":               tk.PadString,              // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false，因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
+		"padStr":               tk.PadString,              // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
 		"strContains":          strings.Contains,          // 判断字符串中是否包含某个字串
 		"strContainsIn":        tk.ContainsIn,             // 判断字符串中是否包含某几个字串
 		"strReplace":           tk.Replace,                // 替换字符串中的字串
@@ -1763,7 +1764,7 @@ func importQLNonGUIPackages() {
 		"formatTime":      tk.FormatTime,                  // 等同于timeToStr
 		"strToTime":       strToTime,                      // 字符串转时间
 		"toTime":          tk.ToTime,                      // 字符串或时间转时间
-		"bytesToData":     tk.BytesToData,                 // 字节数组转任意类型变量，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
+		"bytesToData":     tk.BytesToData,                 // 字节数组转任意类型变量，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian，函数定义func(bytesA []byte, dataA interface{}, optsA ...string) error，其中dataA为接收变量
 		"dataToBytes":     tk.DataToBytes,                 // 任意类型值转字节数组，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
 		"toStr":           tk.ToStr,                       // 任意值转字符串
 		"toInt":           tk.ToInt,                       // 任意值转整数
@@ -1895,7 +1896,9 @@ func importQLNonGUIPackages() {
 		"appendText":        tk.AppendStringToFile,           // 将字符串增加到文件末尾，函数定义： func appendText(strA string, fileA string) string
 		"appendTextX":       fnASSRSe(tk.AppendStringToFile), // 将字符串增加到文件末尾，如果失败返回error对象
 		"loadBytes":         tk.LoadBytesFromFile,            // 从文件中读取二进制数据，函数定义：func loadBytes(fileNameA string, numA ...int) interface{}，返回[]byte或error，第二个参数没有或者小于零的话表示读取所有
+		"loadBytesX":        tk.LoadBytesFromFile,            // 等同于loadBytes
 		"saveBytes":         tk.SaveBytesToFileE,             // 将二进制数据保存到文件，函数定义： func saveBytes(bytesA []byte, fileA string) error
+		"saveBytesX":        tk.SaveBytesToFileE,             // 等同于saveBytes
 		"sleep":             tk.Sleep,                        // 休眠指定的秒数，例：sleep(30)，可以是小数
 		"sleepSeconds":      tk.SleepSeconds,                 // 基本等同于sleep，但只能是整数秒
 		"sleepMilliSeconds": tk.SleepMilliSeconds,            // 类似于sleep，但单位是毫秒
@@ -1909,17 +1912,17 @@ func importQLNonGUIPackages() {
 		"getFloatSwitch": tk.GetSwitchWithDefaultFloatValue,      // 与getSwitch类似，但获取到的是浮点数（float64）的值
 		"switchExists":   tk.IfSwitchExistsWhole,                 // 判断命令行参数中是否存在开关（完整的，），用法：flag = switchExists(args, "-restart")
 		"ifSwitchExists": tk.IfSwitchExistsWhole,                 // 等同于switchExists
-		"parseCommand":   tk.ParseCommandLine,                    // 等同于switchExists
+		"parseCommand":   tk.ParseCommandLine,                    // 等同于tk.ParseCommandLine
 
 		// network related 网络相关
 		"newSSHClient": tk.NewSSHClient, // 新建一个SSH连接，以便执行各种SSH操作，例：
 		// clientT, errT = newSSHClient(hostName, port, userName, password)
 		// defer clientT.Close() // 别忘了用完关闭网络连接
 
-		// outT, errT = clientT.Run(`ls -p; cat abc.txt`)
-		// errT = clientT.Upload(`./abc.txt`, strReplace(joinPath(pathT, `abc.txt`), `\`, "/"))
-		// errT = clientT.Download(`down.txt`, `./down.txt`)
-		// bytesT, errT = clientT.GetFileContent(`/root/test/down.txt`)
+		// outT, errT = clientT.Run(`ls -p; cat abc.txt`) // 执行一条或多条命令
+		// errT = clientT.Upload(`./abc.txt`, strReplace(joinPath(pathT, `abc.txt`), `\`, "/")) // 上传文件
+		// errT = clientT.Download(`down.txt`, `./down.txt`) // 下载文件
+		// bytesT, errT = clientT.GetFileContent(`/root/test/down.txt`) // 获取某个文件的二进制内容[]byte
 		"mapToPostData": tk.MapToPostData,    // 从一个映射（map）对象生成进行POST请求的参数对象，函数定义func mapToPostData(postDataA map[string]string) url.Values
 		"getWebPage":    tk.DownloadPageUTF8, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA url.Values, customHeaders string, timeoutSecsA time.Duration, optsA ...string) string
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
