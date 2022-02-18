@@ -206,7 +206,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.62a"
+var versionG = "3.63a"
 
 // add tk.ToJSONX
 
@@ -1340,6 +1340,14 @@ func isDefined(vA interface{}) bool {
 	return true
 }
 
+func isUndefined(vA interface{}) bool {
+	if vA == spec.Undefined {
+		return true
+	}
+
+	return false
+}
+
 func logPrint(formatA string, argsA ...interface{}) {
 	tk.Pl(formatA, argsA...)
 	tk.LogWithTimeCompact(formatA, argsA...)
@@ -1652,6 +1660,9 @@ func importQLNonGUIPackages() {
 		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
 		"pass":            tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
 		"isDefined":       isDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
+		"isDef":           isDefined,             // 等同于isDef
+		"isUndefined":     isUndefined,           // 判断某变量是否未定义
+		"isUndef":         isUndefined,           // 等同于isUndefined
 		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"isValid":         isValid,               // 判断某变量是否已经定义，并且不是nil，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
 		"isValidNotEmpty": isValidNotEmpty,       // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
@@ -1716,6 +1727,7 @@ func importQLNonGUIPackages() {
 		"toLower":              strings.ToLower,           // 字符串转小写
 		"toUpper":              strings.ToUpper,           // 字符串转大写
 		"padStr":               tk.PadString,              // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
+		"limitStr":             tk.LimitString,            // 超长字符串截短，用法 s2 = limitStr("abcdefg", 3, "-suffix=...")，将得到abc...，suffix默认为...
 		"strContains":          strings.Contains,          // 判断字符串中是否包含某个字串
 		"strContainsIn":        tk.ContainsIn,             // 判断字符串中是否包含某几个字串
 		"strReplace":           tk.Replace,                // 替换字符串中的字串
