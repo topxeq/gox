@@ -1,0 +1,10 @@
+
+a = 1.2
+
+pln("a defined:", isDefined(a))
+
+pln("b defined:", isDefined(b))
+
+pln("a undefined:", isUndefined(a))
+
+pln("b undefined:", isUndefined(b))

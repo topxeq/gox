@@ -1,0 +1,7 @@
+a = "good"
+
+b = "morning"
+
+c = a + " " + b
+
+pln(c)
