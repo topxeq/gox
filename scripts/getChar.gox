@@ -39,4 +39,8 @@ for {
 	r = getChar()
 
 	pl("char is %v", r)
+
+	if r == "3+0" {
+		break
+	}
 }
