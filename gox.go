@@ -209,7 +209,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.65a"
+var versionG = "3.66a"
 
 // add tk.ToJSONX
 
@@ -1750,6 +1750,7 @@ func importQLNonGUIPackages() {
 
 		// input related 输入相关
 		"getChar":      tk.GetChar,           // 从命令行获取用户的输入，成功返回一个表示字符字符串(控制字符代码+字符代码)，否则返回error对象
+		"getChar2":     tk.GetChar2,          // 从命令行获取用户的输入，成功返回一个表示字符ASCII码的字符串，否则返回error对象
 		"getInput":     tk.GetUserInput,      // 从命令行获取用户的输入
 		"getInputf":    tk.GetInputf,         // 从命令行获取用户的输入，同时可以用printf先输出一个提示信息
 		"getPasswordf": tk.GetInputPasswordf, // 从命令行获取密码输入，输入信息将不显示
