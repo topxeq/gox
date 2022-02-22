@@ -1,0 +1,42 @@
+pr("please input a key:")
+
+r = getChar()
+
+pl("char1 is %v", r)
+
+pr("please input a key:")
+
+r = getChar()
+
+pl("char2 is %v", r)
+
+keyboard = github_eiannone_keyboard
+
+err = keyboard.Open()
+
+if err != nil {
+	panic(err)
+}
+
+defer keyboard.Close()
+
+pln("Press ESC to quit")
+
+for {
+	char, key, err = keyboard.GetKey()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("You pressed: rune %q, key %X\r\n", char, key)
+
+	if key == keyboard.KeyEsc {
+		break
+	}
+}
+
+for {
+	r = getChar()
+
+	pl("char is %v", r)
+}

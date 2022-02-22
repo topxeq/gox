@@ -175,6 +175,9 @@ import (
 	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
 
+	qlgithub_eiannone_keyboard "github.com/topxeq/qlang/lib/github.com/eiannone/keyboard"
+	qlgithub_nsf_termboxgo "github.com/topxeq/qlang/lib/github.com/nsf/termbox-go"
+
 	// qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
 
 	"github.com/topxeq/go-sciter"
@@ -206,7 +209,7 @@ import (
 
 // Non GUI related
 
-var versionG = "3.63a"
+var versionG = "3.65a"
 
 // add tk.ToJSONX
 
@@ -432,6 +435,42 @@ func getErrStrX(vA interface{}) string {
 	}
 
 	return ""
+}
+
+func fnARByE(fn func() (byte, error)) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		byteT, errT := fn()
+
+		if errT != nil {
+			return errT
+		}
+
+		return byteT
+	}
+}
+
+func fnARRuE(fn func() (rune, error)) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		runeT, errT := fn()
+
+		if errT != nil {
+			return errT
+		}
+
+		return runeT
+	}
+}
+
+func fnARSE(fn func() (string, error)) func(args ...interface{}) interface{} {
+	return func(args ...interface{}) interface{} {
+		strT, errT := fn()
+
+		if errT != nil {
+			return errT
+		}
+
+		return strT
+	}
 }
 
 func fnASRSE(fn func(string) (string, error)) func(args ...interface{}) interface{} {
@@ -1710,6 +1749,7 @@ func importQLNonGUIPackages() {
 		"plExit": tk.PlAndExit, // 相当于pl然后exit退出脚本的执行
 
 		// input related 输入相关
+		"getChar":      tk.GetChar,           // 从命令行获取用户的输入，成功返回一个表示字符字符串(控制字符代码+字符代码)，否则返回error对象
 		"getInput":     tk.GetUserInput,      // 从命令行获取用户的输入
 		"getInputf":    tk.GetInputf,         // 从命令行获取用户的输入，同时可以用printf先输出一个提示信息
 		"getPasswordf": tk.GetInputPasswordf, // 从命令行获取密码输入，输入信息将不显示
@@ -1815,34 +1855,37 @@ func importQLNonGUIPackages() {
 
 		// object related 对象有关
 
-		"newObject": tk.NewObject, // 新建一个对象，目前支持stack, set(hashset), treeset, list(arraylist), linklist(linkedlist), tree(btree), stringBuffer(stringBuilder), bytesBuffer, error(err), errorString(errStr)等，用法：objT = newObject("stack")或objT = newObject("tree", 5)创建五层的btree树等
+		"newObject": tk.NewObject, // 新建一个对象，目前支持stack, set(hashset), treeset, list(arraylist), linklist(linkedlist), tree(btree), stringBuffer(stringBuilder), bytesBuffer, error(err), errorString(errStr), string(TXString)等，用法：objT = newObject("stack")或objT = newObject("tree", 5)创建五层的btree树等
 		"newObj":    tk.NewObject, // 等同于newObject
 
 		// error related 错误处理相关
-		"isError":          tk.IsError,           // 判断表达式的值是否为error类型
-		"isErr":            tk.IsError,           // 等同于isError
-		"isErrX":           isErrX,               // 判断表达式的值是否为error类型，同时也判断是否是TXERROR:开始的字符串
-		"isErrStr":         tk.IsErrStr,          // 判断字符串是否是TXERROR:开始的字符串
-		"checkError":       tk.CheckError,        // 检查变量，如果是error则立即停止脚本的执行
-		"checkErr":         tk.CheckError,        // 等同于checkError
-		"checkErrf":        tk.CheckErrf,         // 检查变量，如果是error则立即停止脚本的执行，之前可以printfln输出信息
-		"checkErrorString": tk.CheckErrorString,  // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行
-		"checkErrStr":      tk.CheckErrStr,       // 等同于checkErrorString
-		"checkErrStrf":     tk.CheckErrStrf,      // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行，之前可以printfln输出信息
-		"fatalf":           tk.Fatalf,            // printfln输出信息后终止脚本的执行
-		"fatalfc":          tk.FatalfByCondition, // printfln输出信息后如果第一个参数为false，才终止脚本的执行
-		"fatalfi":          tk.FatalfByCondition, // 同fatalfc
-		"errStr":           tk.ErrStr,            // 生成TXERROR:开始的字符串
-		"errStrf":          tk.ErrStrF,           // 生成TXERROR:开始的字符串，类似sprintf的用法
-		"getErrStr":        tk.GetErrStr,         // 从TXERROR:开始的字符串获取其后的错误信息
-		"getErrStrX":       getErrStrX,           // 从error对象或TXERROR:开始的字符串获取其中的错误信息，返回为空字符串一般表示没有错误
-		"errf":             tk.Errf,              // 生成error类型的变量，其中提示信息类似sprintf的用法
+		"isError":          tk.IsError,            // 判断表达式的值是否为error类型
+		"isErr":            tk.IsError,            // 等同于isError
+		"isErrX":           isErrX,                // 判断表达式的值是否为error类型，同时也判断是否是TXERROR:开始的字符串
+		"isErrStr":         tk.IsErrStr,           // 判断字符串是否是TXERROR:开始的字符串
+		"checkError":       tk.CheckError,         // 检查变量，如果是error则立即停止脚本的执行
+		"checkErr":         tk.CheckError,         // 等同于checkError
+		"checkErrf":        tk.CheckErrf,          // 检查变量，如果是error则立即停止脚本的执行，之前可以printfln输出信息
+		"checkErrorString": tk.CheckErrorString,   // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行
+		"checkErrStr":      tk.CheckErrStr,        // 等同于checkErrorString
+		"checkErrStrf":     tk.CheckErrStrf,       // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行，之前可以printfln输出信息
+		"fatalf":           tk.Fatalf,             // printfln输出信息后终止脚本的执行
+		"fatalfc":          tk.FatalfByCondition,  // printfln输出信息后如果第一个参数为false，才终止脚本的执行
+		"fatalfi":          tk.FatalfByCondition,  // 同fatalfc
+		"errStr":           tk.ErrStr,             // 生成TXERROR:开始的字符串
+		"errStrf":          tk.ErrStrF,            // 生成TXERROR:开始的字符串，类似sprintf的用法
+		"getErrStr":        tk.GetErrStr,          // 从TXERROR:开始的字符串获取其后的错误信息
+		"getErrStrX":       getErrStrX,            // 从error对象或TXERROR:开始的字符串获取其中的错误信息，返回为空字符串一般表示没有错误
+		"errf":             tk.Errf,               // 生成error类型的变量，其中提示信息类似sprintf的用法
+		"errToEmptyStr":    tk.ErrorToEmptyString, // 将任意值转为string，如果是error类型的变量则转为空字符串
 
 		// encode/decode related 编码/解码相关
 		"xmlEncode":          tk.EncodeToXMLString,    // 编码为XML
 		"xmlDecode":          tk.FromXMLWithDefault,   // 解码XML为对象，函数定义：(xmlA string, defaultA interface{}) interface{}
 		"fromXML":            tk.FromXMLX,             // 解码XML为etree.Element对象，函数定义：fromXML(xmlA string, pathA ...interface{}) interface{}，出错时返回error，否则返回*etree.Element对象
+		"fromXml":            tk.FromXMLX,             // 等同于fromXML
 		"toXML":              tk.ToXML,                // 编码数据为XML格式，可选参数-indent, -cdata, -root=ABC, -rootAttr={"f1", "v1"}, -default="<xml>ab c</xml>"
+		"toXml":              tk.ToXML,                // 等同于toXML
 		"htmlEncode":         tk.EncodeHTML,           // HTML编码（&nbsp;等）
 		"htmlDecode":         tk.DecodeHTML,           // HTML解码
 		"urlEncode":          tk.UrlEncode2,           // URL编码（http://www.aaa.com -> http%3A%2F%2Fwww.aaa.com）
@@ -1857,10 +1900,15 @@ func importQLNonGUIPackages() {
 		"jsonEncode":         tk.ObjectToJSON,         // JSON编码
 		"jsonDecode":         tk.JSONToObject,         // JSON解码
 		"toJSON":             tk.ToJSONX,              // 增强的JSON编码，建议使用，函数定义： toJSON(objA interface{}, optsA ...string) string，参数optsA可选。例：s = toJSON(textA, "-indent", "-sort")
+		"toJson":             tk.ToJSONX,              // 等同于toJSON
 		"toJSONX":            tk.ToJSONX,              // 等同于toJSON
+		"toJsonX":            tk.ToJSONX,              // 等同于toJSON
 		"fromJSON":           tk.FromJSONWithDefault,  // 增强的JSON解码，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
+		"fromJson":           tk.FromJSONWithDefault,  // 等同于fromJSON
 		"fromJSONX":          fromJSONX,               // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string) interface{}，如果解码失败，返回error对象
+		"fromJsonX":          fromJSONX,               // 等同于fromJSONX
 		"getJSONNode":        tk.GetJSONNode,          // 获取JSON中的某个节点，未取到则返回nil，示例： getJSONNode("{\"ID\":1,\"Name\":\"Reds\",\"Colors\":[\"Crimson\",\"Red\",\"Ruby\",\"Maroon\"]}", "Colors", 0)
+		"getJsonNode":        tk.GetJSONNode,          // 等同于getJSONNode
 		"simpleEncode":       tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
 		"simpleDecode":       tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
 		"tableToMSSArray":    tk.TableToMSSArray,      // 参见dbRecsToMapArray，主要用于处理数据库查询结果
@@ -2300,6 +2348,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
 	qlang.Import("github_topxeq_dialog", qlgithub_topxeq_dialog.Exports)
 
+	qlang.Import("github_nsf_termboxgo", qlgithub_nsf_termboxgo.Exports)
+	qlang.Import("github_eiannone_keyboard", qlgithub_eiannone_keyboard.Exports)
 	// qlang.Import("github_webview_webview", qlgithub_webview_webview.Exports)
 
 	qlang.Import("gonumorg_v1_plot", qlgonumorg_v1_plot.Exports)
