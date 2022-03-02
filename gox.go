@@ -209,7 +209,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.6.8"
+var versionG = "v3.6.9"
 
 // add tk.ToJSONX
 
@@ -383,8 +383,11 @@ func getMagic(numberA int) string {
 	if typeT == 8 {
 		fcT = tk.DownloadPageUTF8(tk.Spr("https://gitee.com/topxeq/gox/raw/master/magic/%v.gox", numberA), nil, "", 30)
 
+	} else if typeT == 9 {
+		fcT = tk.DownloadPageUTF8(tk.Spr("https://script.topget.org/magic/%v.gox", numberA), nil, "", 30)
+
 	} else if typeT == 7 {
-		fcT = tk.DownloadPageUTF8(tk.Spr("https: //raw.githubusercontent.com/topxeq/gox/master/magic/%v.gox", numberA), nil, "", 30)
+		fcT = tk.DownloadPageUTF8(tk.Spr("https://raw.githubusercontent.com/topxeq/gox/master/magic/%v.gox", numberA), nil, "", 30)
 	} else {
 		return tk.GenerateErrorString("invalid magic number")
 	}
@@ -2908,6 +2911,12 @@ func runArgs(argsA ...string) interface{} {
 		return nil
 	}
 
+	cmdT := tk.GetSwitchWithDefaultValue(argsT, "-cmd=", "")
+
+	if cmdT != "" {
+		scriptT = "CMD"
+	}
+
 	if scriptT == "" && (!ifClipT) && (!ifEmbedT) && (!ifInExeT) {
 
 		// autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
@@ -3024,6 +3033,15 @@ func runArgs(argsA ...string) interface{} {
 
 	if ifInExeT && inExeCodeT != "" && !tk.IfSwitchExistsWhole(os.Args, "-noin") {
 		fcT = inExeCodeT
+
+		scriptPathG = ""
+	} else if cmdT != "" {
+		tk.Pl("run cmd(%v)", cmdT)
+		fcT = cmdT
+
+		if tk.IfSwitchExistsWhole(os.Args, "-urlDecode") {
+			fcT = tk.UrlDecode(fcT)
+		}
 
 		scriptPathG = ""
 	} else if ifMagicT {
