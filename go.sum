@@ -454,7 +454,6 @@ github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 h1:NmJisdKbTYN77elI
 github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029/go.mod h1:UVq5N0KFj5HnWtb+azlgFGygxGbhpFsG44uPjPNAbUE=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 h1:rK+vzRQ8z4If0mWMPuy25tSUdEbc5ngAbzknR+AF4j0=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3/go.mod h1:rxUzYlbHy6wU8ci0i5R1zs3YlgXqe5gDRwXwFLp2BqA=
-github.com/topxeq/sqltk v0.0.0-20220224013714-d9d64a06d59f h1:rlYH3+ZIOedH69Sdc08ydKn2J+LsedPsjo7Sv4UQsOw=
 github.com/topxeq/sqltk v0.0.0-20220224013714-d9d64a06d59f/go.mod h1:qfnUkeG9fQMTXI+gBKHldZ3hihvSPpr0N/jGtejLuUo=
 github.com/topxeq/sqltk v0.0.0-20220228051745-2503a98a4e47 h1:iGnlQJ6ShlNT0b5H86zUXfxux6+LQrp8f41PPmlG58o=
 github.com/topxeq/sqltk v0.0.0-20220228051745-2503a98a4e47/go.mod h1:qfnUkeG9fQMTXI+gBKHldZ3hihvSPpr0N/jGtejLuUo=
@@ -462,10 +461,8 @@ github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 h1:yPsp6rNV6vy1pL0H3GG
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928/go.mod h1:tYltUG1XxnVJvVhMpEV2YUzmcOU0HjYl4fK3nnNDKiM=
 github.com/topxeq/tk v0.9.1/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
 github.com/topxeq/tk v0.9.2-0.20220224013140-1d883c9b6981/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
-github.com/topxeq/tk v0.9.9 h1:8R7im8MXzHISGyND50rdEpBzfiVm6XYTjTCWy+K1ZOk=
-github.com/topxeq/tk v0.9.9/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
-github.com/topxeq/tk v1.0.0 h1:o+oQUjOrrhsLRoVBxEZnmjcbV//K0+03WRu/hxsrdns=
-github.com/topxeq/tk v1.0.0/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
+github.com/topxeq/tk v1.0.1-0.20220306105548-30232711fa0d h1:IjwOUd9BcM2IBu0RAhgtS3vKt5t9BZNMBDNhI23e8Fo=
+github.com/topxeq/tk v1.0.1-0.20220306105548-30232711fa0d/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=
 github.com/topxeq/xmlx v0.2.0 h1:u3QIV7fNyGbLx3gvA0DjMj3Ss7U9Wmu4SYOuhunwCGQ=
