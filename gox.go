@@ -209,7 +209,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.7.0"
+var versionG = "v3.7.1"
 
 // add tk.ToJSONX
 
@@ -3036,7 +3036,6 @@ func runArgs(argsA ...string) interface{} {
 
 		scriptPathG = ""
 	} else if cmdT != "" {
-		tk.Pl("run cmd(%v)", cmdT)
 		fcT = cmdT
 
 		if tk.IfSwitchExistsWhole(os.Args, "-urlDecode") {
@@ -3054,6 +3053,7 @@ func runArgs(argsA ...string) interface{} {
 		} else {
 			fcT = scriptT
 		}
+		tk.Pl("run cmd(%v)", fcT)
 
 		scriptPathG = ""
 	} else if ifExampleT {
