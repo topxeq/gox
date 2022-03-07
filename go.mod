@@ -19,9 +19,9 @@ require (
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/go-sciter v0.0.0-20211221081058-795e1f32ae3d
 	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
-	github.com/topxeq/qlang v0.0.0-20220224015111-4e1d7d54c09e
+	github.com/topxeq/qlang v0.0.0-20220307002845-8a5031fe6e11
 	github.com/topxeq/sqltk v0.0.0-20220228051745-2503a98a4e47
-	github.com/topxeq/tk v1.0.1-0.20220306105548-30232711fa0d
+	github.com/topxeq/tk v1.0.1-0.20220307002337-1ee03d3d8831
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
