@@ -8,7 +8,7 @@ require (
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/godror/godror v0.25.3
+	github.com/godror/godror v0.31.1-0.20220304150828-9df83c110931
 	github.com/gopherjs/gopherjs v0.0.0-20220221023154-0b2280d3ff96 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
