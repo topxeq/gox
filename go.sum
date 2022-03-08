@@ -423,8 +423,9 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.7.1-0.20220215102604-1e36bfe10404 h1:fF/zyyzTKjBjhPYm5tKbrjVuRjCcUBRtYpdDftuIhkw=
+github.com/stretchr/testify v1.7.1-0.20220215102604-1e36bfe10404/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/tinylib/msgp v1.1.5 h1:2gXmtWueD2HefZHQe1QOy9HVzmFrLOVvsXwXBQ0ayy0=
 github.com/tinylib/msgp v1.1.5/go.mod h1:eQsjooMTnV42mHu917E26IogZ2930nFyBQdofk10Udg=
@@ -433,8 +434,9 @@ github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4/go.mod h1:LSJyQqZ2K+a
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 h1:SPJ/3/AfLh1Ae6N6A2hPRdWI5VLnTI0+G6dCcxV9X3o=
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97/go.mod h1:4OH+jvJsOmDlZo0w/14dBxg/zQ6jnbrxdUdasWdgoR8=
 github.com/topxeq/blockix v0.0.0-20210301072129-59538096fd95/go.mod h1:xyAfbPzbZwTQ1XIyYCvtE0oHzU9efcOB8KqqDmMdGdY=
-github.com/topxeq/charlang v0.0.0-20220224014453-a505ad57cf4e h1:S1A+nWM9kvwaEPPpnALYOFgFyLlkNPeBlbnFTdO4V14=
 github.com/topxeq/charlang v0.0.0-20220224014453-a505ad57cf4e/go.mod h1:kZm5IVvpQkCiCEueuM7VF5Mb1c8BVqc2y0RDujD+Vp0=
+github.com/topxeq/charlang v0.0.0-20220308001517-79d2b54a8942 h1:GAQa4U6wfubR0VGueAykZc7eiAQkUEAuzEzfxakO5Bw=
+github.com/topxeq/charlang v0.0.0-20220308001517-79d2b54a8942/go.mod h1:aTOMiomHjm4SSr6PpPowbSdhqxYskJF2rRDbyhqhsmw=
 github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533 h1:H05+VuIlNiRa71bgjwrysIlFF6EVHW99XwueANjH1d8=
 github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533/go.mod h1:VThQgbdym2seGYfauRSCVo9sSoaDX79OJYO1bRpn4Mw=
 github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836/go.mod h1:kFhnUTa5MiRVbkEsoTjB/UbVWQyMAzWrnmU6CuGmx30=
