@@ -209,7 +209,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.7.2"
+var versionG = "v3.7.3"
 
 // add tk.ToJSONX
 
@@ -1768,6 +1768,7 @@ func importQLNonGUIPackages() {
 		"strTrim":              tk.Trim,                   // 等同于tk.Trim
 		"trimSafely":           tk.TrimSafely,             // 取出字符串前后的空白字符，非字符串则返回默认值空，可以通过第二个（可选）参数设置默认值
 		"trimx":                tk.TrimSafely,             // 等同于trimSafely
+		"trimX":                tk.TrimSafely,             // 等同于trimSafely
 		"toLower":              strings.ToLower,           // 字符串转小写
 		"toUpper":              strings.ToUpper,           // 字符串转大写
 		"padStr":               tk.PadString,              // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
@@ -1778,7 +1779,7 @@ func importQLNonGUIPackages() {
 		"strReplaceIn":         tk.StringReplace,          // strReplaceIn("2020-02-02 08:09:15", "-", "", ":", "", " ", "")
 		"strJoin":              strJoin,                   // 连接一个字符串数组，以指定的分隔符，例： s = strJoin(listT, "\n")
 		"strSplit":             strings.Split,             // 拆分一个字符串为数组，例： listT = strSplit(strT, "\n")
-		"strSplitByLen":        tk.SplitByLen,             // 按长度拆分一个字符串为数组，注意由于是rune，可能不是按字节长度，例： listT = strSplitByLen(strT, 10)，可以加第三个参数表示字节数不能超过多少
+		"strSplitByLen":        tk.SplitByLen,             // 按长度拆分一个字符串为数组，注意由于是rune，可能不是按字节长度，例： listT = strSplitByLen(strT, 10)，可以加第三个参数表示字节数不能超过多少，加第四个参数表示分隔符（遇上分隔符从分隔符后重新计算长度，也就是说分割长度可以超过指定的个数，一般用于有回车的情况）
 		"splitLines":           tk.SplitLines,             // 相当于strSplit(strT, "\n")
 		"strSplitLines":        tk.SplitLines,             // 相当于splitLines
 		"startsWith":           tk.StartsWith,             // 判断字符串是否以某子串开头
@@ -1860,7 +1861,7 @@ func importQLNonGUIPackages() {
 
 		// object related 对象有关
 
-		"newObject": tk.NewObject, // 新建一个对象，目前支持stack, set(hashset), treeset, list(arraylist), linklist(linkedlist), tree(btree), stringBuffer(stringBuilder), bytesBuffer, error(err), errorString(errStr), string(TXString)等，用法：objT = newObject("stack")或objT = newObject("tree", 5)创建五层的btree树等
+		"newObject": tk.NewObject, // 新建一个对象，目前支持stack, set(hashset), treeset, list(arraylist), linklist(linkedlist), tree(btree), stringBuffer(stringBuilder), bytesBuffer, error(err), errorString(errStr), string(TXString), StringRing等，用法：objT = newObject("stack")或objT = newObject("tree", 5)创建五层的btree树等
 		"newObj":    tk.NewObject, // 等同于newObject
 
 		// error related 错误处理相关
