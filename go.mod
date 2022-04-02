@@ -22,6 +22,7 @@ require (
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0-20220228051745-2503a98a4e47
 	github.com/topxeq/tk v1.0.1
+	github.com/topxeq/xie/go/xie v0.0.0
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
@@ -41,6 +42,8 @@ replace github.com/topxeq/tk v1.0.1 => ../tk
 // replace github.com/topxeq/sqltk v0.0.0 => ../sqltk
 
 replace github.com/topxeq/qlang v0.0.0 => ../qlang
+
+replace github.com/topxeq/xie/go/xie v0.0.0 => ../xie/go/xie
 
 // replace github.com/topxeq/text v0.0.0 => ../text
 

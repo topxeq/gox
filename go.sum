@@ -467,9 +467,10 @@ github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928/go.mod h1:tYltUG1XxnVJ
 github.com/topxeq/tk v0.9.1/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
 github.com/topxeq/tk v0.9.2-0.20220224013140-1d883c9b6981/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
 github.com/topxeq/tk v1.0.1-0.20220307002337-1ee03d3d8831/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
-github.com/topxeq/tk v1.0.1-0.20220310074537-a5a99f49fae8/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=
+github.com/topxeq/xie/go/xie v0.0.0-20220402014725-5c5fa1894d68 h1:hmIZZ/R66h+INhpkr6zL1QPXinxVZk9xrZ6vKejXwIw=
+github.com/topxeq/xie/go/xie v0.0.0-20220402014725-5c5fa1894d68/go.mod h1:LbOHdXGNwemoKqz2kVuLwa5T8LKxAjUZmz1Hg9SeYtA=
 github.com/topxeq/xmlx v0.2.0 h1:u3QIV7fNyGbLx3gvA0DjMj3Ss7U9Wmu4SYOuhunwCGQ=
 github.com/topxeq/xmlx v0.2.0/go.mod h1:0N0JTTPEwnsZPyJzb7wMzqwlA7Y25+ZnLuTb7xSrgVM=
 github.com/ttacon/chalk v0.0.0-20160626202418-22c06c80ed31/go.mod h1:onvgF043R+lC5RZ8IT9rBXDaEDnpnw/Cl+HFiw+v/7Q=
