@@ -1,0 +1,17 @@
+func fibonacci(c) {
+	if c < 2 {
+		return c
+	}
+
+	return fibonacci(c-2) + fibonacci(c-1)
+}
+
+startTime = time.Now()
+
+resultInt = fibonacci(35)
+
+endTime = time.Now()
+
+fmt.Printf("Result: %v\n", resultInt)
+
+fmt.Printf("Duration: %v\n", endTime.Sub(startTime) / time.Second)

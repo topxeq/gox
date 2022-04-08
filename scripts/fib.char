@@ -1,0 +1,17 @@
+fibonacci = func(c) {
+	if c < 2 {
+		return c
+	}
+
+	return fibonacci(c-2) + fibonacci(c-1)
+}
+
+startTime = getNowStr()
+
+resultInt = fibonacci(10)
+
+endTime = getNowStr()
+
+pl("Result: %v\n", resultInt)
+
+pl("Duration: %v %v\n", startTime, endTime)
