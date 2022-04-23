@@ -1,0 +1,27 @@
+func fibonacciFlat(c) {
+	if c < 2 {
+		return c
+	}
+
+	fibo = 1
+	fiboPrev = 1
+	for i = 2; i < c; i++ {
+		temp = fibo
+		fibo += fiboPrev
+		fiboPrev = temp
+	}
+
+	return fibo
+}
+
+n = toInt(getParam(argsG, 1))
+
+startTime = time.Now()
+
+result = fibonacciFlat(n)
+
+endTime = time.Now()
+
+fmt.Printf("Result: %v\n", result)
+
+fmt.Printf("Duration: %v s\n", tk.ToFloat(endTime.Sub(startTime)) / 1000000000.0)

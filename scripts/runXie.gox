@@ -1,0 +1,29 @@
+codeT := `
+var $map1 map
+
+setMapItem $map1 "姓名" 张三
+
+setMapItem $map1 "年龄" #i39
+
+var $map2 map
+
+setMapItem $map2 "姓名" 张胜利
+
+setMapItem $map2 "年龄" #i5
+
+var $list1 list
+
+addItem $list1 $map2
+
+setMapItem $map1 "子女" $list1
+
+plo $map1
+
+toJson $map1 $push -indent -sort
+
+pln $pop
+
+
+`
+
+runXie(codeT, nil)

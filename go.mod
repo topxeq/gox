@@ -3,6 +3,7 @@ module github.com/topxeq/gox
 go 1.14
 
 require (
+	gitee.com/topxeq/xie v0.0.0
 	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
 	github.com/ajstarks/svgo v0.0.0-20200725142600-7a3c8b57fecb // indirect
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
@@ -22,7 +23,6 @@ require (
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0-20220228051745-2503a98a4e47
 	github.com/topxeq/tk v1.0.1
-	github.com/topxeq/xie/go/xie v0.0.0
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
@@ -43,7 +43,8 @@ replace github.com/topxeq/tk v1.0.1 => ../tk
 
 replace github.com/topxeq/qlang v0.0.0 => ../qlang
 
-replace github.com/topxeq/xie/go/xie v0.0.0 => ../xie/go/xie
+// replace github.com/topxeq/xie/go/xie v0.0.0 => ../xie/go/xie
+replace gitee.com/topxeq/xie v0.0.0 => ../../../gitee.com/topxeq/xie
 
 // replace github.com/topxeq/text v0.0.0 => ../text
 

@@ -204,7 +204,7 @@ import (
 	// full version related end
 	// GUI related end
 
-	"github.com/topxeq/xie/go/xie"
+	"gitee.com/topxeq/xie"
 
 	"github.com/topxeq/tk"
 )
