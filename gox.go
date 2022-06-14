@@ -1762,6 +1762,7 @@ func importQLNonGUIPackages() {
 
 		// math related数学相关
 		"bitXor":       tk.BitXor,               // 异或运算
+		"adjustFloat":       tk.AdjustFloat,               // 去除浮点数的计算误差，用法：adjustFloat(4.000000002, 2)，第二个参数表示保留几位小数点后数字
 		"getRandomInt": tk.GetRandomIntLessThan, // 获取[0-maxA)之间的随机整数
 		"getRandom":    tk.GetRandomFloat,       // 获取[0.0-1.0)之间的随机浮点数
 
