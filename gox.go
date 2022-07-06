@@ -2177,7 +2177,7 @@ func importQLNonGUIPackages() {
 		"renderMarkdown":   tk.RenderMarkdown,               // 将Markdown格式字符串渲染为HTML
 
 		"genToken":   tk.GenerateToken, // 生成令牌，用法：genToken("appCode", "userID", "userRole", "-secret=abc")
-		"checkToken": tk.CheckToken,    // 检查令牌，如果成功，返回类似的“appCode|userID|userRole|”字符串；失败返回TXERROR字符串
+		"checkToken": tk.CheckToken,    // 检查令牌，如果成功，返回类似“appCode|userID|userRole|”的字符串；失败返回TXERROR字符串
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
