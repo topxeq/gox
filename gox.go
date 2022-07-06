@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.7.7"
+var versionG = "v3.7.8"
 
 // add tk.ToJSONX
 
@@ -1870,7 +1870,7 @@ func importQLNonGUIPackages() {
 		// error related 错误处理相关
 		"isError":          tk.IsError,            // 判断表达式的值是否为error类型
 		"isErr":            tk.IsError,            // 等同于isError
-		"isErrX":           isErrX,                // 判断表达式的值是否为error类型，同时也判断是否是TXERROR:开始的字符串
+		"isErrX":           tk.IsErrX,             // 判断表达式的值是否为error类型，同时也判断是否是TXERROR:开始的字符串
 		"isErrStr":         tk.IsErrStr,           // 判断字符串是否是TXERROR:开始的字符串
 		"checkError":       tk.CheckError,         // 检查变量，如果是error则立即停止脚本的执行
 		"checkErr":         tk.CheckError,         // 等同于checkError
@@ -1884,7 +1884,7 @@ func importQLNonGUIPackages() {
 		"errStr":           tk.ErrStr,             // 生成TXERROR:开始的字符串
 		"errStrf":          tk.ErrStrF,            // 生成TXERROR:开始的字符串，类似sprintf的用法
 		"getErrStr":        tk.GetErrStr,          // 从TXERROR:开始的字符串获取其后的错误信息
-		"getErrStrX":       getErrStrX,            // 从error对象或TXERROR:开始的字符串获取其中的错误信息，返回为空字符串一般表示没有错误
+		"getErrStrX":       tk.GetErrStrX,         // 从error对象或TXERROR:开始的字符串获取其中的错误信息，返回为空字符串一般表示没有错误
 		"errf":             tk.Errf,               // 生成error类型的变量，其中提示信息类似sprintf的用法
 		"errToEmptyStr":    tk.ErrorToEmptyString, // 将任意值转为string，如果是error类型的变量则转为空字符串
 
@@ -2174,6 +2174,10 @@ func importQLNonGUIPackages() {
 		"newCharAnyValue":  charlang.NewAnyValue,            // create a interface{} value in charlang
 		"toCharValue":      charlang.ConvertToObject,        // convert to a interface{} value in charlang
 		"wrapError":        tk.WrapError,                    //
+		"renderMarkdown":   tk.RenderMarkdown,               // 将Markdown格式字符串渲染为HTML
+
+		"genToken":   tk.GenerateToken, // 生成令牌，用法：genToken("appCode", "userID", "userRole", "-secret=abc")
+		"checkToken": tk.CheckToken,    // 检查令牌，如果成功，返回类似的“appCode|userID|userRole|”字符串；失败返回TXERROR字符串
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
