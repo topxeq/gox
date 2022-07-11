@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.7.8"
+var versionG = "v3.7.9"
 
 // add tk.ToJSONX
 
@@ -732,6 +732,26 @@ func leSort(descentA bool) error {
 	} else {
 		sort.Sort(sort.StringSlice(leBufG))
 	}
+
+	return nil
+}
+
+func leConvertToUTF8(srcEncA ...string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	if leBufG == nil {
+		return tk.Errf("buffer not initalized")
+	}
+
+	encT := ""
+
+	if len(srcEncA) > 0 {
+		encT = srcEncA[0]
+	}
+
+	leBufG = tk.SplitLines(tk.ConvertStringToUTF8(tk.JoinLines(leBufG), encT))
 
 	return nil
 }
@@ -2110,30 +2130,31 @@ func importQLNonGUIPackages() {
 		"dbRecsToMapArrayMap": sqltk.RecordsToMapArrayMap, // 将多行行（第一行为标头字段行）的SQL语句查询结果（[][]string格式）变为类似dbQueryMapArray函数返回的结果
 
 		// line editor related 内置行文本编辑器有关
-		"leClear":       leClear,       // 清空行文本编辑器缓冲区，例：leClear()
-		"leLoadStr":     leLoadString,  // 行文本编辑器缓冲区载入指定字符串内容，例：leLoadStr("abc\nbbb\n结束")
-		"leSetAll":      leLoadString,  // 等同于leLoadString
-		"leSaveStr":     leSaveString,  // 取出行文本编辑器缓冲区中内容，例：s = leSaveStr()
-		"leGetAll":      leSaveString,  // 等同于leSaveStr
-		"leLoad":        leLoadFile,    // 从文件中载入文本到行文本编辑器缓冲区中，例：err = leLoad(`c:\test.txt`)
-		"leLoadFile":    leLoadFile,    // 等同于leLoad
-		"leSave":        leSaveFile,    // 将行文本编辑器缓冲区中内容保存到文件中，例：err = leSave(`c:\test.txt`)
-		"leSaveFile":    leSaveFile,    // 等同于leSave
-		"leLoadClip":    leLoadClip,    // 从剪贴板中载入文本到行文本编辑器缓冲区中，例：err = leLoadClip()
-		"leSaveClip":    leSaveClip,    // 将行文本编辑器缓冲区中内容保存到剪贴板中，例：err = leSaveClip()
-		"leInsert":      leInsertLine,  // 行文本编辑器缓冲区中的指定位置前插入指定内容，例：err = leInsert(3， "abc")
-		"leInsertLine":  leInsertLine,  // 行文本编辑器缓冲区中的指定位置前插入指定内容，例：err = leInsertLine(3， "abc")
-		"leAppend":      leAppendLine,  // 行文本编辑器缓冲区中的指定位置后插入指定内容，例：err = leAppend(3， "abc")
-		"leAppendLine":  leAppendLine,  // 行文本编辑器缓冲区中的指定位置后插入指定内容，例：err = leAppendLine(3， "abc")
-		"leSet":         leSetLine,     // 设定行文本编辑器缓冲区中的指定行为指定内容，例：err = leSet(3， "abc")
-		"leSetLine":     leSetLine,     // 设定行文本编辑器缓冲区中的指定行为指定内容，例：err = leSetLine(3， "abc")
-		"leSetLines":    leSetLines,    // 设定行文本编辑器缓冲区中指定范围的多行为指定内容，例：err = leSetLines(3, 5， "abc\nbbb")
-		"leRemove":      leRemoveLine,  // 删除行文本编辑器缓冲区中的指定行，例：err = leRemove(3)
-		"leRemoveLine":  leRemoveLine,  // 删除行文本编辑器缓冲区中的指定行，例：err = leRemoveLine(3)
-		"leRemoveLines": leRemoveLines, // 删除行文本编辑器缓冲区中指定范围的多行，例：err = leRemoveLines(1, 3)
-		"leViewAll":     leViewAll,     // 查看行文本编辑器缓冲区中的所有内容，例：allText = leViewAll()
-		"leView":        leViewLine,    // 查看行文本编辑器缓冲区中的指定行，例：lineText = leView(18)
-		"leSort":        leSort,        // 将行文本编辑器缓冲区中的行进行排序，唯一参数表示是否降序排序，例：errT = leSort(true)
+		"leClear":       leClear,         // 清空行文本编辑器缓冲区，例：leClear()
+		"leLoadStr":     leLoadString,    // 行文本编辑器缓冲区载入指定字符串内容，例：leLoadStr("abc\nbbb\n结束")
+		"leSetAll":      leLoadString,    // 等同于leLoadString
+		"leSaveStr":     leSaveString,    // 取出行文本编辑器缓冲区中内容，例：s = leSaveStr()
+		"leGetAll":      leSaveString,    // 等同于leSaveStr
+		"leLoad":        leLoadFile,      // 从文件中载入文本到行文本编辑器缓冲区中，例：err = leLoad(`c:\test.txt`)
+		"leLoadFile":    leLoadFile,      // 等同于leLoad
+		"leSave":        leSaveFile,      // 将行文本编辑器缓冲区中内容保存到文件中，例：err = leSave(`c:\test.txt`)
+		"leSaveFile":    leSaveFile,      // 等同于leSave
+		"leLoadClip":    leLoadClip,      // 从剪贴板中载入文本到行文本编辑器缓冲区中，例：err = leLoadClip()
+		"leSaveClip":    leSaveClip,      // 将行文本编辑器缓冲区中内容保存到剪贴板中，例：err = leSaveClip()
+		"leInsert":      leInsertLine,    // 行文本编辑器缓冲区中的指定位置前插入指定内容，例：err = leInsert(3， "abc")
+		"leInsertLine":  leInsertLine,    // 行文本编辑器缓冲区中的指定位置前插入指定内容，例：err = leInsertLine(3， "abc")
+		"leAppend":      leAppendLine,    // 行文本编辑器缓冲区中的指定位置后插入指定内容，例：err = leAppend(3， "abc")
+		"leAppendLine":  leAppendLine,    // 行文本编辑器缓冲区中的指定位置后插入指定内容，例：err = leAppendLine(3， "abc")
+		"leSet":         leSetLine,       // 设定行文本编辑器缓冲区中的指定行为指定内容，例：err = leSet(3， "abc")
+		"leSetLine":     leSetLine,       // 设定行文本编辑器缓冲区中的指定行为指定内容，例：err = leSetLine(3， "abc")
+		"leSetLines":    leSetLines,      // 设定行文本编辑器缓冲区中指定范围的多行为指定内容，例：err = leSetLines(3, 5， "abc\nbbb")
+		"leRemove":      leRemoveLine,    // 删除行文本编辑器缓冲区中的指定行，例：err = leRemove(3)
+		"leRemoveLine":  leRemoveLine,    // 删除行文本编辑器缓冲区中的指定行，例：err = leRemoveLine(3)
+		"leRemoveLines": leRemoveLines,   // 删除行文本编辑器缓冲区中指定范围的多行，例：err = leRemoveLines(1, 3)
+		"leViewAll":     leViewAll,       // 查看行文本编辑器缓冲区中的所有内容，例：allText = leViewAll()
+		"leView":        leViewLine,      // 查看行文本编辑器缓冲区中的指定行，例：lineText = leView(18)
+		"leSort":        leSort,          // 将行文本编辑器缓冲区中的行进行排序，唯一参数表示是否降序排序，例：errT = leSort(true)
+		"leEnc":         leConvertToUTF8, // 将行文本编辑器缓冲区中的文本转换为UTF-8编码，如果不指定原始编码则默认为GB18030编码
 
 		// GUI related start
 		// gui related 图形界面相关
