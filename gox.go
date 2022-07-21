@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.7.9"
+var versionG = "v3.8.0"
 
 // add tk.ToJSONX
 
@@ -1751,6 +1751,12 @@ func importQLNonGUIPackages() {
 		"runCode":         runCode,
 		"runScript":       runScript,
 		"magic":           magic,
+
+		// debug relate 调试相关
+		"dump":   tk.Dump, // 输出一个或多个对象信息供参考
+		"dumpf":  tk.Dumpf,
+		"sdump":  tk.Sdump, // 生成一个或多个对象信息供参考
+		"sdumpf": tk.Sdumpf,
 
 		// output related 输出相关
 		"pv":        printValue,   // 输出一个变量的值，注意参数是字符串类型的变量名，例： pv("a")
