@@ -15,7 +15,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/stretchr/objx v0.3.0 // indirect
-	github.com/topxeq/charlang v0.0.0-20220308001517-79d2b54a8942
+	github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6
 	github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/go-sciter v0.0.0-20211221081058-795e1f32ae3d
