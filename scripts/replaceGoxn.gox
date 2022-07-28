@@ -1,0 +1,53 @@
+gopathT = os.Getenv("GOPATH")
+
+if gopathT == "" {
+	pl("GOPATH not defined")
+	return
+}
+
+sourceFileNameT = tk.JoinPath(gopathT, "/src/github.com/topxeq/gox/gox.go")
+
+fcT = tk.LoadStringFromFile(sourceFileNameT)
+
+if tk.IsErrorString(fcT) {
+	pl("load source file failed: %v", tk.GetErrorString(fcT))
+	return
+}
+
+foundT = tk.RegFindFirst(fcT, `(?m)\s*var defaultExports = map\[string\]interface\{\}\{[\s\S]*?"leBufG":      leBufG`, 0)
+
+if tk.IsErrorString(foundT) {
+	pl("the part not found, maybe not expected source file: %v", tk.GetErrorString(foundT))
+	return
+}
+
+// pl("srcFound: %v", foundT)
+
+destFileNameT = tk.JoinPath(gopathT, "/src/github.com/topxeq/goxn/goxn.go")
+
+fcT = tk.LoadStringFromFile(destFileNameT)
+
+if tk.IsErrorString(fcT) {
+	pl("load source file failed: %v", tk.GetErrorString(fcT))
+	return
+}
+
+found2T = tk.RegFindFirst(fcT, `(?m)\s*var defaultExports = map\[string\]interface\{\}\{[\s\S]*?"leBufG":      leBufG`, 0)
+
+if tk.IsErrorString(found2T) {
+	pl("the part not found, maybe not expected source file: %v", tk.GetErrorString(found2T))
+	return
+}
+
+// pl("destFound: %v", found2T)
+
+fcNewT = tk.Replace(fcT, found2T, foundT)
+
+pl("fcNewT: %v", fcNewT)
+
+rs := saveText(fcNewT, destFileNameT)
+
+plv("rs: %v", rs)
+
+
+
