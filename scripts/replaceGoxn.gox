@@ -47,7 +47,7 @@ pl("fcNewT: %v", fcNewT)
 
 rs := saveText(fcNewT, destFileNameT)
 
-plv("rs: %v", rs)
+pl("rs: %v", rs)
 
 
 
