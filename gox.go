@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.2"
+var versionG = "v3.8.3"
 
 // add tk.ToJSONX
 
@@ -622,6 +622,10 @@ func leLoadFile(fileNameA string) error {
 	strT, errT := tk.LoadStringFromFileE(fileNameA)
 
 	if errT != nil {
+		if !leSilentG {
+			tk.Pl("failed load file to leBuf: %v", errT)
+		}
+
 		return errT
 	}
 
@@ -639,6 +643,10 @@ func leLoadUrl(urlA string) error {
 	strT := tk.DownloadWebPageX(urlA)
 
 	if tk.IsErrStr(strT) {
+		if !leSilentG {
+			tk.Pl("failed load URL to leBuf: %v", tk.GetErrStr(strT))
+		}
+
 		return tk.ErrStrToErr(strT)
 	}
 
@@ -658,6 +666,9 @@ func leSaveFile(fileNameA string) error {
 	textT := tk.JoinLines(leBufG, leLineEndG)
 
 	if tk.IsErrStr(textT) {
+		if !leSilentG {
+			tk.Pl("failed save leBuf to File: %v", tk.GetErrStr(textT))
+		}
 		return tk.Errf(tk.GetErrStr(textT))
 	}
 
@@ -674,6 +685,10 @@ func leLoadClip() error {
 	textT := tk.GetClipText()
 
 	if tk.IsErrStr(textT) {
+		if !leSilentG {
+			tk.Pl("failed load clipboard to leBuf: %v", tk.GetErrStr(textT))
+		}
+
 		return tk.Errf(tk.GetErrStr(textT))
 	}
 
@@ -690,6 +705,10 @@ func leSaveClip() error {
 	textT := tk.JoinLines(leBufG, leLineEndG)
 
 	if tk.IsErrStr(textT) {
+		if !leSilentG {
+			tk.Pl("failed save leBuf to clipboard: %v", tk.GetErrStr(textT))
+		}
+
 		return tk.Errf(tk.GetErrStr(textT))
 	}
 
@@ -729,6 +748,10 @@ func leViewLine(idxA int) error {
 	}
 
 	if idxA < 0 || idxA >= len(leBufG) {
+		if !leSilentG {
+			tk.Pl("line index out of range: %v", idxA)
+		}
+
 		return tk.Errf("line index out of range")
 	}
 
@@ -820,6 +843,10 @@ func leGetLine(idxA int) string {
 	}
 
 	if idxA < 0 || idxA >= len(leBufG) {
+		if !leSilentG {
+			tk.Pl("line index out of range: %v", idxA)
+		}
+
 		return tk.ErrStrf("line index out of range")
 	}
 
@@ -836,6 +863,10 @@ func leSetLine(idxA int, strA string) error {
 	}
 
 	if idxA < 0 || idxA >= len(leBufG) {
+		if !leSilentG {
+			tk.Pl("line index out of range: %v", idxA)
+		}
+
 		return tk.Errf("line index out of range")
 	}
 
@@ -956,6 +987,10 @@ func leRemoveLine(idxA int) error {
 	}
 
 	if idxA < 0 || idxA >= len(leBufG) {
+		if !leSilentG {
+			tk.Pl("line index out of range: %v", idxA)
+		}
+
 		return tk.Errf("line index out of range")
 	}
 
@@ -979,14 +1014,26 @@ func leRemoveLines(startA int, endA int) error {
 	}
 
 	if startA < 0 || startA >= len(leBufG) {
+		if !leSilentG {
+			tk.Pl("line index out of range: %v", startA)
+		}
+
 		return tk.Errf("start line index out of range")
 	}
 
 	if endA < 0 || endA >= len(leBufG) {
+		if !leSilentG {
+			tk.Pl("line index out of range: %v", endA)
+		}
+
 		return tk.Errf("end line index out of range")
 	}
 
 	if startA > endA {
+		if !leSilentG {
+			tk.Pl("start line index greater than end line index: %v", startA)
+		}
+
 		return tk.Errf("start line index greater than end line index")
 	}
 
