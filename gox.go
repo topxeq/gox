@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.3"
+var versionG = "v3.8.5"
 
 // add tk.ToJSONX
 
@@ -2154,6 +2154,7 @@ func importQLNonGUIPackages() {
 		"writeRespHeader":      tk.WriteResponseHeader,           // 写http响应头的状态（200、404等），函数原型writeRespHeader(resA http.ResponseWriter, argsA ...interface{}) error，例：writeRespHeader(http.StatusOK)
 		"setRespHeader":        tk.SetResponseHeader,             // 设置http响应头中的内容，函数原型setRespHeader(resA http.ResponseWriter, keyA string, valueA string) error，例：setRespHeader(responseG, "Content-Type", "text/json; charset=utf-8")
 		"jsonRespToHtml":       tk.JSONResponseToHTML,            // 类似{"Status":"fail", "Value":"failed to connect DB"}的JSON响应转换为通用的简单的错误网页
+		"getMimeType":          tk.GetMimeTypeByExt,              // 根据文件扩展名获取MIME类型
 
 		"replaceHtmlByMap":      tk.ReplaceHtmlByMap,
 		"cleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,

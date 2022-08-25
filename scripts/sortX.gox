@@ -15,4 +15,24 @@ plv(m)
 sortX(m, "-key=Age")
 plv(m)
 
+m2 = ["abc", "ddd"]
+
+sortX(m2)
+plv(m2)
+
+m3 = []
+
+m3 = append(m3, "abc")
+m3 = append(m3, "ddd")
+
+sortX(m3, "-desc")
+plv(m3)
+
+m4 = []
+
+m4 = append(m4, ["abc", "123"])
+m4 = append(m4, ["ddd", "777"])
+
+sortX(m4, "-desc")
+plv(m4)
 
