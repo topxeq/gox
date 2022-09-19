@@ -1,0 +1,44 @@
+dirT = getSwitch(argsG, "-dir=", ".")
+
+patternT = getSwitch(argsG, "-pattern=", "*")
+
+findT = getSwitch(argsG, "-find=", "")
+
+if ifSwitchExists(argsG, "-clip") {
+	findT = getClipText()
+}
+
+filesT = getFiles(dirT, "-recursive", "-pattern="+patternT)
+
+// pln(filesT)
+
+foundCountT = 0
+
+for i, v = range filesT {
+	// pl("process [%v] %v", i, v)
+
+	fcT = loadTextX(v.Abs)
+
+	if isErr(fcT) {
+		pl("failed to load text(%v): %v", v, fcT)
+		continue
+	}
+
+	foundT = regFind(fcT, findT, 0)
+
+	if isErrStr(foundT) {
+
+		if foundT != "TXERROR:no match"{
+			pln(foundT)
+			exit()
+		}
+		// pln(foundT)
+		continue
+	}
+
+	foundCountT++
+
+	pl("[%v] %v", foundCountT, v.Abs)
+}
+
+
