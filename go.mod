@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	gitee.com/topxeq/xie v0.0.0
+	github.com/AllenDang/giu v0.6.2 // indirect
 	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
 	github.com/ajstarks/svgo v0.0.0-20200725142600-7a3c8b57fecb // indirect
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
@@ -24,7 +25,6 @@ require (
 	github.com/topxeq/sqltk v0.0.0
 	github.com/topxeq/tk v1.0.1
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 )
