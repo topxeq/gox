@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.5"
+var versionG = "v3.8.6"
 
 // add tk.ToJSONX
 
@@ -1779,14 +1779,14 @@ func initGUI() {
 	if tk.Contains(osT, "inux") {
 	} else if tk.Contains(osT, "arwin") {
 	} else {
-		_, errT := exec.LookPath("sciter.dll")
+		_, errT := exec.LookPath("sciterts.dll")
 
 		if errT != nil {
 			tk.Pl("Initialzing GUI environment...")
-			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll")
+			rs := tk.DownloadFile("http://script.topget.org/pub/sciterts.dll", applicationPathT, "sciterts.dll")
 
 			if tk.IsErrorString(rs) {
-				tk.Pl("Failed to initialze GUI environment.")
+				tk.Pl("Failed to initialze GUI environment: %v.", tk.GetErrStr(rs))
 			}
 		}
 	}
@@ -2981,7 +2981,7 @@ func runArgs(argsA ...string) interface{} {
 
 			return nil
 		} else {
-			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciter.dll", applicationPathT, "sciter.dll")
+			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciterts.dll", applicationPathT, "sciterts.dll")
 
 			if tk.IsErrorString(rs) {
 
