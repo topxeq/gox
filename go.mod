@@ -54,7 +54,7 @@ replace gitee.com/topxeq/xie v0.0.0 => ../../../gitee.com/topxeq/xie
 
 // replace github.com/topxeq/dialog v0.0.0 => ../../topxeq/dialog
 
-replace github.com/topxeq/goph v0.0.0 => ../goph
+// replace github.com/topxeq/goph v0.0.0 => ../goph
 
 // replace github.com/topxeq/go-sciter v0.0.0 => ../go-sciter
 
