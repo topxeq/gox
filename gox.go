@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.6"
+var versionG = "v3.8.7"
 
 // add tk.ToJSONX
 
@@ -2067,6 +2067,9 @@ func importQLNonGUIPackages() {
 		"logf":       tk.LogWithTimeCompact, // 输出到日志文件，函数定义： func logf(formatA string, argsA ...interface{})
 		"logPrint":   logPrint,              // 同时输出到标准输出和日志文件
 
+		// number related 数字相关
+		"abs": tk.Abs,
+
 		// system related 系统相关
 		"getClipText":       tk.GetClipText,                  // 从系统剪贴板获取文本，例： textT = getClipText()
 		"setClipText":       tk.SetClipText,                  // 设定系统剪贴板中的文本，例： setClipText("测试")
@@ -2286,7 +2289,9 @@ func importQLNonGUIPackages() {
 
 		// GUI related end
 
-		// misc 杂项函数
+		// misc related 杂项相关函数
+		"dealRef": tk.DealRef,
+
 		"sortX":            tk.SortX,                        // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
 		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
 		"newFuncIIE":       NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
