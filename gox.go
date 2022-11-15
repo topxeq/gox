@@ -2071,15 +2071,16 @@ func importQLNonGUIPackages() {
 		"abs": tk.Abs,
 
 		// system related 系统相关
-		"getClipText":       tk.GetClipText,                  // 从系统剪贴板获取文本，例： textT = getClipText()
-		"setClipText":       tk.SetClipText,                  // 设定系统剪贴板中的文本，例： setClipText("测试")
-		"getEnv":            tk.GetEnv,                       // 获取系统环境变量
-		"setEnv":            tk.SetEnv,                       // 设定系统环境变量
-		"systemCmd":         tk.SystemCmd,                    // 执行一条系统命令，例如： systemCmd("cmd", "/k", "copy a.txt b.txt")
-		"openFile":          tk.RunWinFileWithSystemDefault,  // 用系统默认的方式打开一个文件，例如： openFile("a.jpg")
-		"ifFileExists":      tk.IfFileExists,                 // 判断文件是否存在
-		"fileExists":        tk.IfFileExists,                 // 等同于ifFileExists
-		"joinPath":          filepath.Join,                   // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
+		"getClipText":       tk.GetClipText,                 // 从系统剪贴板获取文本，例： textT = getClipText()
+		"setClipText":       tk.SetClipText,                 // 设定系统剪贴板中的文本，例： setClipText("测试")
+		"getEnv":            tk.GetEnv,                      // 获取系统环境变量
+		"setEnv":            tk.SetEnv,                      // 设定系统环境变量
+		"systemCmd":         tk.SystemCmd,                   // 执行一条系统命令，例如： systemCmd("cmd", "/k", "copy a.txt b.txt")
+		"openFile":          tk.RunWinFileWithSystemDefault, // 用系统默认的方式打开一个文件，例如： openFile("a.jpg")
+		"ifFileExists":      tk.IfFileExists,                // 判断文件是否存在
+		"fileExists":        tk.IfFileExists,                // 等同于ifFileExists
+		"joinPath":          filepath.Join,                  // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
+		"ensureDir":         tk.EnsureMakeDirs,
 		"getFileSize":       tk.GetFileSizeCompact,           // 获取文件大小
 		"getFileInfo":       tk.GetFileInfo,                  // 获取文件信息，返回map[string]string
 		"getFileList":       tk.GetFileList,                  // 获取指定目录下的符合条件的所有文件，例：listT = getFileList(pathT, "-recursive", "-pattern=*", "-exclusive=*.txt", "-withDir", "-verbose"), -compact 参数将只给出Abs、Size、IsDir三项, -dirOnly参数将只列出目录（不包含文件）
