@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.7"
+var versionG = "v3.8.8"
 
 // add tk.ToJSONX
 
@@ -1871,6 +1871,9 @@ func importQLNonGUIPackages() {
 		"fprintf":   fmt.Fprintf,  // 等同于其他语言中的frintf
 		"plv":       tk.Plv,       // 输出某变量或表达式的内容/值，以Go语言内部的表达方式，例如字符串将加上双引号
 		"plvx":      tk.Plvx,      // 输出某变量或表达式的内容/值和类型等信息
+		"plo":       tk.Plo,       // 输出某变量或表达式的内容/值和类型等信息
+		"plos":      tk.Plos,      // 输出多个变量或表达式的内容/值和类型等信息
+		"plosr":     tk.Plosr,     // 输出多个变量或表达式的内容/值和类型等信息，每个换行输出
 		"plNow":     tk.PlNow,     // 相当于pl，但前面多加了一个时间标记
 		"plVerbose": tk.PlVerbose, // 相当于pl，但前面多了一个布尔类型的参数，可以传入一个verbose变量，指定是否输出该信息，例：
 		// v = false
@@ -2030,8 +2033,8 @@ func importQLNonGUIPackages() {
 		"urlDecode":          tk.UrlDecode,            // URL解码
 		"base64Encode":       tk.EncodeToBase64,       // Base64编码，输入参数是[]byte字节数组
 		"toBase64":           tk.ToBase64,             // Base64编码，输入参数是[]byte字节数组或字符串
-		"base64Decode":       tk.DecodeFromBase64,     // base64解码
-		"fromBase64":         tk.DecodeFromBase64,     // 同base64Decode，base64解码
+		"base64Decode":       tk.DecodeFromBase64,     // base64解码，返回两个参数（第二个是error类型）的结果
+		"fromBase64":         tk.FromBase64,           // base64解码，返回字节数组
 		"md5Encode":          tk.MD5Encrypt,           // MD5编码
 		"md5":                tk.MD5Encrypt,           // 等同于md5Encode
 		"jsonEncode":         tk.ObjectToJSON,         // JSON编码
