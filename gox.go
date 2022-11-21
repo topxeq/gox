@@ -2580,6 +2580,9 @@ func showHelp() {
 func runInteractiveQlang() int {
 	var following bool
 	var source string
+
+	tk.Pl("Gox %v", versionG)
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
