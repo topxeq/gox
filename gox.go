@@ -1902,6 +1902,8 @@ func importQLNonGUIPackages() {
 		"trimSafely":           tk.TrimSafely,             // 取出字符串前后的空白字符，非字符串则返回默认值空，可以通过第二个（可选）参数设置默认值
 		"trimx":                tk.TrimSafely,             // 等同于trimSafely
 		"trimX":                tk.TrimSafely,             // 等同于trimSafely
+		"trimStart":            strings.TrimPrefix,        // 去除前导子字符串
+		"trimEnd":              strings.TrimSuffix,        // 去除末尾子字符串
 		"toLower":              strings.ToLower,           // 字符串转小写
 		"toUpper":              strings.ToUpper,           // 字符串转大写
 		"padStr":               tk.PadString,              // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
