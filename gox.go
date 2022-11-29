@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.8"
+var versionG = "v3.8.9"
 
 // add tk.ToJSONX
 
@@ -1898,7 +1898,7 @@ func importQLNonGUIPackages() {
 		"deepClone":       tk.DeepClone,
 		"deepCopy":        tk.DeepCopyFromTo,
 		"run":             runFile,
-		"runCode":         runCode,
+		"runCode":         runCode, // 运行一段Gox代码（新开一个虚拟机），传入参数除第一个是代码字符串外，后面可以跟多个参数，如果是字符串参数会加入新虚拟机的argsG变量中，如果是字符串数组也会都加入argsG中，如果是映射，则会按照键值加入全局变量中，例如：runCode("pln", {"arg1": 1.2, "arg2": "true"})
 		"runScript":       runScript,
 		"magic":           magic,
 
