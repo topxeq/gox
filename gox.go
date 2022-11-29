@@ -339,13 +339,64 @@ func runScriptX(codeA string, argsA ...string) interface{} {
 
 }
 
-func runCode(codeA string, argsA ...string) interface{} {
+func runCode(codeA string, argsA ...interface{}) interface{} {
 	initQLVM()
 
 	vmT := qlang.New()
 
+	var argsT []string
+
+	for _, v := range argsA {
+		nv1, ok := v.(string)
+
+		if ok {
+			if argsT == nil {
+				argsT = make([]string, 0, 1)
+			}
+
+			argsT = append(argsT, nv1)
+			continue
+		}
+
+		nv2, ok := v.(map[string]interface{})
+
+		if ok {
+			for k, kv := range nv2 {
+				vmT.SetVar(k, kv)
+			}
+
+			continue
+		}
+
+		nv3, ok := v.(map[string]string)
+
+		if ok {
+			for k, kv := range nv3 {
+				vmT.SetVar(k, kv)
+			}
+
+			continue
+		}
+
+		nv4, ok := v.([]string)
+
+		if ok {
+			if argsT == nil {
+				argsT = make([]string, 0, len(nv4))
+			}
+
+			for _, jv := range nv4 {
+				argsT = append(argsT, jv)
+			}
+
+			continue
+		}
+	}
+
 	// if argsA != nil && len(argsA) > 0 {
-	vmT.SetVar("argsG", argsA)
+	if argsT != nil {
+		vmT.SetVar("argsG", argsT)
+	}
 	// } else {
 	// 	vmT.SetVar("argsG", os.Args)
 	// }
@@ -1054,7 +1105,7 @@ func magic(numberA int, argsA ...string) interface{} {
 		return tk.ErrorStringToError(fcT)
 	}
 
-	return runCode(fcT, argsA...)
+	return runCode(fcT, argsA)
 
 }
 
