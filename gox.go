@@ -3221,13 +3221,15 @@ func runArgs(argsA ...string) interface{} {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
 		}
+
+		scriptPathG = "https://gitee.com/topxeq/gox/raw/master/scripts/" + scriptT
+
 		fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
 
-		scriptPathG = ""
 	} else if ifRemoteT {
+		scriptPathG = scriptT
 		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 
-		scriptPathG = ""
 	} else if ifClipT {
 		fcT = tk.GetClipText()
 
@@ -3251,6 +3253,8 @@ func runArgs(argsA ...string) interface{} {
 			cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
 
 			if !tk.IsErrorString(cfgStrT) {
+				scriptPathG = cfgStrT + scriptT
+
 				fcT = tk.DownloadPageUTF8(cfgStrT+scriptT, nil, "", 30)
 
 				gotT = true
@@ -3259,10 +3263,10 @@ func runArgs(argsA ...string) interface{} {
 		}
 
 		if !gotT {
+			scriptPathG = scriptT
 			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
 		}
 
-		scriptPathG = ""
 	} else if sshT != "" {
 		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
 			scriptT += ".gox"
