@@ -385,9 +385,7 @@ func runCode(codeA string, argsA ...interface{}) interface{} {
 				argsT = make([]string, 0, len(nv4))
 			}
 
-			for _, jv := range nv4 {
-				argsT = append(argsT, jv)
-			}
+			argsT = append(argsT, nv4...)
 
 			continue
 		}
