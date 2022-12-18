@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.8.9"
+var versionG = "v3.9.0"
 
 // add tk.ToJSONX
 
@@ -1930,6 +1930,8 @@ func importQLNonGUIPackages() {
 		"vpl":    tk.PlVerbose, // 等同于plVerbose
 		"plvsr":  tk.Plvsr,     // 输出多个变量或表达式的值，每行一个
 		"plerr":  tk.PlErr,     // 快捷输出一个error类型的值
+		"plErr":  tk.PlErr,     // 快捷输出一个error类型的值
+		"plErrX": tk.PlErrX,    // 快捷输出一个error类型或TXERROR:开始的字符串的值
 		"plExit": tk.PlAndExit, // 相当于pl然后exit退出脚本的执行
 
 		// input related 输入相关
@@ -2056,6 +2058,7 @@ func importQLNonGUIPackages() {
 		"isErrStr":         tk.IsErrStr,           // 判断字符串是否是TXERROR:开始的字符串
 		"checkError":       tk.CheckError,         // 检查变量，如果是error则立即停止脚本的执行
 		"checkErr":         tk.CheckError,         // 等同于checkError
+		"checkErrX":        tk.CheckErrX,          // 检查变量，如果是error或TXERROR:开始的字符串则输出相应信息后立即停止脚本的执行
 		"checkErrf":        tk.CheckErrf,          // 检查变量，如果是error则立即停止脚本的执行，之前可以printfln输出信息
 		"checkErrorString": tk.CheckErrorString,   // 检查变量，如果是TXERROR:开始的字符串则立即停止脚本的执行
 		"checkErrStr":      tk.CheckErrStr,        // 等同于checkErrorString
