@@ -188,6 +188,7 @@ import (
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/godror/godror"
+	_ "github.com/sijms/go-ora/v2"
 
 	// full version related end
 
@@ -204,14 +205,14 @@ import (
 	// full version related end
 	// GUI related end
 
-	"gitee.com/topxeq/xie"
+	"github.com/topxeq/xie"
 
 	"github.com/topxeq/tk"
 )
 
 // Non GUI related
 
-var versionG = "v3.9.0"
+var versionG = "v3.9.1"
 
 // add tk.ToJSONX
 
