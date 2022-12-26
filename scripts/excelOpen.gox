@@ -1,0 +1,24 @@
+// 从命令行参数获取要打开的Excel文件路径
+filePathT = trim(getSwitch(argsG, "-file=", ""))
+
+// 文件名不能为空
+if filePathT == "" {
+    fatalf("empty file name")
+}
+
+pl("try open %v ...", filePathT)
+
+// excelOpen指令用于打开一个Excel文件，获得文件对象
+excelT, errT = excelize.OpenFile(filePathT)
+
+checkErrX(errT)
+
+// defer执行保证程序退出时被执行
+defer excelT.Close()
+
+rowsT, errT = excelT.GetRows(excelT.GetSheetName(0))
+
+checkErrX(errT)
+
+plv(rowsT)
+

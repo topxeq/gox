@@ -129,7 +129,7 @@ import (
 	qlgithub_fogleman_gg "github.com/topxeq/qlang/lib/github.com/fogleman/gg"
 
 	// qlgithub_360EntSecGroupSkylar_excelize "github.com/topxeq/qlang/lib/github.com/360EntSecGroup-Skylar/excelize"
-	qlgithub_xuri_excelize "github.com/topxeq/qlang/lib/github.com/xuri/excelize"
+	qlgithub_xuri_excelize "github.com/topxeq/qlang/lib/github.com/xuri/excelize/v2"
 
 	qlgithub_kbinani_screenshot "github.com/topxeq/qlang/lib/github.com/kbinani/screenshot"
 
