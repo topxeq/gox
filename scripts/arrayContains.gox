@@ -1,0 +1,19 @@
+ary1 = ["abc", 123, 2.58]
+
+plv(arrayContains(ary1, "abc"))
+
+plv(arrayContains(ary1, "abcd"))
+
+plv(arrayContains(ary1, 123))
+
+plv(arrayContains(ary1, 1234))
+
+plv(arrayContains(ary1, 2.58))
+
+plv(arrayContains(ary1, 2.589))
+
+
+plv(arrayContains(argsG, "-verbose"))
+
+plv(arrayContains(argsG, 123))
+

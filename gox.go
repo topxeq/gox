@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.9.1"
+var versionG = "v3.9.2"
 
 // add tk.ToJSONX
 
@@ -2039,13 +2039,14 @@ func importQLNonGUIPackages() {
 		"toVar":       tk.ToVar,       // 任意值（*interface{}）转相应的值
 
 		// array/map related 数组（切片）/映射（字典）相关
-		"removeItems":  tk.RemoveItemsInArray,               // 从切片中删除指定的项，例： removeItems(aryT, 3, 5)，注意这是表示删除序号为3到5的项目（序号从0开始），共三项
-		"removeItem":   tk.RemoveItemsInArray,               // 等同于removeItems
-		"remove":       tk.RemoveItemsInArray,               // 等同于removeItems
-		"getMapString": tk.SafelyGetStringForKeyWithDefault, // 从映射中获得指定的键值，避免返回nil，函数定义：func getMapString(mapA map[string]string, keyA string, defaultA ...string) string， 不指定defaultA将返回空字符串
-		"getMapItem":   getMapItem,                          // 类似于getMapString，但可以取任意类型的值
-		"getArrayItem": getArrayItem,                        // 类似于getMapItem，但是是取一个切片中指定序号的值
-		"joinList":     tk.JoinList,                         // 类似于strJoin，但可以连接任意类型的值
+		"removeItems":   tk.RemoveItemsInArray,               // 从切片中删除指定的项，例： removeItems(aryT, 3, 5)，注意这是表示删除序号为3到5的项目（序号从0开始），共三项
+		"removeItem":    tk.RemoveItemsInArray,               // 等同于removeItems
+		"remove":        tk.RemoveItemsInArray,               // 等同于removeItems
+		"getMapString":  tk.SafelyGetStringForKeyWithDefault, // 从映射中获得指定的键值，避免返回nil，函数定义：func getMapString(mapA map[string]string, keyA string, defaultA ...string) string， 不指定defaultA将返回空字符串
+		"getMapItem":    getMapItem,                          // 类似于getMapString，但可以取任意类型的值
+		"getArrayItem":  getArrayItem,                        // 类似于getMapItem，但是是取一个切片中指定序号的值
+		"joinList":      tk.JoinList,                         // 类似于strJoin，但可以连接任意类型的值
+		"arrayContains": tk.ArrayContains,                    // 判断数组中是否包含某值
 
 		// object related 对象有关
 
