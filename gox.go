@@ -1723,6 +1723,28 @@ func getMapItem(mapA interface{}, keyA string, defaultA ...interface{}) interfac
 		}
 
 		return itemT
+	case map[string]map[string]string:
+		itemT, ok := mapT[keyA]
+		if !ok {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		return itemT
+	case map[string]map[string]interface{}:
+		itemT, ok := mapT[keyA]
+		if !ok {
+			if hasDefaultT {
+				return defaultA[0]
+			}
+
+			return ""
+		}
+
+		return itemT
 	}
 
 	return ""
