@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.9.2"
+var versionG = "v3.9.3"
 
 // add tk.ToJSONX
 
@@ -2185,6 +2185,10 @@ func importQLNonGUIPackages() {
 		"sleepSeconds":      tk.SleepSeconds,                 // 基本等同于sleep，但只能是整数秒
 		"sleepMilliSeconds": tk.SleepMilliSeconds,            // 类似于sleep，但单位是毫秒
 		"sleepMS":           tk.SleepMilliSeconds,            // 等同于sleepMilliSeconds
+
+		"getAppDir":    tk.GetApplicationPath,
+		"getCurDir":    tk.GetCurrentDir,
+		"getConfigDir": fnASRSE(tk.EnsureBasePath),
 
 		// time related 时间相关
 
