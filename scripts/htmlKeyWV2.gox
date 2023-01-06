@@ -1,0 +1,58 @@
+w := webview2.New(true)
+
+if w == nil {
+	log.Fatalln("Failed to load webview.")
+}
+
+defer w.Destroy()
+
+w.SetTitle("dialog")
+
+w.SetSize(800, 600, webview2.HintNone)
+
+htmlT = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title></title>
+<script>
+	function showChar() {
+		let  arr = [] ; 
+		
+		for (let key in event) {
+			arr.push(key+'='+event[key]);
+		}
+			
+		let str = arr.join(' __ ');
+
+		document.getElementById("messageID").innerHTML = str;
+		console.log("e:", event);
+		// console.log("event:", JSON.stringify(event));
+	}
+
+	window.onload = function() {
+		var s1 = "a信b";
+
+		var s2 = "1\x602";
+		alert(s2);
+
+		console.log(s1.charCodeAt(0), s1.charCodeAt(1), s1.charCodeAt(2), s2, JSON.stringify(s2));
+	}
+</script>
+</head>
+<body onkeydown="showChar()">
+<div id="div1">
+</div>
+<div id="div2">
+	<span id='messageID'>abc</span>
+</div>
+</body>
+</html>
+`
+
+w.SetHtml(htmlT)
+
+w.Run()

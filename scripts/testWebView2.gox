@@ -1,4 +1,4 @@
-w = newWebView2("-title=Test WebView2", "-width=1024", "-height=768", "-icon=2", "-centerFalse")
+w = newWebView2("-title=Test WebView2", "-width=1024", "-height=768", "-icon=2", "-centerTrue")
 
 plo(w)
 
