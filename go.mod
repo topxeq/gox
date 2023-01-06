@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/godror/godror v0.31.1-0.20220304150828-9df83c110931
 	github.com/gopherjs/gopherjs v0.0.0-20220221023154-0b2280d3ff96 // indirect
+	github.com/jchv/go-webview2 v0.0.0-20221223143126-dc24628cff85
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible

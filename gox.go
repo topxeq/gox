@@ -175,6 +175,8 @@ import (
 	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
 
+	qlgithub_jchv_gowebview2 "github.com/topxeq/qlang/lib/github.com/jchv/go-webview2"
+
 	qlgithub_eiannone_keyboard "github.com/topxeq/qlang/lib/github.com/eiannone/keyboard"
 	qlgithub_nsf_termboxgo "github.com/topxeq/qlang/lib/github.com/nsf/termbox-go"
 
@@ -202,6 +204,8 @@ import (
 	"github.com/topxeq/dialog"
 	"github.com/topxeq/dlgs"
 
+	"github.com/jchv/go-webview2"
+
 	// full version related end
 	// GUI related end
 
@@ -212,7 +216,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.9.3"
+var versionG = "v3.9.5"
 
 // add tk.ToJSONX
 
@@ -1286,6 +1290,54 @@ func NewFuncInterfaceInterfaceErrorB(funcA interface{}) func(interface{}) (inter
 	return f
 }
 
+func NewFuncInterfaceInterface(funcA interface{}) func(interface{}) interface{} {
+	funcT := (funcA).(*execq.Function)
+	f := func(s interface{}) interface{} {
+		r := funcT.Call(execq.NewStack(), s).([]interface{})
+
+		if len(r) < 1 {
+			return nil
+		}
+
+		return r[0].(interface{})
+	}
+
+	return f
+}
+
+func NewFuncInterfacesInterface(funcA interface{}) func(...interface{}) interface{} {
+	funcT := (funcA).(*execq.Function)
+	f := func(s ...interface{}) interface{} {
+		// tk.Pl("x2: %v", s)
+		r0 := funcT.Call(execq.NewStack(), s...)
+
+		r, ok := r0.([]interface{})
+
+		if ok {
+			if r == nil {
+				return nil
+			}
+
+			if len(r) < 1 {
+				return nil
+			}
+
+			rs, ok := r[0].(interface{})
+			if ok {
+				return rs
+			}
+
+			return nil
+
+		} else {
+			return r0
+		}
+
+	}
+
+	return f
+}
+
 func NewFuncInterfaceInterfaceError(funcA *interface{}) *(func(interface{}) (interface{}, error)) {
 	funcT := (*funcA).(*execq.Function)
 	f := func(s interface{}) (interface{}, error) {
@@ -1843,6 +1895,28 @@ func trim(vA interface{}, argsA ...string) string {
 
 // GUI related start
 
+func newWebView2(optsA ...string) webview2.WebView {
+	titleT := tk.GetSwitch(optsA, "-title=", "Gox "+versionG)
+	widthT := uint(tk.ToInt(tk.GetSwitch(optsA, "-width=", "800"), 800))
+	heightT := uint(tk.ToInt(tk.GetSwitch(optsA, "-height=", "600"), 600))
+	iconT := uint(tk.ToInt(tk.GetSwitch(optsA, "-icon=", "2"), 2))
+	centerT := !tk.IfSwitchExistsWhole(optsA, "-centerFalse")
+
+	w := webview2.NewWithOptions(webview2.WebViewOptions{
+		Debug:     true,
+		AutoFocus: true,
+		WindowOptions: webview2.WindowOptions{
+			Title:  titleT,
+			Width:  widthT,
+			Height: heightT,
+			IconId: iconT, // icon resource id
+			Center: centerT,
+		},
+	})
+
+	return w
+}
+
 func initGUI() {
 	applicationPathT := tk.GetApplicationPath()
 
@@ -2373,6 +2447,8 @@ func importQLNonGUIPackages() {
 		"selectFileGUI":       selectFileGUI,       // 图形化选取文件，例：fileName = selectFileGUI("-title=请选择文件……", "-filterName=所有文件", "-filter=*", "-start=.")，参数均为可选，start是默认起始目录
 		"selectDirectoryGUI":  selectDirectoryGUI,  // 图形化选取目录，例：dirName = selectDirectoryGUI("-title=请选择目录……", "-start=.")，参数均为可选，start是默认起始目录
 
+		"newWebView2": newWebView2, // 新建一个WebView2的窗口
+
 		// GUI related end
 
 		// misc related 杂项相关函数
@@ -2380,7 +2456,9 @@ func importQLNonGUIPackages() {
 
 		"sortX":            tk.SortX,                        // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
 		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
+		"newFuncII":        NewFuncInterfaceInterface,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) interface{} 的形式
 		"newFuncIIE":       NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
+		"newFuncIsI":       NewFuncInterfacesInterface,      // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a ...interface{}) interface{} 的形式
 		"newFuncSSE":       NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
 		"newFuncSS":        NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
 		"newCharFunc":      newCharFunc,                     // 将Gox语言中的定义的函数转换为Charlang语言中类似 func f() 的形式
@@ -2430,6 +2508,8 @@ func importQLNonGUIPackages() {
 		"NewFuncError":                    NewFuncError,
 		"NewFuncInterface":                NewFuncInterface,
 		"NewFuncInterfaceError":           NewFuncInterfaceError,
+		"NewFuncInterfaceInterface":       NewFuncInterfaceInterface,
+		"NewFuncInterfacesInterface":      NewFuncInterfacesInterface,
 		"NewFuncInterfaceInterfaceError":  NewFuncInterfaceInterfaceError,
 		"NewFuncInterfaceInterfaceErrorB": NewFuncInterfaceInterfaceErrorB,
 		"NewFuncIntString":                NewFuncIntString,
@@ -2589,6 +2669,9 @@ func importQLNonGUIPackages() {
 
 	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
 	qlang.Import("github_topxeq_dialog", qlgithub_topxeq_dialog.Exports)
+
+	qlang.Import("github_jchv_gowebview2", qlgithub_jchv_gowebview2.Exports)
+	qlang.Import("webview2", qlgithub_jchv_gowebview2.Exports)
 
 	qlang.Import("github_nsf_termboxgo", qlgithub_nsf_termboxgo.Exports)
 	qlang.Import("github_eiannone_keyboard", qlgithub_eiannone_keyboard.Exports)
