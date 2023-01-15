@@ -451,6 +451,8 @@ github.com/topxeq/blockix v0.0.0-20210301072129-59538096fd95/go.mod h1:xyAfbPzbZ
 github.com/topxeq/charlang v0.0.0-20220224014453-a505ad57cf4e/go.mod h1:kZm5IVvpQkCiCEueuM7VF5Mb1c8BVqc2y0RDujD+Vp0=
 github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6 h1:oveUvAk0mVwa2MPacq71HqgreE5hMrySNm+4X1GYDs0=
 github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6/go.mod h1:t3fUg98zM+J4X2K607uNlGMp7xuP53ScFrBnUJkvvpA=
+github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 h1:JtCULmOHEQb12ZWMFBCYec4gvbt9POZQN3ncD+2509Q=
+github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09/go.mod h1:S/DxGB7MRImGIuTaMZNJpWgguYvMD4a6OGrejBph0xI=
 github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533 h1:H05+VuIlNiRa71bgjwrysIlFF6EVHW99XwueANjH1d8=
 github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533/go.mod h1:VThQgbdym2seGYfauRSCVo9sSoaDX79OJYO1bRpn4Mw=
 github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836/go.mod h1:kFhnUTa5MiRVbkEsoTjB/UbVWQyMAzWrnmU6CuGmx30=
@@ -464,8 +466,8 @@ github.com/topxeq/go-sciter v0.0.0-20221010031453-76f65a41d04f/go.mod h1:+R5PW3U
 github.com/topxeq/gods v0.0.0-20220125023913-b5718bb0c704 h1:UDjm5BOCQ4slQmGLHR9jL/0ldJDHy2CriDdqYbcI5o8=
 github.com/topxeq/gods v0.0.0-20220125023913-b5718bb0c704/go.mod h1:pwCuhd06kBt3NUKc3BQwXbh6DOznm8sbFyMixA1Im/M=
 github.com/topxeq/goph v0.0.0-20211220083015-7bb0167a87df/go.mod h1:CeC7bThR9U7XKZfXJHqh/V/Y8Acqd5DsnG+0nf/jM9k=
-github.com/topxeq/goph v0.0.0-20221230013617-12d452557b9e h1:ECSa8ZsT/2gc05c+aOuS/l9gb1Rcda93R/S+zb6aDkY=
-github.com/topxeq/goph v0.0.0-20221230013617-12d452557b9e/go.mod h1:CeC7bThR9U7XKZfXJHqh/V/Y8Acqd5DsnG+0nf/jM9k=
+github.com/topxeq/goph v0.0.0-20230115120321-83c87d1c01f4 h1:CtFcIVE7jKpf3rdxzBKoKbdWpBTZ/8Bylxk8niHg16c=
+github.com/topxeq/goph v0.0.0-20230115120321-83c87d1c01f4/go.mod h1:dx69VWHgL0R0MkiXSepdhEJMBWxwqBIYUb04boZtWaY=
 github.com/topxeq/imagetk v0.0.0-20200429123347-cfc2b754475d/go.mod h1:5yPPipsPS5Rg8ea7bK3PhAuoQwHtXLwHEm4c+V/BWrE=
 github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f h1:LVUbV3TrzHr54obD5233g+xCUZdX3OtanmdSXKd3Nz8=
 github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f/go.mod h1:5yPPipsPS5Rg8ea7bK3PhAuoQwHtXLwHEm4c+V/BWrE=
