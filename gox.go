@@ -214,7 +214,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.9.5"
+var versionG = "v3.9.6"
 
 // add tk.ToJSONX
 
@@ -2426,6 +2426,14 @@ func importQLNonGUIPackages() {
 		"newWebView2": newWebView2, // 新建一个WebView2的窗口
 
 		// GUI related end
+
+		// compress/uncompress related 压缩解压缩相关函数
+
+		"compress":   tk.Compress,
+		"uncompress": tk.Uncompress,
+
+		"compressText":   tk.CompressText,
+		"uncompressText": tk.UncompressText,
 
 		// misc related 杂项相关函数
 		"dealRef": tk.DealRef,
