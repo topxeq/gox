@@ -21,7 +21,7 @@ require (
 	github.com/topxeq/go-sciter v0.0.0-20221010031453-76f65a41d04f
 	github.com/topxeq/imagetk v0.0.0-20210112052041-d3bf39e7174f // indirect
 	github.com/topxeq/qlang v0.0.0
-	github.com/topxeq/sqltk v0.0.0-20221225082143-d6266faebd41
+	github.com/topxeq/sqltk v0.0.0-20230223005953-f9932d23950c
 	github.com/topxeq/tk v1.0.1
 	github.com/topxeq/xie v0.0.0
 	gonum.org/v1/plot v0.8.2-0.20210109212805-a636e72ce5af // indirect
