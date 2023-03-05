@@ -3175,6 +3175,7 @@ func runArgs(argsA ...string) interface{} {
 		}
 	}
 
+	ifXieT := tk.IfSwitchExistsWhole(argsT, "-xie")
 	ifClipT := tk.IfSwitchExistsWhole(argsT, "-clip")
 	ifEmbedT := (codeTextG != "") && (!tk.IfSwitchExistsWhole(argsT, "-noembed"))
 
@@ -3369,7 +3370,7 @@ func runArgs(argsA ...string) interface{} {
 
 		scriptPathG = ""
 	} else if ifExampleT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
 			scriptT += ".gox"
 		}
 
@@ -3390,7 +3391,7 @@ func runArgs(argsA ...string) interface{} {
 
 		scriptPathG = ""
 	} else if ifCloudT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
 			scriptT += ".gox"
 		}
 
@@ -3419,7 +3420,7 @@ func runArgs(argsA ...string) interface{} {
 		}
 
 	} else if sshT != "" {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
 			scriptT += ".gox"
 		}
 
@@ -3432,7 +3433,7 @@ func runArgs(argsA ...string) interface{} {
 
 		scriptPathG = ""
 	} else if ifGoPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
 			scriptT += ".gox"
 		}
 
@@ -3440,7 +3441,7 @@ func runArgs(argsA ...string) interface{} {
 
 		fcT = tk.LoadStringFromFile(scriptPathG)
 	} else if ifAppPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
 			scriptT += ".gox"
 		}
 
@@ -3448,7 +3449,7 @@ func runArgs(argsA ...string) interface{} {
 
 		fcT = tk.LoadStringFromFile(scriptPathG)
 	} else if ifLocalT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".ql")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
 			scriptT += ".gox"
 		}
 
@@ -3627,6 +3628,15 @@ func runArgs(argsA ...string) interface{} {
 				}
 			}
 
+		}
+
+		return nil
+	}
+
+	if ifXieT {
+		rs := xie.RunCode(fcT, nil, map[string]interface{}{"scriptPathG": scriptPathG}, argsT...) // "guiG": guiHandlerG,
+		if !tk.IsUndefined(rs) {
+			tk.Pl("%v", rs)
 		}
 
 		return nil
@@ -4495,7 +4505,7 @@ data, _ := w.Call("getScreenWH") //, sciter.NewValue(10), sciter.NewValue(20))
 fileNameT := tk.GetParameterByIndexWithDefaultValue(argsG, 0, "")
 
 if ifSwitchExists(argsG, "-gopath") {
-	if (!strEndsWith(fileNameT, ".gox")) && (!strEndsWith(fileNameT, ".ql")) {
+	if (!strEndsWith(fileNameT, ".gox")) && (!strEndsWith(fileNameT, ".xie")) {
 		fileNameT += ".gox"
 	}
 
@@ -4503,7 +4513,7 @@ if ifSwitchExists(argsG, "-gopath") {
 }
 
 if ifSwitchExists(argsG, "-local") {
-	if (!strEndsWith(fileNameT, ".gox")) && (!strEndsWith(fileNameT, ".ql")) {
+	if (!strEndsWith(fileNameT, ".gox")) && (!strEndsWith(fileNameT, ".xie")) {
 		fileNameT += ".gox"
 	}
 
