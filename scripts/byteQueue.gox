@@ -1,0 +1,147 @@
+b1 = newObj("bytequeue", 6)
+
+pl("[%v] %#v %v", -1, b1, b1)
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+pl("List: %#v %v", b1.GetList(), b1.GetList())
+
+pln("remove 0:", b1.Remove(0))
+
+pln("remove last:", b1.Remove(b1.Size()))
+
+pln("remove 3:", b1.Remove(3))
+
+for i = 0; i < 20; i ++ {
+	b1.Push(byte(i))
+
+	pl("[%v] %#v %v", i, b1, b1)
+
+	for j = 0; j < b1.Size(); j ++ {
+		item1 = b1.Get(j)
+		prf(" %v", item1)
+	}
+
+	pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+	pl("List: %#v %v", b1.GetList(), b1.GetList())
+
+}
+
+b1.Insert(0, byte(100))
+
+pl("-1 [%v] %#v %v %v", 999, b1, b1, b1.GetInfo())
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+b1.Insert(3, byte(103))
+
+pl("-2 [%v] %#v %v %v", 999, b1, b1, b1.GetInfo())
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+b1.Insert(b1.Size()-1, byte(109))
+
+pl("-3 [%v] %#v %v %v", 999, b1, b1, b1.GetInfo())
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+pl("List: %#v %v", b1.GetList(), b1.GetList())
+
+// remove 0
+b1.Remove(0)
+
+pl("remove0 [%v] %#v %v %v", 999, b1, b1, b1.GetInfo())
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+pl("List: %#v %v", b1.GetList(), b1.GetList())
+
+// remove last
+b1.Remove(b1.Size()-1)
+
+pl("removeLast [%v] %#v %v %v", 999, b1, b1, b1.GetInfo())
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+pl("List: %#v %v", b1.GetList(), b1.GetList())
+
+// remove 2
+b1.Remove(2)
+
+pl("remove2 [%v] %#v %v %v", 999, b1, b1, b1.GetInfo())
+
+for j = 0; j < b1.Size(); j ++ {
+	item1 = b1.Get(j)
+	prf(" %v", item1)
+}
+
+pl(" F: %v L: %v", b1.Get(), b1.Get(-1))
+
+pl("List: %#v %v", b1.GetList(), b1.GetList())
+
+// // pop
+
+// cnt1 = 0
+// for {
+// 	a1 = b1.Pop()
+
+// 	if isErrX(a1) {
+// 		exit()
+// 	}
+
+// 	cnt1++
+
+// 	pl("got %v", a1)
+
+// 	pl("[%v] %v S: %v", cnt1, b1, b1.Size())
+
+// }
+
+// pick
+
+cnt1 = 0
+for {
+	a1 = b1.Pick()
+
+	if isErrX(a1) {
+		exit()
+	}
+
+	cnt1++
+
+	pl("got %v", a1)
+
+	pl("[%v] %v S: %v", cnt1, b1, b1.Size())
+
+}
