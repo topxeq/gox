@@ -2440,6 +2440,14 @@ func importQLNonGUIPackages() {
 		// misc related 杂项相关函数
 		"dealRef": tk.DealRef,
 
+		"lockN":    tk.LockN, // lock a global lock, 0 <= N < 10
+		"unlockN":  tk.UnlockN,
+		"tryLockN": tk.TryLockN,
+
+		"readLockN":    tk.RLockN, // read lock a global lock, 0 <= N < 10
+		"readUnlockN":  tk.RUnlockN,
+		"tryReadLockN": tk.TryRLockN,
+
 		"sortX":            tk.SortX,                        // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
 		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
 		"newFuncII":        NewFuncInterfaceInterface,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) interface{} 的形式
