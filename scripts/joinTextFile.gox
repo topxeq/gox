@@ -1,0 +1,20 @@
+file1 = trim(getParam(argsG, 1))
+
+file2 = trim(getParam(argsG, 2))
+
+file3 = trim(getParam(argsG, 3))
+
+if !file3 || file3 == "" {
+	fatalf("empty file3")
+}
+
+pl("join %v + %v -> %v", file1, file2, file3)
+
+leLoadFile(file1)
+
+leAppendFile(file2)
+
+leSort()
+
+leSaveFile(file3)
+

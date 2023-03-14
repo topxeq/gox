@@ -689,6 +689,27 @@ func leLoadFile(fileNameA string) error {
 	return nil
 }
 
+func leAppendFile(fileNameA string) error {
+	if leBufG == nil {
+		leClear()
+	}
+
+	strT, errT := tk.LoadStringFromFileE(fileNameA)
+
+	if errT != nil {
+		if !leSilentG {
+			tk.Pl("failed load file to leBuf: %v", errT)
+		}
+
+		return errT
+	}
+
+	leBufG = append(leBufG, tk.SplitLines(strT)...)
+	// leBufG, errT = tk.LoadStringListBuffered(fileNameA, false, false)
+
+	return nil
+}
+
 func leLoadUrl(urlA string) error {
 	if leBufG == nil {
 		leClear()
@@ -814,7 +835,12 @@ func leViewLine(idxA int) error {
 	return nil
 }
 
-func leSort(descentA bool) error {
+func leSort(descentA ...bool) error {
+	descentT := false
+	if len(descentA) > 0 {
+		descentT = descentA[0]
+	}
+
 	if leBufG == nil {
 		leClear()
 	}
@@ -823,7 +849,7 @@ func leSort(descentA bool) error {
 		return tk.Errf("buffer not initalized")
 	}
 
-	if descentA {
+	if descentT {
 		sort.Sort(sort.Reverse(sort.StringSlice(leBufG)))
 	} else {
 		sort.Sort(sort.StringSlice(leBufG))
@@ -2023,16 +2049,17 @@ func importQLNonGUIPackages() {
 		"getRandom":    tk.GetRandomFloat,       // 获取[0.0-1.0)之间的随机浮点数
 
 		// string related 字符串相关
-		"trim":                 trim,                      // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）和nil
-		"strTrim":              tk.Trim,                   // 等同于tk.Trim
-		"trimSafely":           tk.TrimSafely,             // 取出字符串前后的空白字符，非字符串则返回默认值空，可以通过第二个（可选）参数设置默认值
-		"trimx":                tk.TrimSafely,             // 等同于trimSafely
-		"trimX":                tk.TrimSafely,             // 等同于trimSafely
-		"trimStart":            strings.TrimPrefix,        // 去除前导子字符串
-		"trimEnd":              strings.TrimSuffix,        // 去除末尾子字符串
-		"toLower":              strings.ToLower,           // 字符串转小写
-		"toUpper":              strings.ToUpper,           // 字符串转大写
-		"padStr":               tk.PadString,              // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
+		"trim":                 trim,               // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）和nil
+		"strTrim":              tk.Trim,            // 等同于tk.Trim
+		"trimSafely":           tk.TrimSafely,      // 取出字符串前后的空白字符，非字符串则返回默认值空，可以通过第二个（可选）参数设置默认值
+		"trimx":                tk.TrimSafely,      // 等同于trimSafely
+		"trimX":                tk.TrimSafely,      // 等同于trimSafely
+		"trimStart":            strings.TrimPrefix, // 去除前导子字符串
+		"trimEnd":              strings.TrimSuffix, // 去除末尾子字符串
+		"toLower":              strings.ToLower,    // 字符串转小写
+		"toUpper":              strings.ToUpper,    // 字符串转大写
+		"padStr":               tk.PadString,       // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
+		"strPad":               tk.PadString,
 		"limitStr":             tk.LimitString,            // 超长字符串截短，用法 s2 = limitStr("abcdefg", 3, "-suffix=...")，将得到abc...，suffix默认为...
 		"strContains":          strings.Contains,          // 判断字符串中是否包含某个字串
 		"strContainsIn":        tk.ContainsIn,             // 判断字符串中是否包含某几个字串
@@ -2387,6 +2414,7 @@ func importQLNonGUIPackages() {
 		"leGetAll":      leSaveString,    // 等同于leSaveStr
 		"leLoad":        leLoadFile,      // 从文件中载入文本到行文本编辑器缓冲区中，例：err = leLoad(`c:\test.txt`)
 		"leLoadFile":    leLoadFile,      // 等同于leLoad
+		"leAppendFile":  leAppendFile,    // 从文件中载入文本追加到行文本编辑器缓冲区中，例：err = leAppendFile(`c:\test.txt`)
 		"leSave":        leSaveFile,      // 将行文本编辑器缓冲区中内容保存到文件中，例：err = leSave(`c:\test.txt`)
 		"leSaveFile":    leSaveFile,      // 等同于leSave
 		"leLoadClip":    leLoadClip,      // 从剪贴板中载入文本到行文本编辑器缓冲区中，例：err = leLoadClip()
@@ -2404,7 +2432,7 @@ func importQLNonGUIPackages() {
 		"leRemoveLines": leRemoveLines,   // 删除行文本编辑器缓冲区中指定范围的多行，例：err = leRemoveLines(1, 3)
 		"leViewAll":     leViewAll,       // 查看行文本编辑器缓冲区中的所有内容，例：allText = leViewAll()
 		"leView":        leViewLine,      // 查看行文本编辑器缓冲区中的指定行，例：lineText = leView(18)
-		"leSort":        leSort,          // 将行文本编辑器缓冲区中的行进行排序，唯一参数表示是否降序排序，例：errT = leSort(true)
+		"leSort":        leSort,          // 将行文本编辑器缓冲区中的行进行排序，唯一参数（可省略，默认为false）表示是否降序排序，例：errT = leSort(true)
 		"leEnc":         leConvertToUTF8, // 将行文本编辑器缓冲区中的文本转换为UTF-8编码，如果不指定原始编码则默认为GB18030编码
 		"leLineEnd":     leLineEnd,       // 读取或设置行文本编辑器缓冲区中行末字符（一般是\n或\r\n），不带参数是获取，带参数是设置
 		"leSilent":      leSilent,        // 读取或设置行文本编辑器的静默模式（布尔值），不带参数是获取，带参数是设置
