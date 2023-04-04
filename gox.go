@@ -216,7 +216,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.9.7"
+var versionG = "v3.9.9"
 
 // add tk.ToJSONX
 
@@ -2120,14 +2120,15 @@ func importQLNonGUIPackages() {
 		"toSimpleMap":     tk.SimpleMapToString,           // 将一个map（map[string]string或map[string]interface{}）转换为Simple Map字符串
 		"fromSimpleMap":   tk.LoadSimpleMapFromString,     // 将一个Simple Map字符串转换为map[string]string
 
-		"hexToBytes": tk.HexToBytes, // 将16进制字符串转换为字节数组([]byte)
-		"bytesToHex": tk.BytesToHex, // 将字节数组([]byte)转换为16进制字符串
-		"hexEncode":  tk.StrToHex,   // 16进制编码
-		"hex":        tk.StrToHex,   // 等同于hexEncode
-		"strToHex":   tk.StrToHex,   // 等同于hexEncode
-		"toHex":      tk.ToHex,      // 将任意值转换为16进制形式，注意是小写格式
-		"hexDecode":  tk.HexToStr,   // 16进制解码
-		"hexToStr":   tk.HexToStr,   // 等同于hexDecode
+		"hexToBytes":  tk.HexToBytes,  // 将16进制字符串转换为字节数组([]byte)
+		"bytesToHex":  tk.BytesToHex,  // 将字节数组([]byte)转换为16进制字符串
+		"bytesToHexX": tk.BytesToHexX, // 将字节数组([]byte)转换为16进制字符串，每个字节以空格分隔
+		"hexEncode":   tk.StrToHex,    // 16进制编码
+		"hex":         tk.StrToHex,    // 等同于hexEncode
+		"strToHex":    tk.StrToHex,    // 等同于hexEncode
+		"toHex":       tk.ToHex,       // 将任意值转换为16进制形式，注意是小写格式
+		"hexDecode":   tk.HexToStr,    // 16进制解码
+		"hexToStr":    tk.HexToStr,    // 等同于hexDecode
 
 		"mssToMsi": tk.MSS2MSI, // 转换map[string]string到map[string]interface{}
 		"msiToMss": tk.MSI2MSS, // 转换map[string]interface{}到map[string]string
@@ -2296,13 +2297,20 @@ func importQLNonGUIPackages() {
 		"getWebPage":    tk.DownloadPageUTF8, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA url.Values, customHeaders string, timeoutSecsA time.Duration, optsA ...string) string
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
 		// 返回结果是TXERROR字符串，即如果是以TXERROR:开头，则表示错误信息，否则是网页或请求响应
-		"getWeb": tk.DownloadWebPageX, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA map[string]string, optsA ...string) string
+		"getWeb": tk.DownloadWebPageX, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义GetWeb(urlA string, optsA ...interface{}) interface{}
 		// 除了urlA，所有参数都是可选；
-		// optsA支持-verbose， -detail， -timeout=30（秒），-encoding=utf-8/gb2312/gbk/gb18030等,
+		// optsA支持-verbose， -detail， -timeout=30（秒），-encoding=utf-8/gb2312/gbk/gb18030等
 		// 如果要添加FORM形式的POST的数据，则直接传入一个url.Values类型的数据，或者map[string]string或者map[string]interface{}的参数即可，也可以用开关参数-post={"Key1": "Value1", "Key2": "Value2"}这样传入JSON，此时请求将自动转为POST方式（默认是GET方式）
 		// 如果要直接POST数据，则直接传入-postBody=ABCDEFG这样的信息即可，其中ABCDEFG是所需POST的字符串，例如getWeb("http://abc.com:8001/sap/bc/srt/rfc/sap/getSvc", "-postBody=<XML><data1>Test</data1></XML>", `-headers={"Content-Type":"text/xml; charset=utf-8", "SOAPAction":""}`, "-timeout=15")，此时请求将自动转为POST方式（默认是GET方式），另外也可以直接传入一个[]byte类型的参数
 		// 如需添加自定义请求头，则添加开关参数类似：-headers={"content-type": "text/plain; charset=utf-8;"}
 		// 返回结果是TXERROR字符串，即如果是以TXERROR:开头，则表示错误信息，否则是网页或请求响应
+		"getWebX": tk.GetWeb, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义GetWeb(urlA string, optsA ...interface{}) interface{}
+		// 除了urlA，所有参数都是可选；
+		// optsA支持-verbose， -detail， -timeout=30（秒），-encoding=utf-8/gb2312/gbk/gb18030等, -bytes参数表示返回字节数组
+		// 如果要添加FORM形式的POST的数据，则直接传入一个url.Values类型的数据，或者map[string]string或者map[string]interface{}的参数即可，也可以用开关参数-post={"Key1": "Value1", "Key2": "Value2"}这样传入JSON，此时请求将自动转为POST方式（默认是GET方式）
+		// 如果要直接POST数据，则直接传入-postBody=ABCDEFG这样的信息即可，其中ABCDEFG是所需POST的字符串，例如getWeb("http://abc.com:8001/sap/bc/srt/rfc/sap/getSvc", "-postBody=<XML><data1>Test</data1></XML>", `-headers={"Content-Type":"text/xml; charset=utf-8", "SOAPAction":""}`, "-timeout=15")，此时请求将自动转为POST方式（默认是GET方式），另外也可以直接传入一个[]byte类型的参数
+		// 如需添加自定义请求头，则添加开关参数类似：-headers={"content-type": "text/plain; charset=utf-8;"}
+		// 如果返回结果是error对象，则表示错误信息，否则是网页或请求响应
 		"downloadFile": tk.DownloadFile, // 从网络下载一个文件，函数定义func downloadFile(urlA, dirA, fileNameA string, argsA ...string) string
 		"httpRequest":  tk.RequestX,     // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
 		// 其中methodA可以是"GET"，"POST"等
