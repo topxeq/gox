@@ -2297,7 +2297,7 @@ func importQLNonGUIPackages() {
 		"getWebPage":    tk.DownloadPageUTF8, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义func getWebPage(urlA string, postDataA url.Values, customHeaders string, timeoutSecsA time.Duration, optsA ...string) string
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
 		// 返回结果是TXERROR字符串，即如果是以TXERROR:开头，则表示错误信息，否则是网页或请求响应
-		"getWeb": tk.DownloadWebPageX, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义GetWeb(urlA string, optsA ...interface{}) interface{}
+		"getWeb": tk.GetWeb, // 进行一个网络HTTP请求并获得服务器返回结果，或者下载一个网页，函数定义GetWeb(urlA string, optsA ...interface{}) interface{}
 		// 除了urlA，所有参数都是可选；
 		// optsA支持-verbose， -detail， -timeout=30（秒），-encoding=utf-8/gb2312/gbk/gb18030等
 		// 如果要添加FORM形式的POST的数据，则直接传入一个url.Values类型的数据，或者map[string]string或者map[string]interface{}的参数即可，也可以用开关参数-post={"Key1": "Value1", "Key2": "Value2"}这样传入JSON，此时请求将自动转为POST方式（默认是GET方式）
