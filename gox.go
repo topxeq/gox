@@ -216,7 +216,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v3.9.9"
+var versionG = "v5.0.0"
 
 // add tk.ToJSONX
 
@@ -2139,6 +2139,9 @@ func importQLNonGUIPackages() {
 		"toInterface": tk.ToInterface, // 任意值转interface{}
 		"toPointer":   tk.ToPointer,   // 任意值转相应的指针
 		"toVar":       tk.ToVar,       // 任意值（*interface{}）转相应的值
+
+		"toPinYin": tk.ToPinYin, // 字符串转换为拼音，用法：toPinyin("我们都是nice的。")，结果是所有汉字转为的拼音和所有无法转为拼音的字符的原字符；可以加-sep=-表示将各个拼音和字符间以指定分隔符分隔，加-pinYinOnly开关参数表示只包含能够转换为拼音的字符，加-ascOnly表示只包含ASCII字符，加-first表示拼音只取首字母，-tone表示加音调，-digitTone表示音调以数字表示，-digitTone2表示音调以数字表示且加在韵母（元音）后，加-raw表示结果为二维字符串数组，加参数用法类似：toPinyin("我们都是nice的。","-digitTone", "-sep=-")
+		"toPinyin": tk.ToPinYin,
 
 		// array/map related 数组（切片）/映射（字典）相关
 		"removeItems":   tk.RemoveItemsInArray,               // 从切片中删除指定的项，例： removeItems(aryT, 3, 5)，注意这是表示删除序号为3到5的项目（序号从0开始），共三项
