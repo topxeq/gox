@@ -216,7 +216,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v5.0.0"
+var versionG = "v5.0.1"
 
 // add tk.ToJSONX
 
@@ -2288,6 +2288,7 @@ func importQLNonGUIPackages() {
 		"parseCommand":   tk.ParseCommandLine,                    // 等同于tk.ParseCommandLine
 
 		// network related 网络相关
+		"isHttps":      tk.IsHttps,      // 判断一个*http.Request是否是https连接
 		"newSSHClient": tk.NewSSHClient, // 新建一个SSH连接，以便执行各种SSH操作，例：
 		// clientT, errT = newSSHClient(hostName, port, userName, password)
 		// defer clientT.Close() // 别忘了用完关闭网络连接
