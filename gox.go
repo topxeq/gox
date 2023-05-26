@@ -2047,6 +2047,9 @@ func importQLNonGUIPackages() {
 		"adjustFloat":  tk.AdjustFloat,          // 去除浮点数的计算误差，用法：adjustFloat(4.000000002, 2)，第二个参数表示保留几位小数点后数字
 		"getRandomInt": tk.GetRandomIntLessThan, // 获取[0-maxA)之间的随机整数
 		"getRandom":    tk.GetRandomFloat,       // 获取[0.0-1.0)之间的随机浮点数
+		"ceil":         tk.Ceil,                 // 向上取整
+		"floor":        tk.Floor,                // 向下取整
+		"round":        tk.Round,                // 四舍五入
 
 		// string related 字符串相关
 		"trim":                 trim,               // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）和nil
