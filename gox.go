@@ -216,7 +216,7 @@ import (
 
 // Non GUI related
 
-var versionG = "v5.0.1"
+var versionG = "v5.0.2"
 
 // add tk.ToJSONX
 
@@ -2050,6 +2050,8 @@ func importQLNonGUIPackages() {
 		"ceil":         tk.Ceil,                 // 向上取整
 		"floor":        tk.Floor,                // 向下取整
 		"round":        tk.Round,                // 四舍五入
+		"maxX":         tk.Max,                  // 多个数取最大值
+		"minX":         tk.Min,                  // 多个数取最小值
 
 		// string related 字符串相关
 		"trim":                 trim,               // 取出字符串前后的空白字符，可选的第二个参数可以是待去掉的字符列表，等同于tk.Trim, 但支持Undefind（转空字符串）和nil
