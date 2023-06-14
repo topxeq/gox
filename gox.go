@@ -1,16 +1,12 @@
-package main
+package gox
 
 import (
-	"bufio"
-	"bytes"
-	"regexp"
 	"sort"
 	"strings"
 
 	// "context"
+	"net/http"
 
-	"io"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -216,19 +212,21 @@ import (
 
 // Non GUI related
 
-var versionG = "v5.0.2"
+var VersionG = "v6.0.0"
 
 // add tk.ToJSONX
 
-var verboseG = false
+var VerboseG = false
 
 var variableG = make(map[string]interface{})
 
-var codeTextG = ""
+var CodeTextG = ""
 
-var qlVMG *qlang.Qlang = nil
+var QlVMG *qlang.Qlang = nil
 
 var varMutexG sync.Mutex
+
+var QLNonGUIPackagesInitFlag bool = false
 
 func exit(argsA ...int) {
 	defer func() {
@@ -246,10 +244,180 @@ func exit(argsA ...int) {
 	os.Exit(argsA[0])
 }
 
+// init the main VM
+
+var RetG interface{}
+var NotFoundG = interface{}(errors.New("not found"))
+
+func InitQLVM() {
+	if QlVMG == nil {
+		qlang.SetOnPop(func(v interface{}) {
+			RetG = v
+		})
+
+		// qlang.SetDumpCode("1")
+
+		importQLNonGUIPackages()
+
+		// GUI related start
+
+		// importQLGUIPackages()
+
+		// GUI related end
+
+		QlVMG = qlang.New()
+	}
+}
+
+func magic(numberA int, argsA ...string) interface{} {
+	fcT := GetMagic(numberA)
+
+	if tk.IsErrorString(fcT) {
+		return tk.ErrorStringToError(fcT)
+	}
+
+	return runCode(fcT, argsA)
+
+}
+
+func RunScriptX(codeA string, argsA ...string) interface{} {
+
+	InitQLVM()
+
+	// if argsA != nil && len(argsA) > 0 {
+	QlVMG.SetVar("argsG", argsA)
+	// }
+
+	errT := QlVMG.SafeEval(codeA)
+
+	if errT != nil {
+		return errT
+	}
+
+	rs, ok := QlVMG.GetVar("outG")
+
+	if ok {
+		if rs != nil {
+			return rs
+		}
+	}
+
+	return NotFoundG
+
+}
+
+func RunScript(codeA, inputA string, argsA []string, parametersA map[string]string, optionsA ...string) (string, error) {
+	if tk.IfSwitchExists(optionsA, "-verbose") {
+		tk.Pl("Starting...")
+	}
+
+	if !QLNonGUIPackagesInitFlag {
+		importQLNonGUIPackages()
+	}
+
+	if tk.StartsWith(codeA, "//TXDEF#") {
+		tmps := tk.DecryptStringByTXDEF(codeA, "topxeq")
+
+		if !tk.IsErrStr(tmps) {
+			codeA = tmps
+		}
+	}
+
+	vmT := qlang.New("-noexit")
+
+	vmT.SetVar("inputG", inputA)
+
+	vmT.SetVar("argsG", argsA)
+
+	vmT.SetVar("basePathG", tk.GetSwitch(optionsA, "-base=", ""))
+
+	vmT.SetVar("paraMapG", parametersA)
+
+	retT := ""
+
+	errT := vmT.SafeEval(codeA)
+
+	if errT != nil {
+		return retT, errT
+	}
+
+	rs, ok := vmT.GetVar("outG")
+
+	if ok {
+		if rs != nil {
+			strT, ok := rs.(string)
+			if ok {
+				return strT, nil
+			}
+
+			return fmt.Sprintf("%v", rs), nil
+		}
+
+		return retT, nil
+	}
+
+	return retT, nil
+}
+
+func RunScriptOnHttp(codeA string, resA http.ResponseWriter, reqA *http.Request, inputA string, argsA []string, parametersA map[string]string, optionsA ...string) (string, error) {
+	if tk.IfSwitchExists(optionsA, "-verbose") {
+		tk.Pl("Starting...")
+	}
+
+	if !QLNonGUIPackagesInitFlag {
+		importQLNonGUIPackages()
+	}
+
+	if tk.StartsWith(codeA, "//TXDEF#") {
+		tmps := tk.DecryptStringByTXDEF(codeA, "topxeq")
+
+		if !tk.IsErrStr(tmps) {
+			codeA = tmps
+		}
+	}
+
+	vmT := qlang.New("-noexit")
+
+	vmT.SetVar("inputG", inputA)
+
+	vmT.SetVar("argsG", argsA)
+
+	vmT.SetVar("basePathG", tk.GetSwitch(optionsA, "-base=", ""))
+
+	vmT.SetVar("paraMapG", parametersA)
+
+	vmT.SetVar("requestG", reqA)
+
+	vmT.SetVar("responseG", resA)
+
+	retT := ""
+
+	errT := vmT.SafeEval(codeA)
+
+	if errT != nil {
+		return retT, errT
+	}
+
+	rs, ok := vmT.GetVar("outG")
+
+	if ok {
+		if rs != nil {
+			strT, ok := rs.(string)
+			if ok {
+				return strT, nil
+			}
+
+			return fmt.Sprintf("%v", rs), nil
+		}
+
+		return retT, nil
+	}
+
+	return retT, nil
+}
+
 func qlEval(strA string) string {
 	vmT := qlang.New()
-
-	retG = notFoundG
 
 	errT := vmT.SafeEval(strA)
 
@@ -263,25 +431,11 @@ func qlEval(strA string) string {
 		return tk.Spr("%v", rs)
 	}
 
-	if retG != notFoundG {
-		return tk.Spr("%v", retG)
+	if rs != NotFoundG {
+		return tk.Spr("%v", rs)
 	}
 
 	return tk.ErrStrF("no result")
-}
-
-func panicIt(valueA interface{}) {
-	panic(valueA)
-}
-
-func getUint64Value(v reflect.Value) uint16 {
-	tk.Pl("%x", v.Interface())
-
-	var p *uint16
-
-	p = (v.Interface().(*uint16))
-
-	return *p
 }
 
 func runScript(codeA string, modeA string, argsA ...string) interface{} {
@@ -292,8 +446,6 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 		// if argsA != nil && len(argsA) > 0 {
 		vmT.SetVar("argsG", argsA)
 		// }
-
-		retG = notFoundG
 
 		errT := vmT.SafeEval(codeA)
 
@@ -309,43 +461,54 @@ func runScript(codeA string, modeA string, argsA ...string) interface{} {
 			}
 		}
 
-		return retG
+		return NotFoundG
 	} else {
 		return tk.SystemCmd("gox", append([]string{codeA}, argsA...)...)
 	}
 
 }
 
-func runScriptX(codeA string, argsA ...string) interface{} {
+func runFile(argsA ...string) interface{} {
+	lenT := len(argsA)
 
-	initQLVM()
+	// full version related start
+	// GUI related start
 
-	// if argsA != nil && len(argsA) > 0 {
-	qlVMG.SetVar("argsG", argsA)
-	// }
+	if lenT < 1 {
+		rs := tk.GetInputf("Please enter file to run...")
+		// rs := selectFileGUI("Please select file to run...", "All files", "*")
 
-	retG = notFoundG
-
-	errT := qlVMG.SafeEval(codeA)
-
-	if errT != nil {
-		return errT
-	}
-
-	rs, ok := qlVMG.GetVar("outG")
-
-	if ok {
-		if rs != nil {
-			return rs
+		if tk.IsErrorString(rs) {
+			return tk.Errf("Failed to load file: %v", tk.GetErrorString(rs))
 		}
+
+		fcT := tk.LoadStringFromFile(rs)
+
+		if tk.IsErrorString(fcT) {
+			return tk.Errf("Invalid file content: %v", tk.GetErrorString(fcT))
+		}
+
+		return runScript(fcT, "")
+
+	}
+	// GUI related end
+	// full version related end
+
+	if lenT < 1 {
+		return nil
 	}
 
-	return retG
+	fcT := tk.LoadStringFromFile(argsA[0])
 
+	if tk.IsErrorString(fcT) {
+		return tk.Errf("Invalid file content: %v", tk.GetErrorString(fcT))
+	}
+
+	return runScript(fcT, "", argsA[1:]...)
 }
 
 func runCode(codeA string, argsA ...interface{}) interface{} {
-	initQLVM()
+	InitQLVM()
 
 	vmT := qlang.New()
 
@@ -404,7 +567,7 @@ func runCode(codeA string, argsA ...interface{}) interface{} {
 	// 	vmT.SetVar("argsG", os.Args)
 	// }
 
-	retG = notFoundG
+	RetG = NotFoundG
 
 	errT := vmT.SafeEval(codeA)
 
@@ -420,14 +583,28 @@ func runCode(codeA string, argsA ...interface{}) interface{} {
 		}
 	}
 
-	if retG != notFoundG {
-		return retG
+	if RetG != NotFoundG {
+		return RetG
 	}
 
-	return retG
+	return RetG
 }
 
-func getMagic(numberA int) string {
+func panicIt(valueA interface{}) {
+	panic(valueA)
+}
+
+func getUint64Value(v reflect.Value) uint16 {
+	tk.Pl("%x", v.Interface())
+
+	var p *uint16
+
+	p = (v.Interface().(*uint16))
+
+	return *p
+}
+
+func GetMagic(numberA int) string {
 	if numberA < 0 {
 		return tk.GenerateErrorString("invalid magic number")
 	}
@@ -1127,17 +1304,6 @@ func leRemoveLines(startA int, endA int) error {
 	return nil
 }
 
-func magic(numberA int, argsA ...string) interface{} {
-	fcT := getMagic(numberA)
-
-	if tk.IsErrorString(fcT) {
-		return tk.ErrorStringToError(fcT)
-	}
-
-	return runCode(fcT, argsA)
-
-}
-
 func newCharFunc(funcA interface{}) *charlang.Function {
 	funcT := (funcA).(*execq.Function)
 	// f := func(s interface{}) (interface{}, error) {
@@ -1484,7 +1650,7 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 
 func printValue(nameA string) {
 
-	v, idx, ok := qlVMG.GetVarWithIndex(nameA)
+	v, idx, ok := QlVMG.GetVarWithIndex(nameA)
 
 	if !ok {
 		tk.Pl("no variable by the name found: %v", nameA)
@@ -1497,7 +1663,7 @@ func printValue(nameA string) {
 
 func defined(nameA string) bool {
 
-	_, ok := qlVMG.GetVar(nameA)
+	_, ok := QlVMG.GetVar(nameA)
 
 	return ok
 
@@ -1625,7 +1791,7 @@ func isValidNotEmpty(vA interface{}, argsA ...string) bool {
 	return rsT
 }
 
-func isDefined(vA interface{}) bool {
+func IsDefined(vA interface{}) bool {
 	if vA == spec.Undefined {
 		return false
 	}
@@ -1633,8 +1799,16 @@ func isDefined(vA interface{}) bool {
 	return true
 }
 
-func isUndefined(vA interface{}) bool {
+func IsUndefined(vA interface{}) bool {
 	if vA == spec.Undefined {
+		return true
+	}
+
+	return false
+}
+
+func IsNotFound(vA interface{}) bool {
+	if vA == NotFoundG {
 		return true
 	}
 
@@ -1874,15 +2048,15 @@ func strToTime(strA string, formatA ...string) interface{} {
 }
 
 func getStack() string {
-	return qlVMG.Stack.String()
+	return QlVMG.Stack.String()
 }
 
 func getVars() string {
-	return qlVMG.VarsInfo()
+	return QlVMG.VarsInfo()
 }
 
 func typeOfVar(nameA string) string {
-	v, ok := qlVMG.GetVar(nameA)
+	v, ok := QlVMG.GetVar(nameA)
 
 	if !ok {
 		return tk.ErrStrf("no variable by the name found: %v", nameA)
@@ -1947,12 +2121,17 @@ func initGUI() {
 
 // GUI related end
 
-var scriptPathG string
+var ScriptPathG string
 
 func importQLNonGUIPackages() {
+	if QLNonGUIPackagesInitFlag {
+		return
+	}
+
+	QLNonGUIPackagesInitFlag = true
 	// getPointer := func(nameA string) {
 
-	// 	v, ok := qlVMG.GetVar(nameA)
+	// 	v, ok := QlVMG.GetVar(nameA)
 
 	// 	if !ok {
 	// 		tk.Pl("no variable by the name found: %v", nameA)
@@ -1974,10 +2153,10 @@ func importQLNonGUIPackages() {
 		// common related 一般函数
 		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
 		"pass":            tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
-		"isDefined":       isDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
-		"isDef":           isDefined,             // 等同于isDef
-		"isUndefined":     isUndefined,           // 判断某变量是否未定义
-		"isUndef":         isUndefined,           // 等同于isUndefined
+		"IsDefined":       IsDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if IsDefined(a) {...}
+		"isDef":           IsDefined,             // 等同于isDef
+		"IsUndefined":     IsUndefined,           // 判断某变量是否未定义
+		"isUndef":         IsUndefined,           // 等同于IsUndefined
 		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"isValid":         isValid,               // 判断某变量是否已经定义，并且不是nil，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
 		"isValidNotEmpty": isValidNotEmpty,       // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
@@ -2502,8 +2681,8 @@ func importQLNonGUIPackages() {
 		"newFuncSS":        NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
 		"newCharFunc":      newCharFunc,                     // 将Gox语言中的定义的函数转换为Charlang语言中类似 func f() 的形式
 		"newStringRing":    tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
-		"getCfgStr":        getCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
-		"setCfgStr":        setCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
+		"getCfgStr":        GetCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
+		"setCfgStr":        SetCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
 		"genQR":            tk.GenerateQR,                   // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
 		"newChar":          charlang.NewChar,                // new a charlang script VM
 		"runChar":          charlang.RunChar,                // run a charlang script VM
@@ -2528,14 +2707,14 @@ func importQLNonGUIPackages() {
 		"getStack":        getStack,           // 获取堆栈
 		"getVars":         getVars,            // 获取当前变量表
 
-		"scriptPathG": scriptPathG, // 所执行脚本的路径
-		"versionG":    versionG,    // Gox/Goxc的版本号
+		"scriptPathG": ScriptPathG, // 所执行脚本的路径
+		"versionG":    VersionG,    // Gox/Goxc的版本号
 		"leBufG":      leBufG,      // 内置行文本编辑器所用的编辑缓冲区
 
 		// GUI related start
 
 		// full version related start
-		"edit": editFile,
+		"edit": EditFile,
 		// full version related end
 		// GUI related end
 	}
@@ -2758,14 +2937,6 @@ func importQLNonGUIPackages() {
 
 }
 
-func showHelp() {
-	tk.Pl("Gox by TopXeQ V%v\n", versionG)
-
-	tk.Pl("Usage: gox [-v|-h] test.gox, ...\n")
-	tk.Pl("or just gox without arguments to start REPL instead.\n")
-
-}
-
 // func compileSource(srcA string) string {
 // 	vmT := qlang.New()
 
@@ -2782,84 +2953,6 @@ func showHelp() {
 // 	return ""
 
 // }
-
-func runInteractiveQlang() int {
-	var following bool
-	var source string
-
-	tk.Pl("Gox %v", versionG)
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	for {
-		if following {
-			source += "\n"
-			fmt.Print("  ")
-		} else {
-			fmt.Print("> ")
-		}
-
-		if !scanner.Scan() {
-			break
-		}
-		source += scanner.Text()
-		if source == "" {
-			continue
-		}
-		if source == "quit()" {
-			break
-		}
-
-		// stmts, err := parser.ParseSrc(source)
-
-		// if e, ok := err.(*parser.Error); ok {
-		// 	es := e.Error()
-		// 	if strings.HasPrefix(es, "syntax error: unexpected") {
-		// 		if strings.HasPrefix(es, "syntax error: unexpected $end,") {
-		// 			following = true
-		// 			continue
-		// 		}
-		// 	} else {
-		// 		if e.Pos.Column == len(source) && !e.Fatal {
-		// 			fmt.Fprintln(os.Stderr, e)
-		// 			following = true
-		// 			continue
-		// 		}
-		// 		if e.Error() == "unexpected EOF" {
-		// 			following = true
-		// 			continue
-		// 		}
-		// 	}
-		// }
-
-		retG = notFoundG
-
-		err := qlVMG.SafeEval(source)
-
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			following = false
-			source = ""
-			continue
-		}
-
-		if retG != notFoundG {
-			fmt.Println(retG)
-		}
-
-		following = false
-		source = ""
-	}
-
-	if err := scanner.Err(); err != nil {
-		if err != io.EOF {
-			fmt.Fprintln(os.Stderr, "ReadString error:", err)
-			return 12
-		}
-	}
-
-	return 0
-}
 
 // Non GUI related end
 
@@ -3104,651 +3197,7 @@ func selectDirectoryGUI(argsA ...string) string {
 
 // GUI related end
 
-func runFile(argsA ...string) interface{} {
-	lenT := len(argsA)
-
-	// full version related start
-	// GUI related start
-
-	if lenT < 1 {
-		rs := tk.GetInputf("Please enter file to run...")
-		// rs := selectFileGUI("Please select file to run...", "All files", "*")
-
-		if tk.IsErrorString(rs) {
-			return tk.Errf("Failed to load file: %v", tk.GetErrorString(rs))
-		}
-
-		fcT := tk.LoadStringFromFile(rs)
-
-		if tk.IsErrorString(fcT) {
-			return tk.Errf("Invalid file content: %v", tk.GetErrorString(fcT))
-		}
-
-		return runScript(fcT, "")
-
-	}
-	// GUI related end
-	// full version related end
-
-	if lenT < 1 {
-		return nil
-	}
-
-	fcT := tk.LoadStringFromFile(argsA[0])
-
-	if tk.IsErrorString(fcT) {
-		return tk.Errf("Invalid file content: %v", tk.GetErrorString(fcT))
-	}
-
-	return runScript(fcT, "", argsA[1:]...)
-}
-
-func runLine(strA string) interface{} {
-	argsT, errT := tk.ParseCommandLine(strA)
-
-	if errT != nil {
-		return errT
-	}
-
-	return runArgs(argsT...)
-}
-
-func runArgs(argsA ...string) interface{} {
-	argsT := argsA
-
-	if tk.IfSwitchExistsWhole(argsT, "-version") {
-		tk.Pl("Gox by TopXeQ V%v", versionG)
-		return nil
-	}
-
-	if tk.IfSwitchExistsWhole(argsT, "-h") {
-		showHelp()
-		return nil
-	}
-
-	scriptT := tk.GetParameterByIndexWithDefaultValue(argsT, 0, "")
-
-	// GUI related start
-
-	// full version related start
-	if tk.IfSwitchExistsWhole(argsT, "-edit") {
-		// editFile(scriptT)
-		rs := runScriptX(editFileScriptG, argsT...)
-
-		if rs != notFoundG && rs != nil {
-			tk.Pl("%v", rs)
-		}
-
-		return nil
-	}
-	// full version related end
-
-	// GUI related end
-
-	if tk.IfSwitchExistsWhole(argsT, "-initgui") {
-		applicationPathT := tk.GetApplicationPath()
-
-		osT := tk.GetOSName()
-
-		if tk.Contains(osT, "inux") {
-			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
-
-			return nil
-		} else if tk.Contains(osT, "arwin") {
-			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
-
-			return nil
-		} else {
-			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciterts.dll", applicationPathT, "sciterts.dll")
-
-			if tk.IsErrorString(rs) {
-
-				return tk.Errf("failed to download Sciter DLL file.")
-			}
-
-			tk.Pl("Sciter DLL downloaded to application path.")
-
-			// rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/webview.dll", applicationPathT, "webview.dll", false)
-
-			// if tk.IsErrorString(rs) {
-
-			// 	return tk.Errf("failed to download webview DLL file.")
-			// }
-
-			// rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/WebView2Loader.dll", applicationPathT, "WebView2Loader.dll", false)
-
-			// if tk.IsErrorString(rs) {
-
-			// 	return tk.Errf("failed to download webview DLL file.")
-			// }
-
-			// tk.Pl("webview DLL downloaded to application path.")
-
-			return nil
-		}
-	}
-
-	ifXieT := tk.IfSwitchExistsWhole(argsT, "-xie")
-	ifClipT := tk.IfSwitchExistsWhole(argsT, "-clip")
-	ifEmbedT := (codeTextG != "") && (!tk.IfSwitchExistsWhole(argsT, "-noembed"))
-
-	ifInExeT := false
-	inExeCodeT := ""
-
-	binNameT, errT := os.Executable()
-	if errT != nil {
-		binNameT = ""
-	}
-
-	baseBinNameT := filepath.Base(binNameT)
-
-	text1T := tk.Trim(`740404`)
-	text2T := tk.Trim(`690415`)
-	text3T := tk.Trim(`040626`)
-
-	if binNameT != "" {
-		if !tk.StartsWith(baseBinNameT, "gox") {
-			buf1, errT := tk.LoadBytesFromFileE(binNameT)
-			if errT == nil {
-				re := regexp.MustCompile(text1T + text2T + text3T + `(.*?) *` + text3T + text2T + text1T)
-				matchT := re.FindAllSubmatch(buf1, -1)
-
-				if matchT != nil && len(matchT) > 0 {
-					codeStrT := string(matchT[len(matchT)-1][1])
-
-					decCodeT := tk.DecryptStringByTXDEF(codeStrT, "topxeq")
-					if !tk.IsErrStr(decCodeT) {
-						ifInExeT = true
-						inExeCodeT = decCodeT
-					}
-
-				}
-			}
-		}
-	}
-
-	if tk.IfSwitchExistsWhole(argsT, "-shell") {
-		initQLVM()
-
-		runInteractiveQlang()
-
-		// tk.Pl("not enough parameters")
-
-		return nil
-	}
-
-	cmdT := tk.GetSwitchWithDefaultValue(argsT, "-cmd=", "")
-
-	if cmdT != "" {
-		scriptT = "CMD"
-	}
-
-	if scriptT == "" && (!ifClipT) && (!ifEmbedT) && (!ifInExeT) {
-
-		// autoPathT := filepath.Join(tk.GetApplicationPath(), "auto.gox")
-		// autoGxbPathT := filepath.Join(tk.GetApplicationPath(), "auto.gxb")
-		autoPathT := "auto.gox"
-		autoGxbPathT := "auto.gxb"
-
-		if tk.IfFileExists(autoPathT) {
-			scriptT = autoPathT
-		} else if tk.IfFileExists(autoGxbPathT) {
-			scriptT = autoGxbPathT
-		} else {
-			initQLVM()
-
-			runInteractiveQlang()
-
-			// tk.Pl("not enough parameters")
-
-			return nil
-		}
-
-	}
-
-	encryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-encrypt=", "")
-
-	if encryptCodeT != "" {
-		fcT := tk.LoadStringFromFile(scriptT)
-
-		if tk.IsErrorString(fcT) {
-
-			return tk.Errf("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
-		}
-
-		encStrT := tk.EncryptStringByTXDEF(fcT, encryptCodeT)
-
-		if tk.IsErrorString(encStrT) {
-
-			return tk.Errf("failed to encrypt content [%v]: %v", scriptT, tk.GetErrorString(encStrT))
-		}
-
-		rsT := tk.SaveStringToFile("//TXDEF#"+encStrT, scriptT+"e")
-
-		if tk.IsErrorString(rsT) {
-
-			return tk.Errf("failed to encrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
-		}
-
-		return nil
-	}
-
-	decryptCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrypt=", "")
-
-	if decryptCodeT != "" {
-		fcT := tk.LoadStringFromFile(scriptT)
-
-		if tk.IsErrorString(fcT) {
-
-			return tk.Errf("failed to load file [%v]: %v", scriptT, tk.GetErrorString(fcT))
-		}
-
-		decStrT := tk.DecryptStringByTXDEF(fcT, decryptCodeT)
-
-		if tk.IsErrorString(decStrT) {
-
-			return tk.Errf("failed to decrypt content [%v]: %v", scriptT, tk.GetErrorString(decStrT))
-		}
-
-		rsT := tk.SaveStringToFile(decStrT, scriptT+"d")
-
-		if tk.IsErrorString(rsT) {
-
-			return tk.Errf("failed to decrypt file [%v]: %v", scriptT, tk.GetErrorString(rsT))
-		}
-
-		return nil
-	}
-
-	decryptRunCodeT := tk.GetSwitchWithDefaultValue(argsT, "-decrun=", "")
-
-	ifBatchT := tk.IfSwitchExistsWhole(argsT, "-batch")
-
-	if !ifBatchT {
-		if tk.EndsWithIgnoreCase(scriptT, ".gxb") {
-			ifBatchT = true
-		}
-	}
-
-	ifBinT := tk.IfSwitchExistsWhole(argsT, "-bin")
-	if ifBinT {
-	}
-
-	ifRunT := tk.IfSwitchExistsWhole(argsT, "-run")
-	ifExampleT := tk.IfSwitchExistsWhole(argsT, "-example")
-	ifGoPathT := tk.IfSwitchExistsWhole(argsT, "-gopath")
-	ifLocalT := tk.IfSwitchExistsWhole(argsT, "-local")
-	ifAppPathT := tk.IfSwitchExistsWhole(argsT, "-apppath")
-	ifRemoteT := tk.IfSwitchExistsWhole(argsT, "-remote")
-	ifCloudT := tk.IfSwitchExistsWhole(argsT, "-cloud")
-	sshT := tk.GetSwitchWithDefaultValue(argsT, "-ssh=", "")
-	ifViewT := tk.IfSwitchExistsWhole(argsT, "-view")
-	ifOpenT := tk.IfSwitchExistsWhole(argsT, "-open")
-	ifCompileT := tk.IfSwitchExistsWhole(argsT, "-compile")
-
-	verboseG = tk.IfSwitchExistsWhole(argsT, "-verbose")
-
-	ifMagicT := false
-	magicNumberT, errT := tk.StrToIntE(scriptT)
-
-	if errT == nil {
-		ifMagicT = true
-	}
-
-	var fcT string
-
-	if ifInExeT && inExeCodeT != "" && !tk.IfSwitchExistsWhole(os.Args, "-noin") {
-		fcT = inExeCodeT
-
-		scriptPathG = ""
-	} else if cmdT != "" {
-		fcT = cmdT
-
-		if tk.IfSwitchExistsWhole(os.Args, "-urlDecode") {
-			fcT = tk.UrlDecode(fcT)
-		}
-
-		scriptPathG = ""
-	} else if ifMagicT {
-		fcT = getMagic(magicNumberT)
-
-		scriptPathG = ""
-	} else if ifRunT {
-		if tk.IfSwitchExistsWhole(os.Args, "-urlDecode") {
-			fcT = tk.UrlDecode(scriptT)
-		} else {
-			fcT = scriptT
-		}
-		tk.Pl("run cmd(%v)", fcT)
-
-		scriptPathG = ""
-	} else if ifExampleT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
-			scriptT += ".gox"
-		}
-
-		scriptPathG = "https://gitee.com/topxeq/gox/raw/master/scripts/" + scriptT
-
-		fcT = tk.DownloadPageUTF8("https://gitee.com/topxeq/gox/raw/master/scripts/"+scriptT, nil, "", 30)
-
-	} else if ifRemoteT {
-		scriptPathG = scriptT
-		fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-
-	} else if ifClipT {
-		fcT = tk.GetClipText()
-
-		scriptPathG = ""
-	} else if ifEmbedT {
-		fcT = codeTextG
-
-		scriptPathG = ""
-	} else if ifCloudT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
-			scriptT += ".gox"
-		}
-
-		basePathT, errT := tk.EnsureBasePath("gox")
-
-		gotT := false
-
-		if errT == nil {
-			cfgPathT := tk.JoinPath(basePathT, "cloud.cfg")
-
-			cfgStrT := tk.Trim(tk.LoadStringFromFile(cfgPathT))
-
-			if !tk.IsErrorString(cfgStrT) {
-				scriptPathG = cfgStrT + scriptT
-
-				fcT = tk.DownloadPageUTF8(cfgStrT+scriptT, nil, "", 30)
-
-				gotT = true
-			}
-
-		}
-
-		if !gotT {
-			scriptPathG = scriptT
-			fcT = tk.DownloadPageUTF8(scriptT, nil, "", 30)
-		}
-
-	} else if sshT != "" {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
-			scriptT += ".gox"
-		}
-
-		fcT = downloadStringFromSSH(sshT, scriptT)
-
-		if tk.IsErrorString(fcT) {
-
-			return tk.Errf("failed to get script from SSH: %v", tk.GetErrorString(fcT))
-		}
-
-		scriptPathG = ""
-	} else if ifGoPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
-			scriptT += ".gox"
-		}
-
-		scriptPathG = filepath.Join(tk.GetEnv("GOPATH"), "src", "github.com", "topxeq", "gox", "scripts", scriptT)
-
-		fcT = tk.LoadStringFromFile(scriptPathG)
-	} else if ifAppPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
-			scriptT += ".gox"
-		}
-
-		scriptPathG = filepath.Join(tk.GetApplicationPath(), scriptT)
-
-		fcT = tk.LoadStringFromFile(scriptPathG)
-	} else if ifLocalT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
-			scriptT += ".gox"
-		}
-
-		localPathT := getCfgString("localScriptPath.cfg")
-
-		if tk.IsErrorString(localPathT) {
-			// tk.Pl("failed to get local path: %v", tk.GetErrorString(localPathT))
-
-			return tk.Errf("failed to get local path: %v", tk.GetErrorString(localPathT))
-		}
-
-		// if tk.GetEnv("GOXVERBOSE") == "true" {
-		// 	tk.Pl("Try to load script from %v", filepath.Join(localPathT, scriptT))
-		// }
-
-		scriptPathG = filepath.Join(localPathT, scriptT)
-
-		fcT = tk.LoadStringFromFile(scriptPathG)
-	} else {
-		scriptPathG = scriptT
-		fcT = tk.LoadStringFromFile(scriptT)
-	}
-
-	if tk.IsErrorString(fcT) {
-		return tk.Errf("failed to load script from %v: %v", scriptT, tk.GetErrorString(fcT))
-	}
-
-	if tk.StartsWith(fcT, "//TXDEF#") {
-		if decryptRunCodeT == "" {
-			tmps := tk.DecryptStringByTXDEF(fcT, "topxeq")
-
-			if tk.IsErrStr(tmps) {
-				tk.Prf("Password: ")
-				decryptRunCodeT = tk.Trim(tk.GetInputBufferedScan())
-			} else {
-				fcT = tmps
-			}
-
-			// fcT = fcT[8:]
-		}
-	}
-
-	if decryptRunCodeT != "" {
-		fcT = tk.DecryptStringByTXDEF(fcT, decryptRunCodeT)
-	}
-
-	if ifViewT {
-		if !ifInExeT {
-			tk.Pl("%v", fcT)
-		}
-
-		return nil
-	}
-
-	if ifCompileT {
-		appPathT, errT := os.Executable()
-
-		tk.CheckError(errT)
-
-		outputT := tk.Trim(tk.GetSwitch(os.Args, "-output=", "output.exe"))
-
-		if fcT == "" {
-			tk.Fatalf("code empty")
-		}
-
-		buf1, errT := tk.LoadBytesFromFileE(appPathT)
-		if errT != nil {
-			tk.Fatalf("loading bin failed: %v", errT)
-		}
-
-		encTextT := tk.EncryptStringByTXDEF(fcT, "topxeq")
-
-		encBytesT := []byte(encTextT)
-
-		lenEncT := len(encBytesT)
-
-		text1T := tk.Trim("740404")
-		text2T := tk.Trim("690415")
-		text3T := tk.Trim("040626")
-
-		re := regexp.MustCompile(text1T + text2T + text3T + `(.*)` + text3T + text2T + text1T)
-		matchT := re.FindSubmatchIndex(buf1)
-		if matchT == nil {
-			tk.Fatalf("invald bin")
-		}
-
-		bufCodeLenT := matchT[3] - matchT[2]
-
-		var buf3 bytes.Buffer
-
-		if bufCodeLenT < lenEncT {
-
-			buf3.Write(buf1)
-			buf3.Write([]byte("74040469" + "0415840215"))
-			buf3.Write(encBytesT)
-			buf3.Write([]byte("840215690" + "415740404"))
-		} else {
-			buf3.Write(buf1[:matchT[2]])
-			buf3.Write(encBytesT)
-			buf3.Write(buf1[matchT[2]+lenEncT:])
-		}
-
-		errT = tk.SaveBytesToFileE(buf3.Bytes(), outputT)
-		tk.CheckError(errT)
-
-		return nil
-
-	}
-
-	if ifOpenT {
-		tk.RunWinFileWithSystemDefault(scriptPathG)
-
-		return nil
-	}
-
-	// if ifCompileT {
-	// 	initQLVM()
-
-	// 	qlVMG.SetVar("argsG", argsT)
-
-	// 	retG = notFoundG
-
-	// 	endT, errT := qlVMG.SafeCl([]byte(fcT), "")
-	// 	if errT != nil {
-
-	// 		// tk.Pl()
-
-	// 		// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
-	// 		// tk.Pl("Next line: %v, %v", f, l)
-
-	// 		return tk.Errf("failed to compile script(%v) error: %v\n", scriptT, errT)
-	// 	}
-
-	// 	tk.Pl("endT: %v", endT)
-
-	// 	errT = qlVMG.DumpEngine()
-
-	// 	if errT != nil {
-	// 		return tk.Errf("failed to dump engine: %v\n", errT)
-	// 	}
-
-	// 	tk.Plvsr(qlVMG.Cpl.GetCode().Len(), qlVMG.Run())
-
-	// 	return nil
-	// }
-
-	if !ifBatchT {
-		if tk.RegStartsWith(fcT, `//\s*(GXB|gxb)`) {
-			ifBatchT = true
-		}
-	}
-
-	if ifBatchT {
-		listT := tk.SplitLinesRemoveEmpty(fcT)
-
-		// tk.Plv(fcT)
-		// tk.Plv(listT)
-
-		for _, v := range listT {
-			// tk.Pl("Run line: %#v", v)
-			v = tk.Trim(v)
-
-			if tk.StartsWith(v, "//") {
-				continue
-			}
-
-			rsT := runLine(v)
-
-			if rsT != nil {
-				valueT, ok := rsT.(error)
-
-				if ok {
-					return valueT
-				} else {
-					tk.Pl("%v", rsT)
-				}
-			}
-
-		}
-
-		return nil
-	}
-
-	if ifXieT {
-		rs := xie.RunCode(fcT, nil, map[string]interface{}{"scriptPathG": scriptPathG}, argsT...) // "guiG": guiHandlerG,
-		if !tk.IsUndefined(rs) {
-			tk.Pl("%v", rs)
-		}
-
-		return nil
-	}
-
-	initQLVM()
-
-	qlVMG.SetVar("argsG", argsT)
-
-	retG = notFoundG
-
-	errT = qlVMG.SafeEval(fcT)
-	if errT != nil {
-
-		// tk.Pl()
-
-		// f, l := qlVMG.Code.Line(qlVMG.Code.Reserve().Next())
-		// tk.Pl("Next line: %v, %v", f, l)
-
-		return tk.Errf("failed to execute script(%v) error: %v\n", scriptT, errT)
-	}
-
-	rs, ok := qlVMG.GetVar("outG")
-
-	if ok {
-		if rs != nil {
-			return rs
-		}
-	}
-
-	return retG
-}
-
-// init the main VM
-
-var retG interface{}
-var notFoundG = interface{}(errors.New("not found"))
-
-func initQLVM() {
-	if qlVMG == nil {
-		qlang.SetOnPop(func(v interface{}) {
-			retG = v
-		})
-
-		// qlang.SetDumpCode("1")
-
-		importQLNonGUIPackages()
-
-		// GUI related start
-
-		// importQLGUIPackages()
-
-		// GUI related end
-
-		qlVMG = qlang.New()
-	}
-}
-
-func downloadStringFromSSH(sshA string, filePathA string) string {
+func DownloadStringFromSSH(sshA string, filePathA string) string {
 	aryT := tk.Split(sshA, ":")
 
 	basePathT, errT := tk.EnsureBasePath("gox")
@@ -3799,7 +3248,7 @@ func downloadStringFromSSH(sshA string, filePathA string) string {
 	return fcT
 }
 
-func getCfgString(fileNameA string) string {
+func GetCfgString(fileNameA string) string {
 	basePathT, errT := tk.EnsureBasePath("gox")
 
 	if errT == nil {
@@ -3818,7 +3267,7 @@ func getCfgString(fileNameA string) string {
 	return tk.ErrStrF("failed to get config string: %v", errT)
 }
 
-func setCfgString(fileNameA string, strA string) string {
+func SetCfgString(fileNameA string, strA string) string {
 	basePathT, errT := tk.EnsureBasePath("gox")
 
 	if errT == nil {
@@ -3837,7 +3286,7 @@ func setCfgString(fileNameA string, strA string) string {
 	return tk.ErrStrF("failed to save config string: %v", errT)
 }
 
-var editFileScriptG = `
+var EditFileScriptG = `
 sciter = github_scitersdk_gosciter
 window = github_scitersdk_gosciter_window
 
@@ -4600,47 +4049,129 @@ w.Run()
 
 `
 
-func editFile(fileNameA string, argsA ...string) {
-	rs := runScriptX(editFileScriptG, argsA...)
+func EditFile(fileNameA string, argsA ...string) {
+	rs := RunScriptX(EditFileScriptG, argsA...)
 
-	if rs != notFoundG {
+	if rs != NotFoundG {
 		// tk.Pl("%v", rs)
 	}
 
 }
 
-func main() {
-	// var errT error
+func doJapi(resA http.ResponseWriter, reqA *http.Request) string {
+	if reqA != nil {
+		reqA.ParseForm()
+	}
 
-	defer func() {
-		err := recover()
-		if err != nil {
-			fmt.Println("Exception: ", err)
-		}
-	}()
+	reqT := tk.GetFormValueWithDefaultValue(reqA, "req", "")
 
-	test()
+	if resA != nil {
+		resA.Header().Set("Access-Control-Allow-Origin", "*")
+		resA.Header().Set("Access-Control-Allow-Headers", "*")
+		resA.Header().Set("Content-Type", "text/json;charset=utf-8")
+	}
 
-	rand.Seed(time.Now().Unix())
+	resA.WriteHeader(http.StatusOK)
 
-	rs := runArgs(os.Args[1:]...)
+	vo := tk.GetFormValueWithDefaultValue(reqA, "vo", "")
 
-	if rs != nil {
-		valueT, ok := rs.(error)
+	var paraMapT map[string]string
+	var errT error
 
-		if ok {
-			if valueT != spec.Undefined && valueT != notFoundG {
-				tk.Pl("Error: %T %v", valueT, valueT)
-			}
-		} else {
-			tk.Pl("%v", rs)
+	if vo == "" {
+		paraMapT = tk.FormToMap(reqA.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			return tk.GenerateJSONPResponse("success", "invalid vo format", reqA)
 		}
 	}
+
+	switch reqT {
+	case "debug":
+		return tk.GenerateJSONPResponse("success", fmt.Sprintf("%v", reqA), reqA)
+
+	case "requestinfo":
+		rs := tk.Spr("%#v", reqA)
+
+		return tk.GenerateJSONPResponse("success", rs, reqA)
+
+	case "test":
+
+		return tk.GenerateJSONPResponse("success", "test respone", reqA)
+
+	case "runScript":
+		scriptT := paraMapT["script"]
+		if scriptT == "" {
+			return tk.GenerateJSONPResponse("fail", fmt.Sprintf("empty script"), reqA)
+		}
+
+		retT, errT := RunScript(scriptT, paraMapT["input"], nil, nil)
+
+		var errStrT string = ""
+
+		if errT != nil {
+			errStrT = fmt.Sprintf("%v", errT)
+		}
+
+		return tk.GenerateJSONPResponseWithMore("success", retT, reqA, "Error", errStrT)
+
+	case "runFileScript":
+		scriptT := paraMapT["script"]
+		if scriptT == "" {
+			return tk.GenerateJSONPResponse("fail", tk.Spr("empty script"), reqA)
+		}
+
+		baseDirT := paraMapT["base"]
+		if baseDirT == "" {
+			baseDirT = "."
+		}
+
+		fcT := tk.LoadStringFromFile(filepath.Join(baseDirT, scriptT))
+		if tk.IsErrStr(fcT) {
+			return tk.GenerateJSONPResponseWithMore("fail", "", reqA, "Error", tk.GetErrStr(fcT))
+		}
+
+		retT, errT := RunScript(fcT, paraMapT["input"], nil, nil)
+
+		var errStrT string = ""
+
+		if errT != nil {
+			errStrT = fmt.Sprintf("%v", errT)
+		}
+
+		return tk.GenerateJSONPResponseWithMore("success", retT, reqA, "Error", errStrT)
+	}
+
+	return tk.GenerateJSONPResponse("fail", "unknown request", reqA)
 
 }
 
-func test() {
-	if tk.IfSwitchExists(os.Args, "-dotest") {
-		tk.Pl("%v", codeG)
+func japiHandler(w http.ResponseWriter, req *http.Request) {
+	rs := doJapi(w, req)
+
+	w.Write([]byte(rs))
+}
+
+func StartServer(portA string, codeA string) error {
+	muxT := http.NewServeMux()
+
+	if strings.ContainsAny(codeA, " /") {
+		return tk.Errf("failed to start server: %v", "invalid password")
 	}
+
+	if codeA == "" {
+		muxT.HandleFunc("/japi", japiHandler)
+	} else {
+		muxT.HandleFunc("/japi/"+codeA, japiHandler)
+	}
+
+	errT := http.ListenAndServe(portA, muxT)
+
+	if errT != nil {
+		return tk.Errf("failed to start server: %v", errT)
+	}
+
+	return nil
 }

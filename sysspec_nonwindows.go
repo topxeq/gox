@@ -1,6 +1,6 @@
 // +build !windows
 
-package main
+package gox
 
 import (
 	"github.com/topxeq/qlang"

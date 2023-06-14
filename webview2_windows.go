@@ -1,7 +1,7 @@
 //go:build windows
 // +build windows
 
-package main
+package gox
 
 import (
 	"github.com/jchv/go-webview2"
@@ -9,7 +9,7 @@ import (
 )
 
 func newWebView2(optsA ...string) interface{} {
-	titleT := tk.GetSwitch(optsA, "-title=", "Gox "+versionG)
+	titleT := tk.GetSwitch(optsA, "-title=", "Gox "+VersionG)
 	widthT := uint(tk.ToInt(tk.GetSwitch(optsA, "-width=", "800"), 800))
 	heightT := uint(tk.ToInt(tk.GetSwitch(optsA, "-height=", "600"), 600))
 	iconT := uint(tk.ToInt(tk.GetSwitch(optsA, "-icon=", "2"), 2))
