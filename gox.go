@@ -257,7 +257,7 @@ func InitQLVM() {
 			RetG = v
 		})
 
-		fmt.Printf("init qlvm\n")
+		// fmt.Printf("init qlvm\n")
 
 		// qlang.SetDumpCode("1")
 
