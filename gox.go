@@ -228,6 +228,8 @@ var varMutexG sync.Mutex
 
 var QLNonGUIPackagesInitFlag bool = false
 
+var ServerModeG = false
+
 func exit(argsA ...int) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -254,6 +256,8 @@ func InitQLVM() {
 		qlang.SetOnPop(func(v interface{}) {
 			RetG = v
 		})
+
+		fmt.Printf("init qlvm\n")
 
 		// qlang.SetDumpCode("1")
 
@@ -1649,6 +1653,9 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 }
 
 func printValue(nameA string) {
+	if ServerModeG {
+		return
+	}
 
 	v, idx, ok := QlVMG.GetVarWithIndex(nameA)
 
@@ -1662,6 +1669,9 @@ func printValue(nameA string) {
 }
 
 func defined(nameA string) bool {
+	if ServerModeG {
+		return false
+	}
 
 	_, ok := QlVMG.GetVar(nameA)
 
@@ -2048,14 +2058,26 @@ func strToTime(strA string, formatA ...string) interface{} {
 }
 
 func getStack() string {
+	if ServerModeG {
+		return tk.ErrStrf("not available")
+	}
+
 	return QlVMG.Stack.String()
 }
 
 func getVars() string {
+	if ServerModeG {
+		return tk.ErrStrf("not available")
+	}
+
 	return QlVMG.VarsInfo()
 }
 
 func typeOfVar(nameA string) string {
+	if ServerModeG {
+		return tk.ErrStrf("not available")
+	}
+
 	v, ok := QlVMG.GetVar(nameA)
 
 	if !ok {
