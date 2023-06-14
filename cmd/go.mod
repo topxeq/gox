@@ -10,7 +10,11 @@ replace github.com/topxeq/qlang v0.0.0 => ../../qlang
 
 replace github.com/topxeq/xie v0.0.0 => ../../xie
 
-require github.com/topxeq/gox v0.0.0
+require (
+	github.com/topxeq/gox v0.0.0
+	github.com/topxeq/tk v1.0.1
+	github.com/topxeq/xie v0.0.0
+)
 
 require (
 	git.sr.ht/~sbinet/gg v0.3.1 // indirect
@@ -103,9 +107,7 @@ require (
 	github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 // indirect
 	github.com/topxeq/sqltk v0.0.0-20230223005953-f9932d23950c // indirect
 	github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 // indirect
-	github.com/topxeq/tk v1.0.1 // indirect
 	github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 // indirect
-	github.com/topxeq/xie v0.0.0 // indirect
 	github.com/topxeq/xmlx v0.2.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
@@ -116,11 +118,11 @@ require (
 	github.com/yuin/goldmark v1.5.4 // indirect
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/image v0.0.0-20220902085622-e7cb96979f69 // indirect
+	golang.org/x/image v0.8.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	gonum.org/v1/plot v0.12.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
