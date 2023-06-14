@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.1"
+var VersionG = "v6.0.2"
 
 // add tk.ToJSONX
 
@@ -2118,6 +2118,10 @@ func trim(vA interface{}, argsA ...string) string {
 // GUI related start
 
 func initGUI() {
+	if ServerModeG {
+		return
+	}
+
 	applicationPathT := tk.GetApplicationPath()
 
 	osT := tk.GetOSName()
@@ -3066,6 +3070,10 @@ func getDateGUI(titleA string, formatA string, messageA ...interface{}) string {
 }
 
 func getInputGUI(titleA string, messageA string, optsA ...interface{}) string {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	okTitleT := tk.GetSwitchI(optsA, "-ok=", "OK")
 	cancelTitleT := tk.GetSwitchI(optsA, "-cancel=", "Cancel")
 
@@ -3083,6 +3091,10 @@ func getInputGUI(titleA string, messageA string, optsA ...interface{}) string {
 }
 
 func getPasswordGUI(titleA string, messageA string, optsA ...interface{}) string {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	okTitleT := tk.GetSwitchI(optsA, "-ok=", "OK")
 	cancelTitleT := tk.GetSwitchI(optsA, "-cancel=", "Cancel")
 
@@ -3100,6 +3112,10 @@ func getPasswordGUI(titleA string, messageA string, optsA ...interface{}) string
 }
 
 func getListItemGUI(titleA string, messageA string, strsA ...string) string {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	rsT, flagT, errT := dlgs.List(titleA, messageA, strsA)
 
 	if errT != nil {
@@ -3114,6 +3130,10 @@ func getListItemGUI(titleA string, messageA string, strsA ...string) string {
 }
 
 func getListItemsGUI(titleA string, messageA string, strsA ...string) interface{} {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	rsT, flagT, errT := dlgs.ListMulti(titleA, messageA, strsA)
 
 	if errT != nil {
@@ -3128,6 +3148,10 @@ func getListItemsGUI(titleA string, messageA string, strsA ...string) interface{
 }
 
 func getConfirmGUI(titleA string, formatA string, messageA ...interface{}) bool {
+	if ServerModeG {
+		return false
+	}
+
 	flagT, errT := dlgs.Question(titleA, fmt.Sprintf(formatA, messageA...), true)
 	if errT != nil {
 		return false
@@ -3139,17 +3163,29 @@ func getConfirmGUI(titleA string, formatA string, messageA ...interface{}) bool 
 }
 
 func showInfoGUI(titleA string, formatA string, messageA ...interface{}) {
+	if ServerModeG {
+		return
+	}
+
 	dlgs.Info(titleA, fmt.Sprintf(formatA, messageA...))
 	// dialog.Message(formatA, messageA...).Title(titleA).Info()
 }
 
 func showErrorGUI(titleA string, formatA string, messageA ...interface{}) {
+	if ServerModeG {
+		return
+	}
+
 	dlgs.Error(titleA, fmt.Sprintf(formatA, messageA...))
 	// dialog.Message(formatA, messageA...).Title(titleA).Error()
 }
 
 // filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
 func selectFileToSaveGUI(argsA ...string) string {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
 	filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
 	filterTypeT := tk.GetSwitch(argsA, "-filter=", "*")
@@ -3173,6 +3209,10 @@ func selectFileToSaveGUI(argsA ...string) string {
 
 // fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
 func selectFileGUI(argsA ...string) string {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
 	filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
 	filterTypeT := tk.GetSwitch(argsA, "-filter=", "*")
@@ -3196,6 +3236,10 @@ func selectFileGUI(argsA ...string) string {
 
 // directory, err := dialog.Directory().Title("Load images").Browse()
 func selectDirectoryGUI(argsA ...string) string {
+	if ServerModeG {
+		return tk.ErrStrf("not valid")
+	}
+
 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
 	startPathT := tk.GetSwitch(argsA, "-start=", "")
 

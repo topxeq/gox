@@ -9,6 +9,10 @@ import (
 )
 
 func newWebView2(optsA ...string) interface{} {
+	if ServerModeG {
+		return nil
+	}
+
 	titleT := tk.GetSwitch(optsA, "-title=", "Gox "+VersionG)
 	widthT := uint(tk.ToInt(tk.GetSwitch(optsA, "-width=", "800"), 800))
 	heightT := uint(tk.ToInt(tk.GetSwitch(optsA, "-height=", "600"), 600))
