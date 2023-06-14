@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.0"
+var VersionG = "v6.0.1"
 
 // add tk.ToJSONX
 
@@ -2175,9 +2175,9 @@ func importQLNonGUIPackages() {
 		// common related 一般函数
 		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
 		"pass":            tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
-		"IsDefined":       IsDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if IsDefined(a) {...}
+		"isDefined":       IsDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if IsDefined(a) {...}
 		"isDef":           IsDefined,             // 等同于isDef
-		"IsUndefined":     IsUndefined,           // 判断某变量是否未定义
+		"isUndefined":     IsUndefined,           // 判断某变量是否未定义
 		"isUndef":         IsUndefined,           // 等同于IsUndefined
 		"isNil":           isNil,                 // 判断一个变量或表达式是否为nil
 		"isValid":         isValid,               // 判断某变量是否已经定义，并且不是nil，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
