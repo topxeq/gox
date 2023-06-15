@@ -1,0 +1,11 @@
+rs = systemCmd("gox", "-gopath", "basic.gox")
+
+testByText(rs, "3.4000000000000004\n", getSeq(), "basic.gox")
+
+rs = systemCmd("gox", "-gopath", "anonymousFunc.gox")
+
+testByStartsWith(rs, "Hi! Nice to see you.\ncount= <nil>\n3\n8\n17\nCode stack:", getSeq(), "anonymousFunc.gox")
+
+rs = systemCmd("gox", "-gopath", "anyQueue.gox")
+
+testByReg(rs, `(?sm).*?&tk.AnyQueue{.*got 20018.*`, getSeq(), "anyQueue.gox")

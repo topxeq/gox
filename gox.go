@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.2"
+var VersionG = "v6.0.3"
 
 // add tk.ToJSONX
 
@@ -271,6 +271,99 @@ func InitQLVM() {
 
 		QlVMG = qlang.New()
 	}
+}
+
+func TestText(argsA ...interface{}) interface{} {
+	lenT := len(argsA)
+
+	if lenT < 2 {
+		return fmt.Errorf("not enough parameters")
+	}
+
+	v1 := argsA[0]
+	v2 := argsA[1]
+
+	var v3 string
+	var v4 string
+
+	if lenT > 3 {
+		v3 = tk.ToStr(argsA[2])
+		v4 = "(" + tk.ToStr(argsA[3]) + ")"
+	} else if lenT > 2 {
+		v3 = tk.ToStr(argsA[2])
+	} else {
+		v3 = tk.ToStr(tk.GetSeq())
+	}
+
+	if v1 == v2 {
+		tk.Pl("test %v%v passed", v3, v4)
+	} else {
+		return fmt.Errorf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+	}
+
+	return nil
+}
+
+func TestTextStartsWith(argsA ...interface{}) interface{} {
+	lenT := len(argsA)
+
+	if lenT < 2 {
+		return fmt.Errorf("not enough parameters")
+	}
+
+	v1 := argsA[0]
+	v2 := argsA[1]
+
+	var v3 string
+	var v4 string
+
+	if lenT > 3 {
+		v3 = tk.ToStr(argsA[2])
+		v4 = "(" + tk.ToStr(argsA[3]) + ")"
+	} else if lenT > 2 {
+		v3 = tk.ToStr(argsA[2])
+	} else {
+		v3 = tk.ToStr(tk.GetSeq())
+	}
+
+	if strings.HasPrefix(tk.ToStr(v1), tk.ToStr(v2)) {
+		tk.Pl("test %v%v passed", v3, v4)
+	} else {
+		return fmt.Errorf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+	}
+
+	return nil
+}
+
+func TestTextReg(argsA ...interface{}) interface{} {
+	lenT := len(argsA)
+
+	if lenT < 2 {
+		return fmt.Errorf("not enough parameters")
+	}
+
+	v1 := argsA[0]
+	v2 := argsA[1]
+
+	var v3 string
+	var v4 string
+
+	if lenT > 3 {
+		v3 = tk.ToStr(argsA[2])
+		v4 = "(" + tk.ToStr(argsA[3]) + ")"
+	} else if lenT > 2 {
+		v3 = tk.ToStr(argsA[2])
+	} else {
+		v3 = tk.ToStr(tk.GetSeq())
+	}
+
+	if tk.RegMatchX(tk.ToStr(v1), tk.ToStr(v2)) {
+		tk.Pl("test %v%v passed", v3, v4)
+	} else {
+		return fmt.Errorf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+	}
+
+	return nil
 }
 
 func magic(numberA int, argsA ...string) interface{} {
@@ -2214,6 +2307,10 @@ func importQLNonGUIPackages() {
 		"sdump":  tk.Sdump, // 生成一个或多个对象信息供参考
 		"sdumpf": tk.Sdumpf,
 
+		"testByText":       TestText,           // 用于测试
+		"testByStartsWith": TestTextStartsWith, // 用于测试
+		"testByReg":        TestTextReg,        // 用于测试
+
 		// output related 输出相关
 		"pv":        printValue,   // 输出一个变量的值，注意参数是字符串类型的变量名，例： pv("a")
 		"pr":        tk.Pr,        // 等同于其他语言中的print
@@ -2689,6 +2786,8 @@ func importQLNonGUIPackages() {
 
 		// misc related 杂项相关函数
 		"dealRef": tk.DealRef,
+
+		"getSeq": tk.GetSeq, // 获得一个每次增长的序列值（整数）
 
 		"lockN":    tk.LockN, // lock a global lock, 0 <= N < 10
 		"unlockN":  tk.UnlockN,

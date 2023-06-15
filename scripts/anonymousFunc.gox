@@ -21,6 +21,7 @@ NewAddFunc = fn() {
 }
 
 main {
+	
 	println("count=", count)
 
 	// 通过闭包操作count，可以发现count是在变化的
@@ -33,7 +34,9 @@ main {
 	println(f2(9))
 	
 	// should panic here, since count is nil/undefined
+	// It also indicates that the global variable "count" is not the same as the "count" variable in the closure
 	// 此处程序会崩溃，因为count未经定义
+	// 也说明全局变量count与闭包中的count变量并非同一个
 	count += 20
 	
 	println("count=", count)

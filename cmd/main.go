@@ -4,9 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/topxeq/gox"
-	"github.com/topxeq/tk"
-	"github.com/topxeq/xie"
 	"io"
 	"math/rand"
 	"net/http"
@@ -14,7 +11,12 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
+
+	"github.com/topxeq/gox"
+	"github.com/topxeq/tk"
+	"github.com/topxeq/xie"
 )
 
 // for goxn
@@ -862,6 +864,11 @@ func runArgs(argsA ...string) interface{} {
 	} else {
 		gox.ScriptPathG = scriptT
 		fcT = tk.LoadStringFromFile(scriptT)
+
+	}
+
+	if strings.HasSuffix(scriptT, ".xie") {
+		ifXieT = true
 	}
 
 	if tk.IsErrorString(fcT) {
@@ -870,7 +877,7 @@ func runArgs(argsA ...string) interface{} {
 
 	if tk.StartsWith(fcT, "//TXDEF#") {
 		if decryptRunCodeT == "" {
-			tmps := tk.DecryptStringByTXDEF(fcT, "topxeq")
+			tmps := tk.DecryptStringByTXDEF(fcT, "goxxie")
 
 			if tk.IsErrStr(tmps) {
 				tk.Prf("Password: ")
