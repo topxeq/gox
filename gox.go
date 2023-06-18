@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.3"
+var VersionG = "v6.0.5"
 
 // add tk.ToJSONX
 
@@ -2783,6 +2783,9 @@ func importQLNonGUIPackages() {
 
 		"compressText":   tk.CompressText,
 		"uncompressText": tk.UncompressText,
+
+		// bluetooth relate 蓝牙相关
+		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
 		// misc related 杂项相关函数
 		"dealRef": tk.DealRef,

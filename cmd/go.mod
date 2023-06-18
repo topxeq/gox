@@ -9,6 +9,7 @@ replace github.com/topxeq/tk v1.0.1 => ../../tk
 replace github.com/topxeq/qlang v0.0.0 => ../../qlang
 
 replace github.com/topxeq/xie v0.0.0 => ../../xie
+// replace tinygo.org/x/bluetooth v0.7.0 => ../../../tinygo-org/bluetooth
 
 require (
 	github.com/topxeq/gox v0.0.0
@@ -35,14 +36,17 @@ require (
 	github.com/domodwyer/mailyak v3.1.1+incompatible // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/eiannone/keyboard v0.0.0-20200508000154-caf4b762e807 // indirect
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5 // indirect
 	github.com/go-fonts/liberation v0.2.0 // indirect
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-pdf/fpdf v0.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/godror/godror v0.36.0 // indirect
 	github.com/godror/knownpb v0.1.0 // indirect
 	github.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f // indirect
@@ -71,6 +75,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mozillazg/go-pinyin v0.20.0 // indirect
+	github.com/muka/go-bluetooth v0.0.0-20220830075246-0746e3a1ea53 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
@@ -83,11 +88,14 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/saltosystems/winrt-go v0.0.0-20230510070731-e096b9afa761 // indirect
 	github.com/sijms/go-ora/v2 v2.5.25 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect
+	github.com/tinygo-org/cbgo v0.0.4 // indirect
 	github.com/tinylib/msgp v1.1.5 // indirect
 	github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 // indirect
 	github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 // indirect
@@ -127,4 +135,5 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	tinygo.org/x/bluetooth v0.7.0 // indirect
 )

@@ -17,6 +17,7 @@ import (
 	"github.com/topxeq/gox"
 	"github.com/topxeq/tk"
 	"github.com/topxeq/xie"
+	// "tinygo.org/x/bluetooth"
 )
 
 // for goxn
@@ -1092,6 +1093,8 @@ func runArgs(argsA ...string) interface{} {
 // 	return tk.ErrStrF("no result")
 // }
 
+// var bluetoothAdapter = bluetooth.DefaultAdapter
+
 func main() {
 	// var errT error
 
@@ -1103,6 +1106,13 @@ func main() {
 	}()
 
 	test()
+
+	// errT := bluetoothAdapter.Enable()
+
+	// if errT != nil {
+	// 	tk.Pl("enable Bluetooth function failed: %v", errT)
+	// 	// exit()
+	// }
 
 	rand.Seed(time.Now().Unix())
 
