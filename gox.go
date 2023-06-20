@@ -1746,7 +1746,12 @@ func NewFuncFloatStringError(funcA *interface{}) *(func(float64) (string, error)
 }
 
 func printValue(nameA string) {
+	fmt.Printf("ServerModeG: %v\n", ServerModeG)
 	if ServerModeG {
+		return
+	}
+
+	if QlVMG == nil {
 		return
 	}
 
