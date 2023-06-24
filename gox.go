@@ -167,8 +167,8 @@ import (
 	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
 	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
 
-	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
-	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
+	// qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
+	// qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
 	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
@@ -180,7 +180,7 @@ import (
 
 	// qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
 
-	"github.com/sciter-sdk/go-sciter"
+	// "github.com/sciter-sdk/go-sciter"
 	// "github.com/sciter-sdk/go-sciter/window"
 
 	// GUI related end
@@ -197,7 +197,6 @@ import (
 
 	// GUI related start
 	// full version related start
-	"os/exec"
 
 	"github.com/topxeq/dialog"
 	"github.com/topxeq/dlgs"
@@ -2220,23 +2219,23 @@ func initGUI() {
 		return
 	}
 
-	applicationPathT := tk.GetApplicationPath()
+	// applicationPathT := tk.GetApplicationPath()
 
 	osT := tk.GetOSName()
 
 	if tk.Contains(osT, "inux") {
 	} else if tk.Contains(osT, "arwin") {
 	} else {
-		_, errT := exec.LookPath("sciterts.dll")
+		// _, errT := exec.LookPath("sciterts.dll")
 
-		if errT != nil {
-			tk.Pl("Initialzing GUI environment...")
-			rs := tk.DownloadFile("http://script.topget.org/pub/sciterts.dll", applicationPathT, "sciterts.dll")
+		// if errT != nil {
+		// 	tk.Pl("Initialzing GUI environment...")
+		// 	rs := tk.DownloadFile("http://script.topget.org/pub/sciterts.dll", applicationPathT, "sciterts.dll")
 
-			if tk.IsErrorString(rs) {
-				tk.Pl("Failed to initialze GUI environment: %v.", tk.GetErrStr(rs))
-			}
-		}
+		// 	if tk.IsErrorString(rs) {
+		// 		tk.Pl("Failed to initialze GUI environment: %v.", tk.GetErrStr(rs))
+		// 	}
+		// }
 	}
 
 	dialog.Do_init()
@@ -3012,18 +3011,18 @@ func importQLNonGUIPackages() {
 
 	// InitGiu()
 
-	qlgithub_scitersdk_gosciter.Exports["NewValue"] = sciter.NewValue
-	qlgithub_scitersdk_gosciter.Exports["NullValue"] = sciter.NullValue
+	// qlgithub_scitersdk_gosciter.Exports["NewValue"] = sciter.NewValue
+	// qlgithub_scitersdk_gosciter.Exports["NullValue"] = sciter.NullValue
 
-	qlgithub_scitersdk_gosciter.Exports["NewScnLoadDataFunc"] = NewScnLoadDataFunc
-	qlgithub_scitersdk_gosciter.Exports["NewScnDataLoaded"] = NewScnDataLoaded
+	// qlgithub_scitersdk_gosciter.Exports["NewScnLoadDataFunc"] = NewScnLoadDataFunc
+	// qlgithub_scitersdk_gosciter.Exports["NewScnDataLoaded"] = NewScnDataLoaded
 
-	qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
-	qlang.Import("github_topxeq_gosciter", qlgithub_scitersdk_gosciter.Exports)
-	qlang.Import("sciter", qlgithub_scitersdk_gosciter.Exports)
-	qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
-	qlang.Import("github_topxeq_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
-	qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
+	// qlang.Import("github_scitersdk_gosciter", qlgithub_scitersdk_gosciter.Exports)
+	// qlang.Import("github_topxeq_gosciter", qlgithub_scitersdk_gosciter.Exports)
+	// qlang.Import("sciter", qlgithub_scitersdk_gosciter.Exports)
+	// qlang.Import("github_scitersdk_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
+	// qlang.Import("github_topxeq_gosciter_window", qlgithub_scitersdk_gosciter_window.Exports)
+	// qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
 
 	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
 	qlang.Import("github_topxeq_dialog", qlgithub_topxeq_dialog.Exports)
@@ -3096,23 +3095,23 @@ func importQLNonGUIPackages() {
 
 // GUI related start
 
-func NewScnLoadDataFunc(funcA *interface{}) *(func(*sciter.ScnLoadData) int) {
-	funcT := (*funcA).(*execq.Function)
-	f := func(dataA *sciter.ScnLoadData) int {
-		return funcT.Call(execq.NewStack(), dataA).(int)
-	}
+// func NewScnLoadDataFunc(funcA *interface{}) *(func(*sciter.ScnLoadData) int) {
+// 	funcT := (*funcA).(*execq.Function)
+// 	f := func(dataA *sciter.ScnLoadData) int {
+// 		return funcT.Call(execq.NewStack(), dataA).(int)
+// 	}
 
-	return &f
-}
+// 	return &f
+// }
 
-func NewScnDataLoaded(funcA *interface{}) *(func(*sciter.ScnDataLoaded) int) {
-	funcT := (*funcA).(*execq.Function)
-	f := func(dataA *sciter.ScnDataLoaded) int {
-		return funcT.Call(execq.NewStack(), dataA).(int)
-	}
+// func NewScnDataLoaded(funcA *interface{}) *(func(*sciter.ScnDataLoaded) int) {
+// 	funcT := (*funcA).(*execq.Function)
+// 	f := func(dataA *sciter.ScnDataLoaded) int {
+// 		return funcT.Call(execq.NewStack(), dataA).(int)
+// 	}
 
-	return &f
-}
+// 	return &f
+// }
 
 // full version related start
 

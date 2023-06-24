@@ -517,46 +517,46 @@ func runArgs(argsA ...string) interface{} {
 	// GUI related end
 
 	if tk.IfSwitchExistsWhole(argsT, "-initgui") {
-		applicationPathT := tk.GetApplicationPath()
+		// applicationPathT := tk.GetApplicationPath()
 
-		osT := tk.GetOSName()
+		// osT := tk.GetOSName()
 
-		if tk.Contains(osT, "inux") {
-			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
+		// if tk.Contains(osT, "inux") {
+		// 	tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
 
-			return nil
-		} else if tk.Contains(osT, "arwin") {
-			tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
+		// 	return nil
+		// } else if tk.Contains(osT, "arwin") {
+		// 	tk.Pl("Please visit the following URL to find out how to make Sciter environment ready in Linux: ")
 
-			return nil
-		} else {
-			rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciterts.dll", applicationPathT, "sciterts.dll")
+		// 	return nil
+		// } else {
+		// 	// rs := tk.DownloadFile("http://scripts.frenchfriend.net/pub/sciterts.dll", applicationPathT, "sciterts.dll")
 
-			if tk.IsErrorString(rs) {
+		// 	// if tk.IsErrorString(rs) {
 
-				return tk.Errf("failed to download Sciter DLL file.")
-			}
+		// 	// 	return tk.Errf("failed to download Sciter DLL file.")
+		// 	// }
 
-			tk.Pl("Sciter DLL downloaded to application path.")
+		// 	// tk.Pl("Sciter DLL downloaded to application path.")
 
-			// rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/webview.dll", applicationPathT, "webview.dll", false)
+		// 	// rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/webview.dll", applicationPathT, "webview.dll", false)
 
-			// if tk.IsErrorString(rs) {
+		// 	// if tk.IsErrorString(rs) {
 
-			// 	return tk.Errf("failed to download webview DLL file.")
-			// }
+		// 	// 	return tk.Errf("failed to download webview DLL file.")
+		// 	// }
 
-			// rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/WebView2Loader.dll", applicationPathT, "WebView2Loader.dll", false)
+		// 	// rs = tk.DownloadFile("http://scripts.frenchfriend.net/pub/WebView2Loader.dll", applicationPathT, "WebView2Loader.dll", false)
 
-			// if tk.IsErrorString(rs) {
+		// 	// if tk.IsErrorString(rs) {
 
-			// 	return tk.Errf("failed to download webview DLL file.")
-			// }
+		// 	// 	return tk.Errf("failed to download webview DLL file.")
+		// 	// }
 
-			// tk.Pl("webview DLL downloaded to application path.")
+		// 	// tk.Pl("webview DLL downloaded to application path.")
 
-			return nil
-		}
+		// 	return nil
+		// }
 	}
 
 	ifXieT := tk.IfSwitchExistsWhole(argsT, "-xie")
