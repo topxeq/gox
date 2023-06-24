@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.5"
+var VersionG = "v6.0.6"
 
 // add tk.ToJSONX
 
@@ -2395,9 +2395,11 @@ func importQLNonGUIPackages() {
 		"getNowStrCompact":     tk.GetNowTimeString,       // 获取一个简化的表示当前时间的字符串，格式：20200202080915
 		"getNowStringCompact":  tk.GetNowTimeStringFormal, // 等同于getNowStringCompact
 		"getNowDateStrCompact": getNowDateStrCompact,      // 获取一个简化的表示当前日期的字符串，格式：20210215
-		"genTimeStamp":         tk.GetTimeStampMid,        // 生成时间戳，格式为13位的Unix时间戳1640133706954，例：timeStampT = genTimeStamp(time.Now())
-		"genRandomStr":         tk.GenerateRandomStringX,  // 生成随机字符串，函数定义： genRandomStr("-min=6", "-max=8", "-noUpper", "-noLower", "-noDigit", "-special", "-space", "-invalid")
-		"generateRandomString": tk.GenerateRandomString,   // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
+		"getNowTimeStamp":      tk.GetNowTick,             // 获取一个表示当前时间的时间戳，毫秒为单位，整数形式
+		"getNowTick":           tk.GetNowTick,
+		"genTimeStamp":         tk.GetTimeStampMid,       // 生成时间戳，格式为13位的Unix时间戳1640133706954，例：timeStampT = genTimeStamp(time.Now())
+		"genRandomStr":         tk.GenerateRandomStringX, // 生成随机字符串，函数定义： genRandomStr("-min=6", "-max=8", "-noUpper", "-noLower", "-noDigit", "-special", "-space", "-invalid")
+		"generateRandomString": tk.GenerateRandomString,  // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
 		// regex related 正则表达式相关
 		"regMatch":        tk.RegMatchX,          // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
@@ -2412,25 +2414,28 @@ func importQLNonGUIPackages() {
 		"regSplit":        tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 
 		// conversion related 转换相关
-		"nilToEmpty":      nilToEmpty,                     // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
-		"nilToEmptyOk":    nilToEmptyOk,                   // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim，第二个返回值是bool类型，如果值是undefined，则返回false，其他情况为true
-		"intToStr":        tk.IntToStrX,                   // 整数转字符串
-		"strToInt":        tk.StrToIntWithDefaultValue,    // 字符串转整数
-		"floatToStr":      tk.Float64ToStr,                // 浮点数转字符串
-		"strToFloat":      tk.StrToFloat64,                // 字符串转浮点数，如果第二个参数（可选）存在，则默认错误时返回该值，否则错误时返回-1
-		"timeToStr":       tk.FormatTime,                  // 时间转字符串，函数定义: timeToStr(timeA time.Time, formatA ...string) string，formatA可为"2006-01-02 15:04:05"（默认值）等字符串，为compact代表“20060102150405”
-		"timeStampToTime": tk.GetTimeFromUnixTimeStampMid, // Unix时间戳转时间（time.Time），支持10位和13位的时间戳，用法: timeT = timeToStr(timeStampToTime("1641139200"), "compact") ，得到20220103000000
-		"formatTime":      tk.FormatTime,                  // 等同于timeToStr
-		"strToTime":       strToTime,                      // 字符串转时间
-		"toTime":          tk.ToTime,                      // 字符串或时间转时间
-		"bytesToData":     tk.BytesToData,                 // 字节数组转任意类型变量，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian，函数定义func(bytesA []byte, dataA interface{}, optsA ...string) error，其中dataA为接收变量
-		"dataToBytes":     tk.DataToBytes,                 // 任意类型值转字节数组，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
-		"toStr":           tk.ToStr,                       // 任意值转字符串
-		"toInt":           tk.ToInt,                       // 任意值转整数
-		"toFloat":         tk.ToFloat,                     // 任意值转浮点数
-		"toByte":          tk.ToByte,                      // 任意值转字节
-		"toSimpleMap":     tk.SimpleMapToString,           // 将一个map（map[string]string或map[string]interface{}）转换为Simple Map字符串
-		"fromSimpleMap":   tk.LoadSimpleMapFromString,     // 将一个Simple Map字符串转换为map[string]string
+		"nilToEmpty":      nilToEmpty,                  // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
+		"nilToEmptyOk":    nilToEmptyOk,                // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim，第二个返回值是bool类型，如果值是undefined，则返回false，其他情况为true
+		"intToStr":        tk.IntToStrX,                // 整数转字符串
+		"strToInt":        tk.StrToIntWithDefaultValue, // 字符串转整数
+		"floatToStr":      tk.Float64ToStr,             // 浮点数转字符串
+		"strToFloat":      tk.StrToFloat64,             // 字符串转浮点数，如果第二个参数（可选）存在，则默认错误时返回该值，否则错误时返回-1
+		"timeToStr":       tk.FormatTime,               // 时间转字符串，函数定义: timeToStr(timeA time.Time, formatA ...string) string，formatA可为"2006-01-02 15:04:05"（默认值）等字符串，为compact代表“20060102150405”
+		"timeStampToTime": tk.TimeStampToTime,          // Unix时间戳转时间（time.Time），支持10位和13位的时间戳，用法: timeT = timeToStr(timeStampToTime("1641139200"), "compact") ，得到20220103000000，也可直接传入整数时间戳（纳秒为单位），如果参数是nil则返回当前时间，如果字符串解析失败，则返回时间零值（1970年...）
+		"tickToTime":      tk.TimeStampToTime,
+		"timeToTick":      tk.GetTimeStampMid,         // 将时间转换为时间戳，13位字符串形式，单位毫秒
+		"timeToTickInt":   tk.GetTimeStampNanoInt,     // 将时间转换为时间戳，整数形式，单位纳秒
+		"formatTime":      tk.FormatTime,              // 等同于timeToStr
+		"strToTime":       strToTime,                  // 字符串转时间
+		"toTime":          tk.ToTime,                  // 字符串或时间转时间
+		"bytesToData":     tk.BytesToData,             // 字节数组转任意类型变量，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian，函数定义func(bytesA []byte, dataA interface{}, optsA ...string) error，其中dataA为接收变量
+		"dataToBytes":     tk.DataToBytes,             // 任意类型值转字节数组，可选参数-endian=B或L指定使用BigEndian字节顺序还是LittleEndian
+		"toStr":           tk.ToStr,                   // 任意值转字符串
+		"toInt":           tk.ToInt,                   // 任意值转整数
+		"toFloat":         tk.ToFloat,                 // 任意值转浮点数
+		"toByte":          tk.ToByte,                  // 任意值转字节
+		"toSimpleMap":     tk.SimpleMapToString,       // 将一个map（map[string]string或map[string]interface{}）转换为Simple Map字符串
+		"fromSimpleMap":   tk.LoadSimpleMapFromString, // 将一个Simple Map字符串转换为map[string]string
 
 		"hexToBytes":  tk.HexToBytes,  // 将16进制字符串转换为字节数组([]byte)
 		"bytesToHex":  tk.BytesToHex,  // 将字节数组([]byte)转换为16进制字符串
