@@ -11,6 +11,12 @@ replace github.com/topxeq/qlang v0.0.0 => ../../qlang
 replace github.com/topxeq/xie v0.0.0 => ../../xie
 
 require (
+	github.com/jchv/go-webview2 v0.0.0-20221223143126-dc24628cff85
+	github.com/json-iterator/go v1.1.12
+	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
+	github.com/ncruces/zenity v0.10.9
+	github.com/sciter-sdk/go-sciter v0.5.1-0.20210426171118-f5212dff3ad8
+	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
 	github.com/topxeq/tk v1.0.1
 	github.com/topxeq/xie v0.0.0
@@ -21,6 +27,7 @@ require (
 	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d // indirect
 	github.com/aarzilli/sandblast v0.0.0-20151220083925-43f8fb998d06 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
+	github.com/akavel/rsrc v0.10.2 // indirect
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1007 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
@@ -30,6 +37,7 @@ require (
 	github.com/cavaliercoder/grab v2.0.0+incompatible // indirect
 	github.com/cention-sany/utf7 v0.0.0-20170124080048-26cad61bd60a // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dchest/jsmin v0.0.0-20220218165748-59f39799265f // indirect
 	github.com/denisenkom/go-mssqldb v0.12.3 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/domodwyer/mailyak v3.1.1+incompatible // indirect
@@ -53,13 +61,11 @@ require (
 	github.com/gookit/color v1.3.8 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20220221023154-0b2280d3ff96 // indirect
 	github.com/jaytaylor/html2text v0.0.0-20211105163654-bc68cce691ba // indirect
-	github.com/jchv/go-webview2 v0.0.0-20221223143126-dc24628cff85 // indirect
 	github.com/jchv/go-winloader v0.0.0-20200815041850-dec1ee9a7fd5 // indirect
 	github.com/jezek/xgb v1.0.0 // indirect
 	github.com/jhillyerd/enmime v0.9.3 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329 // indirect
+	github.com/josephspurrier/goversioninfo v1.4.0 // indirect
 	github.com/klauspost/compress v1.14.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
@@ -80,6 +86,7 @@ require (
 	github.com/pkg/sftp v1.13.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pterm/pterm v0.12.12 // indirect
+	github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -94,10 +101,8 @@ require (
 	github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6 // indirect
 	github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 // indirect
 	github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533 // indirect
-	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547 // indirect
 	github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e // indirect
 	github.com/topxeq/docxrepl v0.0.0-20230223003559-0c82df798f9d // indirect
-	github.com/topxeq/go-sciter v0.0.0-20221010031453-76f65a41d04f // indirect
 	github.com/topxeq/gods v0.0.0-20220125023913-b5718bb0c704 // indirect
 	github.com/topxeq/goph v0.0.0-20230116054750-120b087d86fb // indirect
 	github.com/topxeq/imagetk v0.0.0-20230306082727-9b06565a8b58 // indirect
@@ -120,7 +125,7 @@ require (
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/image v0.8.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 	golang.org/x/text v0.10.0 // indirect
 	gonum.org/v1/plot v0.12.0 // indirect

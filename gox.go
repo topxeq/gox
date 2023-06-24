@@ -167,8 +167,8 @@ import (
 	qlgonumorg_v1_plot_plotutil "github.com/topxeq/qlang/lib/gonum.org/v1/plot/plotutil"
 	qlgonumorg_v1_plot_vg "github.com/topxeq/qlang/lib/gonum.org/v1/plot/vg"
 
-	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/topxeq/go-sciter"
-	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/topxeq/go-sciter/window"
+	qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
+	qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
 	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
@@ -180,8 +180,8 @@ import (
 
 	// qlgithub_webview_webview "github.com/topxeq/qlang/lib/github.com/webview/webview"
 
-	"github.com/topxeq/go-sciter"
-	"github.com/topxeq/go-sciter/window"
+	"github.com/sciter-sdk/go-sciter"
+	// "github.com/sciter-sdk/go-sciter/window"
 
 	// GUI related end
 
@@ -212,7 +212,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.6"
+var VersionG = "v6.0.7"
 
 // add tk.ToJSONX
 
@@ -2240,7 +2240,7 @@ func initGUI() {
 	}
 
 	dialog.Do_init()
-	window.Do_init()
+	// window.Do_init()
 }
 
 // GUI related end

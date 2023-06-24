@@ -14,11 +14,11 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/sciter-sdk/go-sciter v0.5.1-0.20210426171118-f5212dff3ad8
 	github.com/sijms/go-ora/v2 v2.5.25
 	github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6
 	github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
-	github.com/topxeq/go-sciter v0.0.0-20221010031453-76f65a41d04f
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0-20230223005953-f9932d23950c
 	github.com/topxeq/tk v1.0.1

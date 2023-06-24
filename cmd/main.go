@@ -1033,7 +1033,9 @@ func runArgs(argsA ...string) interface{} {
 	}
 
 	if ifXieT {
-		rs := xie.RunCode(fcT, nil, map[string]interface{}{"gox.ScriptPathG": gox.ScriptPathG}, argsT...) // "guiG": guiHandlerG,
+		var guiHandlerG tk.TXDelegate = guiHandler
+
+		rs := xie.RunCode(fcT, nil, map[string]interface{}{"guiG": guiHandlerG, "scriptPathG": gox.ScriptPathG, "basePathG": basePathG}, argsT...) // "guiG": guiHandlerG,
 		if !tk.IsUndefined(rs) {
 			tk.Pl("%v", rs)
 		}
