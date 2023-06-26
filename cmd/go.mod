@@ -31,6 +31,7 @@ require (
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1007 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/antonmedv/expr v1.12.5 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
