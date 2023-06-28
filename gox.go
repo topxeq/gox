@@ -2285,6 +2285,8 @@ func importQLNonGUIPackages() {
 		"isValidNotEmpty": isValidNotEmpty,       // 判断某变量是否已经定义，并且不是nil或空字符串，如果传入了第二个参数，还可以判断该变量是否类型是该类型，例： if isValid(a, "string") {...}
 		"isValidX":        isValidNotEmpty,       // 等同于isValidNotEmpty
 		"eval":            qlEval,                // 运行一段Gox语言代码并获得其返回值，返回值可以放于名为outG的全局变量中，也可以作为最后一个表达式的返回值返回
+		"flexEval":        tk.FlexEval,           // 计算一个表达式，支持普通语法，支持自定义函数，第一个参数是表达式字符串，然后是0个或多个参数，在表达式中可以用v1、v2……来指代，表达式采用 github.com/antonmedv/expr 提供的表达式计算引擎，相关进一步文档也可以从这里获取
+		"flexEvalMap":     tk.FlexEvalMap,        // 类似flexEval，区别是：flexEval从第二个参数开始可以接受多个参数，并在表达式中以v1、v2这样来指代，而flexEvalMap则只允许有一个参数，需要是映射类型，这样可以直接用键名在表达式中引用这些变量
 		"typeOf":          tk.TypeOfValue,        // 给出某变量的类型名
 		"typeOfReflect":   tk.TypeOfValueReflect, // 给出某变量的类型名（使用了反射方式）
 		"typeOfVar":       typeOfVar,             // 给出某变量的内部类型名，注意参数是字符串类型的变量名
