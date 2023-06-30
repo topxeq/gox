@@ -4,22 +4,14 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os/exec"
-	"path/filepath"
 	"runtime"
-	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/ncruces/zenity"
 	"github.com/topxeq/dlgs"
 	"github.com/topxeq/xie"
 
-	// "github.com/topxeq/go-sciter"
-	// "github.com/topxeq/go-sciter/window"
-	"github.com/sciter-sdk/go-sciter"
-	"github.com/sciter-sdk/go-sciter/window"
 	"github.com/topxeq/tk"
 
 	"github.com/kbinani/screenshot"
@@ -70,6 +62,8 @@ import (
 // browser = reflect.NewAt(browser.Type(), unsafe.Pointer(browser.UnsafeAddr())).Elem()
 // return browser.Interface().(*edge.Chromium)
 // }
+
+var windowStyleG = webview2.HintNone
 
 func newWindowWebView2(objA interface{}, paramsA []interface{}) interface{} {
 	var paraArgsT []string = []string{}
@@ -122,13 +116,19 @@ func newWindowWebView2(objA interface{}, paramsA []interface{}) interface{} {
 		return fmt.Errorf("创建窗口失败：%v", "N/A")
 	}
 
-	windowStyleT := webview2.HintNone
+	windowStyleG = webview2.HintNone
 
 	if fixT {
-		windowStyleT = webview2.HintFixed
+		windowStyleG = webview2.HintFixed
 	}
 
-	w.SetSize(tk.ToInt(widthT, 800), tk.ToInt(heightT, 600), windowStyleT)
+	w.SetSize(tk.ToInt(widthT, 800), tk.ToInt(heightT, 600), windowStyleG)
+
+	w.Bind("delegateCloseWindow", func(argsA ...interface{}) interface{} {
+		w.Destroy()
+
+		return ""
+	})
 
 	var handlerT tk.TXDelegate
 
@@ -136,6 +136,17 @@ func newWindowWebView2(objA interface{}, paramsA []interface{}) interface{} {
 		switch actionA {
 		case "show":
 			w.Run()
+			return nil
+		case "setSize":
+			len1T := len(paramsA)
+			if len1T < 2 {
+				return fmt.Errorf("参数不够")
+			}
+			if len1T > 2 {
+				windowStyleG = webview2.Hint(tk.ToInt(paramsA[2]))
+			}
+
+			w.SetSize(tk.ToInt(paramsA[0], 800), tk.ToInt(paramsA[1], 600), windowStyleG)
 			return nil
 		case "navigate":
 			len1T := len(paramsA)
@@ -181,7 +192,50 @@ func newWindowWebView2(objA interface{}, paramsA []interface{}) interface{} {
 				return fmt.Errorf("not enough parameters")
 			}
 
-			var deleT tk.QuickVarDelegate = paramsA[0].(tk.QuickVarDelegate)
+			var deleT tk.QuickVarDelegate
+			var ok bool
+			var s1 string
+
+			codeT := paramsA[0]
+
+			deleT, ok = codeT.(tk.QuickVarDelegate)
+			if ok {
+
+			} else {
+				if s1, ok = codeT.(string); ok {
+					// s1 = strings.ReplaceAll(s1, "~~~", "`")
+					compiledT := xie.Compile(s1)
+
+					if tk.IsError(compiledT) {
+						return fmt.Errorf("failed to compile the quick delegate code: %v", compiledT)
+					}
+
+					codeT = compiledT
+				}
+
+				cp1, ok := codeT.(*xie.CompiledCode)
+
+				if ok {
+					deleT = func(argsA ...interface{}) interface{} {
+						rs := xie.RunCodePiece(p, nil, cp1, argsA, true)
+
+						return rs
+					}
+				} else {
+					return fmt.Errorf("invalid compiled object: %v", codeT)
+				}
+
+			}
+
+			// deleT, ok := paramsA[0].(tk.QuickVarDelegate)
+
+			// if !ok {
+			// 	s1, ok := paramsA[0].(string)
+
+			// 	if ！ok {
+			// 		return fmt.Errorf("unknown type: %T(%v)", paramsA[0], paramsA[0])
+			// 	}
+			// }
 
 			w.Bind("quickDelegateDo", func(args ...interface{}) interface{} {
 				// args是WebView2中调用谢语言函数时传入的参数
@@ -206,58 +260,136 @@ func newWindowWebView2(objA interface{}, paramsA []interface{}) interface{} {
 			if len1T < 1 {
 				return fmt.Errorf("not enough parameters")
 			}
+			// tk.Pl("----")
+			// tk.Plo(paramsA)
+			// tk.Pl("----")
 
 			var codeT = paramsA[0]
 
-			dv1, ok := codeT.(tk.QuickVarDelegate)
+			var deleT tk.QuickVarDelegate
+			var ok bool
+			var s1 string
 
+			deleT, ok = codeT.(tk.QuickVarDelegate)
 			if ok {
-				w.Bind("delegateDo", dv1)
-				return nil
-			}
+				errT := w.Bind("delegateDo", deleT)
+				return errT
+			} else {
+				if s1, ok = codeT.(string); ok {
+					// s1 = strings.ReplaceAll(s1, "~~~", "`")
+					compiledT := xie.Compile(s1)
 
-			sv1, ok := codeT.(string)
+					if tk.IsError(compiledT) {
+						return fmt.Errorf("failed to compile the quick delegate code: %v", compiledT)
+					}
 
-			if ok {
-				sv1 = strings.ReplaceAll(sv1, "~~~", "`")
-
-				vmT := xie.NewVMQuick()
-
-				vmT.SetVar(p.Running, "guiG", guiHandler)
-
-				lrs := vmT.Load(nil, sv1) // vmT.Running
-
-				if tk.IsError(lrs) {
-					return lrs
+					codeT = compiledT
 				}
 
-				w.Bind("delegateDo", func(argsA ...interface{}) interface{} {
-					// args是WebView2中调用谢语言函数时传入的参数
-					// 可以是多个，谢语言中按位置索引进行访问
-					// strT := args[0].String()
+				cp1, ok := codeT.(*xie.CompiledCode)
 
-					vmT.SetVar(nil, "inputG", argsA) // p.Running
+				if ok {
+					vmT := xie.NewVMQuick()
 
-					rs := vmT.Run()
+					lrs := vmT.Load(nil, cp1)
 
-					// if !tk.IsErrX(rs) {
-					// 	outIndexT, ok := vmT.VarIndexMapM["outG"]
-					// 	if !ok {
-					// 		return tk.ErrStrf("no result")
-					// 	}
+					if tk.IsError(lrs) {
+						return fmt.Errorf("failed to create VM: %v", lrs)
+					}
 
-					// 	return tk.ToStr((*vmT.FuncContextM.VarsM)[vmT.FuncContextM.VarsLocalMapM[outIndexT]])
-					// }
+					deleT = func(argsA ...interface{}) interface{} {
+						vmT.SetVar(nil, "inputG", argsA)
 
-					// 最后一定要返回一个值，空字符串也可以
-					return rs
-				})
+						rs := vmT.Run()
+
+						return rs
+					}
+				} else {
+					return fmt.Errorf("invalid compiled object: %v", codeT)
+				}
 
 			}
+
+			// deleT, ok := paramsA[0].(tk.QuickVarDelegate)
+
+			// if !ok {
+			// 	s1, ok := paramsA[0].(string)
+
+			// 	if ！ok {
+			// 		return fmt.Errorf("unknown type: %T(%v)", paramsA[0], paramsA[0])
+			// 	}
+			// }
+
+			// tk.Pl("here: %#v", deleT)
+			errT := w.Bind("delegateDo", deleT)
+			// errT := w.Bind("delegateDo", func(args ...interface{}) interface{} {
+			// 	// args是WebView2中调用谢语言函数时传入的参数
+			// 	// 可以是多个，谢语言中按位置索引进行访问
+			// 	// strT := args[0].String()
+
+			// 	rsT := deleT(args...)
+
+			// 	if tk.IsErrX(rsT) {
+			// 		if xie.GlobalsG.VerboseLevel > 0 {
+			// 			tk.Pl("error occurred in QuickVarDelegate: %v", rsT)
+			// 		}
+			// 	}
+
+			// 	// 最后一定要返回一个值，空字符串也可以
+			// 	return rsT
+			// })
+
+			return errT
+
+			// dv1, ok := codeT.(tk.QuickVarDelegate)
+
+			// if ok {
+			// 	w.Bind("delegateDo", dv1)
+			// 	return nil
+			// }
+
+			// sv1, ok := codeT.(string)
+
+			// if ok {
+			// 	sv1 = strings.ReplaceAll(sv1, "~~~", "`")
+
+			// 	vmT := xie.NewVMQuick()
+
+			// 	vmT.SetVar(p.Running, "guiG", guiHandler)
+
+			// 	lrs := vmT.Load(nil, sv1) // vmT.Running
+
+			// 	if tk.IsError(lrs) {
+			// 		return lrs
+			// 	}
+
+			// 	w.Bind("delegateDo", func(argsA ...interface{}) interface{} {
+			// 		// args是WebView2中调用谢语言函数时传入的参数
+			// 		// 可以是多个，谢语言中按位置索引进行访问
+			// 		// strT := args[0].String()
+
+			// 		vmT.SetVar(nil, "inputG", argsA) // p.Running
+
+			// 		rs := vmT.Run()
+
+			// 		// if !tk.IsErrX(rs) {
+			// 		// 	outIndexT, ok := vmT.VarIndexMapM["outG"]
+			// 		// 	if !ok {
+			// 		// 		return tk.ErrStrf("no result")
+			// 		// 	}
+
+			// 		// 	return tk.ToStr((*vmT.FuncContextM.VarsM)[vmT.FuncContextM.VarsLocalMapM[outIndexT]])
+			// 		// }
+
+			// 		// 最后一定要返回一个值，空字符串也可以
+			// 		return rs
+			// 	})
+
+			// }
 
 			// p := objA.(*xie.XieVM)
 
-			return fmt.Errorf("invalid type: %T(%v)", codeT, codeT)
+			// return fmt.Errorf("invalid type: %T(%v)", codeT, codeT)
 			// return nil
 		case "setGoDelegate":
 			var codeT string = tk.ToStr(paramsA[0])
@@ -299,35 +431,6 @@ func newWindowWebView2(objA interface{}, paramsA []interface{}) interface{} {
 			})
 
 			return nil
-		// case "call":
-		// 	len1T := len(paramsA)
-		// 	if len1T < 1 {
-		// 		return fmt.Errorf("参数不够")
-		// 	}
-
-		// 	if len1T > 1 {
-		// 		aryT := make([]*sciter.Value, 0, 10)
-
-		// 		for i := 1; i < len1T; i++ {
-		// 			aryT = append(aryT, sciter.NewValue(paramsA[i]))
-		// 		}
-
-		// 		rsT, errT := w.Call(tk.ToStr(paramsA[0]), aryT...)
-
-		// 		if errT != nil {
-		// 			return fmt.Errorf("调用方法时发生错误：%v", errT)
-		// 		}
-
-		// 		return rsT.String()
-		// 	}
-
-		// 	rsT, errT := w.Call(tk.ToStr(paramsA[0]))
-
-		// 	if errT != nil {
-		// 		return fmt.Errorf("调用方法时发生错误：%v", errT)
-		// 	}
-
-		// 	return rsT.String()
 		default:
 			return fmt.Errorf("未知操作：%v", actionA)
 		}
@@ -540,278 +643,6 @@ func guiHandler(actionA string, objA interface{}, dataA interface{}, paramsA ...
 
 		return dlg
 
-	case "newWindowSciter":
-		if len(paramsA) < 3 {
-			return fmt.Errorf("参数不够")
-		}
-		// tk.Pl("paramsA: %#v", paramsA)
-
-		var paraArgsT []string = []string{}
-
-		for i := 3; i < len(paramsA); i++ {
-			paraArgsT = append(paraArgsT, tk.ToStr(paramsA[i]))
-		}
-
-		fromFileT := tk.IfSwitchExistsWhole(paraArgsT, "-fromFile")
-
-		titleT := tk.ToStr(paramsA[0])
-
-		rectStrT := tk.ToStr(paramsA[1]) //tk.GetSwitchI(paramsA, "-rect=", "")
-
-		var rectT *sciter.Rect
-
-		if rectStrT == "" {
-			rectT = sciter.DefaultRect
-		} else {
-			objT, errT := tk.FromJSON(rectStrT)
-
-			if errT != nil {
-				return fmt.Errorf("窗口矩阵位置大小解析错误：%v", errT)
-			}
-
-			var aryT []int
-
-			switch nv := objT.(type) {
-			case []int:
-				aryT = nv
-			case []float64:
-				if len(nv) < 4 {
-					return fmt.Errorf("窗口矩阵位置大小解析错误：%v", "数据个数错误")
-				}
-				aryT = []int{tk.ToInt(nv[0]), tk.ToInt(nv[1]), tk.ToInt(nv[2]), tk.ToInt(nv[3])}
-			case []interface{}:
-				if len(nv) < 4 {
-					return fmt.Errorf("窗口矩阵位置大小解析错误：%v", "数据个数错误")
-				}
-				aryT = []int{tk.ToInt(nv[0]), tk.ToInt(nv[1]), tk.ToInt(nv[2]), tk.ToInt(nv[3])}
-			}
-
-			rectT = &sciter.Rect{Left: int32(aryT[0]), Top: int32(aryT[1]), Right: int32(aryT[0] + aryT[2]), Bottom: int32(aryT[1] + aryT[3])}
-
-		}
-
-		w, errT := window.New(sciter.DefaultWindowCreateFlag, rectT)
-
-		if errT != nil {
-			return fmt.Errorf("创建窗口失败：%v", errT)
-		}
-
-		w.SetOption(sciter.SCITER_SET_SCRIPT_RUNTIME_FEATURES, sciter.ALLOW_EVAL|sciter.ALLOW_SYSINFO|sciter.ALLOW_FILE_IO|sciter.ALLOW_SOCKET_IO)
-
-		w.SetTitle(titleT)
-
-		htmlT := tk.ToStr(paramsA[2])
-
-		baseUrlT := tk.GetSwitch(paraArgsT, "-baseUrl=", "")
-
-		// tk.Pln(fromFileT, htmlT, baseUrlT, tk.PathToURI("."))
-
-		if fromFileT {
-			htmlNewT, errT := filepath.Abs(htmlT)
-			if errT == nil {
-				htmlT = htmlNewT
-			}
-
-			errT = w.LoadFile(htmlT)
-
-			if tk.IsErrX(errT) {
-				return fmt.Errorf("从文件（%v）创建窗口失败：%v", htmlT, errT)
-			}
-		} else {
-			htmlT := tk.ToStr(paramsA[2])
-
-			if baseUrlT == "." {
-				baseUrlT = tk.PathToURI(".") + "/basic.html"
-			}
-
-			w.LoadHtml(htmlT, baseUrlT)
-		}
-
-		// p := objA.(*xie.XieVM)
-
-		var handlerT tk.TXDelegate
-
-		handlerT = func(actionA string, objA interface{}, dataA interface{}, paramsA ...interface{}) interface{} {
-			switch actionA {
-			case "show":
-				w.Show()
-				w.Run()
-				return nil
-			case "setDelegate":
-				len1T := len(paramsA)
-				if len1T < 1 {
-					return fmt.Errorf("not enough parameters")
-				}
-
-				var codeT = paramsA[0]
-
-				// tk.Plo(codeT)
-
-				dv1, ok := codeT.(tk.QuickVarDelegate)
-
-				if ok {
-					// w.Bind("delegateDo", dv1)
-					w.DefineFunction("delegateDo", func(args ...*sciter.Value) *sciter.Value {
-						// args是SciterJS中调用谢语言函数时传入的参数
-						// 可以是多个，谢语言中按位置索引进行访问
-						// strT := args[0].String()
-						argsA := make([]interface{}, 0)
-
-						for _, v := range args {
-							argsA = append(argsA, v.String())
-						}
-
-						rsT := dv1(argsA...)
-
-						// 最后一定要返回一个值，空字符串也可以
-						return sciter.NewValue(rsT)
-					})
-
-					return nil
-				}
-
-				sv1, ok := codeT.(string)
-
-				if ok {
-					sv1 = strings.ReplaceAll(sv1, "~~~", "`")
-
-					vmT := xie.NewVMQuick()
-
-					vmT.SetVar(nil, "guiG", guiHandler) // p.Running
-
-					lrs := vmT.Load(nil, sv1)
-
-					if tk.IsError(lrs) {
-						return lrs
-					}
-
-					w.DefineFunction("delegateDo", func(args ...*sciter.Value) *sciter.Value {
-						// args是SciterJS中调用谢语言函数时传入的参数
-						// 可以是多个，谢语言中按位置索引进行访问
-						argsA := make([]interface{}, 0)
-
-						for _, v := range args {
-							argsA = append(argsA, v.String())
-						}
-
-						vmT.SetVar(nil, "inputG", argsA) // p.Running
-
-						rsT := vmT.Run()
-
-						// if !tk.IsErrX(rs) {
-						// 	outIndexT, ok := vmT.VarIndexMapM["outG"]
-						// 	if !ok {
-						// 		return tk.ErrStrf("no result")
-						// 	}
-
-						// 	return tk.ToStr((*vmT.FuncContextM.VarsM)[vmT.FuncContextM.VarsLocalMapM[outIndexT]])
-						// }
-
-						// 最后一定要返回一个值，空字符串也可以
-						return sciter.NewValue(rsT)
-					})
-
-					return nil
-				}
-
-				// p := objA.(*xie.XieVM)
-
-				return fmt.Errorf("invalid type: %T(%v)", codeT, codeT)
-
-			case "setQuickDelegate":
-				deleT, ok := paramsA[0].(tk.QuickVarDelegate)
-
-				if !ok {
-					var codeT interface{}
-
-					s1, ok := paramsA[0].(string)
-
-					if ok {
-						// s1 = strings.ReplaceAll(s1, "~~~", "`")
-						compiledT := xie.Compile(s1)
-
-						if tk.IsErrX(compiledT) {
-							return fmt.Errorf("failed to compile the quick delegate code: %v", compiledT)
-						}
-
-						codeT = compiledT
-					}
-
-					cp1, ok := codeT.(*xie.CompiledCode)
-
-					if !ok {
-						return fmt.Errorf("invalid compiled object: %v", codeT)
-					}
-
-					p := objA.(*xie.XieVM)
-
-					deleT = func(argsA ...interface{}) interface{} {
-						rs := xie.RunCodePiece(p, nil, cp1, argsA, true)
-
-						return rs
-					}
-
-				}
-
-				w.DefineFunction("delegateDo", func(args ...*sciter.Value) *sciter.Value {
-					// args是SciterJS中调用谢语言函数时传入的参数
-					// 可以是多个，谢语言中按位置索引进行访问
-					// strT := args[0].String()
-
-					argsA := make([]interface{}, 0)
-
-					for _, v := range args {
-						argsA = append(argsA, v.String())
-					}
-
-					rsT := deleT(argsA...)
-
-					// 最后一定要返回一个值，空字符串也可以
-					return sciter.NewValue(rsT)
-				})
-
-				return nil
-			case "call":
-				len1T := len(paramsA)
-				if len1T < 1 {
-					return fmt.Errorf("参数不够")
-				}
-
-				if len1T > 1 {
-					aryT := make([]*sciter.Value, 0, 10)
-
-					for i := 1; i < len1T; i++ {
-						aryT = append(aryT, sciter.NewValue(paramsA[i]))
-					}
-
-					rsT, errT := w.Call(tk.ToStr(paramsA[0]), aryT...)
-
-					if errT != nil {
-						return fmt.Errorf("调用方法时发生错误：%v", errT)
-					}
-
-					return rsT.String()
-				}
-
-				rsT, errT := w.Call(tk.ToStr(paramsA[0]))
-
-				if errT != nil {
-					return fmt.Errorf("调用方法时发生错误：%v", errT)
-				}
-
-				return rsT.String()
-			default:
-				return fmt.Errorf("未知操作：%v", actionA)
-			}
-
-			return nil
-		}
-
-		// w.Show()
-		// w.Run()
-
-		return handlerT
-
 	case "newWindow":
 		return newWindowWebView2(objA, paramsA)
 
@@ -823,34 +654,34 @@ func guiHandler(actionA string, objA interface{}, dataA interface{}, paramsA ...
 }
 
 func initGUI() error {
-	applicationPathT := tk.GetApplicationPath()
+	// applicationPathT := tk.GetApplicationPath()
 
-	osT := tk.GetOSName()
+	// osT := tk.GetOSName()
 
-	if tk.Contains(osT, "inux") {
-	} else if tk.Contains(osT, "arwin") {
-	} else {
-		_, errT := exec.LookPath("sciter.dll")
+	// if tk.Contains(osT, "inux") {
+	// } else if tk.Contains(osT, "arwin") {
+	// } else {
+	// 	// _, errT := exec.LookPath("sciter.dll")
 
-		// tk.Pln("LookPath", errT)
+	// 	// // tk.Pln("LookPath", errT)
 
-		if errors.Is(errT, exec.ErrDot) {
-			errT = nil
-		}
+	// 	// if errors.Is(errT, exec.ErrDot) {
+	// 	// 	errT = nil
+	// 	// }
 
-		if errT != nil {
-			if tk.IfFileExists("sciter.dll") || tk.IfFileExists(filepath.Join(applicationPathT, "sciter.dll")) {
+	// 	// if errT != nil {
+	// 	// 	if tk.IfFileExists("sciter.dll") || tk.IfFileExists(filepath.Join(applicationPathT, "sciter.dll")) {
 
-			} else {
-				tk.Pl("初始化WEB图形界面环境……")
-				rs := tk.DownloadFile("http://xie.topget.org/pub/sciter.dll", applicationPathT, "sciter.dll")
+	// 	// 	} else {
+	// 	// 		tk.Pl("初始化WEB图形界面环境……")
+	// 	// 		rs := tk.DownloadFile("http://xie.topget.org/pub/sciter.dll", applicationPathT, "sciter.dll")
 
-				if tk.IsErrorString(rs) {
-					return fmt.Errorf("初始化图形界面编程环境失败")
-				}
-			}
-		}
-	}
+	// 	// 		if tk.IsErrorString(rs) {
+	// 	// 			return fmt.Errorf("初始化图形界面编程环境失败")
+	// 	// 		}
+	// 	// 	}
+	// 	// }
+	// }
 
 	// dialog.Do_init()
 	// window.Do_init()

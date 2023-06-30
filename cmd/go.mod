@@ -15,7 +15,6 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/ncruces/zenity v0.10.9
-	github.com/sciter-sdk/go-sciter v0.5.1-0.20210426171118-f5212dff3ad8
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
 	github.com/topxeq/tk v1.0.1
