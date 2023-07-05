@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.8"
+var VersionG = "v6.0.9"
 
 // add tk.ToJSONX
 
@@ -2799,6 +2799,9 @@ func importQLNonGUIPackages() {
 		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
 		// misc related 杂项相关函数
+		"readAllStr": tk.ReadAllString,
+		"close":      tk.Close,
+
 		"dealRef": tk.DealRef,
 
 		"getSeq": tk.GetSeq, // 获得一个每次增长的序列值（整数）
