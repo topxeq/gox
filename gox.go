@@ -2800,7 +2800,7 @@ func importQLNonGUIPackages() {
 
 		// misc related 杂项相关函数
 		"readAllStr": tk.ReadAllString,
-		"close":      tk.Close,
+		"closeX":     tk.Close,
 
 		"dealRef": tk.DealRef,
 
