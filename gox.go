@@ -2451,6 +2451,9 @@ func importQLNonGUIPackages() {
 		"mssToMsi": tk.MSS2MSI, // 转换map[string]string到map[string]interface{}
 		"msiToMss": tk.MSI2MSS, // 转换map[string]interface{}到map[string]string
 
+		"strArrayToAnyArray": tk.StringArrayToAnyArray, // 转换[]string到[]interface{}
+		"anyArrayToStrArray": tk.AnyArrayToStringArray, // 转换[]interface{}到[]string
+
 		"mssToCharMap": charlang.MssToMap, // 转换map[string]string到charlang中的map
 		"msiToCharMap": charlang.MsiToMap, // 转换map[string]interface{}到charlang中的map
 
