@@ -32,7 +32,6 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/antonmedv/expr v1.12.5 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
-	github.com/bahlo/generic-list-go v0.2.0 // indirect
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
@@ -113,12 +112,11 @@ require (
 	github.com/topxeq/qlang v0.0.0 // indirect
 	github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 // indirect
 	github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 // indirect
-	github.com/topxeq/sqltk v0.0.0-20230223005953-f9932d23950c // indirect
+	github.com/topxeq/sqltk v0.0.0-20230713014122-1cfca57c0814 // indirect
 	github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 // indirect
 	github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 // indirect
 	github.com/topxeq/xmlx v0.2.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
-	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/excelize/v2 v2.7.0 // indirect

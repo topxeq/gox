@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.0.9"
+var VersionG = "v6.1.0"
 
 // add tk.ToJSONX
 
@@ -2690,6 +2690,8 @@ func importQLNonGUIPackages() {
 		//		fatalf("查询数据库错误：%v", dbT)
 		//	}
 		// pl("在数据库中找到%v条记录", len(sqlRsT))
+
+		"dbQueryOrdered": sqltk.QueryDBOrderedX, // 与dbQuery相同，返回的结果是一个有序列表的数组，其值只能通过Get和Set来操作
 
 		"dbQueryRecs": sqltk.QueryDBRecsX, // 进行数据库查询，所有字段结果都将转换为字符串，返回结果为[][]string，即二维数组，其中第一行为表头字段名：[["Field1", "Field2"],["Value1","Value2"]]，例：
 		// sqlRsT = dbQueryRecs(dbT, `SELECT * FROM TABLE1 WHERE ID=3`)

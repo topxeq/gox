@@ -19,7 +19,7 @@ require (
 	github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0
-	github.com/topxeq/sqltk v0.0.0-20230223005953-f9932d23950c
+	github.com/topxeq/sqltk v0.0.0-20230713014122-1cfca57c0814
 	github.com/topxeq/tk v1.0.1
 	github.com/topxeq/xie v0.0.0
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
