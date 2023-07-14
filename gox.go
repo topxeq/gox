@@ -256,8 +256,6 @@ func InitQLVM() {
 			RetG = v
 		})
 
-		// fmt.Printf("init qlvm\n")
-
 		// qlang.SetDumpCode("1")
 
 		importQLNonGUIPackages()
@@ -2276,7 +2274,7 @@ func importQLNonGUIPackages() {
 		// common related 一般函数
 		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
 		"pass":            tk.Pass,               // 没有任何操作的函数，一般用于脚本结尾避免脚本返回一个结果导致输出乱了
-		"isDefined":       IsDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if IsDefined(a) {...}
+		"isDefined":       IsDefined,             // 判断某变量是否已经定义，与defined的区别是传递的是变量名而不是字符串方式的变量，例： if isDefined(a) {...}
 		"isDef":           IsDefined,             // 等同于isDef
 		"isUndefined":     IsUndefined,           // 判断某变量是否未定义
 		"isUndef":         IsUndefined,           // 等同于IsUndefined
@@ -3081,6 +3079,14 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_topxeq_socks", qlgithub_topxeq_socks.Exports)
 
 	qlang.Import("github_topxeq_regexpx", qlgithub_topxeq_regexpx.Exports)
+
+}
+
+func showHelp() {
+	tk.Pl("Gox by TopXeQ V%v\n", VersionG)
+
+	tk.Pl("Usage: gox [-v|-h] test.gox, ...\n")
+	tk.Pl("or just gox without arguments to start REPL instead.\n")
 
 }
 
@@ -4206,7 +4212,7 @@ if ifSwitchExists(argsG, "-local") {
 		fileNameT += ".gox"
 	}
 
-	fileNameT := getCfgString("localScriptPath.cfg")
+	fileNameT := GetCfgString("localScriptPath.cfg")
 }
 
 w.Call("editFile", sciter.NewValue(fileNameT))
