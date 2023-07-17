@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.1.0"
+var VersionG = "v6.1.1"
 
 // add tk.ToJSONX
 
@@ -2366,7 +2366,11 @@ func importQLNonGUIPackages() {
 		"trimx":                tk.TrimSafely,      // 等同于trimSafely
 		"trimX":                tk.TrimSafely,      // 等同于trimSafely
 		"trimStart":            strings.TrimPrefix, // 去除前导子字符串
+		"strTrimStart":         strings.TrimPrefix, // 去除前导子字符串
 		"trimEnd":              strings.TrimSuffix, // 去除末尾子字符串
+		"strTrimEnd":           strings.TrimSuffix, // 去除末尾子字符串
+		"strTrimLeft":          strings.TrimLeft,   // 去除前部的各个字符
+		"strTrimRight":         strings.TrimRight,  // 去除尾部的各个字符
 		"toLower":              strings.ToLower,    // 字符串转小写
 		"toUpper":              strings.ToUpper,    // 字符串转大写
 		"padStr":               tk.PadString,       // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
@@ -2390,11 +2394,13 @@ func importQLNonGUIPackages() {
 		"newStringBuilder":     newStringBuilder,          // 新建一个strings.Builder对象
 		"newStringBuffer":      newStringBuilder,          // 同newStringBuilder
 		"getNowStr":            tk.GetNowTimeStringFormal, // 获取一个表示当前时间的字符串，格式：2020-02-02 08:09:15
+		"getNowTimeStr":        tk.GetNowTimeStringFormal,
 		"getNowString":         tk.GetNowTimeStringFormal, // 等同于getNowStr
 		"getNowStrCompact":     tk.GetNowTimeString,       // 获取一个简化的表示当前时间的字符串，格式：20200202080915
 		"getNowStringCompact":  tk.GetNowTimeStringFormal, // 等同于getNowStringCompact
-		"getNowDateStrCompact": getNowDateStrCompact,      // 获取一个简化的表示当前日期的字符串，格式：20210215
-		"getNowTimeStamp":      tk.GetNowTick,             // 获取一个表示当前时间的时间戳，毫秒为单位，整数形式
+		"getNowDateStr":        tk.GetNowDateStringFormal,
+		"getNowDateStrCompact": getNowDateStrCompact, // 获取一个简化的表示当前日期的字符串，格式：20210215
+		"getNowTimeStamp":      tk.GetNowTick,        // 获取一个表示当前时间的时间戳，毫秒为单位，整数形式
 		"getNowTick":           tk.GetNowTick,
 		"genTimeStamp":         tk.GetTimeStampMid,       // 生成时间戳，格式为13位的Unix时间戳1640133706954，例：timeStampT = genTimeStamp(time.Now())
 		"genRandomStr":         tk.GenerateRandomStringX, // 生成随机字符串，函数定义： genRandomStr("-min=6", "-max=8", "-noUpper", "-noLower", "-noDigit", "-special", "-space", "-invalid")
@@ -2634,8 +2640,9 @@ func importQLNonGUIPackages() {
 		// 如果要直接POST数据，则直接传入-postBody=ABCDEFG这样的信息即可，其中ABCDEFG是所需POST的字符串，例如getWeb("http://abc.com:8001/sap/bc/srt/rfc/sap/getSvc", "-postBody=<XML><data1>Test</data1></XML>", `-headers={"Content-Type":"text/xml; charset=utf-8", "SOAPAction":""}`, "-timeout=15")，此时请求将自动转为POST方式（默认是GET方式），另外也可以直接传入一个[]byte类型的参数
 		// 如需添加自定义请求头，则添加开关参数类似：-headers={"content-type": "text/plain; charset=utf-8;"}
 		// 如果返回结果是error对象，则表示错误信息，否则是网页或请求响应
-		"downloadFile": tk.DownloadFile, // 从网络下载一个文件，函数定义func downloadFile(urlA, dirA, fileNameA string, argsA ...string) string
-		"httpRequest":  tk.RequestX,     // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
+		"downloadFile":  tk.DownloadFile,     // 从网络下载一个文件，函数定义func downloadFile(urlA, dirA, fileNameA string, argsA ...string) string
+		"downloadBytes": tk.DownloadWebBytes, // 从网络下载字节数组，Go函数定义func (pA *TK) DownloadWebBytes(urlA string, postDataA map[string]string, customHeadersA map[string]string, optsA ...string) ([]byte, map[string]string, error)
+		"httpRequest":   tk.RequestX,         // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
 		// 其中methodA可以是"GET"，"POST"等
 		// customHeadersA 是自定义请求头，内容是多行文本形如 charset: utf-8。如果冒号后还有冒号，要替换成`
 		"postRequest": tk.PostRequestX, // 进行一个POST网络请求并获得服务器返回结果，函数定义func postRequest(urlA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
@@ -2802,6 +2809,8 @@ func importQLNonGUIPackages() {
 		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
 		// misc related 杂项相关函数
+		"recsToMapArray": tk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
+
 		"readAllStr": tk.ReadAllString,
 		"closeX":     tk.Close,
 
@@ -2843,6 +2852,9 @@ func importQLNonGUIPackages() {
 
 		"genToken":   tk.GenerateToken, // 生成令牌，用法：genToken("appCode", "userID", "userRole", "-secret=abc")
 		"checkToken": tk.CheckToken,    // 检查令牌，如果成功，返回类似“appCode|userID|userRole|”的字符串；失败返回TXERROR字符串
+
+		"weixinPaySignString": tk.WeixinPaySignString, // 微信API签名
+		"alipaySignString":    tk.AlipaySignString,    // 阿里云API签名
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
