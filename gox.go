@@ -604,7 +604,7 @@ func runFile(argsA ...string) interface{} {
 func runCode(codeA string, argsA ...interface{}) interface{} {
 	InitQLVM()
 
-	vmT := qlang.New()
+	vmT := qlang.New("-noexit")
 
 	var argsT []string
 
@@ -2407,11 +2407,12 @@ func importQLNonGUIPackages() {
 		"generateRandomString": tk.GenerateRandomString,  // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
 		// regex related 正则表达式相关
-		"regMatch":        tk.RegMatchX,          // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
-		"regContains":     tk.RegContainsX,       // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
-		"regContainsIn":   tk.RegContainsIn,      // 判断字符串中是否包含符合正则表达式的某几个字串
-		"regCount":        tk.RegCount,           // 判断某字符串包含几个符合正则表达式的子串
-		"regFind":         tk.RegFindFirstX,      // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
+		"regMatch":        tk.RegMatchX,     // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
+		"regContains":     tk.RegContainsX,  // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
+		"regContainsIn":   tk.RegContainsIn, // 判断字符串中是否包含符合正则表达式的某几个字串
+		"regCount":        tk.RegCount,      // 判断某字符串包含几个符合正则表达式的子串
+		"regFind":         tk.RegFindFirstX, // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
+		"regFindFirst":    tk.RegFindFirstX,
 		"regFindAll":      tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
 		"regFindIndex":    tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
 		"regFindAllIndex": tk.RegFindAllIndexX,   // 根据正则表达式搜索在字符串中所有匹配，函数定义： func regFindAllIndex(strA, patternA string) [][]int
@@ -2809,6 +2810,7 @@ func importQLNonGUIPackages() {
 		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
 		// misc related 杂项相关函数
+		"resultf":        tk.Resultf,
 		"recsToMapArray": tk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
 
 		"readAllStr": tk.ReadAllString,
@@ -2854,7 +2856,9 @@ func importQLNonGUIPackages() {
 		"checkToken": tk.CheckToken,    // 检查令牌，如果成功，返回类似“appCode|userID|userRole|”的字符串；失败返回TXERROR字符串
 
 		"weixinPaySignString": tk.WeixinPaySignString, // 微信API签名
-		"alipaySignString":    tk.AlipaySignString,    // 阿里云API签名
+		"weixinPaySignStr":    tk.WeixinPaySignString,
+		"alipaySignString":    tk.AlipaySignString, // 阿里云API签名
+		"alipaySignStr":       tk.AlipaySignString,
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
