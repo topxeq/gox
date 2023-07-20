@@ -33,3 +33,20 @@ map2.MoveBefore("3", "SSS")
 
 pln(map2)
 
+map2.SortStringKeys()
+
+pln(map2.Dump())
+
+pln(map2)
+
+map2.SortStringKeys("-desc")
+
+pln(map2)
+
+map2.MoveToFront("3")
+map2.MoveToFront("SSS")
+map2.MoveToFront("kkk")
+
+pln(map2)
+
+
