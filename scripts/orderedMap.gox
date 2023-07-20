@@ -1,0 +1,35 @@
+map1 = newObj("orderedMap")
+
+v2 = 1
+v3 = fromJSONX(`["s1", "s2"]`)
+
+setMapItem(map1, "SSS", "v11")
+
+map1.Set("k1", "v1")
+map1.Set("a2", v2)
+map1.Set("3", v3)
+
+json1 = toJSONX(map1)
+
+pln(json1)
+
+map1a = map1.ToMap()
+
+plo(map1a)
+
+map1b = map1.ToMapAnyKey()
+
+plo(map1b)
+
+map2 = toOrderedMap(map1a)
+
+pln(map2)
+
+map2.MoveToFront("a2")
+
+pln(map2)
+
+map2.MoveBefore("3", "SSS")
+
+pln(map2)
+

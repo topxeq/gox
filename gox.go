@@ -2475,9 +2475,13 @@ func importQLNonGUIPackages() {
 		"remove":        tk.RemoveItemsInArray,               // 等同于removeItems
 		"getMapString":  tk.SafelyGetStringForKeyWithDefault, // 从映射中获得指定的键值，避免返回nil，函数定义：func getMapString(mapA map[string]string, keyA string, defaultA ...string) string， 不指定defaultA将返回空字符串
 		"getMapItem":    getMapItem,                          // 类似于getMapString，但可以取任意类型的值
+		"setMapItem":    tk.SetMapItem,                       // 设置映射的键值对，用法：setMapItem(map1, "key", "value")
+		"getMapKeys":    tk.GetMapKeys,                       // 获取映射中所有的键名
 		"getArrayItem":  getArrayItem,                        // 类似于getMapItem，但是是取一个切片中指定序号的值
 		"joinList":      tk.JoinList,                         // 类似于strJoin，但可以连接任意类型的值
 		"arrayContains": tk.ArrayContains,                    // 判断数组中是否包含某值
+
+		"toOrderedMap": tk.ToOrderedMap, // 转换map为有序map（*tk.OrderedMap）
 
 		// object related 对象有关
 
@@ -2810,7 +2814,9 @@ func importQLNonGUIPackages() {
 		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
 		// misc related 杂项相关函数
-		"resultf":        tk.Resultf,
+		"resultf":        tk.Resultf,             // 生成一个TXResult表示通用结果的对象，JSON表达类似{"Status": "fail", "Value": "auth failed"}，Status一般只有success和fail两个取值，Value一般在fail时为失败原因，还可以有其他字段
+		"resultFromJSON": tk.NewTXResultFromJSON, // 根据JSON生成TXResult对象，失败时返回error对象
+
 		"recsToMapArray": tk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
 
 		"readAllStr": tk.ReadAllString,
