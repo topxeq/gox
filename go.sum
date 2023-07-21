@@ -472,7 +472,6 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.7.1-0.20220215102604-1e36bfe10404/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
@@ -486,8 +485,8 @@ github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 h1:SPJ/3/AfLh1Ae6N6A
 github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97/go.mod h1:4OH+jvJsOmDlZo0w/14dBxg/zQ6jnbrxdUdasWdgoR8=
 github.com/topxeq/blockix v0.0.0-20210301072129-59538096fd95/go.mod h1:xyAfbPzbZwTQ1XIyYCvtE0oHzU9efcOB8KqqDmMdGdY=
 github.com/topxeq/charlang v0.0.0-20220224014453-a505ad57cf4e/go.mod h1:kZm5IVvpQkCiCEueuM7VF5Mb1c8BVqc2y0RDujD+Vp0=
-github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6 h1:oveUvAk0mVwa2MPacq71HqgreE5hMrySNm+4X1GYDs0=
-github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6/go.mod h1:t3fUg98zM+J4X2K607uNlGMp7xuP53ScFrBnUJkvvpA=
+github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121 h1:rDghvNYoVy4oLvOLTE71gSGwRmYyxfMwVTvwZP06yTQ=
+github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121/go.mod h1:kNX2Ywwkrgi3olpjcTUItKSS40FIgj3Mo+hYaNs7nHQ=
 github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 h1:JtCULmOHEQb12ZWMFBCYec4gvbt9POZQN3ncD+2509Q=
 github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09/go.mod h1:S/DxGB7MRImGIuTaMZNJpWgguYvMD4a6OGrejBph0xI=
 github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533 h1:H05+VuIlNiRa71bgjwrysIlFF6EVHW99XwueANjH1d8=
@@ -508,10 +507,12 @@ github.com/topxeq/imagetk v0.0.0-20230306082727-9b06565a8b58 h1:CI4LHMRFcqIGsbPi
 github.com/topxeq/imagetk v0.0.0-20230306082727-9b06565a8b58/go.mod h1:yGXKud91gUI8sdjy+UiSf1YNsEWpiWvD8EHLfC5rdX4=
 github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a h1:AbaDA3cbBe+3qpvek2YhvE/xn+8vLOc3J+KBlR2DMII=
 github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a/go.mod h1:Y07Sl+FLd164UCoNlvVFUb0NJWtcehctV6kaNWPjLgM=
-github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 h1:NmJisdKbTYN77elIJosh+8S0R+8gLUzsR0O1Q2k9a3A=
 github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029/go.mod h1:UVq5N0KFj5HnWtb+azlgFGygxGbhpFsG44uPjPNAbUE=
-github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 h1:rK+vzRQ8z4If0mWMPuy25tSUdEbc5ngAbzknR+AF4j0=
+github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7 h1:bcYgbhUq1iUMjfWbNv2VaEVPAKHt908Oxz2XQcek6bA=
+github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7/go.mod h1:9hd2TDu1NgG4DruiRMa02efE4G0bm8GcT8lVG7u8J88=
 github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3/go.mod h1:rxUzYlbHy6wU8ci0i5R1zs3YlgXqe5gDRwXwFLp2BqA=
+github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9 h1:loWEalO4+4TPW4odgmhwpXWt1R0HclYfyw4DoE6xvzk=
+github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9/go.mod h1:mf0FO/pQYsuIw59dJueuJMTfc9ESck/vtn6CEHeTAtA=
 github.com/topxeq/sqltk v0.0.0-20220224013714-d9d64a06d59f/go.mod h1:qfnUkeG9fQMTXI+gBKHldZ3hihvSPpr0N/jGtejLuUo=
 github.com/topxeq/sqltk v0.0.0-20220228051745-2503a98a4e47/go.mod h1:qfnUkeG9fQMTXI+gBKHldZ3hihvSPpr0N/jGtejLuUo=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 h1:yPsp6rNV6vy1pL0H3GGz99es8Uq/gziGEYxtSq3uChQ=
@@ -521,8 +522,9 @@ github.com/topxeq/tk v0.9.2-0.20220224013140-1d883c9b6981/go.mod h1:yIxcIUyuF/Rx
 github.com/topxeq/tk v1.0.0/go.mod h1:yIxcIUyuF/Rxfqzyp+Zdnz7cUqGH7TYT2nneH8XgbNw=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=
-github.com/topxeq/xmlx v0.2.0 h1:u3QIV7fNyGbLx3gvA0DjMj3Ss7U9Wmu4SYOuhunwCGQ=
 github.com/topxeq/xmlx v0.2.0/go.mod h1:0N0JTTPEwnsZPyJzb7wMzqwlA7Y25+ZnLuTb7xSrgVM=
+github.com/topxeq/xmlx v0.3.0 h1:h3Si1uMvL4jxRYkoEx16kKkSF/3FyGz7FuWEAZNKKhY=
+github.com/topxeq/xmlx v0.3.0/go.mod h1:0N0JTTPEwnsZPyJzb7wMzqwlA7Y25+ZnLuTb7xSrgVM=
 github.com/ttacon/chalk v0.0.0-20160626202418-22c06c80ed31/go.mod h1:onvgF043R+lC5RZ8IT9rBXDaEDnpnw/Cl+HFiw+v/7Q=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/ulikunitz/xz v0.5.8/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oWt/14=

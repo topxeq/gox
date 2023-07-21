@@ -15,12 +15,12 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/sijms/go-ora/v2 v2.5.25
-	github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6
+	github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121
 	github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/sqltk v0.0.0
-	github.com/topxeq/tk v1.0.1
+	github.com/topxeq/tk v1.0.6
 	github.com/topxeq/xie v0.0.0
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 )
@@ -31,7 +31,7 @@ require (
 
 // replace github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2 => github.com/360EntSecGroup-Skylar/excelize v1.4.1
 
-replace github.com/topxeq/tk v1.0.1 => ../tk
+replace github.com/topxeq/tk v1.0.6 => ../tk
 
 // replace github.com/topxeq/xmlx v0.2.0 => ../xmlx
 

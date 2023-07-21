@@ -9,7 +9,7 @@ require (
 	github.com/ncruces/zenity v0.10.9
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
-	github.com/topxeq/tk v1.0.1
+	github.com/topxeq/tk v1.0.6
 	github.com/topxeq/xie v0.0.0
 )
 
@@ -92,7 +92,7 @@ require (
 	github.com/tinylib/msgp v1.1.5 // indirect
 	github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 // indirect
 	github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 // indirect
-	github.com/topxeq/charlang v0.0.0-20220722003130-49bba2664ad6 // indirect
+	github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121 // indirect
 	github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 // indirect
 	github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533 // indirect
 	github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e // indirect
@@ -102,12 +102,12 @@ require (
 	github.com/topxeq/imagetk v0.0.0-20230306082727-9b06565a8b58 // indirect
 	github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a // indirect
 	github.com/topxeq/qlang v0.0.0 // indirect
-	github.com/topxeq/regexpx v0.0.0-20200814082553-4bffc7d07029 // indirect
-	github.com/topxeq/socks v0.0.0-20200812112322-24acb126b5f3 // indirect
+	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7 // indirect
+	github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9 // indirect
 	github.com/topxeq/sqltk v0.0.0 // indirect
 	github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 // indirect
 	github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 // indirect
-	github.com/topxeq/xmlx v0.2.0 // indirect
+	github.com/topxeq/xmlx v0.3.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
@@ -130,7 +130,7 @@ require (
 
 replace github.com/topxeq/gox v0.0.0 => ../
 
-replace github.com/topxeq/tk v1.0.1 => ../../tk
+replace github.com/topxeq/tk v1.0.6 => ../../tk
 
 replace github.com/topxeq/sqltk v0.0.0 => ../../sqltk
 
