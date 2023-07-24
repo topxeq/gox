@@ -1,11 +1,14 @@
 package gox
 
 import (
+	"context"
+	"crypto/rsa"
+	"io"
 	"sort"
 	"strings"
 
-	// "context"
 	"net/http"
+	"net/url"
 
 	"os"
 	"path/filepath"
@@ -207,11 +210,17 @@ import (
 	"github.com/topxeq/xie"
 
 	"github.com/topxeq/tk"
+
+	// finance related
+	"github.com/wechatpay-apiv3/wechatpay-go/core"
+	"github.com/wechatpay-apiv3/wechatpay-go/core/option"
+	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
+	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 )
 
 // Non GUI related
 
-var VersionG = "v6.1.1"
+var VersionG = "v6.1.2"
 
 // add tk.ToJSONX
 
@@ -2210,6 +2219,130 @@ func trim(vA interface{}, argsA ...string) string {
 	return tk.Trim(fmt.Sprintf("%v", vA), argsA...)
 }
 
+// wx payment related
+func WxPaySendRequest(serviceUrlA string, paramsA interface{}, argsA ...string) interface{} {
+	// tk.Pln(serviceUrlA, paramsA, mchIdA, mchCertificateSerialNumberA, mchAPIv3KeyA, privateKeyA, privateKeyTypeA, responseTypeA)
+
+	var mchPrivateKeyT *rsa.PrivateKey
+	var errT error
+
+	mchIdA := tk.GetSwitch(argsA, "-mchID=", "")
+
+	mchCertificateSerialNumberA := tk.GetSwitch(argsA, "-mchCertificateSerialNumber=", "")
+
+	mchAPIv3KeyA := tk.GetSwitch(argsA, "-mchAPIv3Key=", "")
+
+	privateKeyA := tk.GetSwitch(argsA, "-privateKey=", "")
+
+	responseTypeA := tk.GetSwitch(argsA, "-responseType=", "str")
+
+	privateKeyTypeA := tk.GetSwitch(argsA, "-privateKeyType=", "str")
+
+	if privateKeyTypeA != "str" {
+		mchPrivateKeyT, errT = utils.LoadPrivateKeyWithPath(privateKeyA)
+	} else {
+		mchPrivateKeyT, errT = utils.LoadPrivateKey(privateKeyA)
+	}
+
+	if errT != nil {
+		return fmt.Errorf("load merchant private key error: %v", errT)
+	}
+	// tk.Pln(mchIdA, mchCertificateSerialNumberA, mchPrivateKeyT, mchAPIv3KeyA)
+
+	ctx := context.Background()
+	// 使用商户私钥等初始化 client，并使它具有自动定时获取微信支付平台证书的能力
+
+	var opts []core.ClientOption = make([]core.ClientOption, 0, 3)
+
+	// option.WithMerchantCredential(mchID, mchCertificateSerialNumber, mchPrivateKey),
+	// option.WithoutValidator(),
+
+	if tk.IfSwitchExists(argsA, "-optionAutoAuthCipher") {
+		opts = append(opts, option.WithWechatPayAutoAuthCipher(mchIdA, mchCertificateSerialNumberA, mchPrivateKeyT, mchAPIv3KeyA))
+	}
+
+	if tk.IfSwitchExists(argsA, "-optionMerchantCredential") {
+		opts = append(opts, option.WithMerchantCredential(mchIdA, mchCertificateSerialNumberA, mchPrivateKeyT))
+	}
+
+	if tk.IfSwitchExists(argsA, "-optionWithoutValidator") {
+		opts = append(opts, option.WithoutValidator())
+	}
+
+	clientT, errT := core.NewClient(ctx, opts...)
+	if errT != nil {
+		return fmt.Errorf("new wechat pay client err:%s", errT)
+	}
+
+	svcT := jsapi.JsapiApiService{Client: clientT}
+
+	var localVarQueryParamsT url.Values = nil
+
+	paraMapT := make(map[string]string)
+
+	if paramsA == nil {
+
+	} else {
+		switch nv := paramsA.(type) {
+		case map[string]string:
+			for k, v := range nv {
+				paraMapT[k] = v
+			}
+		case map[string]interface{}:
+			for k, v := range nv {
+				paraMapT[k] = tk.ToStr(v)
+			}
+		case url.Values:
+			for k, v := range nv {
+				paraMapT[k] = tk.ToStr(v[0])
+			}
+		case *url.Values:
+			for k, v := range *nv {
+				paraMapT[k] = tk.ToStr(v[0])
+			}
+		}
+	}
+
+	if len(paraMapT) > 0 {
+		localVarQueryParamsT = url.Values{}
+
+		for k, v := range paraMapT {
+			localVarQueryParamsT.Add(k, v)
+		}
+	}
+
+	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentType := core.SelectHeaderContentType(localVarHTTPContentTypes)
+
+	resultT, errT := svcT.Client.Request(ctx, http.MethodGet, serviceUrlA, http.Header{}, localVarQueryParamsT, nil, localVarHTTPContentType)
+	if errT != nil {
+		return fmt.Errorf("new wechat pay client 2 err:%s", errT)
+	}
+
+	if responseTypeA == "" || responseTypeA == "str" || responseTypeA == "string" {
+		bufT, errT := io.ReadAll(resultT.Response.Body)
+
+		if errT != nil {
+			return fmt.Errorf("failed to get http response body: %v", errT)
+		}
+
+		// fmt.Println("bufT:", string(bufT))
+
+		return string(bufT)
+
+	} else {
+		bufT, errT := io.ReadAll(resultT.Response.Body)
+
+		if errT != nil {
+			return fmt.Errorf("failed to get http response body: %v", errT)
+		}
+
+		return bufT
+	}
+
+	return nil
+}
+
 // GUI related start
 
 func initGUI() {
@@ -2813,11 +2946,15 @@ func importQLNonGUIPackages() {
 		// bluetooth relate 蓝牙相关
 		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
+		// payment related
+		"wxPaySendRequest": WxPaySendRequest,
+
 		// misc related 杂项相关函数
 		"resultf":        tk.Resultf,             // 生成一个TXResult表示通用结果的对象，JSON表达类似{"Status": "fail", "Value": "auth failed"}，Status一般只有success和fail两个取值，Value一般在fail时为失败原因，还可以有其他字段
 		"resultFromJSON": tk.NewTXResultFromJSON, // 根据JSON生成TXResult对象，失败时返回error对象
 
-		"recsToMapArray": tk.RecordsToMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
+		"recsToMapArray":        tk.RecordsToMapArray,        // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
+		"recsToMapOrderedArray": tk.RecordsToOrderedMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]*tk.OrderedMap格式，注意与recsToMapArray的区别是返回结果是个有序列表
 
 		"readAllStr": tk.ReadAllString,
 		"closeX":     tk.Close,

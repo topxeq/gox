@@ -22,6 +22,7 @@ require (
 	github.com/topxeq/sqltk v0.0.0
 	github.com/topxeq/tk v1.0.6
 	github.com/topxeq/xie v0.0.0
+	github.com/wechatpay-apiv3/wechatpay-go v0.2.17
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 )
 
