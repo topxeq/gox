@@ -220,7 +220,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.1.2"
+var VersionG = "v6.1.5"
 
 // add tk.ToJSONX
 
@@ -2644,40 +2644,46 @@ func importQLNonGUIPackages() {
 		"errToEmptyStr":    tk.ErrorToEmptyString, // 将任意值转为string，如果是error类型的变量则转为空字符串
 
 		// encode/decode related 编码/解码相关
-		"xmlEncode":          tk.EncodeToXMLString,    // 编码为XML
-		"xmlDecode":          tk.FromXMLWithDefault,   // 解码XML为对象，函数定义：(xmlA string, defaultA interface{}) interface{}
-		"fromXML":            tk.FromXMLX,             // 解码XML为etree.Element对象，函数定义：fromXML(xmlA string, pathA ...interface{}) interface{}，出错时返回error，否则返回*etree.Element对象
-		"fromXml":            tk.FromXMLX,             // 等同于fromXML
-		"toXML":              tk.ToXML,                // 编码数据为XML格式，可选参数-indent, -cdata, -root=ABC, -rootAttr={"f1", "v1"}, -default="<xml>ab c</xml>"
-		"toXml":              tk.ToXML,                // 等同于toXML
-		"htmlEncode":         tk.EncodeHTML,           // HTML编码（&nbsp;等）
-		"htmlDecode":         tk.DecodeHTML,           // HTML解码
-		"urlEncode":          tk.UrlEncode2,           // URL编码（http://www.aaa.com -> http%3A%2F%2Fwww.aaa.com）
-		"urlEncodeX":         tk.UrlEncode,            // 增强URL编码（会将+和\n等也编码）
-		"urlDecode":          tk.UrlDecode,            // URL解码
-		"base64Encode":       tk.EncodeToBase64,       // Base64编码，输入参数是[]byte字节数组
-		"toBase64":           tk.ToBase64,             // Base64编码，输入参数是[]byte字节数组或字符串
-		"base64Decode":       tk.DecodeFromBase64,     // base64解码，返回两个参数（第二个是error类型）的结果
-		"fromBase64":         tk.FromBase64,           // base64解码，返回字节数组
-		"md5Encode":          tk.MD5Encrypt,           // MD5编码
-		"md5":                tk.MD5Encrypt,           // 等同于md5Encode
-		"jsonEncode":         tk.ObjectToJSON,         // JSON编码
-		"jsonDecode":         tk.JSONToObject,         // JSON解码
-		"toJSON":             tk.ToJSONX,              // 增强的JSON编码，建议使用，函数定义： toJSON(objA interface{}, optsA ...string) string，参数optsA可选。例：s = toJSON(textA, "-indent", "-sort")
-		"toJson":             tk.ToJSONX,              // 等同于toJSON
-		"toJSONX":            tk.ToJSONX,              // 等同于toJSON
-		"toJsonX":            tk.ToJSONX,              // 等同于toJSON
-		"fromJSON":           tk.FromJSONWithDefault,  // 增强的JSON解码，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
-		"fromJson":           tk.FromJSONWithDefault,  // 等同于fromJSON
-		"fromJSONX":          fromJSONX,               // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string) interface{}，如果解码失败，返回error对象
-		"fromJsonX":          fromJSONX,               // 等同于fromJSONX
-		"getJSONNode":        tk.GetJSONNode,          // 获取JSON中的某个节点，未取到则返回nil，示例： getJSONNode("{\"ID\":1,\"Name\":\"Reds\",\"Colors\":[\"Crimson\",\"Red\",\"Ruby\",\"Maroon\"]}", "Colors", 0)
-		"getJsonNode":        tk.GetJSONNode,          // 等同于getJSONNode
-		"simpleEncode":       tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
-		"simpleDecode":       tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
-		"tableToMSSArray":    tk.TableToMSSArray,      // 参见dbRecsToMapArray，主要用于处理数据库查询结果
-		"tableToMSSMap":      tk.TableToMSSMap,        // 类似tableToMSSArray，但还加上一个ID作为主键成为字典/映射类型
-		"tableToMSSMapArray": tk.TableToMSSMapArray,   // 类似tableToMSSMap，但主键下的键值是一个数组，其中每一项是一个map[string]string
+		"xmlEncode":                 tk.EncodeToXMLString,    // 编码为XML
+		"xmlDecode":                 tk.FromXMLWithDefault,   // 解码XML为对象，函数定义：(xmlA string, defaultA interface{}) interface{}
+		"fromXML":                   tk.FromXMLX,             // 解码XML为etree.Element对象，函数定义：fromXML(xmlA string, pathA ...interface{}) interface{}，出错时返回error，否则返回*etree.Element对象
+		"fromXml":                   tk.FromXMLX,             // 等同于fromXML
+		"toXML":                     tk.ToXML,                // 编码数据为XML格式，可选参数-indent, -cdata, -root=ABC, -rootAttr={"f1", "v1"}, -default="<xml>ab c</xml>"
+		"toXml":                     tk.ToXML,                // 等同于toXML
+		"htmlEncode":                tk.EncodeHTML,           // HTML编码（&nbsp;等）
+		"htmlDecode":                tk.DecodeHTML,           // HTML解码
+		"urlEncode":                 tk.UrlEncode2,           // URL编码（http://www.aaa.com -> http%3A%2F%2Fwww.aaa.com）
+		"urlEncodeX":                tk.UrlEncode,            // 增强URL编码（会将+和\n等也编码）
+		"urlDecode":                 tk.UrlDecode,            // URL解码
+		"base64Encode":              tk.EncodeToBase64,       // Base64编码，输入参数是[]byte字节数组
+		"toBase64":                  tk.ToBase64,             // Base64编码，输入参数是[]byte字节数组或字符串
+		"base64Decode":              tk.DecodeFromBase64,     // base64解码，返回两个参数（第二个是error类型）的结果
+		"fromBase64":                tk.FromBase64,           // base64解码，返回字节数组
+		"md5Encode":                 tk.MD5Encrypt,           // MD5编码
+		"md5":                       tk.MD5Encrypt,           // 等同于md5Encode
+		"jsonEncode":                tk.ObjectToJSON,         // JSON编码
+		"jsonDecode":                tk.JSONToObject,         // JSON解码
+		"toJSON":                    tk.ToJSONX,              // 增强的JSON编码，建议使用，函数定义： toJSON(objA interface{}, optsA ...string) string，参数optsA可选。例：s = toJSON(textA, "-indent", "-sort")
+		"toJson":                    tk.ToJSONX,              // 等同于toJSON
+		"toJSONX":                   tk.ToJSONX,              // 等同于toJSON
+		"toJsonX":                   tk.ToJSONX,              // 等同于toJSON
+		"fromJSON":                  tk.FromJSONWithDefault,  // 增强的JSON解码，函数定义： fromJSON(jsonA string, defaultA ...interface{}) interface{}
+		"fromJson":                  tk.FromJSONWithDefault,  // 等同于fromJSON
+		"fromJSONX":                 fromJSONX,               // 增强的JSON解码，建议使用，函数定义： fromJSON(jsonA string) interface{}，如果解码失败，返回error对象
+		"fromJsonX":                 fromJSONX,               // 等同于fromJSONX
+		"getJSONNode":               tk.GetJSONNode,          // 获取JSON中的某个节点，未取到则返回nil，示例： getJSONNode("{\"ID\":1,\"Name\":\"Reds\",\"Colors\":[\"Crimson\",\"Red\",\"Ruby\",\"Maroon\"]}", "Colors", 0)
+		"getJsonNode":               tk.GetJSONNode,          // 等同于getJSONNode
+		"simpleEncode":              tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
+		"simpleDecode":              tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
+		"tableToMSSArray":           tk.TableToMSSArray,      // 参见dbRecsToMapArray，主要用于处理数据库查询结果
+		"tableToMSSMap":             tk.TableToMSSMap,        // 类似tableToMSSArray，但还加上一个ID作为主键成为字典/映射类型
+		"tableToMSSOrderedMap":      tk.TableToMSSOrderedMap, // 参见dbRecsToMapArray，主要用于处理数据库查询结果
+		"tableToMSSMapArray":        tk.TableToMSSMapArray,   // 类似tableToMSSMap，但主键下的键值是一个数组，其中每一项是一个map[string]string
+		"recsToMapArray":            tk.RecordsToMapArray,    // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
+		"recsToMapArrayMap":         tk.TableToMSSMap,
+		"recsToMapOrderedArray":     tk.RecordsToOrderedMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]*tk.OrderedMap格式，注意与recsToMapArray的区别是返回结果是个有序列表
+		"recsToMapArrayOrderedMap":  tk.TableToMSSOrderedMap,     // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似{"Value1": {"Field1": "Value1", "Field2": "Value2"}, "Value1a": {"Field1": "Value1a", "Field2": "Value2a"}}的map[string]*tk.OrderedMap格式，注意与recsToMapArrayMap的区别是返回结果中每个叶子项是个有序列表
+		"recsToMapArrayOrderedMapX": tk.RecordsToOrderedMapArrayMap,
 
 		// encrypt/decrypt related 加密/解密相关
 		"encryptStr":   tk.EncryptStringByTXDEF,            // 加密字符串，第二个参数（可选）是密钥字串
@@ -2952,9 +2958,6 @@ func importQLNonGUIPackages() {
 		// misc related 杂项相关函数
 		"resultf":        tk.Resultf,             // 生成一个TXResult表示通用结果的对象，JSON表达类似{"Status": "fail", "Value": "auth failed"}，Status一般只有success和fail两个取值，Value一般在fail时为失败原因，还可以有其他字段
 		"resultFromJSON": tk.NewTXResultFromJSON, // 根据JSON生成TXResult对象，失败时返回error对象
-
-		"recsToMapArray":        tk.RecordsToMapArray,        // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]map[string]string格式
-		"recsToMapOrderedArray": tk.RecordsToOrderedMapArray, // 将多行行（第一行为标头字段行）的常见于SQL语句查询结果（[][]string格式或[][]interface{}格式）变为类似[{"Field1": "Value1", "Field2": "Value2"},{"Field1": "Value1a", "Field2": "Value2a"}]的[]*tk.OrderedMap格式，注意与recsToMapArray的区别是返回结果是个有序列表
 
 		"readAllStr": tk.ReadAllString,
 		"closeX":     tk.Close,
