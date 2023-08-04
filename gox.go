@@ -173,7 +173,7 @@ import (
 	// qlgithub_scitersdk_gosciter "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter"
 	// qlgithub_scitersdk_gosciter_window "github.com/topxeq/qlang/lib/github.com/sciter-sdk/go-sciter/window"
 
-	qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
+	// qlgithub_topxeq_dialog "github.com/topxeq/qlang/lib/github.com/topxeq/dialog"
 	qlgithub_topxeq_dlgs "github.com/topxeq/qlang/lib/github.com/topxeq/dlgs"
 
 	qlgithub_jchv_gowebview2 "github.com/topxeq/qlang/lib/github.com/jchv/go-webview2"
@@ -201,7 +201,7 @@ import (
 	// GUI related start
 	// full version related start
 
-	"github.com/topxeq/dialog"
+	// "github.com/topxeq/dialog"
 	"github.com/topxeq/dlgs"
 
 	// full version related end
@@ -2369,7 +2369,7 @@ func initGUI() {
 		// }
 	}
 
-	dialog.Do_init()
+	// dialog.Do_init()
 	// window.Do_init()
 }
 
@@ -3196,7 +3196,7 @@ func importQLNonGUIPackages() {
 	// qlang.Import("sciterWindow", qlgithub_scitersdk_gosciter_window.Exports)
 
 	qlang.Import("github_topxeq_dlgs", qlgithub_topxeq_dlgs.Exports)
-	qlang.Import("github_topxeq_dialog", qlgithub_topxeq_dialog.Exports)
+	// qlang.Import("github_topxeq_dialog", qlgithub_topxeq_dialog.Exports)
 
 	qlang.Import("github_jchv_gowebview2", qlgithub_jchv_gowebview2.Exports)
 	qlang.Import("webview2", qlgithub_jchv_gowebview2.Exports)
@@ -3471,51 +3471,126 @@ func showErrorGUI(titleA string, formatA string, messageA ...interface{}) {
 }
 
 // filename, err := dialog.File().Filter("XML files", "xml").Title("Export to XML").Save()
+// func selectFileToSaveGUIold(argsA ...string) string {
+// 	if ServerModeG {
+// 		return tk.ErrStrf("not valid")
+// 	}
+
+// 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
+// 	filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
+// 	filterTypeT := tk.GetSwitch(argsA, "-filter=", "*")
+// 	startPathT := tk.GetSwitch(argsA, "-start=", "")
+
+// 	var fileNameT string
+// 	var errT error
+
+// 	if startPathT != "" {
+// 		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).SetStartDir(startPathT).Save()
+// 	} else {
+// 		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).Save()
+// 	}
+
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("failed: %v", errT)
+// 	}
+
+// 	return fileNameT
+// }
+
 func selectFileToSaveGUI(argsA ...string) string {
 	if ServerModeG {
 		return tk.ErrStrf("not valid")
 	}
 
 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
-	filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
+	// filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
 	filterTypeT := tk.GetSwitch(argsA, "-filter=", "*")
-	startPathT := tk.GetSwitch(argsA, "-start=", "")
+	// startPathT := tk.GetSwitch(argsA, "-start=", "")
 
 	var fileNameT string
 	var errT error
 
-	if startPathT != "" {
-		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).SetStartDir(startPathT).Save()
-	} else {
-		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).Save()
-	}
+	var okT bool
+
+	fileNameT, okT, errT = dlgs.File(titleT, filterTypeT, false)
 
 	if errT != nil {
 		return tk.GenerateErrorStringF("failed: %v", errT)
 	}
 
+	if !okT {
+		return tk.GenerateErrorStringF("canceled")
+	}
+
+	// if startPathT != "" {
+	// 	fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).SetStartDir(startPathT).Save()
+	// } else {
+	// 	fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).Save()
+	// }
+
+	// if errT != nil {
+	// 	return tk.GenerateErrorStringF("failed: %v", errT)
+	// }
+
 	return fileNameT
 }
 
 // fileNameT, errT := dialog.File().Filter("Mp3 audio file", "mp3").Load()
+// func selectFileGUIold(argsA ...string) string {
+// 	if ServerModeG {
+// 		return tk.ErrStrf("not valid")
+// 	}
+
+// 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
+// 	filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
+// 	filterTypeT := tk.GetSwitch(argsA, "-filter=", "*")
+// 	startPathT := tk.GetSwitch(argsA, "-start=", "")
+
+// 	var fileNameT string
+// 	var errT error
+
+// 	if startPathT != "" {
+// 		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).SetStartDir(startPathT).Load()
+// 	} else {
+// 		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).Load()
+// 	}
+
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("failed: %v", errT)
+// 	}
+
+// 	return fileNameT
+// }
+
 func selectFileGUI(argsA ...string) string {
 	if ServerModeG {
 		return tk.ErrStrf("not valid")
 	}
 
 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
-	filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
+	// filterNameT := tk.GetSwitch(argsA, "-filterName=", "All files")
 	filterTypeT := tk.GetSwitch(argsA, "-filter=", "*")
-	startPathT := tk.GetSwitch(argsA, "-start=", "")
+	// startPathT := tk.GetSwitch(argsA, "-start=", "")
 
 	var fileNameT string
 	var errT error
+	var okT bool
 
-	if startPathT != "" {
-		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).SetStartDir(startPathT).Load()
-	} else {
-		fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).Load()
+	fileNameT, okT, errT = dlgs.File(titleT, filterTypeT, false)
+
+	if errT != nil {
+		return tk.GenerateErrorStringF("failed: %v", errT)
 	}
+
+	if !okT {
+		return tk.GenerateErrorStringF("canceled")
+	}
+
+	// if startPathT != "" {
+	// 	fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).SetStartDir(startPathT).Load()
+	// } else {
+	// 	fileNameT, errT = dialog.File().Filter(filterNameT, filterTypeT).Title(titleT).Load()
+	// }
 
 	if errT != nil {
 		return tk.GenerateErrorStringF("failed: %v", errT)
@@ -3525,25 +3600,51 @@ func selectFileGUI(argsA ...string) string {
 }
 
 // directory, err := dialog.Directory().Title("Load images").Browse()
+// func selectDirectoryGUIold(argsA ...string) string {
+// 	if ServerModeG {
+// 		return tk.ErrStrf("not valid")
+// 	}
+
+// 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
+// 	startPathT := tk.GetSwitch(argsA, "-start=", "")
+
+// 	var directoryT string
+// 	var errT error
+
+// 	if startPathT != "" {
+// 		directoryT, errT = dialog.Directory().Title(titleT).SetStartDir(startPathT).Browse()
+// 	} else {
+// 		directoryT, errT = dialog.Directory().Title(titleT).Browse()
+// 	}
+
+// 	if errT != nil {
+// 		return tk.GenerateErrorStringF("failed: %v", errT)
+// 	}
+
+// 	return directoryT
+// }
+
 func selectDirectoryGUI(argsA ...string) string {
 	if ServerModeG {
 		return tk.ErrStrf("not valid")
 	}
 
 	titleT := tk.GetSwitch(argsA, "-title=", "Select directory...")
-	startPathT := tk.GetSwitch(argsA, "-start=", "")
+	// startPathT := tk.GetSwitch(argsA, "-start=", "")
+	// filterT := tk.GetSwitch(argsA, "-filter=", "")
 
 	var directoryT string
+	var okT bool
 	var errT error
 
-	if startPathT != "" {
-		directoryT, errT = dialog.Directory().Title(titleT).SetStartDir(startPathT).Browse()
-	} else {
-		directoryT, errT = dialog.Directory().Title(titleT).Browse()
-	}
+	directoryT, okT, errT = dlgs.File(titleT, "", true)
 
 	if errT != nil {
 		return tk.GenerateErrorStringF("failed: %v", errT)
+	}
+
+	if !okT {
+		return tk.GenerateErrorStringF("canceled")
 	}
 
 	return directoryT
