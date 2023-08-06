@@ -2219,6 +2219,19 @@ func trim(vA interface{}, argsA ...string) string {
 	return tk.Trim(fmt.Sprintf("%v", vA), argsA...)
 }
 
+func GetResource(keyA string) string {
+	return tk.SafelyGetStringForKeyWithDefault(ResourceG, keyA, "")
+}
+
+func GetResourceList(keyA string) []string {
+	aryT := make([]string, 0, len(ResourceG))
+	for k, _ := range ResourceG {
+		aryT = append(aryT, k)
+	}
+
+	return aryT
+}
+
 // wx payment related
 func WxPaySendRequest(serviceUrlA string, paramsA interface{}, argsA ...string) interface{} {
 	// tk.Pln(serviceUrlA, paramsA, mchIdA, mchCertificateSerialNumberA, mchAPIv3KeyA, privateKeyA, privateKeyTypeA, responseTypeA)
@@ -2957,6 +2970,9 @@ func importQLNonGUIPackages() {
 		"wxPaySendRequest": WxPaySendRequest,
 
 		// misc related 杂项相关函数
+		"getResource":     GetResource,     // 获取JQuery等常用的脚本或其他内置文本资源，一般用于服务器端提供内置的jquery等脚本嵌入，避免从互联网即时加载，第一个的参数是jquery.min.js等js文件的名称
+		"getResourceList": GetResourceList, // 获取可获取的文本资源名称列表
+
 		"resultf":        tk.Resultf,             // 生成一个TXResult表示通用结果的对象，JSON表达类似{"Status": "fail", "Value": "auth failed"}，Status一般只有success和fail两个取值，Value一般在fail时为失败原因，还可以有其他字段
 		"resultFromJSON": tk.NewTXResultFromJSON, // 根据JSON生成TXResult对象，失败时返回error对象
 
