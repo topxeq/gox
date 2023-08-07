@@ -601,6 +601,11 @@ func runArgs(argsA ...string) interface{} {
 	if tk.IfSwitchExistsWhole(argsT, "-shell") {
 		gox.InitQLVM()
 
+		var guiHandlerG tk.TXDelegate = guiHandler
+
+		gox.QlVMG.SetVar("argsG", argsT)
+		gox.QlVMG.SetVar("guiG", guiHandlerG)
+
 		runInteractiveQlang()
 
 		// tk.Pl("not enough parameters")
@@ -637,6 +642,11 @@ func runArgs(argsA ...string) interface{} {
 			scriptT = autoGxbPathT
 		} else {
 			gox.InitQLVM()
+
+			var guiHandlerG tk.TXDelegate = guiHandler
+
+			gox.QlVMG.SetVar("argsG", argsT)
+			gox.QlVMG.SetVar("guiG", guiHandlerG)
 
 			runInteractiveQlang()
 
@@ -1045,7 +1055,10 @@ func runArgs(argsA ...string) interface{} {
 
 	gox.InitQLVM()
 
+	var guiHandlerG tk.TXDelegate = guiHandler
+
 	gox.QlVMG.SetVar("argsG", argsT)
+	gox.QlVMG.SetVar("guiG", guiHandlerG)
 
 	gox.RetG = gox.NotFoundG
 

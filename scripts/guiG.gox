@@ -1,0 +1,3 @@
+plo(guiG)
+
+guiG("showInfo", nil, nil, "title1", "msg1")
