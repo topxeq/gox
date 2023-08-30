@@ -220,7 +220,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.1.6"
+var VersionG = "v6.1.7"
 
 // add tk.ToJSONX
 
@@ -2536,6 +2536,7 @@ func importQLNonGUIPackages() {
 		"endsWith":             tk.EndsWith,               // 判断字符串是否以某子串结尾
 		"strEndsWith":          tk.EndsWith,               // 等同于endsWith
 		"strIn":                tk.InStrings,              // 判断字符串是否在一个字符串列表中出现，函数定义： strIn(strA string, argsA ...string) bool，第一个可变参数如果以“-”开头，将表示参数开关，-it表示忽略大小写，并且trim再比较（strA并不trim）
+		"strInTrim":            tk.InStringsTrim,          // 判断字符串是否在一个字符串列表中出现，函数定义： strInTrim(strA string, argsA ...string) bool，argsA将trim后再比较（strA并不trim）
 		"strFindAll":           tk.FindSubStringAll,       // 寻找字符串中某个子串出现的所有位置，函数定义： func strFindAll(strA string, subStrA string) [][]int，每个匹配是两个整数，分别表示开头和结尾（不包含）
 		"newStringBuilder":     newStringBuilder,          // 新建一个strings.Builder对象
 		"newStringBuffer":      newStringBuilder,          // 同newStringBuilder
