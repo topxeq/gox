@@ -23,6 +23,7 @@ import (
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
+	"github.com/topxeq/regexpx"
 	"github.com/topxeq/sqltk"
 
 	execq "github.com/topxeq/qlang/exec"
@@ -220,7 +221,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.1.7"
+var VersionG = "v6.1.8"
 
 // add tk.ToJSONX
 
@@ -2565,6 +2566,7 @@ func importQLNonGUIPackages() {
 		"regFindAllIndex": tk.RegFindAllIndexX,   // 根据正则表达式搜索在字符串中所有匹配，函数定义： func regFindAllIndex(strA, patternA string) [][]int
 		"regReplace":      tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string, 例：regReplace("abcdefgabcdfg", "(b.*)f(ga.*?)g", "${1}_${2}")，结果是abcde_gabcdf
 		"regSplit":        tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
+		"regQuote":        regexpx.QuoteMeta,     // 将一个普通字符串中涉及正则表达式特殊字符进行转义替换以便用于正则表达式中
 
 		// conversion related 转换相关
 		"nilToEmpty":      nilToEmpty,                  // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
