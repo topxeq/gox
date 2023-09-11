@@ -221,7 +221,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.1.8"
+var VersionG = "v6.1.9"
 
 // add tk.ToJSONX
 
@@ -2555,18 +2555,19 @@ func importQLNonGUIPackages() {
 		"generateRandomString": tk.GenerateRandomString,  // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
 		// regex related 正则表达式相关
-		"regMatch":        tk.RegMatchX,     // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
-		"regContains":     tk.RegContainsX,  // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
-		"regContainsIn":   tk.RegContainsIn, // 判断字符串中是否包含符合正则表达式的某几个字串
-		"regCount":        tk.RegCount,      // 判断某字符串包含几个符合正则表达式的子串
-		"regFind":         tk.RegFindFirstX, // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
-		"regFindFirst":    tk.RegFindFirstX,
-		"regFindAll":      tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
-		"regFindIndex":    tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
-		"regFindAllIndex": tk.RegFindAllIndexX,   // 根据正则表达式搜索在字符串中所有匹配，函数定义： func regFindAllIndex(strA, patternA string) [][]int
-		"regReplace":      tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string, 例：regReplace("abcdefgabcdfg", "(b.*)f(ga.*?)g", "${1}_${2}")，结果是abcde_gabcdf
-		"regSplit":        tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
-		"regQuote":        regexpx.QuoteMeta,     // 将一个普通字符串中涉及正则表达式特殊字符进行转义替换以便用于正则表达式中
+		"regMatch":           tk.RegMatchX,     // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
+		"regContains":        tk.RegContainsX,  // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
+		"regContainsIn":      tk.RegContainsIn, // 判断字符串中是否包含符合正则表达式的某几个字串
+		"regCount":           tk.RegCount,      // 判断某字符串包含几个符合正则表达式的子串
+		"regFind":            tk.RegFindFirstX, // 根据正则表达式在字符串中寻找第一个匹配，函数定义： func regFind(strA, patternA string, groupA int) string
+		"regFindFirst":       tk.RegFindFirstX,
+		"regFindFirstGroups": tk.RegFindFirstGroupsX,
+		"regFindAll":         tk.RegFindAllX,        // 根据正则表达式在字符串中寻找所有匹配，函数定义： func regFindAll(strA, patternA string, groupA int) []string
+		"regFindIndex":       tk.RegFindFirstIndexX, // 根据正则表达式在字符串中第一个匹配的为止，函数定义： func regFindIndex(strA, patternA string) (int, int)
+		"regFindAllIndex":    tk.RegFindAllIndexX,   // 根据正则表达式搜索在字符串中所有匹配，函数定义： func regFindAllIndex(strA, patternA string) [][]int
+		"regReplace":         tk.RegReplaceX,        // 根据正则表达式在字符串中进行替换，函数定义： regReplace(strA, patternA, replaceA string) string, 例：regReplace("abcdefgabcdfg", "(b.*)f(ga.*?)g", "${1}_${2}")，结果是abcde_gabcdf
+		"regSplit":           tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
+		"regQuote":           regexpx.QuoteMeta,     // 将一个普通字符串中涉及正则表达式特殊字符进行转义替换以便用于正则表达式中
 
 		// conversion related 转换相关
 		"nilToEmpty":      nilToEmpty,                  // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
@@ -2758,6 +2759,9 @@ func importQLNonGUIPackages() {
 		"getAppDir":    tk.GetApplicationPath,
 		"getCurDir":    tk.GetCurrentDir,
 		"getConfigDir": fnASRSE(tk.EnsureBasePath),
+
+		"getOSName": tk.GetOSName,
+		"getOSArch": tk.GetOSArch,
 
 		// time related 时间相关
 
