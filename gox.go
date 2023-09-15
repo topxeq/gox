@@ -2759,6 +2759,7 @@ func importQLNonGUIPackages() {
 		"getAppDir":    tk.GetApplicationPath,
 		"getCurDir":    tk.GetCurrentDir,
 		"getConfigDir": fnASRSE(tk.EnsureBasePath),
+		"getHomeDir":   tk.GetHomeDir,
 
 		"getOSName": tk.GetOSName,
 		"getOSArch": tk.GetOSArch,
