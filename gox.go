@@ -221,7 +221,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.1.9"
+var VersionG = "v6.2.0"
 
 // add tk.ToJSONX
 
@@ -2474,6 +2474,7 @@ func importQLNonGUIPackages() {
 		"fprintf":   fmt.Fprintf,  // 等同于其他语言中的frintf
 		"plv":       tk.Plv,       // 输出某变量或表达式的内容/值，以Go语言内部的表达方式，例如字符串将加上双引号
 		"plvx":      tk.Plvx,      // 输出某变量或表达式的内容/值和类型等信息
+		"plt":       tk.Plt,       // 输出某变量或表达式的内容/值和类型等信息
 		"plo":       tk.Plo,       // 输出某变量或表达式的内容/值和类型等信息
 		"plos":      tk.Plos,      // 输出多个变量或表达式的内容/值和类型等信息
 		"plosr":     tk.Plosr,     // 输出多个变量或表达式的内容/值和类型等信息，每个换行输出
@@ -2637,6 +2638,7 @@ func importQLNonGUIPackages() {
 
 		"newObject": tk.NewObject, // 新建一个对象，目前支持stack, set(hashset), treeset, list(arraylist), linklist(linkedlist), tree(btree), stringBuffer(stringBuilder), bytesBuffer, error(err), errorString(errStr), string(TXString), StringRing等，用法：objT = newObject("stack")或objT = newObject("tree", 5)创建五层的btree树等
 		"newObj":    tk.NewObject, // 等同于newObject
+		"newEx":     tk.NewObject, // 等同于newObject
 
 		// error related 错误处理相关
 		"isError":          tk.IsError,            // 判断表达式的值是否为error类型

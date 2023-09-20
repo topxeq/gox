@@ -1,0 +1,11 @@
+seq1 := newEx("seq")
+
+plt(seq1)
+
+rs := seq1.Get()
+
+plt(rs)
+
+rs = seq1.Get()
+
+plt(rs)
