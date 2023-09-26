@@ -221,7 +221,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.0"
+var VersionG = "v6.2.1"
 
 // add tk.ToJSONX
 
@@ -2808,6 +2808,8 @@ func importQLNonGUIPackages() {
 		// 如果要直接POST数据，则直接传入-postBody=ABCDEFG这样的信息即可，其中ABCDEFG是所需POST的字符串，例如getWeb("http://abc.com:8001/sap/bc/srt/rfc/sap/getSvc", "-postBody=<XML><data1>Test</data1></XML>", `-headers={"Content-Type":"text/xml; charset=utf-8", "SOAPAction":""}`, "-timeout=15")，此时请求将自动转为POST方式（默认是GET方式），另外也可以直接传入一个[]byte类型的参数
 		// 如需添加自定义请求头，则添加开关参数类似：-headers={"content-type": "text/plain; charset=utf-8;"}
 		// 如果返回结果是error对象，则表示错误信息，否则是网页或请求响应
+		"getWebHeader":  tk.GetWebHead,       // 进行一个网络HTTP请求但只获取响应头，这样可用于测试文件是否存在而不必下载，用法示例：resp = getWebHeader(URL)，有可能返回error对象
+		"urlExists":     tk.UrlExists,        // 判断一个网络资源是否存在，用法示例：rs = urlExists(URL)，有可能返回error对象
 		"downloadFile":  tk.DownloadFile,     // 从网络下载一个文件，函数定义func downloadFile(urlA, dirA, fileNameA string, argsA ...string) string
 		"downloadBytes": tk.DownloadWebBytes, // 从网络下载字节数组，Go函数定义func (pA *TK) DownloadWebBytes(urlA string, postDataA map[string]string, customHeadersA map[string]string, optsA ...string) ([]byte, map[string]string, error)
 		"httpRequest":   tk.RequestX,         // 进行一个网络HTTP请求并获得服务器返回结果，函数定义func httpRequest(urlA, methodA, reqBodyA string, customHeadersA string, timeoutSecsA time.Duration, optsA ...string) (string, error)
