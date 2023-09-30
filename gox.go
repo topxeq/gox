@@ -221,7 +221,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.1"
+var VersionG = "v6.2.2"
 
 // add tk.ToJSONX
 
@@ -284,7 +284,7 @@ func TestText(argsA ...interface{}) interface{} {
 	lenT := len(argsA)
 
 	if lenT < 2 {
-		return fmt.Errorf("not enough parameters")
+		tk.Fatalf("not enough parameters")
 	}
 
 	v1 := argsA[0]
@@ -305,7 +305,7 @@ func TestText(argsA ...interface{}) interface{} {
 	if v1 == v2 {
 		tk.Pl("test %v%v passed", v3, v4)
 	} else {
-		return fmt.Errorf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+		tk.Fatalf("test %v%v failed: (pos: %v) %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, tk.FindFirstDiffIndex(tk.ToStr(v1), tk.ToStr(v2)), v1, v2, v1, v2)
 	}
 
 	return nil
@@ -315,7 +315,7 @@ func TestTextStartsWith(argsA ...interface{}) interface{} {
 	lenT := len(argsA)
 
 	if lenT < 2 {
-		return fmt.Errorf("not enough parameters")
+		tk.Fatalf("not enough parameters")
 	}
 
 	v1 := argsA[0]
@@ -336,7 +336,69 @@ func TestTextStartsWith(argsA ...interface{}) interface{} {
 	if strings.HasPrefix(tk.ToStr(v1), tk.ToStr(v2)) {
 		tk.Pl("test %v%v passed", v3, v4)
 	} else {
-		return fmt.Errorf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+		tk.Fatalf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+	}
+
+	return nil
+}
+
+func TestTextEndsWith(argsA ...interface{}) interface{} {
+	lenT := len(argsA)
+
+	if lenT < 2 {
+		tk.Fatalf("not enough parameters")
+	}
+
+	v1 := argsA[0]
+	v2 := argsA[1]
+
+	var v3 string
+	var v4 string
+
+	if lenT > 3 {
+		v3 = tk.ToStr(argsA[2])
+		v4 = "(" + tk.ToStr(argsA[3]) + ")"
+	} else if lenT > 2 {
+		v3 = tk.ToStr(argsA[2])
+	} else {
+		v3 = tk.ToStr(tk.GetSeq())
+	}
+
+	if strings.HasSuffix(tk.ToStr(v1), tk.ToStr(v2)) {
+		tk.Pl("test %v%v passed", v3, v4)
+	} else {
+		tk.Fatalf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+	}
+
+	return nil
+}
+
+func TestTextContains(argsA ...interface{}) interface{} {
+	lenT := len(argsA)
+
+	if lenT < 2 {
+		tk.Fatalf("not enough parameters")
+	}
+
+	v1 := argsA[0]
+	v2 := argsA[1]
+
+	var v3 string
+	var v4 string
+
+	if lenT > 3 {
+		v3 = tk.ToStr(argsA[2])
+		v4 = "(" + tk.ToStr(argsA[3]) + ")"
+	} else if lenT > 2 {
+		v3 = tk.ToStr(argsA[2])
+	} else {
+		v3 = tk.ToStr(tk.GetSeq())
+	}
+
+	if strings.Contains(tk.ToStr(v1), tk.ToStr(v2)) {
+		tk.Pl("test %v%v passed", v3, v4)
+	} else {
+		tk.Fatalf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
 	}
 
 	return nil
@@ -346,7 +408,7 @@ func TestTextReg(argsA ...interface{}) interface{} {
 	lenT := len(argsA)
 
 	if lenT < 2 {
-		return fmt.Errorf("not enough parameters")
+		tk.Fatalf("not enough parameters")
 	}
 
 	v1 := argsA[0]
@@ -367,7 +429,7 @@ func TestTextReg(argsA ...interface{}) interface{} {
 	if tk.RegMatchX(tk.ToStr(v1), tk.ToStr(v2)) {
 		tk.Pl("test %v%v passed", v3, v4)
 	} else {
-		return fmt.Errorf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
+		tk.Fatalf("test %v%v failed: %#v <-> %#v\n-----\n%v\n-----\n%v", v3, v4, v1, v2, v1, v2)
 	}
 
 	return nil
@@ -1601,6 +1663,42 @@ func NewFuncInterfaceInterface(funcA interface{}) func(interface{}) interface{} 
 	return f
 }
 
+func SortByFunc(dataA interface{}, funcA interface{}) interface{} {
+	funcT := (funcA).(*execq.Function)
+
+	f := func(i, j int) bool {
+		r := funcT.Call(execq.NewStack(), dataA, i, j).(bool)
+
+		// if len(r) < 1 {
+		// 	return false
+		// }
+
+		return r
+	}
+
+	sort.SliceStable(dataA, f)
+
+	return dataA
+}
+
+func SortByFuncQuick(dataA interface{}, funcA interface{}) interface{} {
+	funcT := (funcA).(*execq.Function)
+
+	f := func(i, j int) bool {
+		r := funcT.Call(execq.NewStack(), i, j).(bool)
+
+		// if len(r) < 1 {
+		// 	return false
+		// }
+
+		return r
+	}
+
+	sort.SliceStable(dataA, f)
+
+	return dataA
+}
+
 func NewFuncInterfacesInterface(funcA interface{}) func(...interface{}) interface{} {
 	funcT := (funcA).(*execq.Function)
 	f := func(s ...interface{}) interface{} {
@@ -2460,6 +2558,8 @@ func importQLNonGUIPackages() {
 
 		"testByText":       TestText,           // 用于测试
 		"testByStartsWith": TestTextStartsWith, // 用于测试
+		"testByEndsWith":   TestTextEndsWith,   // 用于测试
+		"testByContains":   TestTextContains,   // 用于测试
 		"testByReg":        TestTextReg,        // 用于测试
 
 		// output related 输出相关
@@ -2554,6 +2654,8 @@ func importQLNonGUIPackages() {
 		"genTimeStamp":         tk.GetTimeStampMid,       // 生成时间戳，格式为13位的Unix时间戳1640133706954，例：timeStampT = genTimeStamp(time.Now())
 		"genRandomStr":         tk.GenerateRandomStringX, // 生成随机字符串，函数定义： genRandomStr("-min=6", "-max=8", "-noUpper", "-noLower", "-noDigit", "-special", "-space", "-invalid")
 		"generateRandomString": tk.GenerateRandomString,  // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
+
+		"strFindDiffPos": tk.FindFirstDiffIndex, // 查找两个字符串中的第一处不同所在位置，完全相同则返回-1
 
 		// regex related 正则表达式相关
 		"regMatch":           tk.RegMatchX,     // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
@@ -2990,6 +3092,9 @@ func importQLNonGUIPackages() {
 
 		"readAllStr": tk.ReadAllString,
 		"closeX":     tk.Close,
+
+		"sortByFunc":      SortByFunc,      // 根据自定义函数排序，自定义函数需三个参数，分别是被排序对象，对比的索引号1（整数），对比的索引号2
+		"sortByFuncQuick": SortByFuncQuick, // 根据自定义函数排序，，自定义函数需两个参数，分别是对比的索引号1（整数），对比的索引号2
 
 		"dealRef": tk.DealRef,
 

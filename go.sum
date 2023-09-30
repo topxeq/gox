@@ -55,8 +55,6 @@ github.com/BurntSushi/xgb v0.0.0-20210121224620-deaf085860bc/go.mod h1:IVnqGOEym
 github.com/BurntSushi/xgbutil v0.0.0-20190907113008-ad855c713046/go.mod h1:uw9h2sd4WWHOPdJ13MQpwK5qYWKYDumDqxWWIknEQ+k=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/TheTitanrain/w32 v0.0.0-20180517000239-4f5cfb03fabf/go.mod h1:peYoMncQljjNS6tZwI9WVyQB3qZS6u79/N3mBOcnd3I=
-github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d h1:2xp1BQbqcDDaikHnASWpVZRjibOxu7y9LhAv04whugI=
-github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d/go.mod h1:peYoMncQljjNS6tZwI9WVyQB3qZS6u79/N3mBOcnd3I=
 github.com/aarzilli/sandblast v0.0.0-20151220083925-43f8fb998d06 h1:Im/kd8D6Xggzhq6S+IP1SitRsHHmy5mxqklIjoIfJGo=
 github.com/aarzilli/sandblast v0.0.0-20151220083925-43f8fb998d06/go.mod h1:Lc8kaYF26oMHUxliWAod3EZhrPBMg0irZRYqbPZcGyo=
 github.com/agiledragon/gomonkey v2.0.2+incompatible h1:eXKi9/piiC3cjJD1658mEE2o3NjkJ5vDLgYjCQu0Xlw=
@@ -491,7 +489,6 @@ github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121 h1:rDghvNYoVy4oLvO
 github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121/go.mod h1:kNX2Ywwkrgi3olpjcTUItKSS40FIgj3Mo+hYaNs7nHQ=
 github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 h1:JtCULmOHEQb12ZWMFBCYec4gvbt9POZQN3ncD+2509Q=
 github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09/go.mod h1:S/DxGB7MRImGIuTaMZNJpWgguYvMD4a6OGrejBph0xI=
-github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533 h1:H05+VuIlNiRa71bgjwrysIlFF6EVHW99XwueANjH1d8=
 github.com/topxeq/dialog v0.0.0-20211124003827-315c3296b533/go.mod h1:VThQgbdym2seGYfauRSCVo9sSoaDX79OJYO1bRpn4Mw=
 github.com/topxeq/dlgs v0.0.0-20211122010615-d49596e82836/go.mod h1:kFhnUTa5MiRVbkEsoTjB/UbVWQyMAzWrnmU6CuGmx30=
 github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547 h1:F3Aw0yl5Kac/EOFVxgjfRWAidGcP7g5Hg/QKSRGoAes=

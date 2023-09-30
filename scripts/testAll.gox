@@ -2,6 +2,14 @@ rs = systemCmd("gox", "-gopath", "basic.gox")
 
 testByText(rs, "3.4000000000000004\n", getSeq(), "basic.gox")
 
+rs = systemCmd("gox", "-gopath", "findStringDiffPos.gox")
+
+testByText(rs, "4\n", getSeq(), "findStringDiffPos.gox")
+
+rs = systemCmd("gox", "-gopath", "sortByFunc.gox")
+
+testByText(rs, "[]interface {}{\"0123a\", 1, \"2.33\", 2.33, 2.5, 3, 435, \"abc\", \"zbds123\"}\n[{\"Age\":18,\"Name\":\"Jerry\"},{\"Age\":22,\"Name\":\"Jerry\"},{\"Age\":8,\"Name\":\"Peter\"},{\"Age\":18,\"Name\":\"Tom\"}]\n", getSeq(), "sortByFunc.gox")
+
 rs = systemCmd("gox", "-gopath", "anonymousFunc.gox")
 
 testByStartsWith(rs, "Hi! Nice to see you.\ncount= <nil>\n3\n8\n17\nCode stack:", getSeq(), "anonymousFunc.gox")

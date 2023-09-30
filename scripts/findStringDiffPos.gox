@@ -1,0 +1,6 @@
+s1 := "abc123+-*/"
+
+s2 := "abc163+-*/"
+
+pln(strFindDiffPos(s1, s2))
+
