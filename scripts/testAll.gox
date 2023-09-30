@@ -2,6 +2,10 @@ rs = systemCmd("gox", "-gopath", "basic.gox")
 
 testByText(rs, "3.4000000000000004\n", getSeq(), "basic.gox")
 
+rs = systemCmd("gox", "-gopath", "limitStr.gox")
+
+testByText(rs, "abcde...\n34567...\nabcde!!!\n", getSeq(), "limitStr.gox")
+
 rs = systemCmd("gox", "-gopath", "findStringDiffPos.gox")
 
 testByText(rs, "4\n", getSeq(), "findStringDiffPos.gox")
