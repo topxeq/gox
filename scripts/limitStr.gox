@@ -1,0 +1,7 @@
+s := "abcdefg1234567"
+
+pln(limitStr(s, 5))
+
+pln(limitStr(s, 5, "-fromEnd"))
+
+pln(limitStr(s, 5, "-suffix=!!!"))
