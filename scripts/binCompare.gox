@@ -1,10 +1,18 @@
-file1 = trim(getParam(argsG))
+// gox -gopath binCompare.gox d:\tmpx\demo1.html d:\tmpx\demo2.html -limit=10
+
+argsT := getParams(argsG)
+
+if len(argsT) < 3 {
+	fatalf("not enough parameters")
+}
+
+file1 = trim(argsT[1])
 
 if file1 == "" {
 	fatalf("file1 empty")
 }
 
-file2 = trim(getParam(argsG, 2))
+file2 = trim(argsT[2])
 
 if file2 == "" {
 	fatalf("file2 empty")
@@ -26,49 +34,9 @@ if isError(buf2) {
 
 limit = getIntSwitch(argsG, "-limit=", 0)
 
-compareResult = tk.CompareBytes(buf1, buf2)
+compareResult = tk.CompareBytes(buf1, buf2, limit)
 
 for i, v = range compareResult {
-	if limit > 0 {
-		if i+1 > limit {
-			break
-		}
-	}
-	pl("[%v] %v(%v) - %v %v", i+1, v[0], v[0], toHex(v[1]), toHex(v[2]))
+	pl("[%v] pos: %v %v/%v(%v) - %v/%X(%v)", i+1, v[0], v[1], toHex(v[1]), strQuote(spr("%c", v[1])), v[2], v[2], strQuote(spr("%c", v[2])))
 }
 
-// len1 = len(buf1)
-
-// len2 = len(buf2)
-
-// lenT = len1
-
-// if lenT < len2 {
-// 	lenT = len2
-// }
-
-// c1
-// c2
-
-// for i = 0; i < lenT; i++ {
-// 	if i >= len1 {
-// 		c1 = "!!"
-// 	} else {
-// 		c1 = toHex(buf1[i])
-// 	}
-
-// 	if i >= len2 {
-// 		c2 = "!!"
-// 	} else {
-// 		c2 = toHex(buf2[i])
-// 	}
-
-// 	// if i%1000000 == 0 {
-// 	// 	pl("%v(%v) - %v %v", i, i, c1, c2)
-// 	// }
-
-// 	if c1 != c2 {
-// 		pl("%v(%v) - %v %v", i, i, c1, c2)
-// 	}
-
-// }

@@ -1,0 +1,45 @@
+// Create a new byte pointer
+// The new/newEx function also allocates space for it
+// Therefore, it can be assigned a value
+a := new(byte)
+
+setValueByRef(a, 3)
+
+plt(*a, unref(a), toHex(unref(a)))
+
+// The sscanf function is similar to the sscanf function in other languages
+// Will scan from the first parameter (here is the string "a3") to match
+// The content of the second parameter '% x' format character is placed in the following variable a
+// Since a is a pointer of type byte, a3 is considered a byte integer in hexadecimal lowercase, i.e. 163
+
+rs := sscanf("a3", "%x", a)
+
+plt(rs, *a, unref(a))
+
+// Dereference the value in variable a and place it in variable b
+b := unref(a)
+
+// Output the numbers in b as values, hexadecimal values, and binary values respectively
+pl("%v -> %x -> %b", b, b, b)
+
+// Invert the data in b bit by bit and place it in variable c
+c := byteBitNot(b)
+
+// // Output the numbers in c as values, hexadecimal values, and binary values respectively
+// // %08b represents the output of binary values. If there are less than 8 bits, 0 will be added before it
+pl("%v -> %X -> %08b", c, c, c)
+
+// Calculate and output the data in c and hexadecimal 0F (that is, 15 in Decimal, 00001111 in binary) bit by bit
+// Complex expression calculation is used here
+// The unhex instruction will decode a string into a byte list in hexadecimal format
+// Use the getItem instruction to retrieve the value of the first byte (with sequence number 0) in the list
+// Since 0F is a byte, the first byte is the value of the entire number
+tmp := unhex("0F")
+
+pl("%08b", c&tmp[0])
+
+// The data in c and hexadecimal 0F (that is, 15 in Decimal, 00001111 in binary) are bitwise or calculated and output
+pl("%08b", c|tmp[0])
+
+// The data in c and hexadecimal 0F (that is, 15 in Decimal, 00001111 in binary) are calculated by bit XOR and output
+pl("%08b", c^tmp[0])

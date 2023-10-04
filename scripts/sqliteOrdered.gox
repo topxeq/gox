@@ -1,0 +1,42 @@
+//This example demonstrates dbQueryOrdered function, which always get an Array of ordered maps
+
+dbFilePathT := joinPath(getHomeDir(), `test.db`)
+
+// Determine if the database already exists (run sqlite.char first to create one)
+if !fileExists(dbFilePathT) {
+	fatalf("database not exists")
+}
+
+dbT := dbConnect("sqlite3", dbFilePathT)
+
+if isErr(dbT) {
+	pl("failed to open the database file: %v", getErrStr(dbT))
+	exit()
+}
+
+sqlT := `select ID, CODE from TEST`
+
+rsT := dbQuery(dbT, sqlT)
+
+if isErr(rsT) {
+	pl("failed to query database: %v", getErrStr(rsT))
+	dbClose(dbT)
+	exit()
+}
+
+// ID and CODE will not always the same order in each item
+plt(rsT)
+
+// use dbQueryOrdered to query the database again
+rsT = dbQueryOrdered(dbT, sqlT)
+
+if isErr(rsT) {
+	pl("failed to query database: %v", getErrStr(rsT))
+	dbClose(dbT)
+	exit()
+}
+
+dbClose(dbT)
+
+// ID and CODE should be always the same order in each item
+plt(rsT)

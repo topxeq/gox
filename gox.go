@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"io"
 	"sort"
+	"strconv"
 	"strings"
 
 	"net/http"
@@ -221,7 +222,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.2"
+var VersionG = "v6.2.3"
 
 // add tk.ToJSONX
 
@@ -2302,6 +2303,40 @@ func isNil(vA interface{}) bool {
 	return tk.IsNil(vA)
 }
 
+func byteBitNot(nA interface{}) byte {
+
+	if nA == nil {
+		return 0
+	}
+
+	var v3 byte
+
+	switch nv := nA.(type) {
+	case bool:
+		if nv {
+			v3 = 0
+		} else {
+			v3 = 1
+		}
+	case byte:
+		v3 = ^nv
+	case rune:
+		v3 = ^byte(nv)
+	case int:
+		v3 = ^byte(nv)
+	case int64:
+		v3 = ^byte(nv)
+	case uint:
+		v3 = ^byte(nv)
+	case uint64:
+		v3 = ^byte(nv)
+	default:
+		return 0
+	}
+
+	return v3
+}
+
 func trim(vA interface{}, argsA ...string) string {
 	if vA == nil {
 		return ""
@@ -2595,8 +2630,11 @@ func importQLNonGUIPackages() {
 		"getInput":     tk.GetUserInput,      // 从命令行获取用户的输入
 		"getInputf":    tk.GetInputf,         // 从命令行获取用户的输入，同时可以用printf先输出一个提示信息
 		"getPasswordf": tk.GetInputPasswordf, // 从命令行获取密码输入，输入信息将不显示
+		"sscanf":       tk.Sscanf,
 
 		// math related数学相关
+		"bitNot":       tk.GetBitNotResult, // 按位非运算，如果是布尔值还是进行逻辑或
+		"byteBitNot":   byteBitNot,
 		"bitXor":       tk.BitXor,               // 异或运算
 		"adjustFloat":  tk.AdjustFloat,          // 去除浮点数的计算误差，用法：adjustFloat(4.000000002, 2)，第二个参数表示保留几位小数点后数字
 		"getRandomInt": tk.GetRandomIntLessThan, // 获取[0-maxA)之间的随机整数
@@ -2657,6 +2695,9 @@ func importQLNonGUIPackages() {
 
 		"strFindDiffPos": tk.FindFirstDiffIndex, // 查找两个字符串中的第一处不同所在位置，完全相同则返回-1
 
+		"strQuote":   strconv.Quote,   // 将一个普通字符串中涉及进行转义（加上转义符，如“"”变成“\"”）
+		"strUnquote": strconv.Unquote, // 字符串反转义
+
 		// regex related 正则表达式相关
 		"regMatch":           tk.RegMatchX,     // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
 		"regContains":        tk.RegContainsX,  // 判断某字符串是否包含符合正则表达式的子串，例： if regContains("abccd", "b.c") {...}
@@ -2696,7 +2737,8 @@ func importQLNonGUIPackages() {
 		"toSimpleMap":     tk.SimpleMapToString,       // 将一个map（map[string]string或map[string]interface{}）转换为Simple Map字符串
 		"fromSimpleMap":   tk.LoadSimpleMapFromString, // 将一个Simple Map字符串转换为map[string]string
 
-		"hexToBytes":  tk.HexToBytes,  // 将16进制字符串转换为字节数组([]byte)
+		"hexToBytes":  tk.HexToBytes, // 将16进制字符串转换为字节数组([]byte)
+		"unhex":       tk.HexToBytes,
 		"bytesToHex":  tk.BytesToHex,  // 将字节数组([]byte)转换为16进制字符串
 		"bytesToHexX": tk.BytesToHexX, // 将字节数组([]byte)转换为16进制字符串，每个字节以空格分隔
 		"hexEncode":   tk.StrToHex,    // 16进制编码
@@ -2825,6 +2867,13 @@ func importQLNonGUIPackages() {
 		// number related 数字相关
 		"abs": tk.Abs,
 
+		// compare related 比较相关
+		"compareBytes": tk.CompareBytes,
+
+		// ref/pointer related 引用/指针相关
+		"setValueByRef": tk.SetByRef,         // 根据引用/指针设置变量内容
+		"unref":         tk.GetRefValueQuick, // 根据引用/指针获取变量内容
+
 		// system related 系统相关
 		"getClipText":       tk.GetClipText,                 // 从系统剪贴板获取文本，例： textT = getClipText()
 		"setClipText":       tk.SetClipText,                 // 设定系统剪贴板中的文本，例： setClipText("测试")
@@ -2875,6 +2924,7 @@ func importQLNonGUIPackages() {
 		// command-line 命令行处理相关
 		"getParameter":   tk.GetParameterByIndexWithDefaultValue, // 按顺序序号获取命令行参数，其中0代表第一个参数，也就是软件名称或者命令名称，1开始才是第一个参数，注意参数不包括开关，即类似-verbose=true这样的，函数定义：func getParameter(argsA []string, idxA int, defaultA string) string
 		"getParam":       tk.GetParam,                            // 类似于getParameter，只是后两个参数都是可选，默认是1和""（空字符串），且顺序随意
+		"getParams":      tk.GetAllParameters,                    // 获取所有的命令行参数，去除开关参数（以“-”开头的）
 		"getSwitch":      tk.GetSwitchWithDefaultValue,           // 获取命令行参数中的开关，用法：tmps = getSwitch(args, "-verbose=", "false")，第三个参数是默认值（如果在命令行中没取到的话返回该值）
 		"getIntSwitch":   tk.GetSwitchWithDefaultIntValue,        // 与getSwitch类似，但获取到的是整型（int）的值
 		"getFloatSwitch": tk.GetSwitchWithDefaultFloatValue,      // 与getSwitch类似，但获取到的是浮点数（float64）的值

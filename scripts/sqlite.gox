@@ -1,11 +1,12 @@
+dbFilePathT := joinPath(getHomeDir(), `test.db`)
 
 // 如果存在该库（SQLite库是放在单一的文件中的）则删除该文件
-if tk.IfFileExists(`e:\tmpx\test.db`) {
-	os.Remove(`e:\tmpx\test.db`)
+if tk.IfFileExists(dbFilePathT) {
+	os.Remove(dbFilePathT)
 }
 
 // 创建新库
-dbT, errT = sqltk.ConnectDB("sqlite3", `e:\tmpx\test.db`)
+dbT, errT = sqltk.ConnectDB("sqlite3", dbFilePathT)
 
 if errT != nil {
 	printfln("创建数据库时发生错误：%v", errT)

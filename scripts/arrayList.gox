@@ -2,45 +2,44 @@ utils = github_topxeq_gods_utils
 
 list := newObject("arrayList")
 
-list.Add("a")                         // ["a"]
-list.Add("c", "b")                    // ["a","c","b"]
+list.Add("a")      // ["a"]
+list.Add("c", "b") // ["a","c","b"]
 
 pln(list)
 
-list.Sort(utils.StringComparator)     // ["a","b","c"]
+list.Sort(utils.StringComparator) // ["a","b","c"]
 
 pln(list)
 
-r1, r2 = list.Get(0)                    // "a",true
+r1, r2 = list.Get(0) // "a",true
 pln(r1, r2)
 
-r1, r2 = list.Get(100)                  // nil,false
+r1, r2 = list.Get(100) // nil,false
 pln(r1, r2)
 
 pln(list.Contains("a", "b", "c"))      // true
 pln(list.Contains("a", "b", "c", "d")) // false
 
-list.Swap(0, 1)                       // ["b","a",c"]
+list.Swap(0, 1) // ["b","a","c"]
 pln(list)
 
-list.Remove(2)                        // ["b","a"]
+list.Remove(2) // ["b","a"]
 pln(list)
 
-list.Remove(1)                        // ["b"]
+list.Remove(1) // ["b"]
 pln(list)
 
-list.Remove(0)                        // []
+list.Remove(0) // []
 pln(list)
 
-list.Remove(0)                        // [] (ignored)
+list.Remove(0) // [] (ignored)
 pln(list)
 
+pln(list.Empty()) // true
+pln(list.Size())  // 0
 
-pln(list.Empty())                      // true
-pln(list.Size())                       // 0
-
-list.Add("a")                         // ["a"]
+list.Add("a") // ["a"]
 pln(list)
 
-list.Clear() 
+list.Clear()
 pln(list)

@@ -2,6 +2,14 @@ rs = systemCmd("gox", "-gopath", "basic.gox")
 
 testByText(rs, "3.4000000000000004\n", getSeq(), "basic.gox")
 
+rs = systemCmd("gox", "-gopath", "bitwise.gox")
+
+testByText(rs, "[0] (int)3\n[1] (int)3\n[2] (string)03\n[0] (int)1\n[1] (int)163\n[2] (int)163\n163 -> a3 -> 10100011\n92 -> 5C -> 01011100\n00001100\n01011111\n01010011\n", getSeq(), "bitwise.gox")
+
+rs = systemCmd("gox", "-gopath", "arrayContains.gox", "-verbose")
+
+testByText(rs, "true\nfalse\ntrue\nfalse\ntrue\nfalse\ntrue\nfalse\n", getSeq(), "arrayContains.gox")
+
 rs = systemCmd("gox", "-gopath", "limitStr.gox")
 
 testByText(rs, "abcde...\n34567...\nabcde!!!\n", getSeq(), "limitStr.gox")
