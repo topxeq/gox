@@ -1,0 +1,22 @@
+staticFS = net_http.FileServer(net_http.Dir(path_filepath.Join(`c:\web`, "pages")))
+
+func serveStaticDirHandler(w, r) {
+	name = path_filepath.Join(`c:\web`, "pages", path.Clean(r.URL.Path))
+
+	info, err = os.Lstat(name)
+	if err == nil && (!info.IsDir() || tk.IfFileExists(path_filepath.Join(name, "index.html"))) {
+		staticFS.ServeHTTP(w, r)
+	} else {
+		net_http.NotFound(w, r)
+	}
+	
+}
+
+muxG = net_http.NewServeMux()
+
+muxG.HandleFunc("/", serveStaticDirHandler)
+
+go plerr(net_http.ListenAndServeTLS(":8443", path_filepath.Join(`c:\web`, "server.crt"), path_filepath.Join(`c:\web`, "server.key"), muxG))
+
+checkErrf("failed to start http server: %v", net_http.ListenAndServe(":8080", muxG))
+
