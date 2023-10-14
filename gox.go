@@ -2883,6 +2883,7 @@ func importQLNonGUIPackages() {
 		"openFile":          tk.RunWinFileWithSystemDefault, // 用系统默认的方式打开一个文件，例如： openFile("a.jpg")
 		"ifFileExists":      tk.IfFileExists,                // 判断文件是否存在
 		"fileExists":        tk.IfFileExists,                // 等同于ifFileExists
+		"isDir":             tk.IsDirectory,                 // 判断路径是否是个目录
 		"joinPath":          filepath.Join,                  // 连接文件路径，等同于Go语言标准库中的path/filepath.Join
 		"ensureDir":         tk.EnsureMakeDirs,
 		"getFileSize":       tk.GetFileSizeCompact,           // 获取文件大小
