@@ -2713,6 +2713,10 @@ func importQLNonGUIPackages() {
 		"regSplit":           tk.RegSplitX,          // 根据正则表达式分割字符串（以符合条件的匹配来分割），函数定义： regSplit(strA, patternA string, nA ...int) []string
 		"regQuote":           regexpx.QuoteMeta,     // 将一个普通字符串中涉及正则表达式特殊字符进行转义替换以便用于正则表达式中
 
+		// binary/bytes related 二进制/字节相关
+		"bytesStartsWith": tk.BytesStartsWith,
+		"bytesEndsWith":   tk.BytesEndsWith,
+
 		// conversion related 转换相关
 		"nilToEmpty":      nilToEmpty,                  // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim
 		"nilToEmptyOk":    nilToEmptyOk,                // 将nil、error等值都转换为空字符串，其他的转换为字符串, 加-nofloat参数将浮点数转换为整数，-trim参数将结果trim，第二个返回值是bool类型，如果值是undefined，则返回false，其他情况为true
