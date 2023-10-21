@@ -222,7 +222,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.3"
+var VersionG = "v6.2.5"
 
 // add tk.ToJSONX
 
@@ -2856,7 +2856,7 @@ func importQLNonGUIPackages() {
 		"decryptStr":   tk.DecryptStringByTXDEF,            // 解密字符串，第二个参数（可选）是密钥字串
 		"decryptText":  tk.DecryptStringByTXDEF,            // 等同于decryptStr
 		"decryptTextX": fnASSVRSe(tk.DecryptStringByTXDEF), // 等同于decryptStr，但错误时返回error对象
-		"encryptData":  tk.EncryptDataByTXDEF,              // 加密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
+		"encryptData":  tk.EncryptDataByTXDEF,              // 加密二进制数据（[]byte类型），第二个参数（可选）是密钥字串，后面可加-addHead参数表示加上加密头字（节）串"//TXDEF#"
 		"decryptData":  tk.DecryptDataByTXDEF,              // 解密二进制数据（[]byte类型），第二个参数（可选）是密钥字串
 
 		// log related 日志相关
@@ -3132,8 +3132,12 @@ func importQLNonGUIPackages() {
 		// bluetooth relate 蓝牙相关
 		// "bluetoothDiscoverDevice": tk.BluetoothDiscoverDevice,
 
-		// payment related
+		// payment related 支付相关
 		"wxPaySendRequest": WxPaySendRequest,
+
+		// image related 图形相关
+		"thumbImage":         tk.ThumbImage,
+		"loadImageFromBytes": tk.LoadImageFromBytes,
 
 		// misc related 杂项相关函数
 		"getResource":     GetResource,     // 获取JQuery等常用的脚本或其他内置文本资源，一般用于服务器端提供内置的jquery等脚本嵌入，避免从互联网即时加载，第一个的参数是jquery.min.js等js文件的名称

@@ -1,0 +1,21 @@
+s1 := "abc123天气好！"
+
+b1 := []byte(s1)
+
+plo(b1)
+
+e1 := encryptData(b1, "", "-addHead")
+
+plo(e1)
+
+e2 := encryptData(b1, "")
+
+plo(e2)
+
+ue1 := decryptData(e1, "")
+
+plo(ue1, string(ue1))
+
+ue2 := decryptData(e2, "")
+
+plo(ue2, string(ue2))
