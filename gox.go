@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/topxeq/charlang"
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
@@ -154,8 +153,6 @@ import (
 	qlgithub_topxeq_goph "github.com/topxeq/qlang/lib/github.com/topxeq/goph"
 
 	qlgithub_topxeq_awsapi "github.com/topxeq/qlang/lib/github.com/topxeq/awsapi"
-
-	qlgithub_topxeq_charlang "github.com/topxeq/qlang/lib/github.com/topxeq/charlang"
 
 	qlgithub_cavaliercoder_grab "github.com/topxeq/qlang/lib/github.com/cavaliercoder/grab"
 
@@ -1471,40 +1468,40 @@ func leRemoveLines(startA int, endA int) error {
 	return nil
 }
 
-func newCharFunc(funcA interface{}) *charlang.Function {
-	funcT := (funcA).(*execq.Function)
-	// f := func(s interface{}) (interface{}, error) {
-	// 	r := funcT.Call(execq.NewStack(), s).([]interface{})
+// func newCharFunc(funcA interface{}) *charlang.Function {
+// 	funcT := (funcA).(*execq.Function)
+// 	// f := func(s interface{}) (interface{}, error) {
+// 	// 	r := funcT.Call(execq.NewStack(), s).([]interface{})
 
-	// 	if r[1] == nil {
-	// 		return r[0].(interface{}), nil
-	// 	}
+// 	// 	if r[1] == nil {
+// 	// 		return r[0].(interface{}), nil
+// 	// 	}
 
-	// 	return r[0].(interface{}), r[1].(error)
-	// }
+// 	// 	return r[0].(interface{}), r[1].(error)
+// 	// }
 
-	// return f
+// 	// return f
 
-	return &charlang.Function{
-		Value: func(argsA ...charlang.Object) (charlang.Object, error) {
-			s := make([]interface{}, 0, len(argsA))
+// 	return &charlang.Function{
+// 		Value: func(argsA ...charlang.Object) (charlang.Object, error) {
+// 			s := make([]interface{}, 0, len(argsA))
 
-			for _, v := range argsA {
-				s = append(s, charlang.ConvertFromObject(v))
-			}
+// 			for _, v := range argsA {
+// 				s = append(s, charlang.ConvertFromObject(v))
+// 			}
 
-			r := funcT.Call(execq.NewStack(), s...).([]interface{})
+// 			r := funcT.Call(execq.NewStack(), s...).([]interface{})
 
-			return charlang.ConvertToObject(r), nil
+// 			return charlang.ConvertToObject(r), nil
 
-			// if r[1] == nil {
-			// 	return charlang.ConvertToObject(r[0].(interface{})), nil
-			// }
+// 			// if r[1] == nil {
+// 			// 	return charlang.ConvertToObject(r[0].(interface{})), nil
+// 			// }
 
-			// return charlang.ConvertToObject(r[0].(interface{})), charlang.NewCommonError(r[1].(error).Error())
-		},
-	}
-}
+// 			// return charlang.ConvertToObject(r[0].(interface{})), charlang.NewCommonError(r[1].(error).Error())
+// 		},
+// 	}
+// }
 
 func NewFuncIntString(funcA *interface{}) *(func(int) string) {
 	funcT := (*funcA).(*execq.Function)
@@ -2758,8 +2755,8 @@ func importQLNonGUIPackages() {
 		"strArrayToAnyArray": tk.StringArrayToAnyArray, // 转换[]string到[]interface{}
 		"anyArrayToStrArray": tk.AnyArrayToStringArray, // 转换[]interface{}到[]string
 
-		"mssToCharMap": charlang.MssToMap, // 转换map[string]string到charlang中的map
-		"msiToCharMap": charlang.MsiToMap, // 转换map[string]interface{}到charlang中的map
+		// "mssToCharMap": charlang.MssToMap, // 转换map[string]string到charlang中的map
+		// "msiToCharMap": charlang.MsiToMap, // 转换map[string]interface{}到charlang中的map
 
 		"toInterface": tk.ToInterface, // 任意值转interface{}
 		"toPointer":   tk.ToPointer,   // 任意值转相应的指针
@@ -3168,29 +3165,29 @@ func importQLNonGUIPackages() {
 		"readUnlockN":  tk.RUnlockN,
 		"tryReadLockN": tk.TryRLockN,
 
-		"sortX":            tk.SortX,                        // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
-		"newFunc":          NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
-		"newFuncII":        NewFuncInterfaceInterface,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) interface{} 的形式
-		"newFuncIIE":       NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
-		"newFuncIsI":       NewFuncInterfacesInterface,      // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a ...interface{}) interface{} 的形式
-		"newFuncSSE":       NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
-		"newFuncSS":        NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
-		"newCharFunc":      newCharFunc,                     // 将Gox语言中的定义的函数转换为Charlang语言中类似 func f() 的形式
-		"newStringRing":    tk.NewStringRing,                // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
-		"getCfgStr":        GetCfgString,                    // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
-		"setCfgStr":        SetCfgString,                    // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
-		"genQR":            tk.GenerateQR,                   // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
-		"newChar":          charlang.NewChar,                // new a charlang script VM
-		"runChar":          charlang.RunChar,                // run a charlang script VM
-		"runCharCode":      charlang.RunCharCode,            // run a charlang script
-		"runXie":           xie.RunCode,                     // run a xielang script
-		"quickCompileChar": charlang.QuickCompile,           // compile a charlang script VM
-		"quickRunChar":     charlang.QuickRun,               // run a charlang script VM
-		"newCharAny":       charlang.NewAny,                 // create a interface{} pointer in charlang
-		"newCharAnyValue":  charlang.NewAnyValue,            // create a interface{} value in charlang
-		"toCharValue":      charlang.ConvertToObject,        // convert to a interface{} value in charlang
-		"wrapError":        tk.WrapError,                    //
-		"renderMarkdown":   tk.RenderMarkdown,               // 将Markdown格式字符串渲染为HTML
+		"sortX":      tk.SortX,                        // 排序各种数据，用法：sort([{"f1": 1}, {"f1": 2}], "-key=f1", "-desc")
+		"newFunc":    NewFuncB,                        // 将Gox语言中的定义的函数转换为Go语言中类似 func f() 的形式
+		"newFuncII":  NewFuncInterfaceInterface,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) interface{} 的形式
+		"newFuncIIE": NewFuncInterfaceInterfaceErrorB, // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a interface{}) (interface{}, error) 的形式
+		"newFuncIsI": NewFuncInterfacesInterface,      // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a ...interface{}) interface{} 的形式
+		"newFuncSSE": NewFuncStringStringErrorB,       // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) (string, error) 的形式
+		"newFuncSS":  NewFuncStringStringB,            // 将Gox语言中的定义的函数转换为Go语言中类似 func f(a string) string 的形式
+		// "newCharFunc":   newCharFunc,                     // 将Gox语言中的定义的函数转换为Charlang语言中类似 func f() 的形式
+		"newStringRing": tk.NewStringRing, // 创建一个字符串环，大小固定，后进的会将先进的最后一个顶出来
+		"getCfgStr":     GetCfgString,     // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
+		"setCfgStr":     SetCfgString,     // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
+		"genQR":         tk.GenerateQR,    // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
+		// "newChar":          charlang.NewChar,                // new a charlang script VM
+		// "runChar":          charlang.RunChar,                // run a charlang script VM
+		// "runCharCode":      charlang.RunCharCode,            // run a charlang script
+		"runXie": xie.RunCode, // run a xielang script
+		// "quickCompileChar": charlang.QuickCompile,           // compile a charlang script VM
+		// "quickRunChar":     charlang.QuickRun,               // run a charlang script VM
+		// "newCharAny":       charlang.NewAny,                 // create a interface{} pointer in charlang
+		// "newCharAnyValue":  charlang.NewAnyValue,            // create a interface{} value in charlang
+		// "toCharValue":      charlang.ConvertToObject,        // convert to a interface{} value in charlang
+		"wrapError":      tk.WrapError,      //
+		"renderMarkdown": tk.RenderMarkdown, // 将Markdown格式字符串渲染为HTML
 
 		"genToken":   tk.GenerateToken, // 生成令牌，用法：genToken("appCode", "userID", "userRole", "-secret=abc")
 		"checkToken": tk.CheckToken,    // 检查令牌，如果成功，返回类似“appCode|userID|userRole|”的字符串；失败返回TXERROR字符串
@@ -3359,8 +3356,8 @@ func importQLNonGUIPackages() {
 	qlang.Import("github_topxeq_awsapi", qlgithub_topxeq_awsapi.Exports)
 	qlang.Import("awsapi", qlgithub_topxeq_awsapi.Exports)
 
-	qlang.Import("github_topxeq_charlang", qlgithub_topxeq_charlang.Exports)
-	qlang.Import("charlang", qlgithub_topxeq_charlang.Exports)
+	// qlang.Import("github_topxeq_charlang", qlgithub_topxeq_charlang.Exports)
+	// qlang.Import("charlang", qlgithub_topxeq_charlang.Exports)
 
 	qlang.Import("github_cavaliercoder_grab", qlgithub_cavaliercoder_grab.Exports)
 

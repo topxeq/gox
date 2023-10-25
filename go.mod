@@ -14,7 +14,6 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/sijms/go-ora/v2 v2.5.25
-	github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7

@@ -91,7 +91,6 @@ require (
 	github.com/tinylib/msgp v1.1.5 // indirect
 	github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 // indirect
 	github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 // indirect
-	github.com/topxeq/charlang v0.0.0-20230721071639-f3b26dac7121 // indirect
 	github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 // indirect
 	github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e // indirect
 	github.com/topxeq/docxrepl v0.0.0-20230223003559-0c82df798f9d // indirect
