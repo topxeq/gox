@@ -7,6 +7,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
 	github.com/ncruces/zenity v0.10.9
+	github.com/topxeq/charlang v0.0.0
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
 	github.com/topxeq/tk v1.0.6
@@ -63,7 +64,7 @@ require (
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/mholt/archiver/v3 v3.5.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -87,7 +88,7 @@ require (
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
+	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/tinylib/msgp v1.1.5 // indirect
 	github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 // indirect
 	github.com/topxeq/awsapi v0.0.0-20191115074250-1192cb0fdb97 // indirect
@@ -135,3 +136,5 @@ replace github.com/topxeq/sqltk v0.0.0 => ../../sqltk
 replace github.com/topxeq/qlang v0.0.0 => ../../qlang
 
 replace github.com/topxeq/xie v0.0.0 => ../../xie
+
+replace github.com/topxeq/charlang v0.0.0 => ../../charlang

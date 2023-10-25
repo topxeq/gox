@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/topxeq/charlang"
 	"github.com/topxeq/gox"
 	"github.com/topxeq/tk"
 	"github.com/topxeq/xie"
@@ -151,6 +152,240 @@ func genFailCompact(titleA, msgA string, optsA ...string) string {
 	tmplT := tk.ErrStrf("%v: %v", titleA, msgA)
 
 	return tmplT
+}
+
+// charlang server
+func doCharms(res http.ResponseWriter, req *http.Request) {
+	if res != nil {
+		res.Header().Set("Access-Control-Allow-Origin", "*")
+		res.Header().Set("Access-Control-Allow-Headers", "*")
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	}
+
+	if req != nil {
+		req.ParseForm()
+	}
+
+	reqT := tk.GetFormValueWithDefaultValue(req, "charms", "")
+	if verboseG {
+		tk.Pl("RequestURI: %v", req.RequestURI)
+	}
+
+	if reqT == "" {
+		if tk.StartsWith(req.RequestURI, "/charms") {
+			reqT = req.RequestURI[7:]
+		}
+	}
+
+	tmps := tk.Split(reqT, "?")
+	if len(tmps) > 1 {
+		reqT = tmps[0]
+	}
+
+	if tk.StartsWith(reqT, "/") {
+		reqT = reqT[1:]
+	}
+
+	var paraMapT map[string]string
+	var errT error
+
+	vo := tk.GetFormValueWithDefaultValue(req, "vo", "")
+
+	if vo == "" {
+		paraMapT = tk.FormToMap(req.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			res.Write([]byte(tk.ErrStrf("action failed: %v", "invalid vo format")))
+			return
+		}
+	}
+
+	if verboseG {
+		tk.Pl("[%v] REQ: %#v (%#v)", tk.GetNowTimeStringFormal(), reqT, paraMapT)
+	}
+
+	toWriteT := ""
+
+	fileNameT := reqT
+
+	if !tk.EndsWith(fileNameT, ".char") {
+		fileNameT += ".char"
+	}
+
+	fullPathT := filepath.Join(basePathG, fileNameT)
+
+	if verboseG {
+		tk.Pl("[%v] file path: %#v", tk.GetNowTimeStringFormal(), fullPathT)
+	}
+
+	fcT := tk.LoadStringFromFile(fullPathT)
+	if tk.IsErrStr(fcT) {
+		res.Write([]byte(tk.ErrStrf("action failed: %v", tk.GetErrStr(fcT))))
+		return
+	}
+
+	// paraMapT["_reqHost"] = req.Host
+	// paraMapT["_reqInfo"] = fmt.Sprintf("%#v", req)
+
+	toWriteT, errT = charlang.RunScriptOnHttp(fcT, nil, res, req, paraMapT["input"], nil, paraMapT, map[string]interface{}{"scriptPathG": fullPathT, "runModeG": "charms", "basePathG": basePathG}, "-base="+basePathG)
+
+	if errT != nil {
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		errStrT := tk.ErrStrf("action failed: %v", errT)
+		tk.Pln(errStrT)
+		res.Write([]byte(errStrT))
+		return
+	}
+
+	if toWriteT == "TX_END_RESPONSE_XT" {
+		return
+	}
+
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	res.Write([]byte(toWriteT))
+}
+
+func doCharmsContent(res http.ResponseWriter, req *http.Request) {
+	if res != nil {
+		res.Header().Set("Access-Control-Allow-Origin", "*")
+		res.Header().Set("Access-Control-Allow-Headers", "*")
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	}
+
+	if req != nil {
+		req.ParseForm()
+		req.ParseMultipartForm(1000000000000)
+	}
+
+	reqT := tk.GetFormValueWithDefaultValue(req, "dc", "")
+
+	if charlang.GlobalsG.VerboseLevel > 0 {
+		tk.Pl("RequestURI: %v", req.RequestURI)
+	}
+
+	if reqT == "" {
+		if tk.StartsWith(req.RequestURI, "/dc") {
+			reqT = req.RequestURI[3:]
+		}
+	}
+
+	tmps := tk.Split(reqT, "?")
+	if len(tmps) > 1 {
+		reqT = tmps[0]
+	}
+
+	if tk.StartsWith(reqT, "/") {
+		reqT = reqT[1:]
+	}
+
+	var paraMapT map[string]string
+	var errT error
+
+	vo := tk.GetFormValueWithDefaultValue(req, "vo", "")
+
+	if vo == "" {
+		paraMapT = tk.FormToMap(req.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			res.Write([]byte(genFailCompact("action failed", "invalid parameter format", "-compact")))
+			return
+		}
+	}
+
+	if charlang.GlobalsG.VerboseLevel > 0 {
+		tk.Pl("[%v] REQ: %#v (%#v)", tk.GetNowTimeStringFormal(), reqT, paraMapT)
+	}
+
+	toWriteT := ""
+
+	fileNameT := "router"
+
+	if !tk.EndsWith(fileNameT, ".char") {
+		fileNameT += ".char"
+	}
+
+	// fcT := tk.LoadStringFromFile(filepath.Join(basePathG, "xms", fileNameT))
+	// absT, _ := filepath.Abs(filepath.Join(basePathG, fileNameT))
+	// tk.Pln("loading", absT)
+
+	fullPathT := filepath.Join(basePathG, fileNameT)
+
+	fcT := tk.LoadStringFromFile(fullPathT)
+	if tk.IsErrStr(fcT) {
+		res.Write([]byte(genFailCompact("action failed", tk.GetErrStr(fcT), "-compact")))
+		return
+	}
+
+	// vmT := xie.NewVMQuick(nil)
+
+	// vmT.SetVar(nil, "paraMapG", paraMapT)
+	// vmT.SetVar(nil, "requestG", req)
+	// vmT.SetVar(nil, "responseG", res)
+	// vmT.SetVar(nil, "reqNameG", reqT)
+	// vmT.SetVar(nil, "basePathG", basePathG)
+
+	// vmT.SetVar("inputG", objA)
+
+	// lrs := vmT.Load(nil, fcT)
+
+	// contentTypeT := res.Header().Get("Content-Type")
+
+	// if tk.IsErrX(lrs) {
+	// 	if tk.StartsWith(contentTypeT, "text/json") {
+	// 		res.Write([]byte(tk.GenerateJSONPResponse("fail", tk.Spr("action failed: %v", tk.GetErrStrX(lrs)), req)))
+	// 		return
+	// 	}
+
+	// 	res.Write([]byte(genFailCompact("action failed", tk.GetErrStrX(lrs), "-compact")))
+	// 	return
+	// }
+
+	// rs := vmT.Run()
+
+	toWriteT, errT = charlang.RunScriptOnHttp(fcT, nil, res, req, paraMapT["input"], nil, paraMapT, map[string]interface{}{"scriptPathG": fullPathT, "runModeG": "chardc", "basePathG": basePathG}, "-base="+basePathG)
+
+	if errT != nil {
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		errStrT := tk.ErrStrf("action failed: %v", errT)
+		tk.Pln(errStrT)
+		res.Write([]byte(errStrT))
+		return
+	}
+
+	if toWriteT == "TX_END_RESPONSE_XT" {
+		return
+	}
+
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	res.Write([]byte(toWriteT))
+	contentTypeT := res.Header().Get("Content-Type")
+
+	if errT != nil {
+		if tk.StartsWith(contentTypeT, "text/json") {
+			res.Write([]byte(tk.GenerateJSONPResponse("fail", tk.Spr("action failed: %v", errT), req)))
+			return
+		}
+
+		res.Write([]byte(genFailCompact("action failed", errT.Error(), "-compact")))
+		return
+	}
+
+	if toWriteT == "TX_END_RESPONSE_XT" {
+		return
+	}
+
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	res.Write([]byte(toWriteT))
+
 }
 
 // Xielang
@@ -355,6 +590,13 @@ func doGoxn() {
 
 	muxG.HandleFunc("/xms/", doXms)
 	muxG.HandleFunc("/xms", doXms)
+
+	muxG.HandleFunc("/charms/", doCharms)
+	muxG.HandleFunc("/charms", doCharms)
+
+	// dynamic content
+	muxG.HandleFunc("/dc/", doCharmsContent)
+	muxG.HandleFunc("/dc", doCharmsContent)
 
 	muxG.HandleFunc("/", serveStaticDirHandler)
 
