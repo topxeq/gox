@@ -156,6 +156,190 @@ func genFailCompact(titleA, msgA string, optsA ...string) string {
 	return tmplT
 }
 
+// do mix server
+
+func doMs(res http.ResponseWriter, req *http.Request) {
+	if res != nil {
+		res.Header().Set("Access-Control-Allow-Origin", "*")
+		res.Header().Set("Access-Control-Allow-Headers", "*")
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	}
+
+	if req != nil {
+		req.ParseForm()
+	}
+
+	reqT := tk.GetFormValueWithDefaultValue(req, "ms", "")
+	if verboseG {
+		tk.Pl("RequestURI: %v", req.RequestURI)
+	}
+
+	if reqT == "" {
+		if tk.StartsWith(req.RequestURI, "/ms") {
+			reqT = req.RequestURI[3:]
+		}
+	}
+
+	tmps := tk.Split(reqT, "?")
+	if len(tmps) > 1 {
+		reqT = tmps[0]
+	}
+
+	if tk.StartsWith(reqT, "/") {
+		reqT = reqT[1:]
+	}
+
+	var paraMapT map[string]string
+	var errT error
+
+	vo := tk.GetFormValueWithDefaultValue(req, "vo", "")
+
+	if vo == "" {
+		paraMapT = tk.FormToMap(req.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			res.Write([]byte(tk.ErrStrf("action failed: %v", "invalid vo format")))
+			return
+		}
+	}
+
+	if verboseG {
+		tk.Pl("[%v] REQ: %#v (%#v)", tk.GetNowTimeStringFormal(), reqT, paraMapT)
+	}
+
+	toWriteT := ""
+
+	fileNameT := reqT
+
+	if tk.EndsWith(fileNameT, ".char") || tk.EndsWith(fileNameT, ".xie") || tk.EndsWith(fileNameT, ".gox") {
+	} else {
+		tmps := fileNameT + ".char"
+
+		if tk.IfFileExists(filepath.Join(basePathG, tmps)) {
+			fileNameT = tmps
+		} else {
+			tmps = fileNameT + ".xie"
+
+			if tk.IfFileExists(filepath.Join(basePathG, tmps)) {
+				fileNameT = tmps
+			} else {
+				fileNameT = fileNameT + ".gox"
+			}
+		}
+	}
+
+	fullPathT := filepath.Join(basePathG, fileNameT)
+
+	scriptTypeT := filepath.Ext(fileNameT)
+
+	if verboseG {
+		tk.Pl("[%v] file path: %#v", tk.GetNowTimeStringFormal(), fullPathT)
+	}
+
+	fcT := tk.LoadStringFromFile(fullPathT)
+	if tk.IsErrStr(fcT) {
+		res.Write([]byte(tk.ErrStrf("action failed: %v", tk.GetErrStr(fcT))))
+		return
+	}
+
+	// paraMapT["_reqHost"] = req.Host
+	// paraMapT["_reqInfo"] = fmt.Sprintf("%#v", req)
+
+	if scriptTypeT == ".char" {
+		toWriteT, errT = charlang.RunScriptOnHttp(fcT, nil, res, req, paraMapT["input"], nil, paraMapT, map[string]interface{}{"scriptPathG": fullPathT, "runModeG": "charms", "basePathG": basePathG}, "-base="+basePathG)
+
+		if errT != nil {
+			res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+			errStrT := tk.ErrStrf("action failed: %v", errT)
+			tk.Pln(errStrT)
+			res.Write([]byte(errStrT))
+			return
+		}
+
+		if toWriteT == "TX_END_RESPONSE_XT" {
+			return
+		}
+
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		res.Write([]byte(toWriteT))
+
+		return
+	} else if scriptTypeT == ".xie" {
+		vmT := xie.NewVMQuick()
+
+		vmT.SetVar(vmT.Running, "argsG", paraMapT)
+		vmT.SetVar(vmT.Running, "requestG", req)
+		vmT.SetVar(vmT.Running, "responseG", res)
+		vmT.SetVar(vmT.Running, "reqNameG", reqT)
+		vmT.SetVar(vmT.Running, "basePathG", basePathG)
+
+		// vmT.SetVar("inputG", objA)
+
+		lrs := vmT.Load(vmT.Running, fcT)
+
+		if tk.IsError(lrs) {
+			res.Write([]byte(genFailCompact("action failed", lrs.Error(), "-compact")))
+			return
+		}
+
+		// var argsT []string = tk.JSONToStringArray(tk.GetSwitch(optsA, "-args=", "[]"))
+
+		// if argsT != nil {
+		// 	vmT.VarsM["argsG"] = argsT
+		// } else {
+		// 	vmT.VarsM["argsG"] = []string{}
+		// }
+
+		rs := vmT.Run()
+
+		if errT != nil {
+			res.Write([]byte(genFailCompact("action failed", errT.Error(), "-compact")))
+			return
+		}
+
+		if tk.IsErrX(rs) {
+			res.Write([]byte(genFailCompact("action failed", tk.GetErrStrX(rs), "-compact")))
+			return
+		}
+
+		toWriteT = tk.ToStr(rs)
+
+		if toWriteT == "TX_END_RESPONSE_XT" {
+			return
+		}
+
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		res.Write([]byte(toWriteT))
+
+		return
+	}
+
+	toWriteT, errT = gox.RunScriptOnHttp(fcT, res, req, paraMapT["input"], nil, paraMapT, "-base="+basePathG)
+
+	if errT != nil {
+		res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		errStrT := tk.ErrStrf("action failed: %v", errT)
+		tk.Pln(errStrT)
+		res.Write([]byte(errStrT))
+		return
+	}
+
+	if toWriteT == "TX_END_RESPONSE_XT" {
+		return
+	}
+
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	res.Write([]byte(toWriteT))
+
+}
+
 // charlang server
 func doCharms(res http.ResponseWriter, req *http.Request) {
 	if res != nil {
@@ -586,6 +770,9 @@ func doGoxn() {
 	certPathG = tk.GetSwitch(os.Args, "-certDir=", certPathG)
 
 	muxG = http.NewServeMux()
+
+	muxG.HandleFunc("/ms/", doMs)
+	muxG.HandleFunc("/ms", doMs)
 
 	muxG.HandleFunc("/wms/", doWms)
 	muxG.HandleFunc("/wms", doWms)
