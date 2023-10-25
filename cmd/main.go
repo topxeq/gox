@@ -11,10 +11,12 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime/debug"
 	"strings"
 	"time"
 
 	"github.com/topxeq/charlang"
+	charex "github.com/topxeq/charlang/stdlib/ex"
 	"github.com/topxeq/gox"
 	"github.com/topxeq/tk"
 	"github.com/topxeq/xie"
@@ -802,6 +804,7 @@ func runArgs(argsA ...string) interface{} {
 	}
 
 	ifXieT := tk.IfSwitchExistsWhole(argsT, "-xie")
+	ifCharT := tk.IfSwitchExistsWhole(argsT, "-char")
 	ifClipT := tk.IfSwitchExistsWhole(argsT, "-clip")
 	ifEmbedT := (gox.CodeTextG != "") && (!tk.IfSwitchExistsWhole(argsT, "-noembed"))
 
@@ -1016,7 +1019,7 @@ func runArgs(argsA ...string) interface{} {
 
 		gox.ScriptPathG = ""
 	} else if ifExampleT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) && (!tk.EndsWith(scriptT, ".char")) {
 			scriptT += ".gox"
 		}
 
@@ -1037,7 +1040,7 @@ func runArgs(argsA ...string) interface{} {
 
 		gox.ScriptPathG = ""
 	} else if ifCloudT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) && (!tk.EndsWith(scriptT, ".char")) {
 			scriptT += ".gox"
 		}
 
@@ -1066,7 +1069,7 @@ func runArgs(argsA ...string) interface{} {
 		}
 
 	} else if sshT != "" {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) && (!tk.EndsWith(scriptT, ".char")) {
 			scriptT += ".gox"
 		}
 
@@ -1079,7 +1082,7 @@ func runArgs(argsA ...string) interface{} {
 
 		gox.ScriptPathG = ""
 	} else if ifGoPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) && (!tk.EndsWith(scriptT, ".char")) {
 			scriptT += ".gox"
 		}
 
@@ -1087,7 +1090,7 @@ func runArgs(argsA ...string) interface{} {
 
 		fcT = tk.LoadStringFromFile(gox.ScriptPathG)
 	} else if ifAppPathT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) && (!tk.EndsWith(scriptT, ".char")) {
 			scriptT += ".gox"
 		}
 
@@ -1095,7 +1098,7 @@ func runArgs(argsA ...string) interface{} {
 
 		fcT = tk.LoadStringFromFile(gox.ScriptPathG)
 	} else if ifLocalT {
-		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) {
+		if (!tk.EndsWith(scriptT, ".gox")) && (!tk.EndsWith(scriptT, ".xie")) && (!tk.EndsWith(scriptT, ".char")) {
 			scriptT += ".gox"
 		}
 
@@ -1122,6 +1125,8 @@ func runArgs(argsA ...string) interface{} {
 
 	if strings.HasSuffix(scriptT, ".xie") {
 		ifXieT = true
+	} else if strings.HasSuffix(scriptT, ".char") {
+		ifCharT = true
 	}
 
 	if tk.IsErrorString(fcT) {
@@ -1295,6 +1300,58 @@ func runArgs(argsA ...string) interface{} {
 		return nil
 	}
 
+	if ifCharT {
+		moduleMap := charlang.NewModuleMap()
+		moduleMap.AddBuiltinModule("ex", charex.Module)
+		// moduleMap.AddBuiltinModule("fmt", charfmt.Module)
+
+		charlang.MainCompilerOptions = &charlang.CompilerOptions{
+			// ModulePath:        "", //"(repl)",
+			ModuleMap: moduleMap,
+			// SymbolTable:       charlang.NewSymbolTable(),
+			// OptimizerMaxCycle: charlang.TraceCompilerOptions.OptimizerMaxCycle,
+			// TraceParser:       true,
+			// TraceOptimizer:    true,
+			// TraceCompiler:     true,
+			// OptimizeConst:     !noOptimizer,
+			// OptimizeExpr:      !noOptimizer,
+
+			// Trace:             os.Stdout,
+			// TraceParser:       true,
+			// TraceCompiler:     true,
+			// TraceOptimizer:    true,
+			// OptimizerMaxCycle: 1<<8 - 1,
+			// OptimizeConst:     false,
+			// OptimizeExpr:      false,
+		}
+
+		bytecodeT, errT := charlang.Compile([]byte(fcT), charlang.MainCompilerOptions) // charlang.DefaultCompilerOptions)
+		if errT != nil {
+			return errT
+		}
+
+		envT := charlang.Map{}
+
+		envT["argsG"] = charlang.ConvertToObject(os.Args)
+		envT["versionG"] = charlang.ToStringObject(charlang.VersionG)
+		envT["scriptPathG"] = charlang.ToStringObject(gox.ScriptPathG)
+		envT["runModeG"] = charlang.ToStringObject("script")
+
+		vmT := charlang.NewVM(bytecodeT)
+
+		retT, errT := vmT.Run(envT) // inParasT,
+
+		if errT != nil {
+			return fmt.Errorf("failed to execute script(%v) error: %v\n", gox.ScriptPathG, errT)
+		}
+
+		if !charlang.IsUndefInternal(retT) {
+			tk.Pl("%v", retT)
+		}
+
+		return nil
+	}
+
 	gox.InitQLVM()
 
 	var guiHandlerG tk.TXDelegate = guiHandler
@@ -1359,6 +1416,7 @@ func main() {
 		err := recover()
 		if err != nil {
 			fmt.Println("Exception: ", err)
+			fmt.Printf("runtime error: %v\n%v\n", err, string(debug.Stack()))
 		}
 	}()
 
