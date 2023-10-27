@@ -4,16 +4,11 @@ go 1.14
 
 require (
 	github.com/beevik/etree v1.1.1-0.20200718192613-4a2f8b9d084c // indirect
-	github.com/denisenkom/go-mssqldb v0.12.3
-	github.com/go-sql-driver/mysql v1.7.0
-	github.com/godror/godror v0.36.0
 	github.com/gopherjs/gopherjs v0.0.0-20220221023154-0b2280d3ff96 // indirect
 	github.com/jchv/go-webview2 v0.0.0-20221223143126-dc24628cff85
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/sijms/go-ora/v2 v2.5.25
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7
