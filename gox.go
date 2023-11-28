@@ -3127,7 +3127,10 @@ func importQLNonGUIPackages() {
 		"wxPaySendRequest": WxPaySendRequest,
 
 		// image related 图形相关
+		"makeImage":          tk.NewImage,
 		"thumbImage":         tk.ThumbImage,
+		"resizeImage":        tk.ResizeImageX,
+		"centerEnlargeImage": tk.CenterEnlargeImage,
 		"loadImageFromBytes": tk.LoadImageFromBytes,
 
 		// misc related 杂项相关函数
