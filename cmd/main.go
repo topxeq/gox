@@ -718,7 +718,10 @@ func chpHandler(strA string, w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	countT := 0
+
 	replaceFuncT := func(str1A string) string {
+		countT++
 		// tk.Pl("found: %v", str1A)
 		lastResultT, lastBytecodeT, errT := evalT.Run(ctx, []byte(str1A[5:len(str1A)-2]))
 
@@ -727,7 +730,7 @@ func chpHandler(strA string, w http.ResponseWriter, r *http.Request) {
 		}
 
 		if errT != nil {
-			return tk.ErrorToString(errT)
+			return fmt.Sprintf("[%v] %v", countT, tk.ErrorToString(errT))
 		}
 
 		if lastResultT != nil && lastResultT.TypeCode() != 0 {
