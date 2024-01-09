@@ -713,7 +713,24 @@ func doXms(res http.ResponseWriter, req *http.Request) {
 }
 
 func chpHandler(strA string, w http.ResponseWriter, r *http.Request) {
-	evalT := charlang.NewEvalQuick(map[string]interface{}{"versionG": charlang.VersionG, "argsG": []string{}, "scriptPathG": "", "runModeG": "chp"}, charlang.MainCompilerOptions)
+	var paraMapT map[string]string
+	var errT error
+
+	r.ParseForm()
+
+	vo := tk.GetFormValueWithDefaultValue(r, "vo", "")
+
+	if vo == "" {
+		paraMapT = tk.FormToMap(r.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			paraMapT = map[string]string{}
+		}
+	}
+
+	evalT := charlang.NewEvalQuick(map[string]interface{}{"versionG": charlang.VersionG, "argsG": []string{}, "scriptPathG": "", "runModeG": "chp", "paraMapG": paraMapT}, charlang.MainCompilerOptions)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
