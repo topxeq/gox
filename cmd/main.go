@@ -16,6 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/topxeq/qlang"
+
 	"github.com/topxeq/charlang"
 	charex "github.com/topxeq/charlang/stdlib/ex"
 	"github.com/topxeq/gox"
@@ -730,7 +732,7 @@ func chpHandler(strA string, w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	evalT := charlang.NewEvalQuick(map[string]interface{}{"versionG": charlang.VersionG, "argsG": []string{}, "scriptPathG": "", "runModeG": "chp", "paraMapG": paraMapT}, charlang.MainCompilerOptions)
+	evalT := charlang.NewEvalQuick(map[string]interface{}{"versionG": charlang.VersionG, "argsG": []string{}, "scriptPathG": "", "runModeG": "chp", "paraMapG": paraMapT, "requestG": r, "responseG": w, "reqUriG": r.RequestURI}, charlang.MainCompilerOptions)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -768,6 +770,87 @@ func chpHandler(strA string, w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(strT))
 }
 
+func ghpHandler(strA string, w http.ResponseWriter, r *http.Request) {
+	var paraMapT map[string]string
+	var errT error
+
+	r.ParseForm()
+
+	vo := tk.GetFormValueWithDefaultValue(r, "vo", "")
+
+	if vo == "" {
+		paraMapT = tk.FormToMap(r.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			paraMapT = map[string]string{}
+		}
+	}
+
+	gox.InitQLVM()
+
+	vmT := qlang.New("-noexit")
+
+	vmT.SetVar("paraMapG", paraMapT)
+
+	vmT.SetVar("requestG", r)
+
+	vmT.SetVar("responseG", w)
+
+	countT := 0
+
+	replaceFuncT := func(str1A string) string {
+		strT := str1A[5 : len(str1A)-2]
+
+		countT++
+
+		retT := ""
+
+		if tk.StartsWith(strT, "//TXDEF#") {
+			tmps := tk.DecryptStringByTXDEF(strT, "topxeq")
+
+			if !tk.IsErrStr(tmps) {
+				strT = tmps
+			}
+		}
+
+		errT = vmT.SafeEval(strT)
+
+		if errT != nil {
+			return fmt.Sprintf("[%v] %v", countT, tk.ErrorToString(errT))
+		}
+
+		rs, ok := vmT.GetVar("outG")
+
+		if ok {
+			if rs != nil {
+				strT, ok := rs.(string)
+				if ok {
+					return strT
+				}
+
+				return fmt.Sprintf("%v", rs)
+			}
+
+			return retT
+		}
+
+		return retT
+
+	}
+
+	re := regexp.MustCompile(`(?sm)<\?ghp.*?\?>`)
+
+	strT := re.ReplaceAllStringFunc(strA, replaceFuncT)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	w.Write([]byte(strT))
+}
+
 var staticFS http.Handler = nil
 
 func serveStaticDirHandler(w http.ResponseWriter, r *http.Request) {
@@ -793,6 +876,12 @@ func serveStaticDirHandler(w http.ResponseWriter, r *http.Request) {
 
 			if strings.HasSuffix(name, ".chp") {
 				chpHandler(tk.LoadStringFromFile(name), w, r)
+
+				return
+			}
+
+			if strings.HasSuffix(name, ".ghp") {
+				ghpHandler(tk.LoadStringFromFile(name), w, r)
 
 				return
 			}
