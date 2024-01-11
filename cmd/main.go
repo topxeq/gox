@@ -851,6 +851,88 @@ func ghpHandler(strA string, w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(strT))
 }
 
+func xhpHandler(strA string, w http.ResponseWriter, r *http.Request) {
+	var paraMapT map[string]string
+	var errT error
+
+	r.ParseForm()
+
+	vo := tk.GetFormValueWithDefaultValue(r, "vo", "")
+
+	if vo == "" {
+		paraMapT = tk.FormToMap(r.Form)
+	} else {
+		paraMapT, errT = tk.MSSFromJSON(vo)
+
+		if errT != nil {
+			paraMapT = map[string]string{}
+		}
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	vm0T := xie.NewVM()
+
+	if tk.IsError(vm0T) {
+		w.Write([]byte(fmt.Sprintf("failed to initialize VM: %v", tk.GetErrStrX(vm0T))))
+		return
+	}
+
+	vmT := vm0T.(*xie.XieVM)
+
+	vmT.SetVar(vmT.Running, "paraMapG", paraMapT)
+	vmT.SetVar(vmT.Running, "requestG", r)
+	vmT.SetVar(vmT.Running, "responseG", w)
+
+	countT := 0
+
+	replaceFuncT := func(str1A string) string {
+		strT := str1A[5 : len(str1A)-2]
+
+		countT++
+
+		if tk.StartsWith(strT, "//TXDEF#") {
+			tmps := tk.DecryptStringByTXDEF(strT, "topxeq")
+
+			if !tk.IsErrStr(tmps) {
+				strT = tmps
+			}
+		}
+
+		retT := ""
+
+		originalCodeLenT := vmT.GetCodeLen(vmT.Running)
+
+		lrs := vmT.Load(vmT.Running, strT)
+
+		if tk.IsError(lrs) {
+			return fmt.Sprintf("TXERROR:[%v] failed to load source code of the script: %v", countT, tk.GetErrStrX(lrs))
+		}
+
+		rs := vmT.Run(originalCodeLenT)
+
+		noResultT := tk.IsUndefined(rs) // == "TXERROR:no result")
+
+		if tk.IsErrX(rs) {
+			return fmt.Sprintf("TXERROR:[%v] failed to run: %v", countT, tk.GetErrStrX(rs))
+		}
+
+		if !noResultT {
+			return tk.ToStr(rs)
+		}
+
+		return retT
+	}
+
+	re := regexp.MustCompile(`(?sm)<\?xhp.*?\?>`)
+
+	strT := re.ReplaceAllStringFunc(strA, replaceFuncT)
+
+	w.Write([]byte(strT))
+}
+
 var staticFS http.Handler = nil
 
 func serveStaticDirHandler(w http.ResponseWriter, r *http.Request) {
@@ -882,6 +964,12 @@ func serveStaticDirHandler(w http.ResponseWriter, r *http.Request) {
 
 			if strings.HasSuffix(name, ".ghp") {
 				ghpHandler(tk.LoadStringFromFile(name), w, r)
+
+				return
+			}
+
+			if strings.HasSuffix(name, ".xhp") {
+				xhpHandler(tk.LoadStringFromFile(name), w, r)
 
 				return
 			}
