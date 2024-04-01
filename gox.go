@@ -1997,11 +1997,19 @@ func IsDefined(vA interface{}) bool {
 		return false
 	}
 
+	if vA == tk.Undefined {
+		return false
+	}
+
 	return true
 }
 
 func IsUndefined(vA interface{}) bool {
 	if vA == spec.Undefined {
+		return true
+	}
+
+	if vA == tk.Undefined {
 		return true
 	}
 
@@ -2198,6 +2206,10 @@ func getMapItem(mapA interface{}, keyA string, defaultA ...interface{}) interfac
 		}
 
 		return itemT
+	}
+
+	if hasDefaultT {
+		return defaultA[0]
 	}
 
 	return ""
