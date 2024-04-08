@@ -209,7 +209,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.7"
+var VersionG = "v6.2.8"
 
 // add tk.ToJSONX
 
@@ -2660,7 +2660,7 @@ func importQLNonGUIPackages() {
 		"toUpper":              strings.ToUpper,    // 字符串转大写
 		"padStr":               tk.PadString,       // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
 		"strPad":               tk.PadString,
-		"limitStr":             tk.LimitString,            // 超长字符串截短，用法 s2 = limitStr("abcdefg", 3, "-suffix=...")，将得到abc...，suffix默认为..., -end参数用于指定保留后面开始
+		"limitStr":             tk.LimitString,            // 超长字符串截短，用法 s2 = limitStr("abcdefg", 3, "-suffix=...")，将得到abc...，suffix默认为..., -end参数用于指定保留后面开始，-rune参数表示按整Unicode字符截断
 		"strContains":          strings.Contains,          // 判断字符串中是否包含某个字串
 		"strContainsIn":        tk.ContainsIn,             // 判断字符串中是否包含某几个字串
 		"strReplace":           tk.Replace,                // 替换字符串中的字串
