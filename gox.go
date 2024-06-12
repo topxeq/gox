@@ -205,6 +205,8 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/core/option"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
 	"github.com/wechatpay-apiv3/wechatpay-go/utils"
+
+	"github.com/tjfoc/gmsm/sm3"
 )
 
 // Non GUI related
@@ -2365,7 +2367,15 @@ func GetResourceList(keyA string) []string {
 	return aryT
 }
 
-// wx payment related
+// payment related
+func gmsm3(inA string) string {
+	h := sm3.New()
+	h.Write([]byte(inA))
+	sum := h.Sum(nil)
+
+	return string(sum)
+}
+
 func WxPaySendRequest(serviceUrlA string, paramsA interface{}, argsA ...string) interface{} {
 	// tk.Pln(serviceUrlA, paramsA, mchIdA, mchCertificateSerialNumberA, mchAPIv3KeyA, privateKeyA, privateKeyTypeA, responseTypeA)
 
@@ -3201,6 +3211,8 @@ func importQLNonGUIPackages() {
 		"weixinPaySignStr":    tk.WeixinPaySignString,
 		"alipaySignString":    tk.AlipaySignString, // 阿里云API签名
 		"alipaySignStr":       tk.AlipaySignString,
+
+		"gmsm3": gmsm3, // 国密sm3加密/签名
 
 		// global variables 全局变量
 		"timeFormatG":        tk.TimeFormat,        // 用于时间处理时的时间格式，值为"2006-01-02 15:04:05"
