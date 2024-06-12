@@ -2373,7 +2373,7 @@ func gmsm3(inA string) string {
 	h.Write([]byte(inA))
 	sum := h.Sum(nil)
 
-	return string(sum)
+	return fmt.Sprintf("%x", sum)
 }
 
 func WxPaySendRequest(serviceUrlA string, paramsA interface{}, argsA ...string) interface{} {
