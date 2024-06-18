@@ -133,7 +133,7 @@ replace github.com/topxeq/xie v0.0.0 => ../xie
 
 // replace github.com/topxeq/text v0.0.0 => ../text
 
-replace github.com/topxeq/charlang v0.0.0 => ../charlang
+// replace github.com/topxeq/charlang v0.0.0 => ../charlang
 
 // replace github.com/topxeq/dialog v0.0.0 => ../../topxeq/dialog
 
