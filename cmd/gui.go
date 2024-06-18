@@ -12,7 +12,7 @@ import (
 	"github.com/topxeq/dlgs"
 	"github.com/topxeq/xie"
 
-	"github.com/topxeq/tk"
+	tk "github.com/topxeq/tkc"
 
 	"github.com/kbinani/screenshot"
 

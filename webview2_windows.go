@@ -5,7 +5,7 @@ package gox
 
 import (
 	"github.com/jchv/go-webview2"
-	"github.com/topxeq/tk"
+	tk "github.com/topxeq/tkc"
 )
 
 func newWebView2(optsA ...string) interface{} {

@@ -21,7 +21,7 @@ import (
 	"github.com/topxeq/charlang"
 	charex "github.com/topxeq/charlang/stdlib/ex"
 	"github.com/topxeq/gox"
-	"github.com/topxeq/tk"
+	tk "github.com/topxeq/tkc"
 	"github.com/topxeq/xie"
 
 	// "tinygo.org/x/bluetooth"

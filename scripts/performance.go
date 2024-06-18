@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/topxeq/tk"
+	tk "github.com/topxeq/tkc"
 )
 
 func calPi(pointCount int) float64 {

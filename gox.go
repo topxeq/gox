@@ -124,7 +124,7 @@ import (
 	qlgithubbeeviketree "github.com/topxeq/qlang/lib/github.com/beevik/etree"
 	qlgithubtopxeqimagetk "github.com/topxeq/qlang/lib/github.com/topxeq/imagetk"
 	qlgithubtopxeqsqltk "github.com/topxeq/qlang/lib/github.com/topxeq/sqltk"
-	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tk"
+	qlgithubtopxeqtk "github.com/topxeq/qlang/lib/github.com/topxeq/tkc"
 
 	qlgithub_fogleman_gg "github.com/topxeq/qlang/lib/github.com/fogleman/gg"
 
@@ -198,7 +198,7 @@ import (
 
 	"github.com/topxeq/xie"
 
-	"github.com/topxeq/tk"
+	tk "github.com/topxeq/tkc"
 
 	// finance related
 	"github.com/wechatpay-apiv3/wechatpay-go/core"
@@ -211,7 +211,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.8"
+var VersionG = "v6.2.9"
 
 // add tk.ToJSONX
 
@@ -2558,7 +2558,7 @@ func importQLNonGUIPackages() {
 
 	// import native functions and global variables 内置函数与全局变量
 	var defaultExports = map[string]interface{}{
-		// 其中 tk.开头的函数都是github.com/topxeq/tk包中的，可以去pkg.go.dev/github.com/topxeq/tk查看函数定义
+		// 其中 tk.开头的函数都是github.com/topxeq/tkc包中的，可以去pkg.go.dev/github.com/topxeq/tkc查看函数定义
 
 		// common related 一般函数
 		"defined":         defined,               // 查看某变量是否已经定义，注意参数是字符串类型的变量名，例： if defined("a") {...}
@@ -3355,7 +3355,9 @@ func importQLNonGUIPackages() {
 	// 3rd party
 
 	qlang.Import("github_topxeq_tk", qlgithubtopxeqtk.Exports)
+	qlang.Import("github_topxeq_tkc", qlgithubtopxeqtk.Exports)
 	qlang.Import("tk", qlgithubtopxeqtk.Exports)
+	qlang.Import("tkc", qlgithubtopxeqtk.Exports)
 	qlang.Import("github_topxeq_imagetk", qlgithubtopxeqimagetk.Exports)
 	qlang.Import("imagetk", qlgithubtopxeqimagetk.Exports)
 
