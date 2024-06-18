@@ -525,7 +525,15 @@ func RunScriptOnHttp(codeA string, resA http.ResponseWriter, reqA *http.Request,
 	}
 
 	if tk.StartsWith(codeA, "//TXDEF#") {
-		tmps := tk.DecryptStringByTXDEF(codeA, "topxeq")
+		sCodeT := "topxeq"
+
+		msSecretCodeT := tk.ToStr(tk.GetVar("msSecretCodeG"))
+
+		if !tk.IsErrStr(msSecretCodeT) {
+			sCodeT = msSecretCodeT
+		}
+
+		tmps := tk.DecryptStringByTXDEF(codeA, sCodeT)
 
 		if !tk.IsErrStr(tmps) {
 			codeA = tmps
