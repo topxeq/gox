@@ -3310,12 +3310,18 @@ func importQLNonGUIPackages() {
 		"loadImageFromBytes": tk.LoadImageFromBytes,
 
 		// AI related 人工智能相关
-		"deepLoadTrainDataFromJson":     DeepLoadTrainDataFromJson,     // 载入JSON格式训练数据，例：data1 := deepLoadTrainDataFromJson(`[{"Input": [6.922596716, 1.77106367], "Response": [1]}, {"Input": [8.675418651, -0.242068655], "Response": [1]}]`)
-		"deepLoadTrainDataFromArray":    DeepLoadTrainDataFromArray,    // 载入数组格式训练数据，例：checkData1 := deepLoadTrainDataFromArray([[2.7810836, 2.550537003, 0], [6.922596716, 1.77106367, 1], [8.675418651, -0.242068655, 1]], "-inputLen=2", "-resultLen=1")，输入默认长度为每项数据长度-1，结果默认长度默认为1
+		"deepLoadTrainDataFromJson":     DeepLoadTrainDataFromJson, // 载入JSON格式训练数据，例：data1 := deepLoadTrainDataFromJson(`[{"Input": [6.922596716, 1.77106367], "Response": [1]}, {"Input": [8.675418651, -0.242068655], "Response": [1]}]`)
+		"nnLoadTrainDataFromJson":       DeepLoadTrainDataFromJson,
+		"deepLoadTrainDataFromArray":    DeepLoadTrainDataFromArray, // 载入数组格式训练数据，例：checkData1 := deepLoadTrainDataFromArray([[2.7810836, 2.550537003, 0], [6.922596716, 1.77106367, 1], [8.675418651, -0.242068655, 1]], "-inputLen=2", "-resultLen=1")，输入默认长度为每项数据长度-1，结果默认长度默认为1
+		"nnLoadTrainDataFromArray":      DeepLoadTrainDataFromArray,
 		"deepNewSimpleNewNeuralNetwork": DeepNewSimpleNewNeuralNetwork, // 创建一个简单神经网络，例：nn := deepNewSimpleNewNeuralNetwork(2, "[20, 20, 1]")
-		"deepNewSimpleTrainer":          DeepNewSimpleTrainer,          // 创建一个神经网络训练器，例：trainerT := deepNewSimpleTrainer("-outputInterval=100")
-		"deepTrain":                     DeepTrain,                     // 训练神经网络，例：deepTrain(trainerT, nn, data1, checkData1, roundT)，checkData1是用于比对的数据
-		"deepPredict":                   DeepPredict,                   // 利用神经网络预测，例：pl("predict: %v -> %v", [8.675418651, -0.242068655], deepPredict(nn, [8.675418651, -0.242068655]))，输出浮点数数组
+		"nnNewSimpleNewNeuralNetwork":   DeepNewSimpleNewNeuralNetwork,
+		"deepNewSimpleTrainer":          DeepNewSimpleTrainer, // 创建一个神经网络训练器，例：trainerT := deepNewSimpleTrainer("-outputInterval=100")
+		"nnNewSimpleTrainer":            DeepNewSimpleTrainer,
+		"deepTrain":                     DeepTrain, // 训练神经网络，例：deepTrain(trainerT, nn, data1, checkData1, roundT)，checkData1是用于比对的数据
+		"nnTrain":                       DeepTrain,
+		"deepPredict":                   DeepPredict, // 利用神经网络预测，例：pl("predict: %v -> %v", [8.675418651, -0.242068655], deepPredict(nn, [8.675418651, -0.242068655]))，输出浮点数数组
+		"nnPredict":                     DeepPredict,
 
 		// misc related 杂项相关函数
 		"getResource":     GetResource,     // 获取JQuery等常用的脚本或其他内置文本资源，一般用于服务器端提供内置的jquery等脚本嵌入，避免从互联网即时加载，第一个的参数是jquery.min.js等js文件的名称
