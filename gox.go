@@ -3,6 +3,7 @@ package gox
 import (
 	"context"
 	"crypto/rsa"
+	"encoding/json"
 	"io"
 	"sort"
 	"strconv"
@@ -20,6 +21,8 @@ import (
 	"errors"
 	"fmt"
 
+	deep "github.com/patrikeh/go-deep"
+	"github.com/patrikeh/go-deep/training"
 	"github.com/topxeq/qlang"
 	_ "github.com/topxeq/qlang/lib/builtin" // 导入 builtin 包
 	_ "github.com/topxeq/qlang/lib/chan"
@@ -211,7 +214,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.2.9"
+var VersionG = "v6.3.0"
 
 // add tk.ToJSONX
 
@@ -527,7 +530,7 @@ func RunScriptOnHttp(codeA string, resA http.ResponseWriter, reqA *http.Request,
 	if tk.StartsWith(codeA, "//TXDEF#") {
 		sCodeT := "topxeq"
 
-		msSecretCodeT := tk.ToStr(tk.GetVar("msSecretCodeG"))
+		msSecretCodeT := tk.TrimEx(tk.GetVar("msSecretCodeG"))
 
 		if !tk.IsErrStr(msSecretCodeT) {
 			sCodeT = msSecretCodeT
@@ -2375,6 +2378,149 @@ func GetResourceList(keyA string) []string {
 	return aryT
 }
 
+func DeepLoadTrainDataFromJson(strA string) interface{} {
+	var dataT training.Examples
+
+	errT := json.Unmarshal([]byte(strA), &dataT)
+
+	if errT != nil {
+		return errT
+	}
+
+	return dataT
+}
+
+func DeepLoadTrainDataFromArray(aryA interface{}, argsA ...string) interface{} {
+	var dataT training.Examples
+
+	var lenT int
+
+	nv1, ok := aryA.([][]float64)
+
+	if ok {
+		lenT = len(nv1)
+
+		inputLenT := tk.ToInt(tk.GetSwitch(argsA, "-inputLen=", ""), lenT-1)
+		resultLenT := tk.ToInt(tk.GetSwitch(argsA, "-resultLen=", ""), 1)
+
+		dataT = make(training.Examples, 0)
+
+		for _, v := range nv1 {
+			dataT = append(dataT, training.Example{Input: v[0:inputLenT], Response: v[inputLenT : inputLenT+resultLenT]})
+		}
+
+		return dataT
+	}
+
+	nv2, ok := aryA.([]interface{})
+
+	if ok {
+		lenT = len(nv2)
+
+		inputLenT := tk.ToInt(tk.GetSwitch(argsA, "-inputLen=", ""), lenT-1)
+		resultLenT := tk.ToInt(tk.GetSwitch(argsA, "-resultLen=", ""), 1)
+
+		dataT = make(training.Examples, 0)
+
+		for _, v := range nv2 {
+			nv2a, ok := v.([]float64)
+
+			if ok {
+				dataT = append(dataT, training.Example{Input: nv2a[0:inputLenT], Response: nv2a[inputLenT : inputLenT+resultLenT]})
+				continue
+			}
+
+			nv2b, ok := v.([]float64)
+
+			if ok {
+				dataT = append(dataT, training.Example{Input: nv2b[0:inputLenT], Response: nv2b[inputLenT : inputLenT+resultLenT]})
+				continue
+			}
+
+			return fmt.Errorf("unsupported parameter type")
+		}
+
+		return dataT
+	}
+
+	return fmt.Errorf("unsupported parameter type")
+}
+
+func DeepNewSimpleNewNeuralNetwork(inputNumA int, layoutA string) interface{} {
+	var layoutT []int
+
+	errT := json.Unmarshal([]byte(layoutA), &layoutT)
+
+	if errT != nil {
+		return errT
+	}
+
+	n := deep.NewNeural(&deep.Config{
+		/* Input dimensionality */
+		Inputs: inputNumA,
+		/* Two hidden layers consisting of two neurons each, and a single output */
+		Layout: layoutT,
+		/* Activation functions: Sigmoid, Tanh, ReLU, Linear */
+		Activation: deep.ActivationSigmoid,
+		/* Determines output layer activation & loss function:
+		ModeRegression: linear outputs with MSE loss
+		ModeMultiClass: softmax output with Cross Entropy loss
+		ModeMultiLabel: sigmoid output with Cross Entropy loss
+		ModeBinary: sigmoid output with binary CE loss */
+		Mode: deep.ModeBinary,
+		/* Weight initializers: {deep.NewNormal(μ, σ), deep.NewUniform(μ, σ)} */
+		Weight: deep.NewNormal(1.0, 0.0),
+		/* Apply bias */
+		Bias: true,
+	})
+
+	return n
+}
+
+func DeepNewSimpleTrainer(argsA ...string) interface{} {
+	intervalT := tk.ToInt(tk.GetSwitch(argsA, "-outputInterval=", "50"), 0)
+
+	// params: learning rate, momentum, alpha decay, nesterov
+	optimizer := training.NewSGD(0.05, 0.1, 1e-6, true)
+	// params: optimizer, verbosity (print stats at every 50th iteration)
+	trainer := training.NewTrainer(optimizer, intervalT)
+
+	return trainer
+}
+
+func DeepTrain(trainerA interface{}, nnA interface{}, dataA interface{}, validateDataA interface{}, roundT int) error {
+	trainer := trainerA.(*training.OnlineTrainer)
+
+	nn := nnA.(*deep.Neural)
+
+	dataT := dataA.(training.Examples)
+	validateDataT := validateDataA.(training.Examples)
+
+	trainer.Train(nn, dataT, validateDataT, roundT)
+
+	return nil
+}
+
+func DeepPredict(nnA interface{}, dataA interface{}) interface{} {
+	var dataT []float64
+
+	nv1, ok := dataA.([]float64)
+
+	if ok {
+		dataT = nv1
+	}
+
+	errT := json.Unmarshal([]byte(tk.ToJSONX(dataA)), &dataT)
+
+	if errT != nil {
+		return errT
+	}
+
+	nn := nnA.(*deep.Neural)
+
+	return nn.Predict(dataT)
+}
+
 // payment related
 func gmsm3(inA string) string {
 	h := sm3.New()
@@ -3162,6 +3308,14 @@ func importQLNonGUIPackages() {
 		"resizeImage":        tk.ResizeImageX,
 		"centerEnlargeImage": tk.CenterEnlargeImage,
 		"loadImageFromBytes": tk.LoadImageFromBytes,
+
+		// AI related 人工智能相关
+		"deepLoadTrainDataFromJson":     DeepLoadTrainDataFromJson,     // 载入JSON格式训练数据，例：data1 := deepLoadTrainDataFromJson(`[{"Input": [6.922596716, 1.77106367], "Response": [1]}, {"Input": [8.675418651, -0.242068655], "Response": [1]}]`)
+		"deepLoadTrainDataFromArray":    DeepLoadTrainDataFromArray,    // 载入数组格式训练数据，例：checkData1 := deepLoadTrainDataFromArray([[2.7810836, 2.550537003, 0], [6.922596716, 1.77106367, 1], [8.675418651, -0.242068655, 1]], "-inputLen=2", "-resultLen=1")，输入默认长度为每项数据长度-1，结果默认长度默认为1
+		"deepNewSimpleNewNeuralNetwork": DeepNewSimpleNewNeuralNetwork, // 创建一个简单神经网络，例：nn := deepNewSimpleNewNeuralNetwork(2, "[20, 20, 1]")
+		"deepNewSimpleTrainer":          DeepNewSimpleTrainer,          // 创建一个神经网络训练器，例：trainerT := deepNewSimpleTrainer("-outputInterval=100")
+		"deepTrain":                     DeepTrain,                     // 训练神经网络，例：deepTrain(trainerT, nn, data1, checkData1, roundT)，checkData1是用于比对的数据
+		"deepPredict":                   DeepPredict,                   // 利用神经网络预测，例：pl("predict: %v -> %v", [8.675418651, -0.242068655], deepPredict(nn, [8.675418651, -0.242068655]))，输出浮点数数组
 
 		// misc related 杂项相关函数
 		"getResource":     GetResource,     // 获取JQuery等常用的脚本或其他内置文本资源，一般用于服务器端提供内置的jquery等脚本嵌入，避免从互联网即时加载，第一个的参数是jquery.min.js等js文件的名称

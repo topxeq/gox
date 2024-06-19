@@ -239,7 +239,13 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 			if tk.IfFileExists(filepath.Join(basePathG, tmps)) {
 				fileNameT = tmps
 			} else {
-				fileNameT = fileNameT + ".gox"
+				tmps = fileNameT + ".goxe"
+
+				if tk.IfFileExists(filepath.Join(basePathG, tmps)) {
+					fileNameT = tmps
+				} else {
+					fileNameT = fileNameT + ".gox"
+				}
 			}
 		}
 	}

@@ -4,6 +4,7 @@ go 1.22.4
 
 require (
 	github.com/jchv/go-webview2 v0.0.0-20221223143126-dc24628cff85
+	github.com/patrikeh/go-deep v0.0.0-20230427173908-a2775168ab3d
 	github.com/tjfoc/gmsm v1.4.1
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0

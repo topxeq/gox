@@ -78,6 +78,7 @@ require (
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/patrikeh/go-deep v0.0.0-20230427173908-a2775168ab3d // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
