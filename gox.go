@@ -214,7 +214,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.3.0"
+var VersionG = "v6.3.1"
 
 // add tk.ToJSONX
 
@@ -2430,23 +2430,38 @@ func DeepLoadTrainDataFromArray(aryA interface{}, argsA ...string) interface{} {
 				continue
 			}
 
-			nv2b, ok := v.([]float64)
+			// nv2b, ok := v.([]float64)
+
+			// if ok {
+			// 	dataT = append(dataT, training.Example{Input: nv2b[0:inputLenT], Response: nv2b[inputLenT : inputLenT+resultLenT]})
+			// 	continue
+			// }
+
+			nv2c, ok := v.([]interface{})
 
 			if ok {
-				dataT = append(dataT, training.Example{Input: nv2b[0:inputLenT], Response: nv2b[inputLenT : inputLenT+resultLenT]})
+				lenJT := len(nv2c)
+
+				tmpFloatAryT := make([]float64, lenJT)
+
+				for j := 0; j < lenJT; j++ {
+					tmpFloatAryT[j] = tk.ToFloat(nv2c[j])
+				}
+
+				dataT = append(dataT, training.Example{Input: tmpFloatAryT[0:inputLenT], Response: tmpFloatAryT[inputLenT : inputLenT+resultLenT]})
 				continue
 			}
 
-			return fmt.Errorf("unsupported parameter type")
+			return fmt.Errorf("unsupported parameter type: %T", v)
 		}
 
 		return dataT
 	}
 
-	return fmt.Errorf("unsupported parameter type")
+	return fmt.Errorf("unsupported parameter type: %T", aryA)
 }
 
-func DeepNewSimpleNewNeuralNetwork(inputNumA int, layoutA string) interface{} {
+func DeepNewSimpleNeuralNetwork(inputNumA int, layoutA string, argsA ...string) interface{} {
 	var layoutT []int
 
 	errT := json.Unmarshal([]byte(layoutA), &layoutT)
@@ -2455,19 +2470,46 @@ func DeepNewSimpleNewNeuralNetwork(inputNumA int, layoutA string) interface{} {
 		return errT
 	}
 
+	activationFuncT := tk.GetSwitch(argsA, "-activation=", "")
+
+	var inputActivationType deep.ActivationType
+
+	if activationFuncT == "" || activationFuncT == "sigmoid" {
+		inputActivationType = deep.ActivationSigmoid
+	} else if activationFuncT == "tanh" {
+		inputActivationType = deep.ActivationTanh
+	} else if activationFuncT == "relu" {
+		inputActivationType = deep.ActivationReLU
+	} else if activationFuncT == "softmax " {
+		inputActivationType = deep.ActivationSoftmax
+	} else {
+		inputActivationType = deep.ActivationType(tk.ToInt(activationFuncT, 0))
+	}
+
+	outputActivationFuncT := tk.GetSwitch(argsA, "-outputActivation=", "")
+
+	var outputActivationType deep.Mode = deep.Mode(tk.ToInt(outputActivationFuncT, 0))
+
+	lossT := tk.GetSwitch(argsA, "-loss=", "")
+
+	var lossTypeT deep.LossType = deep.LossType(tk.ToInt(lossT, 0))
+
+	// fmt.Printf("in: %v, out: %v, loss: %v\n", inputActivationType, outputActivationType, lossTypeT)
+
 	n := deep.NewNeural(&deep.Config{
 		/* Input dimensionality */
 		Inputs: inputNumA,
 		/* Two hidden layers consisting of two neurons each, and a single output */
 		Layout: layoutT,
 		/* Activation functions: Sigmoid, Tanh, ReLU, Linear */
-		Activation: deep.ActivationSigmoid,
+		Activation: inputActivationType, // deep.ActivationTanh,
 		/* Determines output layer activation & loss function:
 		ModeRegression: linear outputs with MSE loss
 		ModeMultiClass: softmax output with Cross Entropy loss
 		ModeMultiLabel: sigmoid output with Cross Entropy loss
 		ModeBinary: sigmoid output with binary CE loss */
-		Mode: deep.ModeBinary,
+		Mode: outputActivationType, // deep.ModeRegression, // deep.ModeBinary,
+		Loss: lossTypeT,
 		/* Weight initializers: {deep.NewNormal(μ, σ), deep.NewUniform(μ, σ)} */
 		Weight: deep.NewNormal(1.0, 0.0),
 		/* Apply bias */
@@ -2477,11 +2519,38 @@ func DeepNewSimpleNewNeuralNetwork(inputNumA int, layoutA string) interface{} {
 	return n
 }
 
+func DeepRestoreSimpleNeuralNetwork(strA string, argsA ...string) interface{} {
+	neuralT, errT := deep.Unmarshal([]byte(strA))
+
+	if errT != nil {
+		return errT
+	}
+
+	return neuralT
+}
+
+func DeepDumpSimpleNeuralNetwork(nnA *deep.Neural, argsA ...string) interface{} {
+	b, errT := nnA.Marshal()
+
+	if errT != nil {
+		return errT
+	}
+
+	return string(b)
+}
+
 func DeepNewSimpleTrainer(argsA ...string) interface{} {
 	intervalT := tk.ToInt(tk.GetSwitch(argsA, "-outputInterval=", "50"), 0)
 
 	// params: learning rate, momentum, alpha decay, nesterov
-	optimizer := training.NewSGD(0.05, 0.1, 1e-6, true)
+	lrT := tk.ToFloat(tk.GetSwitch(argsA, "-lr=", "0.25"), 0.25)
+	mT := tk.ToFloat(tk.GetSwitch(argsA, "-m=", "0.1"), 0.1)
+	decayT := tk.ToFloat(tk.GetSwitch(argsA, "-decay=", "0.000001"), 0.000001)
+	nesT := tk.IfSwitchExists(argsA, "-nes") || tk.ToBool(tk.GetSwitch(argsA, "-nes=", "true"))
+
+	fmt.Printf("lr: %v, m: %v, decay: %v, nes: %v\n", lrT, mT, decayT, nesT)
+
+	optimizer := training.NewSGD(lrT, mT, decayT, nesT)
 	// params: optimizer, verbosity (print stats at every 50th iteration)
 	trainer := training.NewTrainer(optimizer, intervalT)
 
@@ -2854,7 +2923,8 @@ func importQLNonGUIPackages() {
 		"getNowTick":           tk.GetNowTick,
 		"genTimeStamp":         tk.GetTimeStampMid,       // 生成时间戳，格式为13位的Unix时间戳1640133706954，例：timeStampT = genTimeStamp(time.Now())
 		"genRandomStr":         tk.GenerateRandomStringX, // 生成随机字符串，函数定义： genRandomStr("-min=6", "-max=8", "-noUpper", "-noLower", "-noDigit", "-special", "-space", "-invalid")
-		"generateRandomString": tk.GenerateRandomString,  // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
+		"getRandomStr":         tk.GenerateRandomStringX,
+		"generateRandomString": tk.GenerateRandomString, // 生成随机字符串，函数定义： (minCharA, maxCharA int, hasUpperA, hasLowerA, hasDigitA, hasSpecialCharA, hasSpaceA bool, hasInvalidChars bool) string
 
 		"strFindDiffPos": tk.FindFirstDiffIndex, // 查找两个字符串中的第一处不同所在位置，完全相同则返回-1
 
@@ -3310,18 +3380,21 @@ func importQLNonGUIPackages() {
 		"loadImageFromBytes": tk.LoadImageFromBytes,
 
 		// AI related 人工智能相关
-		"deepLoadTrainDataFromJson":     DeepLoadTrainDataFromJson, // 载入JSON格式训练数据，例：data1 := deepLoadTrainDataFromJson(`[{"Input": [6.922596716, 1.77106367], "Response": [1]}, {"Input": [8.675418651, -0.242068655], "Response": [1]}]`)
-		"nnLoadTrainDataFromJson":       DeepLoadTrainDataFromJson,
-		"deepLoadTrainDataFromArray":    DeepLoadTrainDataFromArray, // 载入数组格式训练数据，例：checkData1 := deepLoadTrainDataFromArray([[2.7810836, 2.550537003, 0], [6.922596716, 1.77106367, 1], [8.675418651, -0.242068655, 1]], "-inputLen=2", "-resultLen=1")，输入默认长度为每项数据长度-1，结果默认长度默认为1
-		"nnLoadTrainDataFromArray":      DeepLoadTrainDataFromArray,
-		"deepNewSimpleNewNeuralNetwork": DeepNewSimpleNewNeuralNetwork, // 创建一个简单神经网络，例：nn := deepNewSimpleNewNeuralNetwork(2, "[20, 20, 1]")
-		"nnNewSimpleNewNeuralNetwork":   DeepNewSimpleNewNeuralNetwork,
-		"deepNewSimpleTrainer":          DeepNewSimpleTrainer, // 创建一个神经网络训练器，例：trainerT := deepNewSimpleTrainer("-outputInterval=100")
-		"nnNewSimpleTrainer":            DeepNewSimpleTrainer,
-		"deepTrain":                     DeepTrain, // 训练神经网络，例：deepTrain(trainerT, nn, data1, checkData1, roundT)，checkData1是用于比对的数据
-		"nnTrain":                       DeepTrain,
-		"deepPredict":                   DeepPredict, // 利用神经网络预测，例：pl("predict: %v -> %v", [8.675418651, -0.242068655], deepPredict(nn, [8.675418651, -0.242068655]))，输出浮点数数组
-		"nnPredict":                     DeepPredict,
+		"deepLoadTrainDataFromJson":    DeepLoadTrainDataFromJson, // 载入JSON格式训练数据，例：data1 := deepLoadTrainDataFromJson(`[{"Input": [6.922596716, 1.77106367], "Response": [1]}, {"Input": [8.675418651, -0.242068655], "Response": [1]}]`)
+		"nnLoadTrainDataFromJson":      DeepLoadTrainDataFromJson,
+		"deepLoadTrainDataFromArray":   DeepLoadTrainDataFromArray, // 载入数组格式训练数据，例：checkData1 := deepLoadTrainDataFromArray([[2.7810836, 2.550537003, 0], [6.922596716, 1.77106367, 1], [8.675418651, -0.242068655, 1]], "-inputLen=2", "-resultLen=1")，输入默认长度为每项数据长度-1，结果默认长度默认为1
+		"nnLoadTrainDataFromArray":     DeepLoadTrainDataFromArray,
+		"deepNewSimpleNeuralNetwork":   DeepNewSimpleNeuralNetwork, // 创建一个简单神经网络，例：nn := deepNewSimpleNeuralNetwork(2, "[20, 20, 1]")
+		"nnNewSimpleNeuralNetwork":     DeepNewSimpleNeuralNetwork,
+		"nnRestoreSimpleNeuralNetwork": DeepRestoreSimpleNeuralNetwork, // 从导出的JSON字符串格式的信息恢复神经网络
+		"nnDumpSimpleNeuralNetwork":    DeepDumpSimpleNeuralNetwork,    // 导出神经网络到JSON字符串
+
+		"deepNewSimpleTrainer": DeepNewSimpleTrainer, // 创建一个神经网络训练器，例：trainerT := deepNewSimpleTrainer("-outputInterval=100")
+		"nnNewSimpleTrainer":   DeepNewSimpleTrainer,
+		"deepTrain":            DeepTrain, // 训练神经网络，例：deepTrain(trainerT, nn, data1, checkData1, roundT)，checkData1是用于比对的数据
+		"nnTrain":              DeepTrain,
+		"deepPredict":          DeepPredict, // 利用神经网络预测，例：pl("predict: %v -> %v", [8.675418651, -0.242068655], deepPredict(nn, [8.675418651, -0.242068655]))，输出浮点数数组
+		"nnPredict":            DeepPredict,
 
 		// misc related 杂项相关函数
 		"getResource":     GetResource,     // 获取JQuery等常用的脚本或其他内置文本资源，一般用于服务器端提供内置的jquery等脚本嵌入，避免从互联网即时加载，第一个的参数是jquery.min.js等js文件的名称
