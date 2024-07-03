@@ -9,7 +9,7 @@ require (
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7
-	github.com/topxeq/sqltk v0.0.0-20240618014733-99f9a3c3eefb
+	github.com/topxeq/sqltk v0.0.0-20240629061205-d42826b0e386
 	github.com/topxeq/tkc v0.0.0
 	github.com/topxeq/xie v0.0.0
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.17
@@ -103,7 +103,7 @@ require (
 	github.com/yuin/goldmark v1.7.2 // indirect
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594 // indirect
 	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/image v0.17.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/term v0.21.0 // indirect
