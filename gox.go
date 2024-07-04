@@ -214,7 +214,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.3.1"
+var VersionG = "v6.3.2"
 
 // add tk.ToJSONX
 
@@ -2590,6 +2590,25 @@ func DeepPredict(nnA interface{}, dataA interface{}) interface{} {
 	return nn.Predict(dataT)
 }
 
+// database related
+func connectDb(driverStrA string, connectStrA string) interface{} {
+	v1 := driverStrA
+	v2 := connectStrA
+
+	if v1 == "godror" {
+		matchesT := tk.RegFindFirstGroupsX(v2, `^(.*?)/(.*?)@(.*?)$`)
+
+		if matchesT != nil {
+			v1 = "oracle"
+			v2 = "oracle://" + matchesT[1] + ":" + matchesT[2] + "@" + matchesT[3]
+		}
+	} else if v1 == "sqlite3" {
+		v1 = "sqlite"
+	}
+
+	return sqltk.ConnectDBX(v1, v2)
+}
+
 // payment related
 func gmsm3(inA string) string {
 	h := sm3.New()
@@ -3227,7 +3246,7 @@ func importQLNonGUIPackages() {
 		"cleanHtmlPlaceholders": tk.CleanHtmlPlaceholders,
 
 		// database related
-		"dbConnect": sqltk.ConnectDBX, // 连接数据库以便后续读写操作，例：
+		"dbConnect": connectDb, // 连接数据库以便后续读写操作，例：
 		// dbT = dbConnect("sqlserver", "server=127.0.0.1;port=1443;portNumber=1443;user id=user;password=userpass;database=db1")
 		// 	if isError(dbT) {
 		// 		fatalf("打开数据库%v错误：%v", dbT)

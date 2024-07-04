@@ -28,13 +28,14 @@ import (
 
 	// full version related start
 	_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/godror/godror"
+	// _ "github.com/godror/godror"
 	_ "github.com/sijms/go-ora/v2"
 
 	// full version related end
 
 	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
+	_ "github.com/glebarez/go-sqlite"
 )
 
 // for goxn
