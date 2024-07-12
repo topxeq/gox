@@ -527,7 +527,11 @@ func RunScriptOnHttp(codeA string, resA http.ResponseWriter, reqA *http.Request,
 		importQLNonGUIPackages()
 	}
 
-	if tk.StartsWith(codeA, "//TXDEF#") {
+	if strings.HasPrefix(codeA, "//INROUTE:") {
+		codeA = tk.TrimEx(tk.GetVar(codeA[10:]))
+	}
+
+	if strings.HasPrefix(codeA, "//TXDEF#") {
 		sCodeT := "topxeq"
 
 		msSecretCodeT := tk.TrimEx(tk.GetVar("msSecretCodeG"))
