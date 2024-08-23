@@ -1056,7 +1056,7 @@ func doGoxn() {
 		go startHttpsServer(sslPortG)
 	}
 
-	tk.Pl("try starting server on %v ...", portG)
+	tk.PlNow("try starting server on %v ...", portG)
 	err := http.ListenAndServe(portG, muxG)
 
 	if err != nil {
