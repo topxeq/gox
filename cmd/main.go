@@ -36,6 +36,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	// _ "github.com/mattn/go-sqlite3"
 	_ "github.com/glebarez/go-sqlite"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // for goxn
