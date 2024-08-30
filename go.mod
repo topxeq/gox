@@ -9,7 +9,7 @@ require (
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/qlang v0.0.0
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7
-	github.com/topxeq/sqltk v0.0.0-20240825031238-117d837e64ab
+	github.com/topxeq/sqltk v0.0.0-20240829014103-632cd7779564
 	github.com/topxeq/tkc v0.0.0
 	github.com/topxeq/xie v0.0.0
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.17
@@ -51,7 +51,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 // indirect
-	github.com/klauspost/compress v1.14.4 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -79,8 +79,8 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tinylib/msgp v1.1.5 // indirect
 	github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 // indirect
 	github.com/topxeq/awsapi v0.0.0-20240618030908-cda3055d09ff // indirect
@@ -103,12 +103,12 @@ require (
 	github.com/yeka/zip v0.0.0-20231116150916-03d6312748a9 // indirect
 	github.com/yuin/goldmark v1.7.2 // indirect
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/net v0.26.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
-	golang.org/x/term v0.21.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/term v0.23.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	gonum.org/v1/plot v0.12.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

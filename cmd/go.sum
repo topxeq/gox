@@ -326,8 +326,8 @@ github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7 h1:bcYgbhUq1iUMjfWb
 github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7/go.mod h1:9hd2TDu1NgG4DruiRMa02efE4G0bm8GcT8lVG7u8J88=
 github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9 h1:loWEalO4+4TPW4odgmhwpXWt1R0HclYfyw4DoE6xvzk=
 github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9/go.mod h1:mf0FO/pQYsuIw59dJueuJMTfc9ESck/vtn6CEHeTAtA=
-github.com/topxeq/sqltk v0.0.0-20240825031238-117d837e64ab h1:nA5E05C3qJ6f9YhHUEuCGVwafXWBSx99V31pqKxLSmo=
-github.com/topxeq/sqltk v0.0.0-20240825031238-117d837e64ab/go.mod h1:zB0eZTSMxFAGBDLw9hC+hKMVeMjU11CtPiAaC6ne4sE=
+github.com/topxeq/sqltk v0.0.0-20240829014103-632cd7779564 h1:6XGiSAI+MnnCMJiXsdlH+G1Wq8GGTd89ErZdoUlZBt8=
+github.com/topxeq/sqltk v0.0.0-20240829014103-632cd7779564/go.mod h1:zB0eZTSMxFAGBDLw9hC+hKMVeMjU11CtPiAaC6ne4sE=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 h1:yPsp6rNV6vy1pL0H3GGz99es8Uq/gziGEYxtSq3uChQ=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928/go.mod h1:tYltUG1XxnVJvVhMpEV2YUzmcOU0HjYl4fK3nnNDKiM=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
