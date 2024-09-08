@@ -17,6 +17,7 @@ require (
 
 require (
 	git.sr.ht/~sbinet/gg v0.3.1 // indirect
+	github.com/ALTree/bigfloat v0.2.0 // indirect
 	github.com/aarzilli/sandblast v0.0.0-20151220083925-43f8fb998d06 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
 	github.com/alecthomas/chroma v0.10.0 // indirect
