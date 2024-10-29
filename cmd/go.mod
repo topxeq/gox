@@ -60,6 +60,8 @@ require (
 	github.com/gookit/color v1.3.8 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20220221023154-0b2280d3ff96 // indirect
 	github.com/guptarohit/asciigraph v0.5.6 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/ikawaha/kagome-dict v1.0.10 // indirect
 	github.com/ikawaha/kagome-dict/ipa v1.0.11 // indirect
 	github.com/ikawaha/kagome/v2 v2.9.8 // indirect
@@ -70,6 +72,7 @@ require (
 	github.com/jchv/go-winloader v0.0.0-20200815041850-dec1ee9a7fd5 // indirect
 	github.com/jezek/xgb v1.1.0 // indirect
 	github.com/jhillyerd/enmime v1.2.0 // indirect
+	github.com/jlaffaye/ftp v0.2.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josephspurrier/goversioninfo v1.4.0 // indirect
 	github.com/jtclarkjr/kanjikana v0.1.0 // indirect
