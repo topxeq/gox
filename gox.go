@@ -214,7 +214,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.3.2"
+var VersionG = "v6.3.3"
 
 // add tk.ToJSONX
 
@@ -3096,6 +3096,8 @@ func importQLNonGUIPackages() {
 		"fromJsonX":               fromJSONX,               // 等同于fromJSONX
 		"getJSONNode":             tk.GetJSONNode,          // 获取JSON中的某个节点，未取到则返回nil，示例： getJSONNode("{\"ID\":1,\"Name\":\"Reds\",\"Colors\":[\"Crimson\",\"Red\",\"Ruby\",\"Maroon\"]}", "Colors", 0)
 		"getJsonNode":             tk.GetJSONNode,          // 等同于getJSONNode
+		"getJsonNodeStr":             tk.GetJSONNodeString,          // getJsonNodeStr(jsonA, pathA), pathA参考github.com/tidwall/gjson
+		"getJsonNodeStrs":             tk.GetJSONNodeStrings,          // getJsonNodeStrs(jsonA, pathA), pathA参考github.com/tidwall/gjson
 		"simpleEncode":            tk.EncodeStringCustomEx, // 简单编码，主要为了文件名和网址名不含非法字符
 		"simpleDecode":            tk.DecodeStringCustom,   // 简单编码的解码，主要为了文件名和网址名不含非法字符
 		"tableToMSSArray":         tk.TableToMSSArray,      // 参见dbRecsToMapArray，主要用于处理数据库查询结果
