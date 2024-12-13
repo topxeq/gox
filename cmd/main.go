@@ -186,11 +186,11 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 
 	if req != nil {
 		req.ParseForm()
-		errT = req.ParseMultipartForm(100000000)
+		req.ParseMultipartForm(100000000)
 		
-		if errT != nil {
-			tk.Pl("failed to parse multipart form: %v", errT)
-		}
+//		if errT != nil {
+//			tk.Pl("failed to parse multipart form: %v", errT)
+//		}
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "ms", "")
