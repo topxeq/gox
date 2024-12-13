@@ -57,7 +57,7 @@ func doWms(res http.ResponseWriter, req *http.Request) {
 
 	if req != nil {
 		req.ParseForm()
-		req.ParseMultipartForm(1000000000000)
+		req.ParseMultipartForm(100000000)
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "wms", "")
@@ -184,7 +184,7 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 
 	if req != nil {
 		req.ParseForm()
-		req.ParseMultipartForm(1000000000000)
+		req.ParseMultipartForm(100000000)
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "ms", "")
@@ -374,7 +374,7 @@ func doCharms(res http.ResponseWriter, req *http.Request) {
 
 	if req != nil {
 		req.ParseForm()
-		req.ParseMultipartForm(1000000000000)
+		req.ParseMultipartForm(100000000)
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "charms", "")
@@ -469,7 +469,7 @@ func doCharmsContent(res http.ResponseWriter, req *http.Request) {
 
 	if req != nil {
 		req.ParseForm()
-		req.ParseMultipartForm(1000000000000)
+		req.ParseMultipartForm(100000000)
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "dc", "")
@@ -609,7 +609,7 @@ func doXms(res http.ResponseWriter, req *http.Request) {
 
 	if req != nil {
 		req.ParseForm()
-		req.ParseMultipartForm(1000000000000)
+		req.ParseMultipartForm(100000000)
 	}
 
 	// tk.Pl("xms: %v", req)
