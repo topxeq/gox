@@ -189,8 +189,7 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 		errT = req.ParseMultipartForm(100000000)
 		
 		if errT != nil {
-			res.Write([]byte(tk.ErrStrf("failed to parse multipart form: %v", errT)))
-			return
+			tk.Pl("failed to parse multipart form: %v", errT)
 		}
 	}
 
