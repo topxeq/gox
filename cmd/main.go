@@ -182,9 +182,16 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 		res.Header().Set("Content-Type", "text/html; charset=utf-8")
 	}
 
+	var errT error
+
 	if req != nil {
 		req.ParseForm()
-		req.ParseMultipartForm(100000000)
+		errT = req.ParseMultipartForm(100000000)
+		
+		if errT != nil {
+			res.Write([]byte(tk.ErrStrf("failed to parse multipart form: %v", errT)))
+			return
+		}
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "ms", "")
@@ -208,7 +215,6 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 	}
 
 	var paraMapT map[string]string
-	var errT error
 
 	vo := tk.GetFormValueWithDefaultValue(req, "vo", "")
 
