@@ -250,8 +250,8 @@ github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547 h1:F3Aw0yl5Kac/EOFVxgj
 github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547/go.mod h1:kFhnUTa5MiRVbkEsoTjB/UbVWQyMAzWrnmU6CuGmx30=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e h1:/wlnbdgwQS5AY2zDhv68utbTPCYiIAhQsobpJX9R5T0=
 github.com/topxeq/doc2vec v0.0.0-20200623133505-b167170c691e/go.mod h1:V81PuRavrZfUlLORzIAcJ5h84s52j49oYnPdQQ2d9Qw=
-github.com/topxeq/docxrepl v0.0.0-20250212063339-ba67f7344b69 h1:YVFc80MjfrBidjvpWGp0Xwx+Nhy7fstzDx55vNDU76Y=
-github.com/topxeq/docxrepl v0.0.0-20250212063339-ba67f7344b69/go.mod h1:dv9nr0GOeIC+9K2+YAfQrwCx0BaZoL243J7zmJ93FxQ=
+github.com/topxeq/docxrepl v0.0.0-20250213015321-4bb6fda31782 h1:k2s+D1vuFY/Upo+NoMchQGoZNVWfQr9GZ8dNLOxs6ac=
+github.com/topxeq/docxrepl v0.0.0-20250213015321-4bb6fda31782/go.mod h1:dv9nr0GOeIC+9K2+YAfQrwCx0BaZoL243J7zmJ93FxQ=
 github.com/topxeq/gods v0.0.0-20220125023913-b5718bb0c704 h1:UDjm5BOCQ4slQmGLHR9jL/0ldJDHy2CriDdqYbcI5o8=
 github.com/topxeq/gods v0.0.0-20220125023913-b5718bb0c704/go.mod h1:pwCuhd06kBt3NUKc3BQwXbh6DOznm8sbFyMixA1Im/M=
 github.com/topxeq/goph v0.0.0-20240813015542-ebac0794140b h1:N5id1qwkwAelUb5A3bFJlQHnc2inOMI81ElS7I1Cpfg=
