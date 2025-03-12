@@ -2885,6 +2885,7 @@ func importQLNonGUIPackages() {
 		"getInput":     tk.GetUserInput,      // 从命令行获取用户的输入
 		"getInputf":    tk.GetInputf,         // 从命令行获取用户的输入，同时可以用printf先输出一个提示信息
 		"getPasswordf": tk.GetInputPasswordf, // 从命令行获取密码输入，输入信息将不显示
+		"getMultiLineInput":     tk.GetMultiLineInput,      // 从命令行获取用户的输入，多行的形式
 		"sscanf":       tk.Sscanf,
 
 		// math related数学相关
@@ -2914,6 +2915,8 @@ func importQLNonGUIPackages() {
 		"strTrimRight":         strings.TrimRight,  // 去除尾部的各个字符
 		"toLower":              strings.ToLower,    // 字符串转小写
 		"toUpper":              strings.ToUpper,    // 字符串转大写
+		"strToLower":              strings.ToLower,    // 字符串转小写
+		"strToUpper":              strings.ToUpper,    // 字符串转大写
 		"padStr":               tk.PadString,       // 字符串补零等填充操作，例如 s1 = padStr(s0, 5, "-fill=0", "-right=true")，第二个参数是要补齐到几位，默认填充字符串fill为字符串0，right（表示是否在右侧填充）为false（也可以直接写成-right），因此上例等同于padStr(s0, 5)，如果fill字符串不止一个字符，最终补齐数量不会多于第二个参数指定的值，但有可能少
 		"strPad":               tk.PadString,
 		"limitStr":             tk.LimitString,            // 超长字符串截短，用法 s2 = limitStr("abcdefg", 3, "-suffix=...")，将得到abc...，suffix默认为..., -end参数用于指定保留后面开始，-rune参数表示按整Unicode字符截断
