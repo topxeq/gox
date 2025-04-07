@@ -162,7 +162,7 @@ require (
 	github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a // indirect
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7 // indirect
 	github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9 // indirect
-	github.com/topxeq/sqltk v0.0.0-20250321071853-ac6f8f228108 // indirect
+	github.com/topxeq/sqltk v0.0.0-20250406084423-dfacc20b10c4 // indirect
 	github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 // indirect
 	github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 // indirect
 	github.com/topxeq/xmlx v0.3.0 // indirect
