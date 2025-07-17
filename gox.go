@@ -214,7 +214,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.3.3"
+var VersionG = "v6.3.5"
 
 // add tk.ToJSONX
 
@@ -3461,6 +3461,7 @@ func importQLNonGUIPackages() {
 		"getCfgStr":     GetCfgString,     // 从根目录（Windows下为C:\，*nix下为/）的gox子目录中获取文件名为参数1的配置项字符串
 		"setCfgStr":     SetCfgString,     // 向根目录（Windows下为C:\，*nix下为/）的gox子目录中写入文件名为参数1，内容为参数2的配置项字符串，例：saveCfgStr("timeout", "30")
 		"genQR":         tk.GenerateQR,    // 生成二维码，例：genQR("http://www.example.com", "-level=2"), level 0..3，越高容错性越好，但越大
+		"scanQR":         tk.ScanQR, // 识别二维码，输入image.Image对象，scanQR(imgA, optsA)，输出字符串，错误情况输出TXERROR字符串
 		// "newChar":          charlang.NewChar,                // new a charlang script VM
 		// "runChar":          charlang.RunChar,                // run a charlang script VM
 		// "runCharCode":      charlang.RunCharCode,            // run a charlang script
