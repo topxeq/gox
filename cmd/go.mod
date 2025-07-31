@@ -119,7 +119,6 @@ require (
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
-	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/nwaples/rardecode/v2 v2.0.0-beta.4.0.20241112120701-034e449c6e78 // indirect
@@ -194,11 +193,9 @@ require (
 	gonum.org/v1/plot v0.12.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.66.2 // indirect
-	modernc.org/libquickjs v0.11.0 // indirect
-	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.11.0 // indirect
-	modernc.org/quickjs v0.15.4 // indirect
+	modernc.org/libc v1.37.6 // indirect
+	modernc.org/mathutil v1.6.0 // indirect
+	modernc.org/memory v1.7.2 // indirect
 	modernc.org/sqlite v1.28.0 // indirect
 )
 
@@ -213,5 +210,3 @@ replace github.com/topxeq/qlang v0.0.0 => ../../qlang
 replace github.com/topxeq/xie v0.0.0 => ../../xie
 
 replace github.com/topxeq/charlang v0.0.0 => ../../charlang
-
-replace modernc.org/sqlite v1.28.0 => modernc.org/sqlite v1.38.0
