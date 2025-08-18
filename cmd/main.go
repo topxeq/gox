@@ -991,6 +991,12 @@ func serveStaticDirHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			if strings.HasSuffix(strings.ToLower(name), ".php") {
+				http.NotFound(w, r)
+
+				return
+			}
+
 			staticFS.ServeHTTP(w, r)
 			// http.ServeFile(w, r, name)
 		} else {
