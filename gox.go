@@ -214,7 +214,7 @@ import (
 
 // Non GUI related
 
-var VersionG = "v6.3.5"
+var VersionG = "v6.3.6"
 
 // add tk.ToJSONX
 
@@ -2956,6 +2956,9 @@ func importQLNonGUIPackages() {
 
 		"strQuote":   strconv.Quote,   // 将一个普通字符串中涉及进行转义（加上转义符，如“"”变成“\"”）
 		"strUnquote": strconv.Unquote, // 字符串反转义
+
+		"strSub": tk.GetSubString, // 按起始（包含）和结束（不包含）索引获取字符串子串，索引有错则返回默认字符串（无默认则是空串），例如：rs := strSub("abc", 1, 2, "123")
+		"dealStr": tk.DealString,
 
 		// regex related 正则表达式相关
 		"regMatch":           tk.RegMatchX,     // 判断某字符串是否完整符合某表达式，例： if regMatch(mailT, `^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$`) {...}
