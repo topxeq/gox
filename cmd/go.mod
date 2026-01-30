@@ -14,12 +14,12 @@ require (
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237
 	github.com/ncruces/zenity v0.10.9
 	github.com/sijms/go-ora/v2 v2.5.25
-	github.com/topxeq/charlang v0.0.0
+	github.com/topxeq/charlang v0.0.0-20260129072537-0ce411988119
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
-	github.com/topxeq/qlang v0.0.0
-	github.com/topxeq/tkc v0.0.0
-	github.com/topxeq/xie v0.0.0
+	github.com/topxeq/qlang v0.0.0-20260130005213-732db0348c51
+	github.com/topxeq/tkc v0.0.0-20260115062048-7734b6d59f96
+	github.com/topxeq/xie v0.0.0-20260130004820-66f1a1be7dac
 )
 
 require (
@@ -203,12 +203,12 @@ require (
 
 replace github.com/topxeq/gox v0.0.0 => ../
 
-replace github.com/topxeq/tkc v0.0.0 => ../../tkc
+//replace github.com/topxeq/tkc v0.0.0 => ../../tkc
 
 // replace github.com/topxeq/sqltk v0.0.0 => ../../sqltk
 
-replace github.com/topxeq/qlang v0.0.0 => ../../qlang
+//replace github.com/topxeq/qlang v0.0.0 => ../../qlang
 
-replace github.com/topxeq/xie v0.0.0 => ../../xie
+//replace github.com/topxeq/xie v0.0.0 => ../../xie
 
-replace github.com/topxeq/charlang v0.0.0 => ../../charlang
+//replace github.com/topxeq/charlang v0.0.0 => ../../charlang

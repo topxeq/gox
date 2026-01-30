@@ -9,11 +9,11 @@ require (
 	github.com/patrikeh/go-deep v0.0.0-20230427173908-a2775168ab3d
 	github.com/tjfoc/gmsm v1.4.1
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
-	github.com/topxeq/qlang v0.0.0
+	github.com/topxeq/qlang v0.0.0-20260130005213-732db0348c51
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7
-	github.com/topxeq/sqltk v0.0.0-20251230061659-bfabc630b3fa
-	github.com/topxeq/tkc v0.0.0
-	github.com/topxeq/xie v0.0.0
+	github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30
+	github.com/topxeq/tkc v0.0.0-20260115062048-7734b6d59f96
+	github.com/topxeq/xie v0.0.0-20260130004820-66f1a1be7dac
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.17
 )
 
@@ -165,16 +165,16 @@ require (
 
 // replace github.com/360EntSecGroup-Skylar/excelize/v2 v2.3.2 => github.com/360EntSecGroup-Skylar/excelize v1.4.1
 
-replace github.com/topxeq/tkc v0.0.0 => ../tkc
+//replace github.com/topxeq/tkc v0.0.0 => ../tkc
 
 // replace github.com/topxeq/xmlx v0.2.0 => ../xmlx
 
 // replace github.com/topxeq/sqltk v0.0.0 => ../sqltk
 
-replace github.com/topxeq/qlang v0.0.0 => ../qlang
+//replace github.com/topxeq/qlang v0.0.0 => ../qlang
 
 // replace github.com/topxeq/xie/go/xie v0.0.0 => ../xie/go/xie
-replace github.com/topxeq/xie v0.0.0 => ../xie
+//replace github.com/topxeq/xie v0.0.0 => ../xie
 
 // replace github.com/topxeq/text v0.0.0 => ../text
 
