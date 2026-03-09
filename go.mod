@@ -10,7 +10,7 @@ require (
 	github.com/topxeq/qlang v0.0.0-20260225063152-12a767129bd4
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7
 	github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30
-	github.com/topxeq/tkc v0.0.0-20260225062728-2458d92d9e05
+	github.com/topxeq/tkc v0.0.0-20260309011933-5d9a035395ca
 	github.com/topxeq/xie v0.0.0-20260225063523-790912f4f4d6
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.17
 )

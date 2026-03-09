@@ -406,8 +406,8 @@ github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30 h1:xAFbfQOXLzlhB1aCJZ
 github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30/go.mod h1:n465NKnpOMX1yJP73+ZY6ZZqiQHYuCULK1Cf/GfBKh4=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 h1:yPsp6rNV6vy1pL0H3GGz99es8Uq/gziGEYxtSq3uChQ=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928/go.mod h1:tYltUG1XxnVJvVhMpEV2YUzmcOU0HjYl4fK3nnNDKiM=
-github.com/topxeq/tkc v0.0.0-20260225062728-2458d92d9e05 h1:nzEz+5PF2aw7S/4OneiQwc4pdPEpdkXl/PjQgJ2DkLI=
-github.com/topxeq/tkc v0.0.0-20260225062728-2458d92d9e05/go.mod h1:EdmMu/Thm/2nWXuzoDggIajypO7NhK16OwT5BXPQk+k=
+github.com/topxeq/tkc v0.0.0-20260309011933-5d9a035395ca h1:UrB33SBcq4WEOznhOeNtjeicqO8jgWQKPkIc6Fcou+A=
+github.com/topxeq/tkc v0.0.0-20260309011933-5d9a035395ca/go.mod h1:EdmMu/Thm/2nWXuzoDggIajypO7NhK16OwT5BXPQk+k=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=
 github.com/topxeq/xie v0.0.0-20260225063523-790912f4f4d6 h1:T8gCB6OS7IApZEaRQ7uKG1XsWxgvqCGLQWelgiwtrno=
