@@ -423,8 +423,8 @@ github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4 h1:dGAgcOMLxOrSloQNvz
 github.com/topxeq/afero v0.0.0-20200914073911-38c8390e9ef4/go.mod h1:LSJyQqZ2K+aR4TM9sU7vKU/tu1fPVpzibChaYXwjEAk=
 github.com/topxeq/awsapi v0.0.0-20240618030908-cda3055d09ff h1:8GSdYAugHcOI9k5X3zHYQkh0QsLStoKISscZ6vIsD7g=
 github.com/topxeq/awsapi v0.0.0-20240618030908-cda3055d09ff/go.mod h1:4OH+jvJsOmDlZo0w/14dBxg/zQ6jnbrxdUdasWdgoR8=
-github.com/topxeq/charlang v0.0.0-20260309012757-5ee5eea6f6f2 h1:qfaA0iHLJA4h2NjtZIP3aYRNBt4fJP5E+B/KXJma0rU=
-github.com/topxeq/charlang v0.0.0-20260309012757-5ee5eea6f6f2/go.mod h1:iBhRe5SQ7pZc7WyVnvwK49iyxkQc6bBwt+R5PGmswzg=
+github.com/topxeq/charlang v0.1.1-0.20260429012613-64e5a90a9664 h1:h1inhOfaithAjTBQVns6TgiTgVigLUZz+RYKlWbM9PU=
+github.com/topxeq/charlang v0.1.1-0.20260429012613-64e5a90a9664/go.mod h1:iBhRe5SQ7pZc7WyVnvwK49iyxkQc6bBwt+R5PGmswzg=
 github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09 h1:JtCULmOHEQb12ZWMFBCYec4gvbt9POZQN3ncD+2509Q=
 github.com/topxeq/countingwriter v0.0.0-20230115115152-84660be6de09/go.mod h1:S/DxGB7MRImGIuTaMZNJpWgguYvMD4a6OGrejBph0xI=
 github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547 h1:F3Aw0yl5Kac/EOFVxgjfRWAidGcP7g5Hg/QKSRGoAes=

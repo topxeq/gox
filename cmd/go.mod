@@ -12,7 +12,7 @@ require (
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237
 	github.com/ncruces/zenity v0.10.9
 	github.com/sijms/go-ora/v2 v2.5.25
-	github.com/topxeq/charlang v0.0.0-20260309012757-5ee5eea6f6f2
+	github.com/topxeq/charlang v0.1.1-0.20260429012613-64e5a90a9664
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
 	github.com/topxeq/qlang v0.0.0-20260225063152-12a767129bd4
