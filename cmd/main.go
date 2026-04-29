@@ -58,6 +58,12 @@ func doWms(res http.ResponseWriter, req *http.Request) {
 	if req != nil {
 		req.ParseForm()
 		req.ParseMultipartForm(100000000)
+		
+		defer func() {
+			if req.MultipartForm != nil {
+				req.MultipartForm.RemoveAll()
+			}
+		}()
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "wms", "")
@@ -187,7 +193,12 @@ func doMs(res http.ResponseWriter, req *http.Request) {
 	if req != nil {
 		req.ParseForm()
 		req.ParseMultipartForm(100000000)
-		
+	
+		defer func() {
+			if req.MultipartForm != nil {
+				req.MultipartForm.RemoveAll()
+			}
+		}()
 //		if errT != nil {
 //			tk.Pl("failed to parse multipart form: %v", errT)
 //		}
@@ -380,6 +391,12 @@ func doCharms(res http.ResponseWriter, req *http.Request) {
 	if req != nil {
 		req.ParseForm()
 		req.ParseMultipartForm(100000000)
+		
+		defer func() {
+			if req.MultipartForm != nil {
+				req.MultipartForm.RemoveAll()
+			}
+		}()
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "charms", "")
@@ -475,6 +492,12 @@ func doCharmsContent(res http.ResponseWriter, req *http.Request) {
 	if req != nil {
 		req.ParseForm()
 		req.ParseMultipartForm(100000000)
+		
+		defer func() {
+			if req.MultipartForm != nil {
+				req.MultipartForm.RemoveAll()
+			}
+		}()
 	}
 
 	reqT := tk.GetFormValueWithDefaultValue(req, "dc", "")
