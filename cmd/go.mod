@@ -12,11 +12,11 @@ require (
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237
 	github.com/ncruces/zenity v0.10.9
 	github.com/sijms/go-ora/v2 v2.5.25
-	github.com/topxeq/charlang v0.1.1-0.20260429012613-64e5a90a9664
+	github.com/topxeq/charlang v0.1.1-0.20260717002218-9742bad54c8c
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
 	github.com/topxeq/qlang v0.0.0-20260225063152-12a767129bd4
-	github.com/topxeq/tkc v0.0.0-20260309011933-5d9a035395ca
+	github.com/topxeq/tkc v0.0.0-20260605141016-ef826d7efa1d
 	github.com/topxeq/xie v0.0.0-20260225063523-790912f4f4d6
 )
 
