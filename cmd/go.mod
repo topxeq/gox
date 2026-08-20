@@ -12,7 +12,7 @@ require (
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237
 	github.com/ncruces/zenity v0.10.9
 	github.com/sijms/go-ora/v2 v2.5.25
-	github.com/topxeq/charlang v0.1.1-0.20260815153714-7173fd7b3f37
+	github.com/topxeq/charlang v0.1.1-0.20260820114325-f3092cd7727b
 	github.com/topxeq/dlgs v0.0.0-20220223083937-4d3036aff547
 	github.com/topxeq/gox v0.0.0
 	github.com/topxeq/qlang v0.0.0-20260225063152-12a767129bd4
@@ -169,7 +169,7 @@ require (
 	github.com/topxeq/mahonia v0.0.0-20190828060648-12b0599ddd1a // indirect
 	github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7 // indirect
 	github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9 // indirect
-	github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30 // indirect
+	github.com/topxeq/sqltk v0.0.0-20260820114004-cb868047090b // indirect
 	github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 // indirect
 	github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 // indirect
 	github.com/topxeq/xmlx v0.3.0 // indirect

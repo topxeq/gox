@@ -402,12 +402,12 @@ github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7 h1:bcYgbhUq1iUMjfWb
 github.com/topxeq/regexpx v0.0.0-20230721063247-f118dbe089d7/go.mod h1:9hd2TDu1NgG4DruiRMa02efE4G0bm8GcT8lVG7u8J88=
 github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9 h1:loWEalO4+4TPW4odgmhwpXWt1R0HclYfyw4DoE6xvzk=
 github.com/topxeq/socks v0.0.0-20230721063359-4740c5e460e9/go.mod h1:mf0FO/pQYsuIw59dJueuJMTfc9ESck/vtn6CEHeTAtA=
-github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30 h1:xAFbfQOXLzlhB1aCJZShxcjD0Jx7e6qzfzXjn+tn2Bs=
-github.com/topxeq/sqltk v0.0.0-20260124035901-98bf8683db30/go.mod h1:n465NKnpOMX1yJP73+ZY6ZZqiQHYuCULK1Cf/GfBKh4=
+github.com/topxeq/sqltk v0.0.0-20260820114004-cb868047090b h1:UhNdtx2AQbd3js0Izajq3dCKQaPbWC1K52QMg34++/c=
+github.com/topxeq/sqltk v0.0.0-20260820114004-cb868047090b/go.mod h1:7PWmKj1vH1JUD9jFUfmlAItmcBxewV/JCr2mSo62L7E=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928 h1:yPsp6rNV6vy1pL0H3GGz99es8Uq/gziGEYxtSq3uChQ=
 github.com/topxeq/text v0.0.0-20210710090213-e5fbc3508928/go.mod h1:tYltUG1XxnVJvVhMpEV2YUzmcOU0HjYl4fK3nnNDKiM=
-github.com/topxeq/tkc v0.0.0-20260309011933-5d9a035395ca h1:UrB33SBcq4WEOznhOeNtjeicqO8jgWQKPkIc6Fcou+A=
-github.com/topxeq/tkc v0.0.0-20260309011933-5d9a035395ca/go.mod h1:EdmMu/Thm/2nWXuzoDggIajypO7NhK16OwT5BXPQk+k=
+github.com/topxeq/tkc v0.0.0-20260605141016-ef826d7efa1d h1:T4/M0dK5ibdyISNoqrMRyjY/izbLV3VQcE1Quscfy38=
+github.com/topxeq/tkc v0.0.0-20260605141016-ef826d7efa1d/go.mod h1:EdmMu/Thm/2nWXuzoDggIajypO7NhK16OwT5BXPQk+k=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1 h1:IEl6WYCFNG6l+4JSvFVZ0zKXOuu6NockB/BgL6d6FcE=
 github.com/topxeq/uuid v0.0.0-20210318003930-0d149e412ca1/go.mod h1:M6+8XhQK8KhdO8FvAckQN9zCLgJU8TZTVhITlsQwkWM=
 github.com/topxeq/xie v0.0.0-20260225063523-790912f4f4d6 h1:T8gCB6OS7IApZEaRQ7uKG1XsWxgvqCGLQWelgiwtrno=
